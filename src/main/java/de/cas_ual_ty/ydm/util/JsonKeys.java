@@ -28,6 +28,7 @@ public class JsonKeys
     
     // type = "Monster" & monster_type = ""/"Ritual"/"Fusion"/"Synchro"
     public static final String LEVEL = "level";
+    public static final String IS_TUNER = "is_tuner";
     
     // type = "Monster" & monster_type = "Xyz"
     public static final String RANK = "rank";

@@ -7,6 +7,7 @@ import de.cas_ual_ty.ydm.util.JsonKeys;
 public class LevelMonsterProperties extends DefMonsterProperties
 {
     public byte level;
+    public boolean isTuner;
     
     public LevelMonsterProperties(Properties p0, JsonObject j)
     {
@@ -22,6 +23,7 @@ public class LevelMonsterProperties extends DefMonsterProperties
         {
             LevelMonsterProperties p1 = (LevelMonsterProperties)p0;
             this.level = p1.level;
+            this.isTuner = p1.isTuner;
         }
     }
     
@@ -46,10 +48,12 @@ public class LevelMonsterProperties extends DefMonsterProperties
     public void readLevelMonsterProperties(JsonObject j)
     {
         this.level = j.get(JsonKeys.LEVEL).getAsByte();
+        this.isTuner = j.get(JsonKeys.IS_TUNER).getAsBoolean();
     }
     
     public void writeLevelProperties(JsonObject j)
     {
         j.addProperty(JsonKeys.LEVEL, this.level);
+        j.addProperty(JsonKeys.IS_TUNER, this.isTuner);
     }
 }
