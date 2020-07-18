@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -11,6 +12,7 @@ public class Properties
     public boolean isIllegal;
     public String text;
     public Type type;
+    public String[] images;
     
     public Properties(Properties p0)
     {
@@ -19,6 +21,7 @@ public class Properties
         this.isIllegal = p0.isIllegal;
         this.text = p0.text;
         this.type = p0.type;
+        this.images = p0.images;
     }
     
     public Properties(JsonObject j)
@@ -47,6 +50,13 @@ public class Properties
         this.isIllegal = j.get(JsonKeys.IS_ILLEGAL).getAsBoolean();
         this.text = j.get(JsonKeys.TEXT).getAsString();
         this.type = Type.fromString(j.get(JsonKeys.TYPE).getAsString());
+        
+        JsonArray images = j.get(JsonKeys.IMAGES).getAsJsonArray();
+        this.images = new String[images.size()];
+        for(int i = 0; i < this.images.length; ++i)
+        {
+            this.images[i] = images.get(i).getAsString();
+        }
     }
     
     public void writeProperties(JsonObject j)
@@ -56,6 +66,13 @@ public class Properties
         j.addProperty(JsonKeys.IS_ILLEGAL, this.isIllegal);
         j.addProperty(JsonKeys.TEXT, this.text);
         j.addProperty(JsonKeys.TYPE, this.type.name);
+        
+        JsonArray images = new JsonArray();
+        for(String image : this.images)
+        {
+            images.add(image);
+        }
+        j.add(JsonKeys.IMAGES, images);
     }
     
     public boolean getIsSpell()
