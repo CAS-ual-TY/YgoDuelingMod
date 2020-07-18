@@ -3,11 +3,13 @@ package de.cas_ual_ty.ydm.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 
 public class Database
 {
     private static List<Properties> PROPERTIES_LIST;
+    private static List<Card> CARDS_LIST;
     
     public static void registerProperties(Properties p)
     {
@@ -109,5 +111,64 @@ public class Database
          */
         
         return null;
+    }
+    
+    public static Iterable<Properties> getPropertiesIterable()
+    {
+        return () -> Database.PROPERTIES_LIST.iterator();
+    }
+    
+    public static void registerCard(Card card)
+    {
+        Database.CARDS_LIST.add(card);
+    }
+    
+    public static void initCardsList(int size)
+    {
+        Database.CARDS_LIST = new ArrayList<>(size);
+    }
+    
+    public static void sortCardsList()
+    {
+        Database.CARDS_LIST.sort((c1, c2) -> c1.getSetId().compareTo(c2.getSetId()));
+    }
+    
+    // Divide and conquer algorithm on a sorted list
+    public static Card getCardBySetId(String setId)
+    {
+        Card c;
+        int result;
+        
+        int left = 0;
+        int right = Database.CARDS_LIST.size();
+        int index = Database.CARDS_LIST.size() / 2;
+        
+        while(left < right)
+        {
+            c = Database.CARDS_LIST.get(index);
+            result = setId.compareTo(c.getSetId());
+            
+            if(result == -1)
+            {
+                right = index;
+            }
+            else if(result == 1)
+            {
+                left = index + 1;
+            }
+            else
+            {
+                return c;
+            }
+            
+            index = (left + right) / 2;
+        }
+        
+        return null;
+    }
+    
+    public static Iterable<Card> getCardsIterable()
+    {
+        return () -> Database.CARDS_LIST.iterator();
     }
 }
