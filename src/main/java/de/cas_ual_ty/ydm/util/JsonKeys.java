@@ -7,6 +7,7 @@ public class JsonKeys
     public static final String IS_ILLEGAL = "is_illegal";
     public static final String TEXT = "text";
     public static final String TYPE = "type";
+    public static final String IMAGES = "images";
     
     // type = "Spell"
     public static final String SPELL_TYPE = "spell_type";
