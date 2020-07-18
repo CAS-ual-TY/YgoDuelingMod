@@ -3,9 +3,6 @@ package de.cas_ual_ty.ydm.card;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import de.cas_ual_ty.ydm.util.Database;
-import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.nbt.CompoundNBT;
 
 public class Card
 {
@@ -25,5 +22,25 @@ public class Card
         this.pictureIndex = 0;
         this.setId = "SET_ID";
         this.rarity = Rarity.COMMON;
+    }
+    
+    public Properties getProperties()
+    {
+        return this.properties;
+    }
+    
+    public byte getPictureIndex()
+    {
+        return this.pictureIndex;
+    }
+    
+    public String getSetId()
+    {
+        return this.setId;
+    }
+    
+    public Rarity getRarity()
+    {
+        return this.rarity;
     }
 }
