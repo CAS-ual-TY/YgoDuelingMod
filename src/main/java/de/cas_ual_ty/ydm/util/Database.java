@@ -30,7 +30,7 @@ public class Database
     // Divide and conquer algorithm on a sorted list
     public static Properties getPropertiesById(long id)
     {
-        Properties p = null;
+        Properties p;
         int result;
         
         // left included
@@ -108,6 +108,6 @@ public class Database
          * - loop end (left<right does not hold anymore)
          */
         
-        return p;
+        return null;
     }
 }
