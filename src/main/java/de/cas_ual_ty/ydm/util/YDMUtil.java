@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.util;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.card.properties.LevelMonsterProperties;
+import de.cas_ual_ty.ydm.card.properties.LinkMonsterProperties;
 import de.cas_ual_ty.ydm.card.properties.MonsterProperties;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.card.properties.SpellProperties;
@@ -39,7 +40,7 @@ public class YDMUtil
             }
             else if(p1.getIsLink())
             {
-                
+                return new LinkMonsterProperties(p1, j);
             }
         }
         
