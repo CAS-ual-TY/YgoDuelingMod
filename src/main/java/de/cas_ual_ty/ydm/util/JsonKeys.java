@@ -2,6 +2,8 @@ package de.cas_ual_ty.ydm.util;
 
 public class JsonKeys
 {
+    // cards
+    
     public static final String NAME = "name";
     public static final String ID = "id";
     public static final String IS_ILLEGAL = "is_illegal";
@@ -42,4 +44,10 @@ public class JsonKeys
     public static final String PENDULUM_TEXT = "pendulum_text";
     public static final String PENDULUM_SCALE_LEFT_BLUE = "pendulum_scale_left_blue";
     public static final String PENDULUM_SCALE_RIGHT_RED = "pendulum_scale_right_red";
+    
+    // set entries
+    
+    public static final String SET_ID = "set_id";
+    public static final String IMAGE_INDEX = "image_index";
+    public static final String RARITY = "rarity";
 }
