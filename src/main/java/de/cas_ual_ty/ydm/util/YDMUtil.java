@@ -48,7 +48,7 @@ public class YDMUtil
     
     public static String toSimpleString(String s)
     {
-        return s.replaceAll("[^a-zA-Z0-9\\.\\-]", "_").toLowerCase();
+        return s.replaceAll("[^a-zA-Z0-9]", "_").toLowerCase();
     }
     
     public static int getPow2(int pow)
