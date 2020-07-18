@@ -12,14 +12,13 @@ public class CardHolderStorage implements IStorage<ICardHolder>
     public INBT writeNBT(Capability<ICardHolder> capability, ICardHolder instance, Direction side)
     {
         CompoundNBT nbt = new CompoundNBT();
-        
-        
+        instance.writeCardHolderToNBT(nbt);
         return nbt;
     }
     
     @Override
     public void readNBT(Capability<ICardHolder> capability, ICardHolder instance, Direction side, INBT nbt)
     {
-        
+        instance.readCardHolderFromNBT((CompoundNBT)nbt);
     }
 }

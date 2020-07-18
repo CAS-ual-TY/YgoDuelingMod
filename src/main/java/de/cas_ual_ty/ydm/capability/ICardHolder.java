@@ -50,16 +50,21 @@ public interface ICardHolder
     {
         this.setCard(Database.getCardBySetId(nbt.getString(JsonKeys.SET_ID)));
         this.overrideImageIndex(nbt.getByte(JsonKeys.IMAGE_INDEX));
-        
-        if(nbt.hasUniqueId(JsonKeys.RARITY))
-        {
-            this.overrideRarity(Rarity.fromString(nbt.getString(JsonKeys.RARITY)));
-        }
+        this.overrideRarity(Rarity.fromString(nbt.getString(JsonKeys.RARITY)));
     }
     
     public default void writeCardHolderToNBT(CompoundNBT nbt)
     {
         nbt.putString(JsonKeys.SET_ID, this.getCard().getSetId());
-        nbt.putByte(JsonKeys.IMAGE_INDEX, this.getActiveImageIndex());
+        nbt.putByte(JsonKeys.IMAGE_INDEX, this.getOverriddenImageIndex());
+        
+        if(this.isRarityOverridden())
+        {
+            nbt.putString(JsonKeys.RARITY, this.getOverriddenRarity().name);
+        }
+        else
+        {
+            nbt.putString(JsonKeys.RARITY, "");
+        }
     }
 }
