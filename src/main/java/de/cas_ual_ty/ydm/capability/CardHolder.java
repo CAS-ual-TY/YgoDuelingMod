@@ -16,6 +16,11 @@ public class CardHolder implements ICardHolder
         this.overriddenRarity = null;
     }
     
+    public CardHolder()
+    {
+        this(null);
+    }
+    
     @Override
     public Card getCard()
     {

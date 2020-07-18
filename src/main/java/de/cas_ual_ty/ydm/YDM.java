@@ -1,9 +1,17 @@
 package de.cas_ual_ty.ydm;
 
+import de.cas_ual_ty.ydm.capability.CardHolder;
+import de.cas_ual_ty.ydm.capability.CardHolderProvider;
+import de.cas_ual_ty.ydm.capability.CardHolderStorage;
+import de.cas_ual_ty.ydm.capability.ICardHolder;
+import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.proxy.ISidedProxy;
 import de.cas_ual_ty.ydm.util.CardsReader;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -35,7 +43,7 @@ public class YDM
         bus.addListener(this::init);
         
         bus = MinecraftForge.EVENT_BUS;
-        //TODO
+        bus.addListener(this::attachCapabilitiesItemStack);
     }
     
     private void init(FMLCommonSetupEvent event)
@@ -44,5 +52,17 @@ public class YDM
             () -> YDM.PROTOCOL_VERSION,
             YDM.PROTOCOL_VERSION::equals,
             YDM.PROTOCOL_VERSION::equals);
+        
+        CapabilityManager.INSTANCE.register(ICardHolder.class, new CardHolderStorage(), CardHolder::new);
+    }
+    
+    private void attachCapabilitiesItemStack(AttachCapabilitiesEvent<ItemStack> event)
+    {
+        if(event.getObject() instanceof ItemStack && event.getObject().getItem() instanceof CardItem)
+        {
+            CardHolderProvider provider = new CardHolderProvider();
+            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_holder"), provider);
+            event.addListener(provider.getListener());
+        }
     }
 }
