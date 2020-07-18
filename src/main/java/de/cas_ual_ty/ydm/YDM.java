@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm;
 
 import de.cas_ual_ty.ydm.proxy.ISidedProxy;
+import de.cas_ual_ty.ydm.util.CardsReader;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,6 +24,8 @@ public class YDM
     
     public YDM()
     {
+        CardsReader.readFiles();
+        
         YDM.instance = this;
         YDM.proxy = DistExecutor.runForDist(
             () -> de.cas_ual_ty.ydm.proxy.ClientProxy::new,
