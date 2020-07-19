@@ -31,17 +31,7 @@ public class DNCList<K, V> implements Iterable<V>
         this.list = new ArrayList<>(0);
     }
     
-    public void add(V value)
-    {
-        if(this.isSorted)
-        {
-            this.isSorted = false;
-        }
-        
-        this.list.add(value);
-    }
-    
-    public V get(K key)
+    public int getIndex(K key)
     {
         if(!this.isSorted)
         {
@@ -75,7 +65,7 @@ public class DNCList<K, V> implements Iterable<V>
             }
             else
             {
-                return p;
+                return index;
             }
             
             index = (left + right) / 2;
@@ -110,9 +100,9 @@ public class DNCList<K, V> implements Iterable<V>
          * - result = -1 (2.5~3 -> -1)
          * 
          * Iteration 4:
-         * - left = 4
-         * - right = 4
-         * - index = 4
+         * - left = 3
+         * - right = 3
+         * - index = 3
          * - loop end (left<right does not hold anymore)
          * 
          * And finally, if we would have instead searched for 3.5:
@@ -120,13 +110,73 @@ public class DNCList<K, V> implements Iterable<V>
          * - result = 1 (3.5~3 -> 1)
          * 
          * Iteration 4:
-         * - left = 3
-         * - right = 3
-         * - index = 3
+         * - left = 4
+         * - right = 4
+         * - index = 4
          * - loop end (left<right does not hold anymore)
          */
         
-        return null;
+        return -1;
+    }
+    
+    public V getByIndex(int index)
+    {
+        return this.list.get(index);
+    }
+    
+    public V get(K key)
+    {
+        int index = this.getIndex(key);
+        
+        if(index != -1)
+        {
+            return this.getByIndex(index);
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    public void add(V value)
+    {
+        if(this.isSorted)
+        {
+            this.isSorted = false;
+        }
+        
+        this.list.add(value);
+    }
+    
+    public void addKeepSorted(V value)
+    {
+        K key = this.keyExtractor.getKeyFrom(value);
+        int index = this.getIndex(key);
+        
+        if(index != -1)
+        {
+            V current = this.getByIndex(index);
+            int comparison = this.dncComparator.compare(key, current);
+            
+            if(comparison < 1)
+            {
+                this.list.add(index, value);
+            }
+            else
+            {
+                this.list.add(index + 1, value);
+            }
+        }
+    }
+    
+    public V removeIndex(int index)
+    {
+        return this.list.remove(index);
+    }
+    
+    public boolean contains(K key)
+    {
+        return this.get(key) != null;
     }
     
     public int size()
