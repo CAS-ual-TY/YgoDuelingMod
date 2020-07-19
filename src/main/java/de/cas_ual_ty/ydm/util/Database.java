@@ -8,8 +8,8 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 
 public class Database
 {
-    private static List<Properties> PROPERTIES_LIST;
-    private static List<Card> CARDS_LIST;
+    public static List<Properties> PROPERTIES_LIST;
+    public static List<Card> CARDS_LIST;
     
     public static void registerProperties(Properties p)
     {
