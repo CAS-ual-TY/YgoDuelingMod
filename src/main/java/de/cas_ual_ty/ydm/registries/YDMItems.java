@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.registries;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.card.CardBackItem;
 import de.cas_ual_ty.ydm.card.CardItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
@@ -22,7 +23,7 @@ public class YDMItems
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
         IForgeRegistry<Item> registry = event.getRegistry();
-        registry.register(new Item(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
+        registry.register(new CardBackItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
         registry.register(new CardItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card"));
     }
 }
