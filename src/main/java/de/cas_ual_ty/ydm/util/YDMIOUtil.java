@@ -30,7 +30,7 @@ public class YdmIOUtil
     
     public static void createDirIfNonExistant(File file)
     {
-        if(!file.exists() && file.isDirectory())
+        if(!file.exists())
         {
             file.mkdir();
         }
