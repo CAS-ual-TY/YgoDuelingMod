@@ -12,9 +12,6 @@ import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
 
 public class YDMUtil
 {
-    public static final FileFilterSuffix JSON_FILTER = YDMUtil.createFileFilter(".json");
-    public static final FileFilterSuffix PNG_FILTER = YDMUtil.createFileFilter(".png");
-    
     private static final int[] POW_2 = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
     
     public static Properties buildProperties(JsonObject j)
@@ -59,10 +56,5 @@ public class YDMUtil
     {
         assert pow >= 0 && pow < 10;
         return YDMUtil.POW_2[pow];
-    }
-    
-    public static FileFilterSuffix createFileFilter(String requiredSuffix)
-    {
-        return () -> requiredSuffix;
     }
 }
