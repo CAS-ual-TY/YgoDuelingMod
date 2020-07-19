@@ -55,11 +55,11 @@ public class DNCList<K, V> implements Iterable<V>
             p = this.list.get(index);
             result = this.dncComparator.compare(key, p);
             
-            if(result == -1) // id comes before currently viewed p
+            if(result <= -1) // id comes before currently viewed p
             {
                 right = index;
             }
-            else if(result == 1) // id comes after currently viewed p
+            else if(result >= 1) // id comes after currently viewed p
             {
                 left = index + 1;
             }
