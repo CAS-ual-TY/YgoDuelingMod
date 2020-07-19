@@ -11,6 +11,7 @@ import de.cas_ual_ty.ydm.capability.CardHolderStorage;
 import de.cas_ual_ty.ydm.capability.ICardHolder;
 import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.proxy.ISidedProxy;
+import de.cas_ual_ty.ydm.util.ImageHandler;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -78,7 +79,7 @@ public class YDM
         YDM.distributionsFolder = new File(YDM.mainFolder, "distributions");
         YDM.imagesParentFolder = new File(YDM.mainFolder, "images");
         YDM.rawImagesFolder = new File(YDM.imagesParentFolder, "cards_raw");
-        YDM.activeImageSize = 128;
+        YDM.activeImageSize = 64;
         
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
         YDM.cardImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeImageSize);

@@ -131,54 +131,32 @@ public class ImageHandler
         
         BufferedImage img = ImageIO.read(in);
         
-        int divider = 2;
+        int size = YDM.activeImageSize; // set target size, maybe make different versions for card info and card item
+        int margin = size / 8;
         
-        double inverted = .5D / divider;
+        int sizeX = img.getWidth();
+        int sizeY = img.getHeight();
         
-        int defaultX = 322;
-        int defaultY = 433;
+        double factor = (double) sizeY / sizeX;
         
-        int size = 512;
-        int sizeX = defaultX;
-        int sizeY = defaultY;
+        // (sizeX / sizeY =) factor = newSizeX / newSizeY
+        // <=> newSizeY = newSizeX / factor
         
-        for(int i = 0; i < divider; ++i)
-        {
-            size /= 2;
-            
-            if(sizeX % 2 == 1)
-            {
-                ++sizeX;
-            }
-            sizeX /= 2;
-            
-            if(sizeY % 2 == 1)
-            {
-                ++sizeY;
-            }
-            sizeY /= 2;
-        }
+        int newSizeY = size - margin;
+        int newSizeX = (int)Math.round(newSizeY / factor);
         
-        if(img.getWidth() != defaultX || img.getHeight() != defaultY)
-        {
-            double width = ((double)defaultX) / img.getWidth();
-            double height = ((double)defaultY) / img.getHeight();
-            
-            BufferedImage after = new BufferedImage(defaultX, defaultY, BufferedImage.TYPE_INT_ARGB);
-            AffineTransform at = new AffineTransform();
-            at.scale(width, height);
-            AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-            after = scaleOp.filter(img, after);
-            img = after;
-        }
+        double scaleFactorX = (double) newSizeX / sizeX;
+        double scaleFactorY = (double) newSizeY / sizeY;
         
-        BufferedImage after = new BufferedImage(sizeX, sizeY, BufferedImage.TYPE_INT_ARGB);
+        // Resize card image to size that fits the next image
+        BufferedImage after = new BufferedImage(newSizeX, newSizeY, BufferedImage.TYPE_INT_ARGB);
         AffineTransform at = new AffineTransform();
-        at.scale(inverted, inverted);
+        at.scale(scaleFactorX, scaleFactorY);
         AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
         after = scaleOp.filter(img, after);
         img = after;
         
+        // Create new image with pow2 resolution, stick previous image in the middle
         BufferedImage newImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics g = newImg.getGraphics();
         g.drawImage(img, 1 + (size - img.getWidth()) / 2, 1 + (size - img.getHeight()) / 2, null);
