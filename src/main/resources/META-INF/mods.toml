@@ -12,7 +12,7 @@ loaderVersion="[31,)" #mandatory This is typically bumped every Minecraft versio
 # A list of mods - how many allowed here is determined by the individual mod loader
 [[mods]] #mandatory
 # The modid of the mod
-modId="ydm2" #mandatory
+modId="ydm" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
 version="${file.jarVersion}" #mandatory
  # A display name for the mod

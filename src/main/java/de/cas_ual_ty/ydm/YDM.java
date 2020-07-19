@@ -23,7 +23,7 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 @Mod(YDM.MOD_ID)
 public class YDM
 {
-    public static final String MOD_ID = "ydm2";
+    public static final String MOD_ID = "ydm";
     public static final String PROTOCOL_VERSION = "1";
     
     public static YDM instance;
