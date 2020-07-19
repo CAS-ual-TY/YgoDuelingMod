@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 public class ClientProxy implements ISidedProxy
 {
     @Override
-    public void setup()
+    public void preInit()
     {
         Minecraft.getInstance().getResourcePackList().addPackFinder(new YDMResourcePackFinder(YDM.cardImagesFolder));
     }

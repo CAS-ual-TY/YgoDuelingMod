@@ -64,7 +64,7 @@ public class YDM
         bus = MinecraftForge.EVENT_BUS;
         bus.addListener(this::attachCapabilitiesItemStack);
         
-        YDM.proxy.setup();
+        YDM.proxy.preInit();
     }
     
     private void initFiles()
