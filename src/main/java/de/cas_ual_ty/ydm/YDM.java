@@ -11,7 +11,6 @@ import de.cas_ual_ty.ydm.capability.CardHolderStorage;
 import de.cas_ual_ty.ydm.capability.ICardHolder;
 import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.proxy.ISidedProxy;
-import de.cas_ual_ty.ydm.util.ImageHandler;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
@@ -44,9 +43,11 @@ public class YDM
     public static File distributionsFolder;
     public static File imagesParentFolder;
     public static File rawImagesFolder;
-    public static File cardImagesFolder;
+    public static File cardInfoImagesFolder;
+    public static File cardItemImagesFolder;
     
-    public static int activeImageSize;
+    public static int activeInfoImageSize;
+    public static int activeItemImageSize;
     public static boolean keepCachedImages = true;
     
     public static SimpleChannel channel;
@@ -79,14 +80,16 @@ public class YDM
         YDM.distributionsFolder = new File(YDM.mainFolder, "distributions");
         YDM.imagesParentFolder = new File(YDM.mainFolder, "images");
         YDM.rawImagesFolder = new File(YDM.imagesParentFolder, "cards_raw");
-        YDM.activeImageSize = 64;
+        YDM.activeInfoImageSize = 256;
+        YDM.activeItemImageSize = 64;
         
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
-        YDM.cardImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeImageSize);
+        YDM.cardInfoImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeInfoImageSize);
+        YDM.cardItemImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeItemImageSize);
         
         YdmIOUtil.createDirIfNonExistant(YDM.imagesParentFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.rawImagesFolder);
-        YdmIOUtil.createDirIfNonExistant(YDM.cardImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(YDM.cardInfoImagesFolder);
     }
     
     private void init(FMLCommonSetupEvent event)

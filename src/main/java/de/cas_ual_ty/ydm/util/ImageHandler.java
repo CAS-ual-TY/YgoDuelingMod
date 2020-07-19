@@ -27,7 +27,7 @@ public class ImageHandler
     private static List<String> IN_PROGRESS = new LinkedList<>();
     private static List<String> FAILED = new LinkedList<>();
     
-    public static String getReplacementImage(Card card)
+    public static String getInfoReplacementImage(Card card)
     {
         String imageName = card.getImageName();
         
@@ -37,7 +37,7 @@ public class ImageHandler
         {
             if(!ImageHandler.isInProgress(imageName))
             {
-                if(ImageHandler.getActiveFile(imageName).exists())
+                if(ImageHandler.getInfoFile(imageName).exists())
                 {
                     ImageHandler.setFinished(imageName, false);
                     return imageName;
@@ -48,7 +48,7 @@ public class ImageHandler
                 }
                 else
                 {
-                    ImageHandler.makeImageReady(card);
+                    ImageHandler.makeImageReady(card, YDM.activeInfoImageSize);
                     return ImageHandler.IN_PROGRESS_IMAGE;
                 }
             }
@@ -109,14 +109,14 @@ public class ImageHandler
         }
     }
     
-    private static void makeImageReady(Card card)
+    private static void makeImageReady(Card card, int size)
     {
         String imageName = card.getImageName();
         String imageUrl = card.getImageURL();
         
         ImageHandler.setInProgress(imageName);
         
-        Thread t = new Thread(new ImageWizard(imageName, imageUrl), "YDM Image Downloader");
+        Thread t = new Thread(new ImageWizard(imageName, imageUrl, size), "YDM Image Downloader");
         t.start();
     }
     
@@ -125,19 +125,20 @@ public class ImageHandler
         YdmIOUtil.downloadFile(new URL(imageUrl), rawImageFile);
     }
     
-    private static void convertImage(File converted, File raw) throws IOException
+    private static void convertImage(File converted, File raw, int size) throws IOException
     {
+        // size: target size, maybe make different versions for card info and card item
+        
         InputStream in = new FileInputStream(raw);
         
         BufferedImage img = ImageIO.read(in);
         
-        int size = YDM.activeImageSize; // set target size, maybe make different versions for card info and card item
         int margin = size / 8;
         
         int sizeX = img.getWidth();
         int sizeY = img.getHeight();
         
-        double factor = (double) sizeY / sizeX;
+        double factor = (double)sizeY / sizeX;
         
         // (sizeX / sizeY =) factor = newSizeX / newSizeY
         // <=> newSizeY = newSizeX / factor
@@ -145,8 +146,8 @@ public class ImageHandler
         int newSizeY = size - margin;
         int newSizeX = (int)Math.round(newSizeY / factor);
         
-        double scaleFactorX = (double) newSizeX / sizeX;
-        double scaleFactorY = (double) newSizeY / sizeY;
+        double scaleFactorX = (double)newSizeX / sizeX;
+        double scaleFactorY = (double)newSizeY / sizeY;
         
         // Resize card image to size that fits the next image
         BufferedImage after = new BufferedImage(newSizeX, newSizeY, BufferedImage.TYPE_INT_ARGB);
@@ -172,25 +173,27 @@ public class ImageHandler
         return new File(YDM.rawImagesFolder, imageName + ".jpg");
     }
     
-    public static File getActiveFile(String imageName)
+    public static File getInfoFile(String imageName)
     {
-        return new File(YDM.cardImagesFolder, imageName + ".png");
+        return new File(YDM.cardInfoImagesFolder, imageName + ".png");
     }
     
-    public static File getActiveFileNoSuffix(String imageName)
+    public static File getItemFileNoSuffix(String imageName)
     {
-        return new File(YDM.cardImagesFolder, imageName);
+        return new File(YDM.cardItemImagesFolder, imageName);
     }
     
     private static class ImageWizard implements Runnable
     {
         private final String imageName;
         private final String imageUrl;
+        private final int size;
         
-        public ImageWizard(String imageName, String imageUrl)
+        public ImageWizard(String imageName, String imageUrl, int size)
         {
             this.imageName = imageName;
             this.imageUrl = imageUrl;
+            this.size = size;
         }
         
         @Override
@@ -215,14 +218,14 @@ public class ImageHandler
                 }
             }
             
-            File converted = ImageHandler.getActiveFile(this.imageName);
+            File converted = ImageHandler.getInfoFile(this.imageName);
             boolean failed = false;
             
             if(!converted.exists())
             {
                 try
                 {
-                    ImageHandler.convertImage(converted, raw);
+                    ImageHandler.convertImage(converted, raw, this.size);
                 }
                 catch (IOException e)
                 {

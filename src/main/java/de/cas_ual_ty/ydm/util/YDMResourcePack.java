@@ -35,7 +35,7 @@ public class YdmResourcePack extends ResourcePack
     
     public YdmResourcePack()
     {
-        super(YDM.cardImagesFolder);
+        super(YDM.cardItemImagesFolder);
         this.packMeta = new JsonObject();
         JsonObject pack = new JsonObject();
         pack.addProperty("description", "YDM Card Images");
@@ -63,7 +63,7 @@ public class YdmResourcePack extends ResourcePack
         
         if(image == null)
         {
-            throw new ResourcePackFileNotFoundException(YDM.cardImagesFolder, resourcePath);
+            throw new ResourcePackFileNotFoundException(YDM.cardInfoImagesFolder, resourcePath);
         }
         else
         {
@@ -89,7 +89,7 @@ public class YdmResourcePack extends ResourcePack
         // We remove that prefix part
         filename = filename.substring("assets/ydm/textures/item/".length());
         
-        File image = ImageHandler.getActiveFileNoSuffix(filename);
+        File image = ImageHandler.getItemFileNoSuffix(filename);
         
         if(image.exists())
         {
