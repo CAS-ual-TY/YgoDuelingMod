@@ -46,6 +46,8 @@ public class CardsReader
     
     private static void readCards(File cardsFolder)
     {
+        YDM.log("Reading card files from: " + cardsFolder.getAbsolutePath());
+        
         File[] cardsFiles = cardsFolder.listFiles();
         Database.initPropertiesList(cardsFiles.length);
         
@@ -79,6 +81,8 @@ public class CardsReader
     
     private static void readSets(File setsFolder)
     {
+        YDM.log("Reading set files from: " + setsFolder.getAbsolutePath());
+        
         //TODO
         
         Database.initCardsList(Database.PROPERTIES_LIST.size());

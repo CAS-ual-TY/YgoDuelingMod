@@ -64,7 +64,6 @@ public class YDM
         bus = MinecraftForge.EVENT_BUS;
         bus.addListener(this::attachCapabilitiesItemStack);
         
-        System.out.println("ydm - proxy setup");
         YDM.proxy.setup();
     }
     

@@ -83,6 +83,7 @@ public class YDMResourcePack extends ResourcePack
     @Nullable
     private File getFile(String filename)
     {
+        System.out.println("getFile: " + filename);
         try
         {
             File file1 = new File(this.file, filename + this.filter.getRequiredSuffix());
