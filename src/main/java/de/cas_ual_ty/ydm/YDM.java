@@ -28,6 +28,7 @@ public class YDM
     
     public static YDM instance;
     public static ISidedProxy proxy;
+    public static YDMItemGroup ydmItemGroup;
     public static SimpleChannel channel;
     
     public YDM()
@@ -38,6 +39,7 @@ public class YDM
         YDM.proxy = DistExecutor.runForDist(
             () -> de.cas_ual_ty.ydm.proxy.ClientProxy::new,
             () -> de.cas_ual_ty.ydm.proxy.ServerProxy::new);
+        YDM.ydmItemGroup = new YDMItemGroup("itemGroup." + YDM.MOD_ID);
         
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
