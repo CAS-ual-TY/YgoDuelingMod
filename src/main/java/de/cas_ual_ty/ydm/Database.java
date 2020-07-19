@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.util;
+package de.cas_ual_ty.ydm;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,9 +9,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.util.DNCList;
+import de.cas_ual_ty.ydm.util.YdmIOUtil;
+import de.cas_ual_ty.ydm.util.YdmUtil;
 
 public class Database
 {

@@ -1,9 +1,9 @@
 package de.cas_ual_ty.ydm.capability;
 
+import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import de.cas_ual_ty.ydm.util.Database;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.nbt.CompoundNBT;
 

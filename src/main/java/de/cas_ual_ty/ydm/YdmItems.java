@@ -1,6 +1,5 @@
-package de.cas_ual_ty.ydm.registries;
+package de.cas_ual_ty.ydm;
 
-import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardBackItem;
 import de.cas_ual_ty.ydm.card.CardItem;
 import net.minecraft.item.Item;
