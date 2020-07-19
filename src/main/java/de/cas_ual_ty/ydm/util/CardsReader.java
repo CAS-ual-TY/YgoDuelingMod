@@ -9,6 +9,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
+import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 
 public class CardsReader
@@ -17,21 +19,29 @@ public class CardsReader
     
     public static void readFiles()
     {
-        File mainFolder = new File("ydm_db");
+        File mainFolder = YDM.mainFolder;
         
         if(!mainFolder.exists())
         {
             return;
         }
         
-        File cardsFolder = new File("ydm_db/cards");
+        File cardsFolder = YDM.cardsFolder;
         
         if(!cardsFolder.exists())
         {
             return;
         }
         
+        File setsFolder = YDM.setsFolder;
+        
+        if(!setsFolder.exists())
+        {
+            return;
+        }
+        
         CardsReader.readCards(cardsFolder);
+        CardsReader.readSets(setsFolder);
     }
     
     private static void readCards(File cardsFolder)
@@ -65,6 +75,18 @@ public class CardsReader
         }
         
         Database.sortPropertiesList();
+    }
+    
+    private static void readSets(File setsFolder)
+    {
+        //TODO
+        
+        Database.initCardsList(Database.PROPERTIES_LIST.size());
+        for(Properties properties : Database.getPropertiesIterable())
+        {
+            Database.registerCard(new Card(properties));
+        }
+        Database.sortCardsList();
     }
     
     public static JsonObject parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
