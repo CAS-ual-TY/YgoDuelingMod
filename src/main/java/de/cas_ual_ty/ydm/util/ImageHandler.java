@@ -187,7 +187,20 @@ public class ImageHandler
     
     public static boolean areAllItemImagesReady()
     {
-        return false; // TODO
+        return getMissingItemImages().isEmpty();
+    }
+    
+    public static List<Card> getMissingItemImages()
+    {
+        List<Card> list = new LinkedList<>();
+        for(Card card : Database.CARDS_LIST)
+        {
+            if(!getItemFileNoSuffix(card.getImageName() + ".png").exists())
+            {
+                list.add(card);
+            }
+        }
+        return list;
     }
     
     public static void downloadAllCardImages()
