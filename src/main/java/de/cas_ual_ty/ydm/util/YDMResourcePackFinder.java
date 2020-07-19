@@ -23,7 +23,7 @@ public class YDMResourcePackFinder implements IPackFinder
     @Override
     public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
     {
-        System.out.println("addPackInfosToMap: " + nameToPackMap);
+        YDM.debug("addPackInfosToMap: " + nameToPackMap);
         //        String s = "file/" + file1.getName();
         String s = YDM.MOD_ID;
         T t = ResourcePackInfo.createResourcePack(s, true, this.makePackSupplier(), packInfoFactory, ResourcePackInfo.Priority.TOP);

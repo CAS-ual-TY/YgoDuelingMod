@@ -104,4 +104,9 @@ public class YDM
     {
         YDM.LOGGER.info(s);
     }
+    
+    public static void debug(String s)
+    {
+        LOGGER.debug(s);
+    }
 }

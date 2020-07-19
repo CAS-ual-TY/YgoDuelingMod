@@ -61,7 +61,7 @@ public class YDMResourcePack extends ResourcePack
     protected InputStream getInputStream(String resourcePath) throws IOException
     {
         //TODO pack.png
-        System.out.println("getInputStream: " + resourcePath);
+        YDM.debug("getInputStream: " + resourcePath);
         File file1 = this.getFile(resourcePath);
         if(file1 == null)
         {
@@ -76,14 +76,14 @@ public class YDMResourcePack extends ResourcePack
     @Override
     protected boolean resourceExists(String resourcePath)
     {
-        System.out.println("resourceExists: " + resourcePath);
+        YDM.debug("resourceExists: " + resourcePath);
         return this.getFile(resourcePath + this.filter.getRequiredSuffix()) != null;
     }
     
     @Nullable
     private File getFile(String filename)
     {
-        System.out.println("getFile: " + filename);
+        YDM.debug("getFile: " + filename);
         try
         {
             File file1 = new File(this.file, filename + this.filter.getRequiredSuffix());
@@ -115,7 +115,7 @@ public class YDMResourcePack extends ResourcePack
     public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn)
     {
         List<ResourceLocation> list = Lists.newArrayList();
-        System.out.println("getAllResourceLocations: " + type + " " + namespaceIn + " " + pathIn);
+        YDM.debug("getAllResourceLocations: " + type + " " + namespaceIn + " " + pathIn);
         
         if(type == ResourcePackType.CLIENT_RESOURCES)
         {
@@ -125,6 +125,7 @@ public class YDMResourcePack extends ResourcePack
             {
                 for(File f : listFiles)
                 {
+                    YDM.debug("addResourceLocation: " + new ResourceLocation(YDM.MOD_ID, f.getName().replace(this.filter.getRequiredSuffix(), "")).toString());
                     list.add(new ResourceLocation(YDM.MOD_ID, f.getName().replace(this.filter.getRequiredSuffix(), "")));
                 }
             }
