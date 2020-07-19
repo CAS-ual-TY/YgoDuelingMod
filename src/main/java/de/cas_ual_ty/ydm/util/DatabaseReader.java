@@ -49,7 +49,7 @@ public class DatabaseReader
         YDM.log("Reading card files from: " + cardsFolder.getAbsolutePath());
         
         File[] cardsFiles = cardsFolder.listFiles();
-        Database.initPropertiesList(cardsFiles.length);
+        Database.PROPERTIES_LIST.ensureExtraCapacity(cardsFiles.length);
         
         JsonObject j;
         Properties p;
@@ -60,7 +60,7 @@ public class DatabaseReader
             {
                 j = DatabaseReader.parseJsonFile(cardFile);
                 p = YDMUtil.buildProperties(j);
-                Database.registerProperties(p);
+                Database.PROPERTIES_LIST.add(p);
             }
             catch (JsonSyntaxException e)
             {
@@ -76,7 +76,7 @@ public class DatabaseReader
             }
         }
         
-        Database.sortPropertiesList();
+        Database.PROPERTIES_LIST.sort();
     }
     
     private static void readSets(File setsFolder)
@@ -85,12 +85,12 @@ public class DatabaseReader
         
         //TODO
         
-        Database.initCardsList(Database.PROPERTIES_LIST.size());
-        for(Properties properties : Database.getPropertiesIterable())
+        Database.CARDS_LIST.ensureExtraCapacity(Database.PROPERTIES_LIST.size());
+        for(Properties properties : Database.PROPERTIES_LIST)
         {
-            Database.registerCard(new Card(properties));
+            Database.CARDS_LIST.add(new Card(properties));
         }
-        Database.sortCardsList();
+        Database.CARDS_LIST.sort();
     }
     
     public static JsonObject parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException

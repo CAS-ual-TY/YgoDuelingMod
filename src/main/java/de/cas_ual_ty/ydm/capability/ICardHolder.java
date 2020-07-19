@@ -48,7 +48,7 @@ public interface ICardHolder
     
     public default void readCardHolderFromNBT(CompoundNBT nbt)
     {
-        this.setCard(Database.getCardBySetId(nbt.getString(JsonKeys.SET_ID)));
+        this.setCard(Database.CARDS_LIST.get(nbt.getString(JsonKeys.SET_ID)));
         this.overrideImageIndex(nbt.getByte(JsonKeys.IMAGE_INDEX));
         this.overrideRarity(Rarity.fromString(nbt.getString(JsonKeys.RARITY)));
     }

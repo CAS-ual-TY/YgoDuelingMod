@@ -64,7 +64,7 @@ public class CardItem extends Item
         LazyOptional<ICardHolder> cap;
         ICardHolder holder;
         
-        for(Card card : Database.getCardsIterable())
+        for(Card card : Database.CARDS_LIST)
         {
             // not using ::createItemForCard to conserve the memory of the method calls
             itemStack = new ItemStack(this);
