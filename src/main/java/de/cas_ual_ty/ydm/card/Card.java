@@ -19,10 +19,22 @@ public class Card
     public Card(Properties p)
     {
         this.properties = p;
-        this.setId = "SET_ID";
+        this.setId = String.valueOf(this.properties.getId());
         this.imageIndex = 0;
         this.rarity = Rarity.COMMON;
     }
+    
+    public String getImageName()
+    {
+        return this.getProperties().getId() + "_" + this.getImageIndex();
+    }
+    
+    public String getImageURL()
+    {
+        return this.getProperties().getImage(this.getImageIndex());
+    }
+    
+    // --- Getters ---
     
     public Properties getProperties()
     {
