@@ -48,7 +48,7 @@ public class DatabaseReader
     {
         YDM.log("Reading card files from: " + cardsFolder.getAbsolutePath());
         
-        File[] cardsFiles = cardsFolder.listFiles();
+        File[] cardsFiles = cardsFolder.listFiles(YDMUtil.JSON_FILTER);
         Database.PROPERTIES_LIST.ensureExtraCapacity(cardsFiles.length);
         
         JsonObject j;
