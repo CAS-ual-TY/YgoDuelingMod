@@ -6,10 +6,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class YDMIOUtil
+public class YdmIOUtil
 {
-    public static final FileFilterSuffix JSON_FILTER = YDMIOUtil.createFileFilter(".json");
-    public static final FileFilterSuffix PNG_FILTER = YDMIOUtil.createFileFilter(".png");
+    public static final FileFilterSuffix JSON_FILTER = YdmIOUtil.createFileFilter(".json");
+    public static final FileFilterSuffix PNG_FILTER = YdmIOUtil.createFileFilter(".png");
 
     public static FileFilterSuffix createFileFilter(String requiredSuffix)
     {

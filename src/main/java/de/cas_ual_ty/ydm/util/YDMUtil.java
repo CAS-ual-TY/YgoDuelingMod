@@ -10,7 +10,7 @@ import de.cas_ual_ty.ydm.card.properties.SpellProperties;
 import de.cas_ual_ty.ydm.card.properties.TrapProperties;
 import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
 
-public class YDMUtil
+public class YdmUtil
 {
     private static final int[] POW_2 = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
     
@@ -55,6 +55,6 @@ public class YDMUtil
     public static int getPow2(int pow)
     {
         assert pow >= 0 && pow < 10;
-        return YDMUtil.POW_2[pow];
+        return YdmUtil.POW_2[pow];
     }
 }

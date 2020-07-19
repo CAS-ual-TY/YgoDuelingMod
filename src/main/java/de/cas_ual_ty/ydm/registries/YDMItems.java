@@ -14,7 +14,7 @@ import net.minecraftforge.registries.ObjectHolder;
 
 @EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
 @ObjectHolder(YDM.MOD_ID)
-public class YDMItems
+public class YdmItems
 {
     public static final Item CARD_BACK = null;
     public static final Item CARD = null;

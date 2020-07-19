@@ -3,7 +3,7 @@ package de.cas_ual_ty.ydm.card.properties;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.cas_ual_ty.ydm.util.YDMUtil;
+import de.cas_ual_ty.ydm.util.YdmUtil;
 
 public enum LinkArrow
 {
@@ -17,12 +17,12 @@ public enum LinkArrow
     {
         this.name = name;
         this.index = index;
-        this.number = YDMUtil.getPow2(index);
+        this.number = YdmUtil.getPow2(index);
     }
     
     public boolean isContainedIn(short linkNumber)
     {
-        return (linkNumber % YDMUtil.getPow2(this.index + 1)) >= this.number;
+        return (linkNumber % YdmUtil.getPow2(this.index + 1)) >= this.number;
     }
     
     public static final LinkArrow[] VALUES = LinkArrow.values();

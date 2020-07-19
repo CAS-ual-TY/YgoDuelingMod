@@ -9,11 +9,11 @@ import net.minecraft.resources.IPackFinder;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackInfo;
 
-public class YDMResourcePackFinder implements IPackFinder
+public class YdmResourcePackFinder implements IPackFinder
 {
     private final File folder;
     
-    public YDMResourcePackFinder(File folderIn)
+    public YdmResourcePackFinder(File folderIn)
     {
         this.folder = folderIn;
     }
@@ -28,6 +28,6 @@ public class YDMResourcePackFinder implements IPackFinder
     
     private Supplier<IResourcePack> makePackSupplier()
     {
-        return () -> new YDMResourcePack(this.folder);
+        return () -> new YdmResourcePack(this.folder);
     }
 }

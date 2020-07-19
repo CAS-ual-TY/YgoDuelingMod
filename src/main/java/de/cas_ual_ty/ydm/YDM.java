@@ -35,7 +35,7 @@ public class YDM
     
     public static YDM instance;
     public static ISidedProxy proxy;
-    public static YDMItemGroup ydmItemGroup;
+    public static YdmItemGroup ydmItemGroup;
     
     public static File mainFolder;
     public static File cardsFolder;
@@ -53,7 +53,7 @@ public class YDM
         YDM.proxy = DistExecutor.runForDist(
             () -> de.cas_ual_ty.ydm.proxy.ClientProxy::new,
             () -> de.cas_ual_ty.ydm.proxy.ServerProxy::new);
-        YDM.ydmItemGroup = new YDMItemGroup("itemGroup." + YDM.MOD_ID);
+        YDM.ydmItemGroup = new YdmItemGroup("itemGroup." + YDM.MOD_ID);
         
         this.initFiles();
         DatabaseReader.readFiles();

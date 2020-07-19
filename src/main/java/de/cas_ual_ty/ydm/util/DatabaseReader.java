@@ -48,7 +48,7 @@ public class DatabaseReader
     {
         YDM.log("Reading card files from: " + cardsFolder.getAbsolutePath());
         
-        File[] cardsFiles = cardsFolder.listFiles(YDMIOUtil.JSON_FILTER);
+        File[] cardsFiles = cardsFolder.listFiles(YdmIOUtil.JSON_FILTER);
         Database.PROPERTIES_LIST.ensureExtraCapacity(cardsFiles.length);
         
         JsonObject j;
@@ -59,7 +59,7 @@ public class DatabaseReader
             try
             {
                 j = DatabaseReader.parseJsonFile(cardFile);
-                p = YDMUtil.buildProperties(j);
+                p = YdmUtil.buildProperties(j);
                 Database.PROPERTIES_LIST.add(p);
             }
             catch (JsonSyntaxException e)

@@ -24,7 +24,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 
-public class YDMResourcePack extends ResourcePack
+public class YdmResourcePack extends ResourcePack
 {
     public static final String PATH_PREFIX = "assets/" + YDM.MOD_ID + "/textures/item/";
     
@@ -33,7 +33,7 @@ public class YDMResourcePack extends ResourcePack
     
     private JsonObject packMeta;
     
-    public YDMResourcePack(File folder)
+    public YdmResourcePack(File folder)
     {
         super(folder);
         this.packMeta = new JsonObject();
@@ -45,9 +45,9 @@ public class YDMResourcePack extends ResourcePack
     
     public static String convertPath(String s)
     {
-        if(YDMResourcePack.OS_WINDOWS)
+        if(YdmResourcePack.OS_WINDOWS)
         {
-            s = YDMResourcePack.BACKSLASH_MATCHER.replaceFrom(s, '/');
+            s = YdmResourcePack.BACKSLASH_MATCHER.replaceFrom(s, '/');
         }
         
         return s;
@@ -59,7 +59,7 @@ public class YDMResourcePack extends ResourcePack
         //TODO pack.png needs to be returned as well
         
         // We get system dependent resource paths here (so eg. \ for windows, / for mac) so we need to convert
-        File image = this.getFile(YDMResourcePack.convertPath(resourcePath));
+        File image = this.getFile(YdmResourcePack.convertPath(resourcePath));
         
         if(image == null)
         {

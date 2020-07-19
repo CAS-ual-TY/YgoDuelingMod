@@ -1,12 +1,12 @@
 package de.cas_ual_ty.ydm;
 
-import de.cas_ual_ty.ydm.registries.YDMItems;
+import de.cas_ual_ty.ydm.registries.YdmItems;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 
-public class YDMItemGroup extends ItemGroup
+public class YdmItemGroup extends ItemGroup
 {
-    public YDMItemGroup(String label)
+    public YdmItemGroup(String label)
     {
         super(label);
     }
@@ -14,6 +14,6 @@ public class YDMItemGroup extends ItemGroup
     @Override
     public ItemStack createIcon()
     {
-        return new ItemStack(YDMItems.CARD_BACK);
+        return new ItemStack(YdmItems.CARD_BACK);
     }
 }
