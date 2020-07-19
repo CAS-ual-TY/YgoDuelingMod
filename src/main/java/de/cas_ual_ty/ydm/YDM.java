@@ -11,7 +11,7 @@ import de.cas_ual_ty.ydm.capability.CardHolderStorage;
 import de.cas_ual_ty.ydm.capability.ICardHolder;
 import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.proxy.ISidedProxy;
-import de.cas_ual_ty.ydm.util.CardsReader;
+import de.cas_ual_ty.ydm.util.DatabaseReader;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -56,7 +56,7 @@ public class YDM
         YDM.ydmItemGroup = new YDMItemGroup("itemGroup." + YDM.MOD_ID);
         
         this.initFiles();
-        CardsReader.readFiles();
+        DatabaseReader.readFiles();
         
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);

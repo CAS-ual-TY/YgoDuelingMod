@@ -13,7 +13,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 
-public class CardsReader
+public class DatabaseReader
 {
     public static final JsonParser JSON_PARSER = new JsonParser();
     
@@ -40,8 +40,8 @@ public class CardsReader
             return;
         }
         
-        CardsReader.readCards(cardsFolder);
-        CardsReader.readSets(setsFolder);
+        DatabaseReader.readCards(cardsFolder);
+        DatabaseReader.readSets(setsFolder);
     }
     
     private static void readCards(File cardsFolder)
@@ -58,7 +58,7 @@ public class CardsReader
         {
             try
             {
-                j = CardsReader.parseJsonFile(cardFile);
+                j = DatabaseReader.parseJsonFile(cardFile);
                 p = YDMUtil.buildProperties(j);
                 Database.registerProperties(p);
             }
@@ -95,6 +95,6 @@ public class CardsReader
     
     public static JsonObject parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
     {
-        return CardsReader.JSON_PARSER.parse(new FileReader(file)).getAsJsonObject();
+        return DatabaseReader.JSON_PARSER.parse(new FileReader(file)).getAsJsonObject();
     }
 }
