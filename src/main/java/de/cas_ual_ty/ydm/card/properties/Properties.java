@@ -90,6 +90,11 @@ public class Properties
         return this.getType() == Type.MONSTER;
     }
     
+    public String getImage(byte imageIndex)
+    {
+        return this.getImages()[imageIndex];
+    }
+    
     // --- Getters ---
     
     public String getName()
@@ -115,5 +120,10 @@ public class Properties
     public Type getType()
     {
         return this.type;
+    }
+    
+    public String[] getImages()
+    {
+        return this.images;
     }
 }
