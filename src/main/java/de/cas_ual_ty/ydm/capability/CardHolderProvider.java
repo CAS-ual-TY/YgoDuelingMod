@@ -22,19 +22,19 @@ public class CardHolderProvider implements ICapabilitySerializable<INBT>
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
     {
-        return cap == CardHolderProvider.CAPABILITY_CARD_HOLDER ? this.instance.cast() : LazyOptional.empty();
+        return CardHolderProvider.CAPABILITY_CARD_HOLDER.orEmpty(cap, this.instance);
     }
     
     @Override
     public INBT serializeNBT()
     {
-        return CardHolderProvider.CAPABILITY_CARD_HOLDER.getStorage().writeNBT(CardHolderProvider.CAPABILITY_CARD_HOLDER, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null);
+        return CardHolderProvider.CAPABILITY_CARD_HOLDER.writeNBT(this.instance.orElse(null), null);
     }
     
     @Override
     public void deserializeNBT(INBT nbt)
     {
-        CardHolderProvider.CAPABILITY_CARD_HOLDER.getStorage().readNBT(CardHolderProvider.CAPABILITY_CARD_HOLDER, this.instance.orElseThrow(() -> new IllegalArgumentException("LazyOptional must not be empty!")), null, nbt);
+        CardHolderProvider.CAPABILITY_CARD_HOLDER.readNBT(this.instance.orElse(null), null, nbt);
     }
     
     public Runnable getListener()
