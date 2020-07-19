@@ -55,7 +55,11 @@ public interface ICardHolder
     
     public default void writeCardHolderToNBT(CompoundNBT nbt)
     {
-        nbt.putString(JsonKeys.SET_ID, this.getCard().getSetId());
+        if(this.getCard() != null)
+        {
+            nbt.putString(JsonKeys.SET_ID, this.getCard().getSetId());
+        }
+        
         nbt.putByte(JsonKeys.IMAGE_INDEX, this.getOverriddenImageIndex());
         
         if(this.isRarityOverridden())
