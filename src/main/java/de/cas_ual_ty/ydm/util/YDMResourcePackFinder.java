@@ -1,6 +1,5 @@
 package de.cas_ual_ty.ydm.util;
 
-import java.io.File;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -11,11 +10,8 @@ import net.minecraft.resources.ResourcePackInfo;
 
 public class YdmResourcePackFinder implements IPackFinder
 {
-    private final File folder;
-    
-    public YdmResourcePackFinder(File folderIn)
+    public YdmResourcePackFinder()
     {
-        this.folder = folderIn;
     }
     
     @Override
@@ -28,6 +24,6 @@ public class YdmResourcePackFinder implements IPackFinder
     
     private Supplier<IResourcePack> makePackSupplier()
     {
-        return () -> new YdmResourcePack(this.folder);
+        return () -> new YdmResourcePack();
     }
 }
