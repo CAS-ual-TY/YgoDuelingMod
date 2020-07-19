@@ -12,9 +12,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.BiConsumer;
 
 import javax.imageio.ImageIO;
 
+import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.Card;
 
@@ -63,7 +65,7 @@ public class ImageHandler
         }
     }
     
-    public static boolean isImageReady(String imageName)
+    public static boolean isInfoImageReady(String imageName)
     {
         return ImageHandler.FINAL_IMAGE_READY_LIST.contains(imageName);
     }
@@ -116,7 +118,7 @@ public class ImageHandler
         
         ImageHandler.setInProgress(imageName);
         
-        Thread t = new Thread(new ImageWizard(imageName, imageUrl, size), "YDM Image Downloader");
+        Thread t = new Thread(new InfoImageWizard(imageName, imageUrl), "YDM Image Downloader");
         t.start();
     }
     
@@ -183,64 +185,94 @@ public class ImageHandler
         return new File(YDM.cardItemImagesFolder, imageName);
     }
     
-    private static class ImageWizard implements Runnable
+    public static boolean areAllItemImagesReady()
+    {
+        return false; // TODO
+    }
+    
+    public static void downloadAllCardImages()
+    {
+        Thread t = new Thread(new ItemImagesWizard());
+        t.start();
+        return; // TODO
+    }
+    
+    private static void imagePipeline(String imageName, String imageUrl, BiConsumer<String, Boolean> onFinish)
+    {
+        // onFinish params: (imageName, failed)
+        
+        File raw = ImageHandler.getRawFile(imageName);
+        
+        if(!raw.exists())
+        {
+            try
+            {
+                ImageHandler.downloadRawImage(imageUrl, raw);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                
+                onFinish.accept(imageName, true);
+                
+                // Without the raw image we cant do anything anyways
+                return;
+            }
+        }
+        
+        File converted = ImageHandler.getInfoFile(imageName);
+        boolean failed = false;
+        
+        if(!converted.exists())
+        {
+            try
+            {
+                ImageHandler.convertImage(converted, raw, YDM.activeInfoImageSize);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                failed = true;
+            }
+        }
+        
+        // Delete cache if requested
+        if(!YDM.keepCachedImages)
+        {
+            raw.delete();
+        }
+        
+        onFinish.accept(imageName, failed);
+    }
+    
+    private static class InfoImageWizard implements Runnable
     {
         private final String imageName;
         private final String imageUrl;
-        private final int size;
         
-        public ImageWizard(String imageName, String imageUrl, int size)
+        public InfoImageWizard(String imageName, String imageUrl)
         {
             this.imageName = imageName;
             this.imageUrl = imageUrl;
-            this.size = size;
         }
         
         @Override
         public void run()
         {
-            File raw = ImageHandler.getRawFile(this.imageName);
-            
-            if(!raw.exists())
+            ImageHandler.imagePipeline(this.imageName, this.imageUrl, (name, failed) -> ImageHandler.setFinished(name, failed));
+        }
+    }
+    
+    private static class ItemImagesWizard implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            for(Card card : Database.CARDS_LIST)
             {
-                try
-                {
-                    ImageHandler.downloadRawImage(this.imageUrl, raw);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                    
-                    ImageHandler.setFinished(this.imageName, true);
-                    
-                    // Without the raw image we cant do anything anyways
-                    return;
-                }
+                ImageHandler.imagePipeline(card.getImageName(), card.getImageURL(), (name, failed) ->
+                {});
             }
-            
-            File converted = ImageHandler.getInfoFile(this.imageName);
-            boolean failed = false;
-            
-            if(!converted.exists())
-            {
-                try
-                {
-                    ImageHandler.convertImage(converted, raw, this.size);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                    failed = true;
-                }
-            }
-            
-            // Delete cache if requested
-            if(!YDM.keepCachedImages)
-            {
-                raw.delete();
-            }
-            
-            ImageHandler.setFinished(this.imageName, failed);
         }
     }
 }
