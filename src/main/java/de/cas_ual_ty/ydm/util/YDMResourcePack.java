@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -13,7 +13,6 @@ import javax.annotation.Nullable;
 
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.YDM;
@@ -27,18 +26,16 @@ import net.minecraft.util.Util;
 
 public class YDMResourcePack extends ResourcePack
 {
+    public static final String PATH_PREFIX = "assets/" + YDM.MOD_ID + "/textures/item/";
+    
     private static final boolean OS_WINDOWS = Util.getOSType() == Util.OS.WINDOWS;
     private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
     
-    private FileFilterSuffix filter;
-    
     private JsonObject packMeta;
     
-    public YDMResourcePack(File folder, FileFilterSuffix filter)
+    public YDMResourcePack(File folder)
     {
         super(folder);
-        this.filter = filter;
-        
         this.packMeta = new JsonObject();
         JsonObject pack = new JsonObject();
         pack.addProperty("description", "YDM Card Images");
@@ -46,55 +43,57 @@ public class YDMResourcePack extends ResourcePack
         this.packMeta.add("pack", pack);
     }
     
-    public static boolean validatePath(File fileIn, String pathIn) throws IOException
+    public static String convertPath(String s)
     {
-        String s = fileIn.getCanonicalPath();
         if(YDMResourcePack.OS_WINDOWS)
         {
             s = YDMResourcePack.BACKSLASH_MATCHER.replaceFrom(s, '/');
         }
         
-        return s.endsWith(pathIn);
+        return s;
     }
     
     @Override
     protected InputStream getInputStream(String resourcePath) throws IOException
     {
-        //TODO pack.png
-        YDM.debug("getInputStream: " + resourcePath);
-        File file1 = this.getFile(resourcePath);
-        if(file1 == null)
+        //TODO pack.png needs to be returned as well
+        
+        // We get system dependent resource paths here (so eg. \ for windows, / for mac) so we need to convert
+        File image = this.getFile(YDMResourcePack.convertPath(resourcePath));
+        
+        if(image == null)
         {
             throw new ResourcePackFileNotFoundException(this.file, resourcePath);
         }
         else
         {
-            return new FileInputStream(file1);
+            return new FileInputStream(image);
         }
     }
     
     @Override
     protected boolean resourceExists(String resourcePath)
     {
-        YDM.debug("resourceExists: " + resourcePath);
-        return this.getFile(resourcePath + this.filter.getRequiredSuffix()) != null;
+        return this.getFile(resourcePath) != null;
     }
     
     @Nullable
     private File getFile(String filename)
     {
-        YDM.debug("getFile: " + filename);
-        try
+        // We only look for assets with this path as prefix (so eg. no models)
+        if(!filename.startsWith("assets/ydm/textures/item/"))
         {
-            File file1 = new File(this.file, filename + this.filter.getRequiredSuffix());
-            if(file1.isFile() && YDMResourcePack.validatePath(file1, filename))
-            {
-                return file1;
-            }
+            return null;
         }
-        catch (IOException var3)
+        
+        // We remove that prefix part
+        filename = filename.substring("assets/ydm/textures/item/".length());
+        
+        File image = new File(this.file, filename);
+        
+        if(image.exists())
         {
-            
+            return image;
         }
         
         return null;
@@ -114,8 +113,10 @@ public class YDMResourcePack extends ResourcePack
     @Override
     public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn)
     {
+        // This is only needed for fonts and sounds afaik
+        /*
+        
         List<ResourceLocation> list = Lists.newArrayList();
-        YDM.debug("getAllResourceLocations: " + type + " " + namespaceIn + " " + pathIn);
         
         if(type == ResourcePackType.CLIENT_RESOURCES)
         {
@@ -130,8 +131,8 @@ public class YDMResourcePack extends ResourcePack
                 }
             }
         }
-        
-        return list;
+        */
+        return Collections.emptyList();
     }
     
     @Override

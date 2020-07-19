@@ -12,19 +12,15 @@ import net.minecraft.resources.ResourcePackInfo;
 public class YDMResourcePackFinder implements IPackFinder
 {
     private final File folder;
-    private FileFilterSuffix filter;
     
-    public YDMResourcePackFinder(File folderIn, FileFilterSuffix filter)
+    public YDMResourcePackFinder(File folderIn)
     {
         this.folder = folderIn;
-        this.filter = filter;
     }
     
     @Override
     public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
     {
-        YDM.debug("addPackInfosToMap: " + nameToPackMap);
-        //        String s = "file/" + file1.getName();
         String s = YDM.MOD_ID;
         T t = ResourcePackInfo.createResourcePack(s, true, this.makePackSupplier(), packInfoFactory, ResourcePackInfo.Priority.TOP);
         nameToPackMap.put(s, t);
@@ -32,6 +28,6 @@ public class YDMResourcePackFinder implements IPackFinder
     
     private Supplier<IResourcePack> makePackSupplier()
     {
-        return () -> new YDMResourcePack(this.folder, this.filter);
+        return () -> new YDMResourcePack(this.folder);
     }
 }

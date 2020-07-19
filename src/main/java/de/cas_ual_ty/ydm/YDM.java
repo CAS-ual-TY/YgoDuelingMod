@@ -107,6 +107,6 @@ public class YDM
     
     public static void debug(String s)
     {
-        LOGGER.debug(s);
+        YDM.LOGGER.debug(s);
     }
 }
