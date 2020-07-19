@@ -2,6 +2,9 @@ package de.cas_ual_ty.ydm;
 
 import java.io.File;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import de.cas_ual_ty.ydm.capability.CardHolder;
 import de.cas_ual_ty.ydm.capability.CardHolderProvider;
 import de.cas_ual_ty.ydm.capability.CardHolderStorage;
@@ -27,6 +30,8 @@ public class YDM
 {
     public static final String MOD_ID = "ydm";
     public static final String PROTOCOL_VERSION = "1";
+    
+    private static final Logger LOGGER = LogManager.getLogger();
     
     public static YDM instance;
     public static ISidedProxy proxy;
@@ -94,5 +99,10 @@ public class YDM
             event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_holder"), provider);
             event.addListener(provider.getListener());
         }
+    }
+    
+    public static void log(String s)
+    {
+        YDM.LOGGER.info(s);
     }
 }
