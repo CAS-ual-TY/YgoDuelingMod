@@ -137,4 +137,10 @@ public class YDMResourcePack extends ResourcePack
     {
         return deserializer.deserialize(JSONUtils.getJsonObject(this.packMeta, deserializer.getSectionName()));
     }
+    
+    @Override
+    public String getName()
+    {
+        return "YDM Card Images";
+    }
 }
