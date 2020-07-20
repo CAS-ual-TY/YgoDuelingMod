@@ -173,7 +173,7 @@ public class Database
         
         Database.PROPERTIES_LIST.sort();
         
-        YDM.log("Donw reading card files!");
+        YDM.log("Done reading card files!");
     }
     
     private static void readSets(File setsFolder)
@@ -192,6 +192,6 @@ public class Database
         }
         Database.CARDS_LIST.sort();
         
-        YDM.log("Donw reading set files!");
+        YDM.log("Done reading set files!");
     }
 }
