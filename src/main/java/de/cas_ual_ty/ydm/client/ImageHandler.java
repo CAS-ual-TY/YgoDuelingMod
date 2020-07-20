@@ -250,7 +250,13 @@ public class ImageHandler
     
     public static void downloadAllCardImages()
     {
-        Thread t = new Thread(new ItemImagesWizard());
+        Thread t = new Thread(new ItemImagesWizard(Database.CARDS_LIST, Database.CARDS_LIST.size()));
+        t.start();
+    }
+    
+    public static void downloadCardImages(List<Card> list)
+    {
+        Thread t = new Thread(new ItemImagesWizard(list, list.size()));
         t.start();
     }
     
@@ -336,6 +342,15 @@ public class ImageHandler
     
     private static class ItemImagesWizard implements Runnable
     {
+        private Iterable<Card> list;
+        private int size;
+        
+        public ItemImagesWizard(Iterable<Card> list, int size)
+        {
+            this.list = list;
+            this.size = size;
+        }
+        
         @Override
         public void run()
         {
@@ -344,9 +359,9 @@ public class ImageHandler
             long millies = System.currentTimeMillis();
             int status;
             
-            for(Card card : Database.CARDS_LIST)
+            for(Card card : this.list)
             {
-                YDM.log("Fetching image of: " + ++j + "/" + Database.CARDS_LIST.size() + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
+                YDM.log("Fetching image of: " + ++j + "/" + this.size + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
                 
                 status = ImageHandler.imagePipeline(card.getDirectImageName(), card.getImageURL(), ImageHandler.getItemFile(card.getDirectImageName()), YDM.activeItemImageSize, (failed) ->
                 {});

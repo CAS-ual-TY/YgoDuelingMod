@@ -21,6 +21,7 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void registerModEventListeners(IEventBus bus)
     {
+        bus.addListener(this::textureStitch);
         bus.addListener(this::modelRegistry);
         bus.addListener(this::modelBake);
         
@@ -30,12 +31,13 @@ public class ClientProxy implements ISidedProxy
             
             if(list.size() == 0)
             {
+                YDM.log("Items will use card images!");
                 YDM.itemsUseCardImagesActive = true;
-                bus.addListener(this::textureStitch);
             }
             else
             {
-                ImageHandler.downloadAllCardImages();
+                YDM.log("Items will not use card images, still missing " + list.size() + " images. Fetching...");
+                ImageHandler.downloadCardImages(list);
             }
         }
     }
@@ -48,9 +50,12 @@ public class ClientProxy implements ISidedProxy
     
     private void textureStitch(TextureStitchEvent.Pre event)
     {
-        for(Card card : Database.CARDS_LIST)
+        if(YDM.itemsUseCardImagesActive)
         {
-            event.addSprite(card.getItemImageResourceLocation());
+            for(Card card : Database.CARDS_LIST)
+            {
+                event.addSprite(card.getItemImageResourceLocation());
+            }
         }
     }
     
