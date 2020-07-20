@@ -49,7 +49,9 @@ public class YDM
         YDM.instance = this;
         YDM.proxy = DistExecutor.runForDist(
             () -> de.cas_ual_ty.ydm.client.ClientProxy::new,
-            () -> () -> new ISidedProxy() {});
+            () -> () -> new ISidedProxy()
+            {
+            });
         YDM.ydmItemGroup = new YdmItemGroup("itemGroup." + YDM.MOD_ID);
         
         this.initFiles();
@@ -76,7 +78,7 @@ public class YDM
         YDM.imagesParentFolder = new File(YDM.mainFolder, "images");
         YDM.rawImagesFolder = new File(YDM.imagesParentFolder, "cards_raw");
         YDM.activeInfoImageSize = 256;
-        YDM.activeItemImageSize = 16;
+        YDM.activeItemImageSize = 128;
         
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
         YDM.cardInfoImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeInfoImageSize);

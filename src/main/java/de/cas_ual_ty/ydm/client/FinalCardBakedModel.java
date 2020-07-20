@@ -51,7 +51,7 @@ public class FinalCardBakedModel implements IBakedModel
         List<BakedQuad> list = new LinkedList<>();
         
         ResourceLocation front = new ResourceLocation(YDM.MOD_ID, "item/blanc_card");
-        ResourceLocation back = new ResourceLocation(YDM.MOD_ID, "item/card_back");
+        ResourceLocation back = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + YDM.activeItemImageSize);
         
         if(YDM.itemsUseCardImages)
         {

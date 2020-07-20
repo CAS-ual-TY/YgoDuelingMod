@@ -9,8 +9,11 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;
+import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.IEventBus;
 
 public class ClientProxy implements ISidedProxy
@@ -18,6 +21,9 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void registerModEventListeners(IEventBus bus)
     {
+        bus.addListener(this::modelRegistry);
+        bus.addListener(this::modelBake);
+        
         if(YDM.itemsUseCardImages)
         {
             List<Card> list = ImageHandler.getMissingItemImages();
@@ -25,7 +31,6 @@ public class ClientProxy implements ISidedProxy
             if(list.size() == 0)
             {
                 bus.addListener(this::textureStitch);
-                bus.addListener(this::modelBake);
             }
             else
             {
@@ -48,9 +53,26 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
+    private void modelRegistry(ModelRegistryEvent event)
+    {
+        ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory"));
+    }
+    
     private void modelBake(ModelBakeEvent event)
     {
-        ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
-        event.getModelRegistry().put(key, new CardBakedModel(event.getModelRegistry().get(key)));
+        YdmItems.CARD.getRegistryName();
+        
+        YdmItems.CARD_BACK.getRegistryName();
+        
+        event.getModelRegistry().put(new ModelResourceLocation(YdmItems.CARD_BACK.getRegistryName(), "inventory"),
+            event.getModelRegistry().get(
+                new ModelResourceLocation(
+                    new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory")));
+        
+        if(YDM.itemsUseCardImages)
+        {
+            ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
+            event.getModelRegistry().put(key, new CardBakedModel(event.getModelRegistry().get(key)));
+        }
     }
 }
