@@ -3,10 +3,10 @@ package de.cas_ual_ty.ydm.client;
 import java.util.List;
 
 import de.cas_ual_ty.ydm.Database;
+import de.cas_ual_ty.ydm.ISidedProxy;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
-import de.cas_ual_ty.ydm.proxy.ISidedProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraftforge.client.event.ModelBakeEvent;

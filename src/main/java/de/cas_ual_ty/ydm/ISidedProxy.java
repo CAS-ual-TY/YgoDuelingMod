@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.proxy;
+package de.cas_ual_ty.ydm;
 
 import net.minecraftforge.eventbus.api.IEventBus;
 

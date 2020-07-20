@@ -5,7 +5,6 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.cas_ual_ty.ydm.proxy.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
@@ -50,7 +49,7 @@ public class YDM
         YDM.instance = this;
         YDM.proxy = DistExecutor.runForDist(
             () -> de.cas_ual_ty.ydm.client.ClientProxy::new,
-            () -> de.cas_ual_ty.ydm.proxy.ServerProxy::new);
+            () -> () -> new ISidedProxy() {});
         YDM.ydmItemGroup = new YdmItemGroup("itemGroup." + YDM.MOD_ID);
         
         this.initFiles();
