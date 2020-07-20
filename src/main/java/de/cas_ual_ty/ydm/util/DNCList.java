@@ -31,6 +31,11 @@ public class DNCList<K, V> implements Iterable<V>
         this.list = new ArrayList<>(0);
     }
     
+    public int getIndexOf(V value)
+    {
+        return this.getIndex(this.keyExtractor.getKeyFrom(value));
+    }
+    
     public int getIndex(K key)
     {
         if(!this.isSorted)

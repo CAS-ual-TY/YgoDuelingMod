@@ -36,7 +36,7 @@ public class ImageHandler
     {
         if(ImageHandler.hasInfoSuffix(imageName) || ImageHandler.hasItemSuffix(imageName))
         {
-            imageName = imageName.substring(0, imageName.length() - 2);
+            imageName = imageName.substring(0, imageName.length() - 5);
         }
         
         return imageName;
@@ -227,8 +227,6 @@ public class ImageHandler
         return new File(YDM.cardItemImagesFolder, imageName + ".png");
     }
     
-    //    public static
-    
     public static boolean areAllItemImagesReady()
     {
         return ImageHandler.getMissingItemImages().isEmpty();
@@ -357,17 +355,19 @@ public class ImageHandler
                     }
                     
                     millies = System.currentTimeMillis();
+                    
+                    break;
                 }
             }
             
-            YDM.log("Done downloading! Rechecking to make sure...");
+            YDM.log("Done fething images! Rechecking images to make sure...");
             
             for(Card card : ImageHandler.getMissingItemImages())
             {
                 YDM.log("Missing image of: " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
             }
             
-            YDM.log("Done checking!");
+            YDM.log("Done checking images!");
         }
     }
 }

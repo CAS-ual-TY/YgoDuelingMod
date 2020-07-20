@@ -16,7 +16,7 @@ import net.minecraftforge.registries.ObjectHolder;
 public class YdmItems
 {
     public static final Item CARD_BACK = null;
-    public static final Item CARD = null;
+    public static final CardItem CARD = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)

@@ -2,8 +2,10 @@ package de.cas_ual_ty.ydm.card;
 
 import com.google.gson.JsonObject;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.ImageHandler;
+import net.minecraft.util.ResourceLocation;
 
 public class Card
 {
@@ -43,6 +45,16 @@ public class Card
     public String getImageURL()
     {
         return this.getProperties().getImage(this.getImageIndex());
+    }
+    
+    public ResourceLocation getInfoImageResourceLocation()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "item/" + this.getInfoImageName());
+    }
+    
+    public ResourceLocation getItemImageResourceLocation()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "item/" + this.getItemImageName());
     }
     
     // --- Getters ---

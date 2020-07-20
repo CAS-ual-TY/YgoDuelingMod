@@ -81,24 +81,18 @@ public class YdmResourcePack extends ResourcePack
     private File getFile(String filename)
     {
         // We only look for assets with this path as prefix (so eg. no models)
-        if(!filename.startsWith("assets/ydm/textures/item/"))
+        if(filename.startsWith("assets/ydm/textures/item/") && filename.endsWith(".png"))
         {
-            return null;
-        }
-        
-        // We remove that prefix part
-        filename = filename.substring("assets/ydm/textures/item/".length());
-        
-        if(filename.endsWith(".png"))
-        {
-            filename = filename.substring(0, filename.length() - 4);
-        }
-        
-        File image = ImageHandler.getFileBySuffix(filename);
-        
-        if(image.exists())
-        {
-            return image;
+            // We remove that prefix part and we remove .png
+            filename = filename.substring("assets/ydm/textures/item/".length());
+            filename = filename.substring(0, filename.length() - ".png".length());
+            
+            File image = ImageHandler.getFileBySuffix(filename);
+            
+            if(image.exists())
+            {
+                return image;
+            }
         }
         
         return null;
