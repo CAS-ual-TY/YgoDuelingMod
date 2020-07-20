@@ -252,7 +252,6 @@ public class ImageHandler
     {
         Thread t = new Thread(new ItemImagesWizard());
         t.start();
-        return; // TODO
     }
     
     private static int imagePipeline(String imageName, String imageUrl, File convertedTarget, int size, Consumer<Boolean> onFinish)
