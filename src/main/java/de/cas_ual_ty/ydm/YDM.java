@@ -49,6 +49,7 @@ public class YDM
     public static int activeInfoImageSize;
     public static int activeItemImageSize;
     public static boolean keepCachedImages = true;
+    public static boolean itemsUseCardImages = true;
     
     public static SimpleChannel channel;
     
@@ -90,6 +91,7 @@ public class YDM
         YdmIOUtil.createDirIfNonExistant(YDM.imagesParentFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.rawImagesFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.cardInfoImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(YDM.cardItemImagesFolder);
     }
     
     private void init(FMLCommonSetupEvent event)

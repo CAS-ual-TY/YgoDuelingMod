@@ -89,7 +89,12 @@ public class YdmResourcePack extends ResourcePack
         // We remove that prefix part
         filename = filename.substring("assets/ydm/textures/item/".length());
         
-        File image = ImageHandler.getItemFileNoSuffix(filename);
+        if(filename.endsWith(".png"))
+        {
+            filename = filename.substring(0, filename.length() - 4);
+        }
+        
+        File image = ImageHandler.getFileBySuffix(filename);
         
         if(image.exists())
         {

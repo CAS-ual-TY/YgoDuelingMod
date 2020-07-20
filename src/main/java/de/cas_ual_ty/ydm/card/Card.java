@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.card;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.util.ImageHandler;
 
 public class Card
 {
@@ -24,9 +25,19 @@ public class Card
         this.rarity = Rarity.COMMON;
     }
     
-    public String getImageName()
+    public String getDirectImageName()
     {
         return this.getProperties().getId() + "_" + this.getImageIndex();
+    }
+    
+    public String getInfoImageName()
+    {
+        return ImageHandler.addInfoSuffix(this.getDirectImageName());
+    }
+    
+    public String getItemImageName()
+    {
+        return ImageHandler.addItemSuffix(this.getDirectImageName());
     }
     
     public String getImageURL()

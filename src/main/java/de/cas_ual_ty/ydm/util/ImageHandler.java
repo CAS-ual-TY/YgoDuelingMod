@@ -12,7 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 
@@ -25,32 +25,65 @@ public class ImageHandler
     public static final String IN_PROGRESS_IMAGE = "blanc_card";
     public static final String FAILED_IMAGE = "failed_card";
     
+    public static final String INFO_SUFFIX = "_info";
+    public static final String ITEM_SUFFIX = "_item";
+    
     private static DNCList<String, String> FINAL_IMAGE_READY_LIST = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
     private static List<String> IN_PROGRESS = new LinkedList<>();
     private static List<String> FAILED = new LinkedList<>();
     
+    public static String cutSuffix(String imageName)
+    {
+        if(ImageHandler.hasInfoSuffix(imageName) || ImageHandler.hasItemSuffix(imageName))
+        {
+            imageName = imageName.substring(0, imageName.length() - 2);
+        }
+        
+        return imageName;
+    }
+    
+    public static String addInfoSuffix(String imageName)
+    {
+        return imageName + ImageHandler.INFO_SUFFIX;
+    }
+    
+    public static String addItemSuffix(String imageName)
+    {
+        return imageName + ImageHandler.ITEM_SUFFIX;
+    }
+    
+    public static boolean hasInfoSuffix(String imageName)
+    {
+        return imageName.endsWith(ImageHandler.INFO_SUFFIX);
+    }
+    
+    public static boolean hasItemSuffix(String imageName)
+    {
+        return imageName.endsWith(ImageHandler.ITEM_SUFFIX);
+    }
+    
     public static String getInfoReplacementImage(Card card)
     {
-        String imageName = card.getImageName();
+        String imageName = card.getInfoImageName();
         
         int index = ImageHandler.FINAL_IMAGE_READY_LIST.getIndex(imageName);
         
         if(index == -1)
         {
-            if(!ImageHandler.isInProgress(imageName))
+            if(!ImageHandler.isInfoImageInProgress(imageName))
             {
                 if(ImageHandler.getInfoFile(imageName).exists())
                 {
                     ImageHandler.setFinished(imageName, false);
                     return imageName;
                 }
-                else if(ImageHandler.isFailed(imageName))
+                else if(ImageHandler.isInfoImageFailed(imageName))
                 {
                     return ImageHandler.FAILED_IMAGE;
                 }
                 else
                 {
-                    ImageHandler.makeImageReady(card, YDM.activeInfoImageSize);
+                    ImageHandler.makeInfoImageReady(card);
                     return ImageHandler.IN_PROGRESS_IMAGE;
                 }
             }
@@ -70,17 +103,17 @@ public class ImageHandler
         return ImageHandler.FINAL_IMAGE_READY_LIST.contains(imageName);
     }
     
-    private static boolean isInProgress(String imageName)
+    private static boolean isInfoImageInProgress(String imageName)
     {
         return ImageHandler.IN_PROGRESS.contains(imageName);
     }
     
-    private static boolean isFailed(String imageName)
+    private static boolean isInfoImageFailed(String imageName)
     {
         return ImageHandler.FAILED.contains(imageName);
     }
     
-    private static void setInProgress(String imageName)
+    private static void setInfoImageInProgress(String imageName)
     {
         synchronized(ImageHandler.IN_PROGRESS)
         {
@@ -111,14 +144,10 @@ public class ImageHandler
         }
     }
     
-    private static void makeImageReady(Card card, int size)
+    private static void makeInfoImageReady(Card card)
     {
-        String imageName = card.getImageName();
-        String imageUrl = card.getImageURL();
-        
-        ImageHandler.setInProgress(imageName);
-        
-        Thread t = new Thread(new InfoImageWizard(imageName, imageUrl), "YDM Image Downloader");
+        ImageHandler.setInfoImageInProgress(card.getInfoImageName());
+        Thread t = new Thread(new InfoImageWizard(card), "YDM Image Downloader");
         t.start();
     }
     
@@ -175,19 +204,34 @@ public class ImageHandler
         return new File(YDM.rawImagesFolder, imageName + ".jpg");
     }
     
+    public static File getFileBySuffix(String imageName)
+    {
+        if(ImageHandler.hasItemSuffix(imageName))
+        {
+            return new File(YDM.cardItemImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
+        }
+        else
+        {
+            // need to return something, so by default we pick the info images
+            return new File(YDM.cardInfoImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
+        }
+    }
+    
     public static File getInfoFile(String imageName)
     {
         return new File(YDM.cardInfoImagesFolder, imageName + ".png");
     }
     
-    public static File getItemFileNoSuffix(String imageName)
+    public static File getItemFile(String imageName)
     {
-        return new File(YDM.cardItemImagesFolder, imageName);
+        return new File(YDM.cardItemImagesFolder, imageName + ".png");
     }
+    
+    //    public static
     
     public static boolean areAllItemImagesReady()
     {
-        return getMissingItemImages().isEmpty();
+        return ImageHandler.getMissingItemImages().isEmpty();
     }
     
     public static List<Card> getMissingItemImages()
@@ -195,7 +239,7 @@ public class ImageHandler
         List<Card> list = new LinkedList<>();
         for(Card card : Database.CARDS_LIST)
         {
-            if(!getItemFileNoSuffix(card.getImageName() + ".png").exists())
+            if(!ImageHandler.getItemFile(card.getDirectImageName()).exists())
             {
                 list.add(card);
             }
@@ -210,9 +254,9 @@ public class ImageHandler
         return; // TODO
     }
     
-    private static void imagePipeline(String imageName, String imageUrl, BiConsumer<String, Boolean> onFinish)
+    private static void imagePipeline(String imageName, String imageUrl, File convertedTarget, int size, Consumer<Boolean> onFinish)
     {
-        // onFinish params: (imageName, failed)
+        // onFinish params: (failed) -> ???
         
         File raw = ImageHandler.getRawFile(imageName);
         
@@ -226,21 +270,20 @@ public class ImageHandler
             {
                 e.printStackTrace();
                 
-                onFinish.accept(imageName, true);
+                onFinish.accept(true);
                 
                 // Without the raw image we cant do anything anyways
                 return;
             }
         }
         
-        File converted = ImageHandler.getInfoFile(imageName);
         boolean failed = false;
         
-        if(!converted.exists())
+        if(!convertedTarget.exists())
         {
             try
             {
-                ImageHandler.convertImage(converted, raw, YDM.activeInfoImageSize);
+                ImageHandler.convertImage(convertedTarget, raw, size);
             }
             catch (IOException e)
             {
@@ -255,24 +298,22 @@ public class ImageHandler
             raw.delete();
         }
         
-        onFinish.accept(imageName, failed);
+        onFinish.accept(failed);
     }
     
     private static class InfoImageWizard implements Runnable
     {
-        private final String imageName;
-        private final String imageUrl;
+        private final Card card;
         
-        public InfoImageWizard(String imageName, String imageUrl)
+        public InfoImageWizard(Card card)
         {
-            this.imageName = imageName;
-            this.imageUrl = imageUrl;
+            this.card = card;
         }
         
         @Override
         public void run()
         {
-            ImageHandler.imagePipeline(this.imageName, this.imageUrl, (name, failed) -> ImageHandler.setFinished(name, failed));
+            ImageHandler.imagePipeline(this.card.getDirectImageName(), this.card.getImageURL(), ImageHandler.getInfoFile(this.card.getDirectImageName()), YDM.activeInfoImageSize, (failed) -> ImageHandler.setFinished(InfoImageWizard.this.card.getInfoImageName(), failed));
         }
     }
     
@@ -281,11 +322,52 @@ public class ImageHandler
         @Override
         public void run()
         {
+            int i = 0;
+            int j = 0;
+            long millies = System.currentTimeMillis();
+            
             for(Card card : Database.CARDS_LIST)
             {
-                ImageHandler.imagePipeline(card.getImageName(), card.getImageURL(), (name, failed) ->
+                YDM.log("Fetching image of: " + ++j + "/" + Database.CARDS_LIST.size() + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
+                
+                ImageHandler.imagePipeline(card.getDirectImageName(), card.getImageURL(), ImageHandler.getItemFile(card.getDirectImageName()), YDM.activeItemImageSize, (failed) ->
                 {});
+                
+                if(++i >= 20)
+                {
+                    i = 0;
+                    millies = System.currentTimeMillis() - millies;
+                    
+                    if(millies <= 1100)
+                    {
+                        // In case we pulled 20 images in less than 1 second, we need to slow down a bit
+                        // otherwise IP gets blacklisted.
+                        // 1100 instead of 1000 just to make sure any inaccuracy doesnt get us blacklisted.
+                        
+                        /*
+                        try
+                        {
+                            TimeUnit.MILLISECONDS.sleep(1100 - millies);
+                        }
+                        catch (InterruptedException e)
+                        {
+                            e.printStackTrace();
+                        }
+                        */
+                    }
+                    
+                    millies = System.currentTimeMillis();
+                }
             }
+            
+            YDM.log("Done downloading! Rechecking to make sure...");
+            
+            for(Card card : ImageHandler.getMissingItemImages())
+            {
+                YDM.log("Missing image of: " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
+            }
+            
+            YDM.log("Done checking!");
         }
     }
 }
