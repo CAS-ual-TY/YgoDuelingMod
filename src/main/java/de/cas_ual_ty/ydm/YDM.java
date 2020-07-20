@@ -5,18 +5,10 @@ import java.io.File;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.cas_ual_ty.ydm.capability.CardHolder;
-import de.cas_ual_ty.ydm.capability.CardHolderProvider;
-import de.cas_ual_ty.ydm.capability.CardHolderStorage;
-import de.cas_ual_ty.ydm.capability.ICardHolder;
-import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.proxy.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -68,9 +60,10 @@ public class YDM
         
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
+        YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
-        bus.addListener(this::attachCapabilitiesItemStack);
+        YDM.proxy.registerForgeEventListeners(bus);
         
         YDM.proxy.preInit();
     }
@@ -102,18 +95,6 @@ public class YDM
             () -> YDM.PROTOCOL_VERSION,
             YDM.PROTOCOL_VERSION::equals,
             YDM.PROTOCOL_VERSION::equals);
-        
-        CapabilityManager.INSTANCE.register(ICardHolder.class, new CardHolderStorage(), CardHolder::new);
-    }
-    
-    private void attachCapabilitiesItemStack(AttachCapabilitiesEvent<ItemStack> event)
-    {
-        if(event.getObject() instanceof ItemStack && event.getObject().getItem() instanceof CardItem)
-        {
-            CardHolderProvider provider = new CardHolderProvider();
-            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_holder"), provider);
-            event.addListener(provider.getListener());
-        }
     }
     
     public static void log(String s)
