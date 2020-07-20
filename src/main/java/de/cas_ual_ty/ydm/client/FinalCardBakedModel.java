@@ -50,8 +50,10 @@ public class FinalCardBakedModel implements IBakedModel
     {
         List<BakedQuad> list = new LinkedList<>();
         
-        ResourceLocation front = new ResourceLocation(YDM.MOD_ID, "item/blanc_card");
+        ResourceLocation front = null;
         ResourceLocation back = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + YDM.activeItemImageSize);
+        
+        TextureAtlasSprite spriteBack = this.textureGetter.apply(back);
         
         if(YDM.itemsUseCardImagesActive)
         {
@@ -60,16 +62,18 @@ public class FinalCardBakedModel implements IBakedModel
             if(card != null)
             {
                 front = card.getItemImageResourceLocation();
+                TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
+                
+                float distance = 0.002F;
+                
+                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteBack, spriteBack, 0.5F - distance, Direction.NORTH, 0xFFFFFFFF, 1));
+                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + distance, Direction.SOUTH, 0xFFFFFFFF, 1));
+                
+                return list;
             }
         }
         
-        TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
-        TextureAtlasSprite spriteBack = this.textureGetter.apply(back);
-        
-        float distance = 0.002F;
-        
-        list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteBack, spriteBack, 0.5F - distance, Direction.NORTH, 0xFFFFFFFF, 1));
-        list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + distance, Direction.SOUTH, 0xFFFFFFFF, 1));
+        list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteBack, spriteBack, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
         
         return list;
     }
