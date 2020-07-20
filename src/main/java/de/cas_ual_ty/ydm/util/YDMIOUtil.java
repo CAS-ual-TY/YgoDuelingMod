@@ -63,7 +63,7 @@ public class YdmIOUtil
         YdmIOUtil.GSON.toJson(json, fw);
         fw.flush();
     }
-
+    
     public static boolean doForDeepSearched(File parent, Predicate<File> predicate, Consumer<File> consumer)
     {
         for(File file : parent.listFiles())
@@ -81,7 +81,7 @@ public class YdmIOUtil
         
         return false;
     }
-
+    
     public static void deleteRecursively(File parent)
     {
         if(parent.isDirectory())
@@ -94,7 +94,7 @@ public class YdmIOUtil
         
         parent.delete();
     }
-
+    
     public static JsonObject parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
     {
         return Database.JSON_PARSER.parse(new FileReader(file)).getAsJsonObject();

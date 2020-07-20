@@ -30,29 +30,29 @@ public class Database
     
     public static void readFiles()
     {
-        File mainFolder = YDM.mainFolder;
+        YDM.log("Reading database!");
         
-        if(!mainFolder.exists())
+        if(!YDM.mainFolder.exists())
         {
+            YDM.log(YDM.mainFolder.getAbsolutePath() + " does not exist! Aborting...");
             return;
         }
         
-        File cardsFolder = YDM.cardsFolder;
-        
-        if(!cardsFolder.exists())
+        if(!YDM.cardsFolder.exists())
         {
+            YDM.log(YDM.cardsFolder.getAbsolutePath() + " does not exist! Aborting...");
             return;
         }
         
-        File setsFolder = YDM.setsFolder;
+        Database.readCards(YDM.cardsFolder);
         
-        if(!setsFolder.exists())
+        if(!YDM.setsFolder.exists())
         {
+            YDM.log(YDM.setsFolder.getAbsolutePath() + " does not exist! Aborting...");
             return;
         }
         
-        Database.readCards(cardsFolder);
-        Database.readSets(setsFolder);
+        Database.readSets(YDM.setsFolder);
     }
     
     public static void downloadDatabase() throws IOException
@@ -172,6 +172,8 @@ public class Database
         }
         
         Database.PROPERTIES_LIST.sort();
+        
+        YDM.log("Donw reading card files!");
     }
     
     private static void readSets(File setsFolder)
@@ -189,5 +191,7 @@ public class Database
             }
         }
         Database.CARDS_LIST.sort();
+        
+        YDM.log("Donw reading set files!");
     }
 }

@@ -85,6 +85,7 @@ public class YDM
             try
             {
                 Database.downloadDatabase();
+                YDM.mainFolder = new File("ydm_db");
             }
             catch (IOException e)
             {
@@ -124,7 +125,7 @@ public class YDM
     
     public static void log(String s)
     {
-        YDM.LOGGER.info(s);
+        YDM.LOGGER.info("[" + YDM.MOD_ID + "] " + s);
     }
     
     public static void debug(String s)
