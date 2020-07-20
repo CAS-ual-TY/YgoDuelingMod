@@ -4,8 +4,6 @@ import java.util.List;
 
 import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.capability.ICardHolder;
-import de.cas_ual_ty.ydm.capability.ItemStackCardHolder;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;

@@ -1,7 +1,4 @@
-package de.cas_ual_ty.ydm.capability;
-
-import de.cas_ual_ty.ydm.card.Card;
-import de.cas_ual_ty.ydm.card.Rarity;
+package de.cas_ual_ty.ydm.card;
 
 public class CardHolder implements ICardHolder
 {
