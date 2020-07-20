@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.util;
+package de.cas_ual_ty.ydm.client;
 
 import java.util.List;
 import java.util.Random;

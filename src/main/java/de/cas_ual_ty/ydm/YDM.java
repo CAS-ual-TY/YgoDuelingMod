@@ -49,7 +49,7 @@ public class YDM
     {
         YDM.instance = this;
         YDM.proxy = DistExecutor.runForDist(
-            () -> de.cas_ual_ty.ydm.proxy.ClientProxy::new,
+            () -> de.cas_ual_ty.ydm.client.ClientProxy::new,
             () -> de.cas_ual_ty.ydm.proxy.ServerProxy::new);
         YDM.ydmItemGroup = new YdmItemGroup("itemGroup." + YDM.MOD_ID);
         

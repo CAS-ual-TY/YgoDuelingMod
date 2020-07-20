@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.util;
+package de.cas_ual_ty.ydm.client;
 
 import java.io.File;
 import java.io.FileInputStream;

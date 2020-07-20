@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import de.cas_ual_ty.ydm.util.ImageHandler;
+import de.cas_ual_ty.ydm.client.ImageHandler;
 import net.minecraft.util.ResourceLocation;
 
 public class Card
