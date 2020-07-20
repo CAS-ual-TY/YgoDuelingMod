@@ -62,6 +62,8 @@ public class YDM
         YDM.ydmItemGroup = new YdmItemGroup("itemGroup." + YDM.MOD_ID);
         
         this.initFiles();
+        
+        YdmIOUtil.setAgent();
         Database.readFiles();
         
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
