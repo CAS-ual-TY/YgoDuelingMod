@@ -12,6 +12,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
@@ -191,7 +192,7 @@ public class ImageHandler
         // Create new image with pow2 resolution, stick previous image in the middle
         BufferedImage newImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         Graphics g = newImg.getGraphics();
-        g.drawImage(img, 1 + (size - img.getWidth()) / 2, 1 + (size - img.getHeight()) / 2, null);
+        g.drawImage(img, (size - img.getWidth()) / 2, (size - img.getHeight()) / 2, null);
         g.dispose();
         
         ImageIO.write(newImg, "PNG", converted);
@@ -252,9 +253,20 @@ public class ImageHandler
         return; // TODO
     }
     
-    private static void imagePipeline(String imageName, String imageUrl, File convertedTarget, int size, Consumer<Boolean> onFinish)
+    private static int imagePipeline(String imageName, String imageUrl, File convertedTarget, int size, Consumer<Boolean> onFinish)
     {
         // onFinish params: (failed) -> ???
+        
+        // ret codes:
+        
+        // -2: raw already existed + conversion fails
+        // -1: raw download fail
+        //  0: raw already existed + converted already existed
+        //  1: downloaded raw + converted already existed
+        //  2: raw already existed + done conversion
+        //  3: downloaded raw + done conversion
+        
+        int ret = 0;
         
         File raw = ImageHandler.getRawFile(imageName);
         
@@ -262,7 +274,9 @@ public class ImageHandler
         {
             try
             {
+                ret = 1;
                 ImageHandler.downloadRawImage(imageUrl, raw);
+                ret += 1;
             }
             catch (IOException e)
             {
@@ -271,7 +285,7 @@ public class ImageHandler
                 onFinish.accept(true);
                 
                 // Without the raw image we cant do anything anyways
-                return;
+                return -1;
             }
         }
         
@@ -282,11 +296,13 @@ public class ImageHandler
             try
             {
                 ImageHandler.convertImage(convertedTarget, raw, size);
+                ret += 2;
             }
             catch (IOException e)
             {
                 e.printStackTrace();
                 failed = true;
+                ret = -2;
             }
         }
         
@@ -297,6 +313,8 @@ public class ImageHandler
         }
         
         onFinish.accept(failed);
+        
+        return ret;
     }
     
     private static class InfoImageWizard implements Runnable
@@ -323,15 +341,32 @@ public class ImageHandler
             int i = 0;
             int j = 0;
             long millies = System.currentTimeMillis();
+            int status;
             
             for(Card card : Database.CARDS_LIST)
             {
                 YDM.log("Fetching image of: " + ++j + "/" + Database.CARDS_LIST.size() + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
                 
-                ImageHandler.imagePipeline(card.getDirectImageName(), card.getImageURL(), ImageHandler.getItemFile(card.getDirectImageName()), YDM.activeItemImageSize, (failed) ->
+                status = ImageHandler.imagePipeline(card.getDirectImageName(), card.getImageURL(), ImageHandler.getItemFile(card.getDirectImageName()), YDM.activeItemImageSize, (failed) ->
                 {});
                 
-                if(++i >= 20)
+                if(status < 0)
+                {
+                    if(status == -1)
+                    {
+                        YDM.log("Failed downloading raw image!");
+                    }
+                    else if(status == -2)
+                    {
+                        YDM.log("Failed converting image to square format!");
+                    }
+                }
+                else if(status % 2 == 1)
+                {
+                    ++i;
+                }
+                
+                if(i >= 20)
                 {
                     i = 0;
                     millies = System.currentTimeMillis() - millies;
@@ -342,7 +377,6 @@ public class ImageHandler
                         // otherwise IP gets blacklisted.
                         // 1100 instead of 1000 just to make sure any inaccuracy doesnt get us blacklisted.
                         
-                        /*
                         try
                         {
                             TimeUnit.MILLISECONDS.sleep(1100 - millies);
@@ -351,7 +385,6 @@ public class ImageHandler
                         {
                             e.printStackTrace();
                         }
-                        */
                     }
                     
                     millies = System.currentTimeMillis();
