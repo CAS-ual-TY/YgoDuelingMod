@@ -53,7 +53,7 @@ public class FinalCardBakedModel implements IBakedModel
         ResourceLocation front = new ResourceLocation(YDM.MOD_ID, "item/blanc_card");
         ResourceLocation back = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + YDM.activeItemImageSize);
         
-        if(YDM.itemsUseCardImages)
+        if(YDM.itemsUseCardImagesActive)
         {
             Card card = YdmItems.CARD.getCardHolder(this.activeItemStack).getCard();
             

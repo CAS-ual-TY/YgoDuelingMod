@@ -28,6 +28,7 @@ public class YDM
     public static YDM instance;
     public static ISidedProxy proxy;
     public static YdmItemGroup ydmItemGroup;
+    public static boolean itemsUseCardImagesActive;
     
     public static File mainFolder;
     public static File cardsFolder;
@@ -55,6 +56,7 @@ public class YDM
             {
             });
         YDM.ydmItemGroup = new YdmItemGroup("itemGroup." + YDM.MOD_ID);
+        YDM.itemsUseCardImagesActive = false;
         
         this.initFiles();
         
