@@ -30,6 +30,7 @@ public class ClientProxy implements ISidedProxy
             
             if(list.size() == 0)
             {
+                YDM.itemsUseCardImagesActive = true;
                 bus.addListener(this::textureStitch);
             }
             else
