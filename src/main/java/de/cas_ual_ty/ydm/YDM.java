@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,8 +40,9 @@ public class YDM
     
     public static int activeInfoImageSize;
     public static int activeItemImageSize;
-    public static boolean keepCachedImages = true;
-    public static boolean itemsUseCardImages = true;
+    public static boolean keepCachedImages;
+    public static boolean itemsUseCardImages;
+    public static String dbSourceUrl;
     
     public static SimpleChannel channel;
     
@@ -56,9 +58,6 @@ public class YDM
         
         this.initFiles();
         
-        YdmIOUtil.setAgent();
-        Database.readFiles();
-        
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
         YDM.proxy.registerModEventListeners(bus);
@@ -71,14 +70,35 @@ public class YDM
     
     private void initFiles()
     {
+        YDM.activeInfoImageSize = 256;
+        YDM.activeItemImageSize = 16;
+        YDM.keepCachedImages = true;
+        YDM.itemsUseCardImages = true;
+        YDM.dbSourceUrl = "https://github.com/CAS-ual-TY/YDM2-DB/archive/master.zip";
+        
         YDM.mainFolder = new File("ydm_db");
+        
+        if(!YDM.mainFolder.exists())
+        {
+            YDM.log("YDM YDM YDM");
+            
+            try
+            {
+                Database.downloadDatabase();
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                return;
+            }
+        }
+        
         YDM.cardsFolder = new File(YDM.mainFolder, "cards");
         YDM.setsFolder = new File(YDM.mainFolder, "sets");
         YDM.distributionsFolder = new File(YDM.mainFolder, "distributions");
-        YDM.imagesParentFolder = new File(YDM.mainFolder, "images");
+        
+        YDM.imagesParentFolder = new File("ydm_db_images");
         YDM.rawImagesFolder = new File(YDM.imagesParentFolder, "cards_raw");
-        YDM.activeInfoImageSize = 256;
-        YDM.activeItemImageSize = 16;
         
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
         YDM.cardInfoImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeInfoImageSize);
@@ -88,6 +108,9 @@ public class YDM
         YdmIOUtil.createDirIfNonExistant(YDM.rawImagesFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.cardItemImagesFolder);
+        
+        YdmIOUtil.setAgent();
+        Database.readFiles();
     }
     
     private void init(FMLCommonSetupEvent event)

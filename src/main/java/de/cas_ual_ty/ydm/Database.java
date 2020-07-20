@@ -1,9 +1,18 @@
 package de.cas_ual_ty.ydm;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
+import com.google.common.io.Files;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -47,6 +56,119 @@ public class Database
         
         Database.readCards(cardsFolder);
         Database.readSets(setsFolder);
+    }
+    
+    public static void downloadDatabase() throws IOException
+    {
+        URL url = new URL(YDM.dbSourceUrl);
+        
+        // archive containing the files
+        File zip = new File("ydm_db_temp.zip");
+        if(zip.exists())
+        {
+            zip.delete();
+        }
+        
+        // archive to inpack to
+        File temp = new File("ydm_db_temp");
+        if(temp.exists())
+        {
+            temp.delete();
+        }
+        temp.mkdir();
+        
+        // download the zipped db
+        YdmIOUtil.downloadFile(url, zip);
+        
+        // --- zip unpack ---
+        
+        ZipInputStream zipIn = new ZipInputStream(new FileInputStream(zip));
+        ZipEntry entry = zipIn.getNextEntry();
+        
+        byte[] buffer = new byte[1024];
+        
+        File currentFile;
+        FileOutputStream zipOut;
+        int length;
+        
+        while(entry != null)
+        {
+            currentFile = new File(temp, entry.getName());
+            
+            if(entry.isDirectory())
+            {
+                currentFile.mkdir();
+            }
+            else
+            {
+                zipOut = new FileOutputStream(currentFile);
+                
+                while((length = zipIn.read(buffer)) > 0)
+                {
+                    zipOut.write(buffer, 0, length);
+                }
+                
+                zipOut.close();
+            }
+            
+            entry = zipIn.getNextEntry();
+        }
+        
+        zipIn.closeEntry();
+        zipIn.close();
+        
+        zip.delete();
+        
+        // --- zip unpack end ---
+        
+        // now move the file out
+        Database.doForDeepSearched(temp, (file) -> file.getName().equals(YDM.mainFolder.getName()), (file) ->
+        {
+            try
+            {
+                Files.move(file, YDM.mainFolder);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        });
+        
+        // now delete temp folder
+        Database.deleteRecursively(temp);
+    }
+    
+    private static boolean doForDeepSearched(File parent, Predicate<File> predicate, Consumer<File> consumer)
+    {
+        YDM.debug(parent);
+        
+        for(File file : parent.listFiles())
+        {
+            if(predicate.test(file))
+            {
+                consumer.accept(file);
+                return true;
+            }
+            else if(file.isDirectory() && Database.doForDeepSearched(file, predicate, consumer))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    private static void deleteRecursively(File parent)
+    {
+        if(parent.isDirectory())
+        {
+            for(File file : parent.listFiles())
+            {
+                Database.deleteRecursively(file);
+            }
+        }
+        
+        parent.delete();
     }
     
     private static void readCards(File cardsFolder)
