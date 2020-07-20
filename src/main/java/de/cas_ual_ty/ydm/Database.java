@@ -4,11 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -60,6 +57,8 @@ public class Database
     
     public static void downloadDatabase() throws IOException
     {
+        YDM.log("Downloading cards database...");
+        
         URL url = new URL(YDM.dbSourceUrl);
         
         // archive containing the files
@@ -122,7 +121,7 @@ public class Database
         // --- zip unpack end ---
         
         // now move the file out
-        Database.doForDeepSearched(temp, (file) -> file.getName().equals(YDM.mainFolder.getName()), (file) ->
+        YdmIOUtil.doForDeepSearched(temp, (file) -> file.getName().equals(YDM.mainFolder.getName()), (file) ->
         {
             try
             {
@@ -135,40 +134,9 @@ public class Database
         });
         
         // now delete temp folder
-        Database.deleteRecursively(temp);
-    }
-    
-    private static boolean doForDeepSearched(File parent, Predicate<File> predicate, Consumer<File> consumer)
-    {
-        YDM.debug(parent);
+        YdmIOUtil.deleteRecursively(temp);
         
-        for(File file : parent.listFiles())
-        {
-            if(predicate.test(file))
-            {
-                consumer.accept(file);
-                return true;
-            }
-            else if(file.isDirectory() && Database.doForDeepSearched(file, predicate, consumer))
-            {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    private static void deleteRecursively(File parent)
-    {
-        if(parent.isDirectory())
-        {
-            for(File file : parent.listFiles())
-            {
-                Database.deleteRecursively(file);
-            }
-        }
-        
-        parent.delete();
+        YDM.log("Finished downloading cards database!");
     }
     
     private static void readCards(File cardsFolder)
@@ -185,7 +153,7 @@ public class Database
         {
             try
             {
-                j = Database.parseJsonFile(cardFile);
+                j = YdmIOUtil.parseJsonFile(cardFile);
                 p = YdmUtil.buildProperties(j);
                 Database.PROPERTIES_LIST.add(p);
             }
@@ -221,10 +189,5 @@ public class Database
             }
         }
         Database.CARDS_LIST.sort();
-    }
-    
-    public static JsonObject parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
-    {
-        return Database.JSON_PARSER.parse(new FileReader(file)).getAsJsonObject();
     }
 }

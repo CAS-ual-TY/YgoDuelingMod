@@ -80,14 +80,13 @@ public class YDM
         
         if(!YDM.mainFolder.exists())
         {
-            YDM.log("YDM YDM YDM");
-            
             try
             {
                 Database.downloadDatabase();
             }
             catch (IOException e)
             {
+                YDM.log("Failed downloading cards database.");
                 e.printStackTrace();
                 return;
             }

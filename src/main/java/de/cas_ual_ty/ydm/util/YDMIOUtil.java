@@ -1,16 +1,24 @@
 package de.cas_ual_ty.ydm.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+
+import de.cas_ual_ty.ydm.Database;
 
 public class YdmIOUtil
 {
@@ -54,5 +62,41 @@ public class YdmIOUtil
         FileWriter fw = new FileWriter(target);
         YdmIOUtil.GSON.toJson(json, fw);
         fw.flush();
+    }
+
+    public static boolean doForDeepSearched(File parent, Predicate<File> predicate, Consumer<File> consumer)
+    {
+        for(File file : parent.listFiles())
+        {
+            if(predicate.test(file))
+            {
+                consumer.accept(file);
+                return true;
+            }
+            else if(file.isDirectory() && YdmIOUtil.doForDeepSearched(file, predicate, consumer))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public static void deleteRecursively(File parent)
+    {
+        if(parent.isDirectory())
+        {
+            for(File file : parent.listFiles())
+            {
+                YdmIOUtil.deleteRecursively(file);
+            }
+        }
+        
+        parent.delete();
+    }
+
+    public static JsonObject parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
+    {
+        return Database.JSON_PARSER.parse(new FileReader(file)).getAsJsonObject();
     }
 }
