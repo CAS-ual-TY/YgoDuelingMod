@@ -22,7 +22,7 @@ public class Card
     public Card(Properties p, byte imageIndex)
     {
         this.properties = p;
-        this.setId = String.valueOf(this.properties.getId());
+        this.setId = String.valueOf(this.properties.getId() + "_" + imageIndex);
         this.imageIndex = imageIndex;
         this.rarity = Rarity.COMMON;
     }
