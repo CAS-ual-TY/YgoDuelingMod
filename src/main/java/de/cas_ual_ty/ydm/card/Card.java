@@ -19,11 +19,11 @@ public class Card
         
     }
     
-    public Card(Properties p)
+    public Card(Properties p, byte imageIndex)
     {
         this.properties = p;
         this.setId = String.valueOf(this.properties.getId());
-        this.imageIndex = 0;
+        this.imageIndex = imageIndex;
         this.rarity = Rarity.COMMON;
     }
     

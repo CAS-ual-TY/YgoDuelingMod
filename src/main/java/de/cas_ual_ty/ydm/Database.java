@@ -93,7 +93,10 @@ public class Database
         Database.CARDS_LIST.ensureExtraCapacity(Database.PROPERTIES_LIST.size());
         for(Properties properties : Database.PROPERTIES_LIST)
         {
-            Database.CARDS_LIST.add(new Card(properties));
+            for(byte imageIndex = 0; imageIndex < properties.images.length; ++imageIndex)
+            {
+                Database.CARDS_LIST.add(new Card(properties, imageIndex));
+            }
         }
         Database.CARDS_LIST.sort();
     }
