@@ -55,7 +55,7 @@ public class YDM
             () -> () -> new ISidedProxy()
             {
             });
-        YDM.ydmItemGroup = new YdmItemGroup("itemGroup." + YDM.MOD_ID);
+        YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID);
         YDM.itemsUseCardImagesActive = false;
         
         this.initFiles();
