@@ -7,6 +7,7 @@ import de.cas_ual_ty.ydm.ISidedProxy;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
+import de.cas_ual_ty.ydm.config.Configuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.util.ResourceLocation;
@@ -15,6 +16,9 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.ModConfig.Type;
 
 public class ClientProxy implements ISidedProxy
 {
@@ -24,7 +28,19 @@ public class ClientProxy implements ISidedProxy
         bus.addListener(this::textureStitch);
         bus.addListener(this::modelRegistry);
         bus.addListener(this::modelBake);
-        
+        bus.addListener(this::modConfig);
+    }
+    
+    @Override
+    public void preInit()
+    {
+        Minecraft.getInstance().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
+        ModLoadingContext.get().registerConfig(Type.CLIENT, Configuration.CLIENT_SPEC);
+    }
+    
+    @Override
+    public void init()
+    {
         if(YDM.itemsUseCardImages)
         {
             List<Card> list = ImageHandler.getMissingItemImages();
@@ -42,16 +58,12 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
-    @Override
-    public void preInit()
-    {
-        Minecraft.getInstance().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
-    }
-    
     private void textureStitch(TextureStitchEvent.Pre event)
     {
         if(YDM.itemsUseCardImagesActive)
         {
+            YDM.log("Stitching card item textures!");
+            
             for(Card card : Database.CARDS_LIST)
             {
                 event.addSprite(card.getItemImageResourceLocation());
@@ -79,6 +91,14 @@ public class ClientProxy implements ISidedProxy
         {
             ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
             event.getModelRegistry().put(key, new CardBakedModel(event.getModelRegistry().get(key)));
+        }
+    }
+    
+    private void modConfig(final ModConfig.ModConfigEvent event)
+    {
+        if(event.getConfig().getSpec() == Configuration.CLIENT_SPEC)
+        {
+            Configuration.bakeClient();
         }
     }
 }

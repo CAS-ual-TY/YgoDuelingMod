@@ -16,4 +16,9 @@ public interface ISidedProxy
     {
         
     }
+    
+    public default void init()
+    {
+        
+    }
 }

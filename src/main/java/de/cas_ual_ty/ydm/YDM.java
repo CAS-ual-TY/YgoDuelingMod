@@ -58,8 +58,6 @@ public class YDM
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID);
         YDM.itemsUseCardImagesActive = false;
         
-        this.initFiles();
-        
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
         YDM.proxy.registerModEventListeners(bus);
@@ -72,12 +70,6 @@ public class YDM
     
     private void initFiles()
     {
-        YDM.activeInfoImageSize = 256;
-        YDM.activeItemImageSize = 64;
-        YDM.keepCachedImages = true;
-        YDM.itemsUseCardImages = true;
-        YDM.dbSourceUrl = "https://github.com/CAS-ual-TY/YDM2-DB/archive/master.zip";
-        
         YDM.mainFolder = new File("ydm_db");
         
         if(!YDM.mainFolder.exists())
@@ -121,6 +113,10 @@ public class YDM
             () -> YDM.PROTOCOL_VERSION,
             YDM.PROTOCOL_VERSION::equals,
             YDM.PROTOCOL_VERSION::equals);
+        
+        this.initFiles();
+        
+        YDM.proxy.init();
     }
     
     public static void log(String s)
