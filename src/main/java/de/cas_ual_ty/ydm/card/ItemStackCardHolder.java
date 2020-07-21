@@ -1,17 +1,21 @@
 package de.cas_ual_ty.ydm.card;
 
-import de.cas_ual_ty.ydm.Database;
-import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 
-public class ItemStackCardHolder implements ICardHolder
+public class ItemStackCardHolder extends CardHolder
 {
     private ItemStack itemStack;
     
     public ItemStackCardHolder(ItemStack itemStack)
     {
         this.itemStack = itemStack;
+        this.readCardHolderFromNBT(this.getNBT());
+    }
+    
+    private void saveToItemStack()
+    {
+        this.writeCardHolderToNBT(this.getNBT());
     }
     
     private CompoundNBT getNBT()
@@ -20,38 +24,23 @@ public class ItemStackCardHolder implements ICardHolder
     }
     
     @Override
-    public Card getCard()
-    {
-        return Database.CARDS_LIST.get(this.getNBT().getString(JsonKeys.SET_ID));
-    }
-    
-    @Override
     public void setCard(Card card)
     {
-        this.getNBT().putString(JsonKeys.SET_ID, card.getSetId());
+        super.setCard(card);
+        this.saveToItemStack();
     }
     
     @Override
     public void overrideImageIndex(byte imageIndex)
     {
-        this.getNBT().putByte(JsonKeys.IMAGE_INDEX, imageIndex);
-    }
-    
-    @Override
-    public byte getOverriddenImageIndex()
-    {
-        return this.getNBT().getByte(JsonKeys.IMAGE_INDEX);
+        super.overrideImageIndex(imageIndex);
+        this.saveToItemStack();
     }
     
     @Override
     public void overrideRarity(Rarity rarity)
     {
-        this.getNBT().putString(JsonKeys.RARITY, rarity.name);
-    }
-    
-    @Override
-    public Rarity getOverriddenRarity()
-    {
-        return Rarity.fromString(this.getNBT().getString(JsonKeys.RARITY));
+        super.overrideRarity(rarity);
+        this.saveToItemStack();
     }
 }

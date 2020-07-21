@@ -73,7 +73,7 @@ public class YDM
     private void initFiles()
     {
         YDM.activeInfoImageSize = 256;
-        YDM.activeItemImageSize = 16;
+        YDM.activeItemImageSize = 64;
         YDM.keepCachedImages = true;
         YDM.itemsUseCardImages = true;
         YDM.dbSourceUrl = "https://github.com/CAS-ual-TY/YDM2-DB/archive/master.zip";
