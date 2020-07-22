@@ -1,7 +1,10 @@
 package de.cas_ual_ty.ydm.util;
 
+import java.util.UUID;
+
 import com.google.gson.JsonObject;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.LevelMonsterProperties;
 import de.cas_ual_ty.ydm.card.properties.LinkMonsterProperties;
 import de.cas_ual_ty.ydm.card.properties.MonsterProperties;
@@ -9,6 +12,8 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.card.properties.SpellProperties;
 import de.cas_ual_ty.ydm.card.properties.TrapProperties;
 import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
+import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.common.util.NonNullSupplier;
 
 public class YdmUtil
 {
@@ -56,5 +61,15 @@ public class YdmUtil
     {
         assert pow >= 0 && pow < 10;
         return YdmUtil.POW_2[pow];
+    }
+    
+    public static UUID createRandomUUID()
+    {
+        return MathHelper.getRandomUUID();
+    }
+    
+    public static NonNullSupplier<IllegalArgumentException> throwNullCapabilityException()
+    {
+        return () -> new IllegalArgumentException("[" + YDM.MOD_ID + "] Capability can not be null!");
     }
 }

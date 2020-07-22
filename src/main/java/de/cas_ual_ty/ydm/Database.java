@@ -153,7 +153,7 @@ public class Database
         {
             try
             {
-                j = YdmIOUtil.parseJsonFile(cardFile);
+                j = YdmIOUtil.parseJsonFile(cardFile).getAsJsonObject();
                 p = YdmUtil.buildProperties(j);
                 Database.PROPERTIES_LIST.add(p);
             }

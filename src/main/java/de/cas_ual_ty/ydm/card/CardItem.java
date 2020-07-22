@@ -23,7 +23,7 @@ public class CardItem extends Item
     @Override
     public void addInformation(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
     {
-        ICardHolder holder = this.getCardHolder(itemStack);
+        CardHolder holder = this.getCardHolder(itemStack);
         
         if(holder.getCard() == null)
         {
@@ -36,7 +36,7 @@ public class CardItem extends Item
         tooltip.add(new StringTextComponent(holder.getActiveRarity().name));
     }
     
-    public ICardHolder getCardHolder(ItemStack itemStack)
+    public CardHolder getCardHolder(ItemStack itemStack)
     {
         return new ItemStackCardHolder(itemStack);
     }
@@ -54,7 +54,7 @@ public class CardItem extends Item
         YDM.log("Creating card item variants (" + Database.CARDS_LIST.size() + " different variants)");
         
         ItemStack itemStack;
-        ICardHolder holder;
+        CardHolder holder;
         
         for(Card card : Database.CARDS_LIST)
         {

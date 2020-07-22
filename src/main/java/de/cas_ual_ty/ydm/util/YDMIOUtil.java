@@ -14,8 +14,8 @@ import java.util.function.Predicate;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
 import de.cas_ual_ty.ydm.Database;
@@ -51,7 +51,7 @@ public class YdmIOUtil
         }
     }
     
-    public static void writeJson(File target, JsonObject json) throws IOException
+    public static void writeJson(File target, JsonElement json) throws IOException
     {
         if(target.exists())
         {
@@ -95,8 +95,8 @@ public class YdmIOUtil
         parent.delete();
     }
     
-    public static JsonObject parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
+    public static JsonElement parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
     {
-        return Database.JSON_PARSER.parse(new FileReader(file)).getAsJsonObject();
+        return Database.JSON_PARSER.parse(new FileReader(file));
     }
 }

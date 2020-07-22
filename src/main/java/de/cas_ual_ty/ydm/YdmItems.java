@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm;
 
+import de.cas_ual_ty.ydm.binder.CardBinderItem;
 import de.cas_ual_ty.ydm.card.CardBackItem;
 import de.cas_ual_ty.ydm.card.CardItem;
 import net.minecraft.item.Item;
@@ -17,6 +18,7 @@ public class YdmItems
 {
     public static final Item CARD_BACK = null;
     public static final CardItem CARD = null;
+    public static final CardBinderItem CARD_BINDER = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -24,5 +26,6 @@ public class YdmItems
         IForgeRegistry<Item> registry = event.getRegistry();
         registry.register(new CardBackItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
         registry.register(new CardItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card"));
+        registry.register(new CardBinderItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_binder"));
     }
 }

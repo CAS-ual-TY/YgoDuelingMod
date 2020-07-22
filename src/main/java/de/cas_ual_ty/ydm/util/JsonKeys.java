@@ -50,4 +50,9 @@ public class JsonKeys
     public static final String SET_ID = "set_id";
     public static final String IMAGE_INDEX = "image_index";
     public static final String RARITY = "rarity";
+    
+    // other
+    
+    public static final String COUNT = "count";
+    public static final String UUID = "uuid";
 }

@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 
 // Divide and Conquer list
 // V is element type (value)
@@ -28,7 +29,7 @@ public class DNCList<K, V> implements Iterable<V>
         this.dncComparator = (k, v) -> this.keyComparator.compare(k, this.keyExtractor.getKeyFrom(v));
         
         this.isSorted = false;
-        this.list = new ArrayList<>(0);
+        this.clear();
     }
     
     public int getIndexOf(V value)
@@ -203,6 +204,16 @@ public class DNCList<K, V> implements Iterable<V>
     public void ensureExtraCapacity(int size)
     {
         this.list.ensureCapacity(this.list.size() + size);
+    }
+    
+    public List<V> getSubList(int min, int max)
+    {
+        return this.list.subList(min, max);
+    }
+    
+    public void clear()
+    {
+        this.list = new ArrayList<>(0);
     }
     
     @Override

@@ -6,9 +6,20 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.cas_ual_ty.ydm.binder.BinderCardInventoryManager;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
+import de.cas_ual_ty.ydm.util.YdmUtil;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.INBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.capabilities.CapabilityInject;
+import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -38,6 +49,7 @@ public class YDM
     public static File rawImagesFolder;
     public static File cardInfoImagesFolder;
     public static File cardItemImagesFolder;
+    public static File bindersFolder;
     
     public static int activeInfoImageSize;
     public static int activeItemImageSize;
@@ -46,6 +58,9 @@ public class YDM
     public static String dbSourceUrl;
     
     public static SimpleChannel channel;
+    
+    @CapabilityInject(BinderCardInventoryManager.class)
+    public static Capability<BinderCardInventoryManager> BINDER_INVENTORY_CAPABILITY = null;
     
     public YDM()
     {
@@ -63,9 +78,24 @@ public class YDM
         YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
+        bus.addListener(this::attachItemStackCapabilities);
         YDM.proxy.registerForgeEventListeners(bus);
         
         YDM.proxy.preInit();
+    }
+    
+    private void init(FMLCommonSetupEvent event)
+    {
+        YDM.channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(YDM.MOD_ID, "main"),
+            () -> YDM.PROTOCOL_VERSION,
+            YDM.PROTOCOL_VERSION::equals,
+            YDM.PROTOCOL_VERSION::equals);
+        
+        CapabilityManager.INSTANCE.<BinderCardInventoryManager>register(BinderCardInventoryManager.class, new BinderCardInventoryManager.Storage(), BinderCardInventoryManager::new);
+        
+        this.initFiles();
+        
+        YDM.proxy.init();
     }
     
     private void initFiles()
@@ -98,25 +128,46 @@ public class YDM
         YDM.cardInfoImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeInfoImageSize);
         YDM.cardItemImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeItemImageSize);
         
+        YDM.bindersFolder = new File("ydm_binders");
+        
         YdmIOUtil.createDirIfNonExistant(YDM.imagesParentFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.rawImagesFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.cardItemImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(YDM.bindersFolder);
         
         YdmIOUtil.setAgent();
         Database.readFiles();
     }
     
-    private void init(FMLCommonSetupEvent event)
+    private void attachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event)
     {
-        YDM.channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(YDM.MOD_ID, "main"),
-            () -> YDM.PROTOCOL_VERSION,
-            YDM.PROTOCOL_VERSION::equals,
-            YDM.PROTOCOL_VERSION::equals);
-        
-        this.initFiles();
-        
-        YDM.proxy.init();
+        if(event.getObject().getItem() == YdmItems.CARD_BINDER)
+        {
+            final LazyOptional<BinderCardInventoryManager> instance = LazyOptional.of(BinderCardInventoryManager::new);
+            final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>()
+            {
+                @Override
+                public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
+                {
+                    return YDM.BINDER_INVENTORY_CAPABILITY.orEmpty(cap, instance);
+                }
+                
+                @Override
+                public INBT serializeNBT()
+                {
+                    return YDM.BINDER_INVENTORY_CAPABILITY.writeNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null);
+                }
+                
+                @Override
+                public void deserializeNBT(INBT nbt)
+                {
+                    YDM.BINDER_INVENTORY_CAPABILITY.readNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null, nbt);
+                }
+            };
+            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_inventory_manager"), provider);
+            event.addListener(instance::invalidate);
+        }
     }
     
     public static void log(String s)
