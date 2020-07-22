@@ -1,5 +1,8 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -93,6 +96,34 @@ public class Properties
     public String getImage(byte imageIndex)
     {
         return this.getImages()[imageIndex];
+    }
+    
+    public List<String> getRawStringList()
+    {
+        List<String> list = new LinkedList<>();
+        
+        this.addHeader(list);
+        list.add("");
+        this.addText(list);
+        
+        return list;
+    }
+    
+    public void addHeader(List<String> list)
+    {
+        list.add(this.getName());
+        list.add("");
+        this.addCardType(list);
+    }
+    
+    public void addText(List<String> list)
+    {
+        list.add(this.getText());
+    }
+    
+    public void addCardType(List<String> list)
+    {
+        list.add(this.type.name);
     }
     
     // --- Getters ---

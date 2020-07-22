@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -141,6 +143,96 @@ public class MonsterProperties extends Properties
     public boolean getHasLevel()
     {
         return this.getType() == null || this.getIsFusion() || this.getIsRitual() || this.getIsSynchro();
+    }
+    
+    @Override
+    public void addHeader(List<String> list)
+    {
+        super.addHeader(list);
+        this.addMonsterHeader(list);
+    }
+    
+    @Override
+    public void addText(List<String> list)
+    {
+        if(this.getIsPendulum())
+        {
+            this.addPendulumTextHeader(list);
+            list.add(this.getPendulumText());
+            list.add("");
+        }
+        this.addMonsterTextHeader(list);
+        super.addText(list);
+    }
+    
+    public void addPendulumTextHeader(List<String> list)
+    {
+        // TODO Pendulum Text Header Formatting and Color
+        list.add(this.getPendulumScaleLeftBlue() + " < / > " + this.getPendulumScaleRightRed());
+    }
+    
+    @Override
+    public void addCardType(List<String> list)
+    {
+        if(this.getMonsterType() != null)
+        {
+            list.add(this.getMonsterType().name + " " + this.getType().name);
+        }
+        else if(this.getHasEffect())
+        {
+            list.add("Effect " + this.getType().name);
+        }
+        else
+        {
+            list.add("Normal " + this.getType().name);
+        }
+    }
+    
+    public void addMonsterHeader(List<String> list)
+    {
+        this.addMonsterHeader1(list);
+        this.addMonsterHeader2(list);
+    }
+    
+    public void addMonsterHeader1(List<String> list)
+    {
+        list.add(this.getAttribute().name);
+    }
+    
+    public void addMonsterHeader2(List<String> list)
+    {
+        list.add(this.getAtk() + " ATK");
+    }
+    
+    public void addMonsterTextHeader(List<String> list)
+    {
+        String s = "";
+        
+        if(this.getMonsterType() != null)
+        {
+            s += this.getMonsterType().name + " / ";
+        }
+        
+        if(this.getIsPendulum())
+        {
+            s += "Pendulum" + " / ";
+        }
+        
+        if(this.getAbility() != null)
+        {
+            s += this.getAbility().name + " / ";
+        }
+        
+        if(this.getHasEffect())
+        {
+            s += "Effect";
+        }
+        else
+        {
+            s += "Normal";
+        }
+        
+        list.add(s);
     }
     
     // --- Getters ---

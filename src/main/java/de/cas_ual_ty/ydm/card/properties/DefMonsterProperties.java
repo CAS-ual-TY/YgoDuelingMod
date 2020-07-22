@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -51,5 +53,18 @@ public class DefMonsterProperties extends MonsterProperties
     public void writeDefProperties(JsonObject j)
     {
         j.addProperty(JsonKeys.DEF, this.def);
+    }
+    
+    @Override
+    public void addMonsterHeader2(List<String> list)
+    {
+        list.add(this.getAtk() + " ATK / " + this.getDef() + " DEF");
+    }
+    
+    // --- Getters ---
+    
+    public int getDef()
+    {
+        return this.def;
     }
 }

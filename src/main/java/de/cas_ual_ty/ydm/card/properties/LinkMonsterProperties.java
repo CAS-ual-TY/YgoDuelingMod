@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.card.properties;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.gson.JsonObject;
 
@@ -57,5 +58,37 @@ public class LinkMonsterProperties extends MonsterProperties
     {
         j.addProperty(JsonKeys.LINK_RATING, this.linkRating);
         j.addProperty(JsonKeys.LINK_ARROWS, LinkArrow.toShort(this.linkArrows));
+    }
+    
+    @Override
+    public void addMonsterHeader2(List<String> list)
+    {
+        list.add(this.getAtk() + " ATK / LINK-" + this.getLinkRating());
+    }
+    
+    @Override
+    public void addText(List<String> list)
+    {
+        // TODO Link Marker Formatting and Colors
+        this.addLinkMarkers(list);
+        list.add("");
+        super.addText(list);
+    }
+    
+    public void addLinkMarkers(List<String> list)
+    {
+        list.add(this.linkArrows.stream().map((arrow) -> arrow.name).collect(Collectors.joining(", ")));
+    }
+    
+    // --- Getters ---
+    
+    public byte getLinkRating()
+    {
+        return this.linkRating;
+    }
+    
+    public List<LinkArrow> getLinkArrows()
+    {
+        return this.linkArrows;
     }
 }

@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -51,6 +53,12 @@ public class SpellProperties extends Properties
     public void writeSpellProperties(JsonObject j)
     {
         j.addProperty(JsonKeys.SPELL_TYPE, this.spellType.name);
+    }
+    
+    @Override
+    public void addCardType(List<String> list)
+    {
+        list.add(this.getSpellType().name + " " + this.getType().name);
     }
     
     // --- Getters ---

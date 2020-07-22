@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -50,5 +52,18 @@ public class XyzMonsterProperties extends DefMonsterProperties
     public void writeXyzProperties(JsonObject j)
     {
         j.addProperty(JsonKeys.RANK, this.rank);
+    }
+    
+    @Override
+    public void addMonsterHeader1(List<String> list)
+    {
+        list.add(this.getAttribute().name + " / " + " Rank " + this.getRank());
+    }
+    
+    // --- Getters ---
+    
+    public byte getRank()
+    {
+        return this.rank;
     }
 }

@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -55,5 +57,60 @@ public class LevelMonsterProperties extends DefMonsterProperties
     {
         j.addProperty(JsonKeys.LEVEL, this.level);
         j.addProperty(JsonKeys.IS_TUNER, this.isTuner);
+    }
+    
+    @Override
+    public void addMonsterHeader1(List<String> list)
+    {
+        list.add(this.getAttribute().name + " / " + " Level " + this.getLevel());
+    }
+    
+    @Override
+    public void addMonsterTextHeader(List<String> list)
+    {
+        String s = "";
+        
+        if(this.getMonsterType() != null)
+        {
+            s += this.getMonsterType().name + " / ";
+        }
+        
+        if(this.getIsPendulum())
+        {
+            s += "Pendulum" + " / ";
+        }
+        
+        if(this.getAbility() != null)
+        {
+            s += this.getAbility().name + " / ";
+        }
+        
+        if(this.getIsTuner())
+        {
+            s += "Tuner / ";
+        }
+        
+        if(this.getHasEffect())
+        {
+            s += "Effect";
+        }
+        else
+        {
+            s += "Normal";
+        }
+        
+        list.add(s);
+    }
+    
+    // --- Getters ---
+    
+    public byte getLevel()
+    {
+        return this.level;
+    }
+    
+    public boolean getIsTuner()
+    {
+        return this.isTuner;
     }
 }

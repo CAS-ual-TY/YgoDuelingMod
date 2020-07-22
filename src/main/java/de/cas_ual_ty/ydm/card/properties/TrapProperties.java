@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -39,6 +41,12 @@ public class TrapProperties extends Properties
     public void readTrapProperties(JsonObject j)
     {
         this.trapType = TrapType.fromString(j.get(JsonKeys.TRAP_TYPE).getAsString());
+    }
+    
+    @Override
+    public void addCardType(List<String> list)
+    {
+        list.add(this.getTrapType().name + " " + this.getType().name);
     }
     
     // --- Getters ---
