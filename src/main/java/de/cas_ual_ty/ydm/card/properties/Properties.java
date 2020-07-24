@@ -7,6 +7,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class Properties
 {
@@ -96,6 +98,19 @@ public class Properties
     public String getImage(byte imageIndex)
     {
         return this.getImages()[imageIndex];
+    }
+    
+    public void addInformation(List<ITextComponent> list)
+    {
+        List<String> raw = this.getRawStringList();
+        
+        for(String s1 : raw)
+        {
+            for(String s2 : s1.split("\n"))
+            {
+                list.add(new StringTextComponent(s2));
+            }
+        }
     }
     
     public List<String> getRawStringList()
