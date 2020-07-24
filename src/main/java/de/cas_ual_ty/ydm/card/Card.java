@@ -49,7 +49,7 @@ public class Card
     
     public ResourceLocation getInfoImageResourceLocation()
     {
-        return new ResourceLocation(YDM.MOD_ID, "item/" + this.getInfoImageName());
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ImageHandler.getInfoReplacementImage(this) + ".png");
     }
     
     public ResourceLocation getItemImageResourceLocation()

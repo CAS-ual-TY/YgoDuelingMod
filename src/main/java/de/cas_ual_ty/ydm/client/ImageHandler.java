@@ -25,8 +25,8 @@ import de.cas_ual_ty.ydm.util.YdmIOUtil;
 
 public class ImageHandler
 {
-    public static final String IN_PROGRESS_IMAGE = "blanc_card";
-    public static final String FAILED_IMAGE = "failed_card";
+    public static final String IN_PROGRESS_IMAGE = "card_back";
+    public static final String FAILED_IMAGE = "blanc_card";
     
     public static final String INFO_SUFFIX = "_info";
     public static final String ITEM_SUFFIX = "_item";
@@ -75,28 +75,35 @@ public class ImageHandler
         {
             if(!ImageHandler.isInfoImageInProgress(imageName))
             {
+                // not finished, not in progress
+                
                 if(ImageHandler.getInfoFile(imageName).exists())
                 {
+                    // image exists, so set ready and return
                     ImageHandler.setFinished(imageName, false);
                     return imageName;
                 }
                 else if(ImageHandler.isInfoImageFailed(imageName))
                 {
-                    return ImageHandler.FAILED_IMAGE;
+                    // image does not exist, check if failed already and return replacement
+                    return ImageHandler.FAILED_IMAGE + "_" + YDM.activeInfoImageSize;
                 }
                 else
                 {
+                    // image does not exist and has not been tried, so make it ready and return replacement
                     ImageHandler.makeInfoImageReady(card);
-                    return ImageHandler.IN_PROGRESS_IMAGE;
+                    return ImageHandler.IN_PROGRESS_IMAGE + "_" + YDM.activeInfoImageSize;
                 }
             }
             else
             {
-                return ImageHandler.IN_PROGRESS_IMAGE;
+                // in progress
+                return ImageHandler.IN_PROGRESS_IMAGE + "_" + YDM.activeInfoImageSize;
             }
         }
         else
         {
+            // finished
             return imageName;
         }
     }
@@ -222,12 +229,12 @@ public class ImageHandler
     
     public static File getInfoFile(String imageName)
     {
-        return new File(YDM.cardInfoImagesFolder, imageName + ".png");
+        return new File(YDM.cardInfoImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
     }
     
     public static File getItemFile(String imageName)
     {
-        return new File(YDM.cardItemImagesFolder, imageName + ".png");
+        return new File(YDM.cardItemImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
     }
     
     public static boolean areAllItemImagesReady()
