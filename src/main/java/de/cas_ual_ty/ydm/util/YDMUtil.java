@@ -78,4 +78,9 @@ public class YdmUtil
     {
         return () -> new IllegalArgumentException("[" + YDM.MOD_ID + "] Capability can not be null!");
     }
+    
+    public static int toPow2(int i)
+    {
+        return MathHelper.log2(i);
+    }
 }

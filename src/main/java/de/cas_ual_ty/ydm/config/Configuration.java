@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.config;
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class Configuration
@@ -26,8 +27,8 @@ public class Configuration
     
     public static void bakeClient()
     {
-        YDM.activeInfoImageSize = Configuration.CLIENT.activeInfoImageSize.get();
-        YDM.activeItemImageSize = Configuration.CLIENT.activeItemImageSize.get();
+        YDM.activeInfoImageSize = YdmUtil.toPow2(Configuration.CLIENT.activeInfoImageSize.get());
+        YDM.activeItemImageSize = YdmUtil.toPow2(Configuration.CLIENT.activeItemImageSize.get());
         YDM.keepCachedImages = Configuration.CLIENT.keepCachedImages.get();
         YDM.itemsUseCardImages = Configuration.CLIENT.itemsUseCardImages.get();
         YDM.dbSourceUrl = Configuration.CLIENT.dbSourceUrl.get();
