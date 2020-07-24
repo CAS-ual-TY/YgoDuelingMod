@@ -142,7 +142,7 @@ public class YDM
     
     private void attachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event)
     {
-        if(event.getObject().getItem() == YdmItems.CARD_BINDER)
+        if(event.getObject() instanceof ItemStack && event.getObject().getItem() == YdmItems.CARD_BINDER)
         {
             final LazyOptional<BinderCardInventoryManager> instance = LazyOptional.of(BinderCardInventoryManager::new);
             final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>()
