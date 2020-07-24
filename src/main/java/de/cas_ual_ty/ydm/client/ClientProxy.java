@@ -1,6 +1,10 @@
 package de.cas_ual_ty.ydm.client;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.ISidedProxy;
@@ -9,12 +13,21 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.config.Configuration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
@@ -29,6 +42,12 @@ public class ClientProxy implements ISidedProxy
         bus.addListener(this::modelRegistry);
         bus.addListener(this::modelBake);
         bus.addListener(this::modConfig);
+    }
+    
+    @Override
+    public void registerForgeEventListeners(IEventBus bus)
+    {
+        bus.addListener(this::renderGameOverlay);
     }
     
     @Override
@@ -100,5 +119,97 @@ public class ClientProxy implements ISidedProxy
         {
             Configuration.bakeClient();
         }
+    }
+    
+    //    private void renderGameOverlay(RenderGameOverlayEvent.Post event)
+    private void renderGameOverlay(TickEvent.RenderTickEvent event)
+    {
+        if(event.type != TickEvent.Type.RENDER || event.phase != TickEvent.Phase.END)
+        {
+            return;
+        }
+        
+        Card card = null;
+        
+        Screen screen = Minecraft.getInstance().currentScreen;
+        
+        if(screen instanceof ContainerScreen)
+        {
+            ContainerScreen<?> containerScreen = (ContainerScreen<?>)screen;
+            
+            if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty() && containerScreen.getSlotUnderMouse().getStack().getItem() == YdmItems.CARD)
+            {
+                card = YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()).getCard();
+            }
+        }
+        else if(Minecraft.getInstance().player != null)
+        {
+            PlayerEntity player = Minecraft.getInstance().player;
+            
+            ItemStack itemStack = ItemStack.EMPTY;
+            
+            if(player.getHeldItemMainhand().getItem() == YdmItems.CARD)
+            {
+                itemStack = player.getHeldItemMainhand();
+            }
+            else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
+            {
+                itemStack = player.getHeldItemOffhand();
+            }
+            
+            card = YdmItems.CARD.getCardHolder(itemStack).getCard();
+        }
+        
+        if(card != null)
+        {
+            ClientProxy.renderCardInfo(card);
+        }
+    }
+    
+    public static void renderCardInfo(Card card)
+    {
+        float f = 0.5f;
+        
+        // TODO make width dependent on current screen
+        int maxWidth = 200;
+        
+        RenderSystem.pushMatrix();
+        RenderSystem.enableBlend();
+        RenderHelper.disableStandardItemLighting();
+        RenderSystem.color4f(1F, 1F, 1F, 1F);
+        
+        RenderSystem.translatef(2, 2, 0);
+        RenderSystem.scalef(f, f, f);
+        
+        {
+            RenderSystem.pushMatrix();
+            
+            RenderSystem.scalef(f, f, f);
+            
+            Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
+            
+            // 256 somehow needs to be hardcoded
+            // still uses YDM.activeInfoImageSize as size for pictures
+            // and renders them properly
+            // I believe the scalef calls do it but I dont know
+            final int size = 256;
+            AbstractGui.blit(0, 0, 0, 0, 0, size, size, 256, 256);
+            
+            RenderSystem.popMatrix();
+        }
+        
+        {
+            FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+            
+            List<ITextComponent> list = new LinkedList<>();
+            card.getProperties().addInformation(list);
+            
+            String string = list.stream().map((t) -> t.getFormattedText()).collect(Collectors.joining("\n"));
+            fontRenderer.drawSplitString(string, 0, 139, maxWidth, 0xFFFFFF);
+        }
+        
+        RenderHelper.enableStandardItemLighting();
+        RenderSystem.disableBlend();
+        RenderSystem.popMatrix();
     }
 }
