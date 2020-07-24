@@ -222,6 +222,12 @@ public class DNCList<K, V> implements Iterable<V>
         return this.list.iterator();
     }
     
+    @Override
+    public String toString()
+    {
+        return this.list.toString();
+    }
+    
     private static interface DNCComparator<K, V>
     {
         int compare(K k, V v);
