@@ -48,6 +48,13 @@ public class CardItem extends Item
         return itemStack;
     }
     
+    public ItemStack createItemForCardHolder(CardHolder card)
+    {
+        ItemStack itemStack = new ItemStack(this);
+        this.getCardHolder(itemStack).override(card);
+        return itemStack;
+    }
+    
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
     {
