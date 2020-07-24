@@ -1,11 +1,11 @@
 package de.cas_ual_ty.ydm.card.properties;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.TextFormatting;
 
 public class LinkMonsterProperties extends MonsterProperties
 {
@@ -77,7 +77,8 @@ public class LinkMonsterProperties extends MonsterProperties
     
     public void addLinkMarkers(List<String> list)
     {
-        list.add(this.linkArrows.stream().map((arrow) -> arrow.name).collect(Collectors.joining(", ")));
+        //        list.add(this.linkArrows.stream().map((arrow) -> arrow.name).collect(Collectors.joining(", ")));
+        list.addAll(LinkArrow.buildSymbolsString(this.getLinkArrows(), TextFormatting.WHITE, TextFormatting.RED, "  "));
     }
     
     // --- Getters ---

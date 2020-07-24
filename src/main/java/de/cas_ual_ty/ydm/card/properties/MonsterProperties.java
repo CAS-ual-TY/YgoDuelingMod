@@ -5,6 +5,9 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 public class MonsterProperties extends Properties
 {
@@ -168,7 +171,11 @@ public class MonsterProperties extends Properties
     public void addPendulumTextHeader(List<String> list)
     {
         // TODO Pendulum Text Header Formatting and Color
-        list.add(this.getPendulumScaleLeftBlue() + " < / > " + this.getPendulumScaleRightRed());
+        ITextComponent leftArrow = new StringTextComponent("◀");
+        leftArrow.getStyle().setColor(TextFormatting.BLUE);
+        ITextComponent rightArrow = new StringTextComponent("▶");
+        rightArrow.getStyle().setColor(TextFormatting.RED);
+        list.add(this.getPendulumScaleLeftBlue() + " " + leftArrow.getFormattedText() + " / " + rightArrow.getFormattedText() + " " + this.getPendulumScaleRightRed());
     }
     
     @Override
