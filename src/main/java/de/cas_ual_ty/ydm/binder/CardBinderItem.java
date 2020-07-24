@@ -3,16 +3,23 @@ package de.cas_ual_ty.ydm.binder;
 import java.util.List;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.container.Container;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-public class CardBinderItem extends Item
+public class CardBinderItem extends Item implements INamedContainerProvider
 {
     public CardBinderItem(Properties properties)
     {
@@ -40,6 +47,49 @@ public class CardBinderItem extends Item
         else
         {
             tooltip.add(new StringTextComponent("Error! No capability present! Pls report to mod author!"));
+        }
+    }
+    
+    @Override
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    {
+        ItemStack stack = this.getActiveBinder(player);
+        
+        if(player.getHeldItem(hand) == stack)
+        {
+            player.openContainer(this);
+            return ActionResult.resultSuccess(stack);
+        }
+        
+        return super.onItemRightClick(world, player, hand);
+    }
+    
+    @Override
+    public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
+    {
+        ItemStack s = this.getActiveBinder(player);
+        return new BinderContainer(YdmContainerTypes.CARD_BINDER, id, playerInv, this.getInventoryManager(s), s);
+    }
+    
+    @Override
+    public ITextComponent getDisplayName()
+    {
+        return new TranslationTextComponent("container." + YDM.MOD_ID + ".card_binder");
+    }
+    
+    public ItemStack getActiveBinder(PlayerEntity player)
+    {
+        if(player.getHeldItemMainhand().getItem() == this)
+        {
+            return player.getHeldItemMainhand();
+        }
+        else if(player.getHeldItemOffhand().getItem() == this)
+        {
+            return player.getHeldItemOffhand();
+        }
+        else
+        {
+            return ItemStack.EMPTY;
         }
     }
 }

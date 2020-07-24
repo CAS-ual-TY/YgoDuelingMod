@@ -9,12 +9,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.ISidedProxy;
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
+import de.cas_ual_ty.ydm.binder.BinderScreen;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.config.Configuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.RenderHelper;
@@ -75,6 +78,8 @@ public class ClientProxy implements ISidedProxy
                 ImageHandler.downloadCardImages(list);
             }
         }
+        
+        ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, (container, playerInv, text) -> new BinderScreen(container, playerInv, text));
     }
     
     private void textureStitch(TextureStitchEvent.Pre event)
