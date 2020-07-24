@@ -13,11 +13,16 @@ public class CardHolder
     public byte overriddenImageIndex;
     public Rarity overriddenRarity;
     
-    public CardHolder(Card card)
+    public CardHolder(Card card, byte overriddenImageIndex, Rarity overriddenRarity)
     {
         this.card = card;
-        this.overriddenImageIndex = -1;
-        this.overriddenRarity = null;
+        this.overriddenImageIndex = overriddenImageIndex;
+        this.overriddenRarity = overriddenRarity;
+    }
+    
+    public CardHolder(Card card)
+    {
+        this(card, (byte)-1, (Rarity)null);
     }
     
     public CardHolder(CompoundNBT nbt)

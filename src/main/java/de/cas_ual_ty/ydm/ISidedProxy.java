@@ -1,5 +1,8 @@
 package de.cas_ual_ty.ydm;
 
+import javax.annotation.Nullable;
+
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.eventbus.api.IEventBus;
 
 public interface ISidedProxy
@@ -20,5 +23,11 @@ public interface ISidedProxy
     public default void init()
     {
         
+    }
+    
+    @Nullable
+    public default PlayerEntity getClientPlayer()
+    {
+        return null;
     }
 }

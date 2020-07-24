@@ -217,4 +217,10 @@ public class ClientProxy implements ISidedProxy
         RenderSystem.disableBlend();
         RenderSystem.popMatrix();
     }
+    
+    @Override
+    public PlayerEntity getClientPlayer()
+    {
+        return Minecraft.getInstance().player;
+    }
 }

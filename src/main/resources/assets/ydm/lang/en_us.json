@@ -5,5 +5,6 @@
     "item.ydm.card_back.desc": "Just a cosmetic Item!",
     "item.ydm.card_binder": "Card Binder",
     "item.ydm.card_binder.uuid": "Unique Identifier (UUID):",
-    "container.ydm.card_binder": "Card Binder"
+    "container.ydm.card_binder": "Card Binder",
+    "container.ydm.card_binder.loading": "[Loading...]"
 }

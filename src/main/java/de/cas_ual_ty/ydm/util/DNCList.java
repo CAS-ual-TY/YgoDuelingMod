@@ -32,12 +32,17 @@ public class DNCList<K, V> implements Iterable<V>
         this.clear();
     }
     
-    public int getIndexOf(V value)
+    public int getIndexOfSameKey(V value)
     {
         return this.getIndex(this.keyExtractor.getKeyFrom(value));
     }
     
     public int getIndex(K key)
+    {
+        return this.getIndex(key, false);
+    }
+    
+    public int getIndex(K key, boolean forceReturn)
     {
         if(!this.isSorted)
         {
@@ -122,7 +127,14 @@ public class DNCList<K, V> implements Iterable<V>
          * - loop end (left<right does not hold anymore)
          */
         
-        return -1;
+        if(forceReturn)
+        {
+            return index;
+        }
+        else
+        {
+            return -1;
+        }
     }
     
     public V getByIndex(int index)
@@ -157,21 +169,24 @@ public class DNCList<K, V> implements Iterable<V>
     public void addKeepSorted(V value)
     {
         K key = this.keyExtractor.getKeyFrom(value);
-        int index = this.getIndex(key);
+        int index = this.getIndex(key, true);
         
-        if(index != -1)
+        if(index >= this.list.size())
         {
-            V current = this.getByIndex(index);
-            int comparison = this.dncComparator.compare(key, current);
-            
-            if(comparison < 1)
-            {
-                this.list.add(index, value);
-            }
-            else
-            {
-                this.list.add(index + 1, value);
-            }
+            this.list.add(value);
+            return;
+        }
+        
+        V current = this.getByIndex(index);
+        int comparison = this.dncComparator.compare(key, current);
+        
+        if(comparison < 1)
+        {
+            this.list.add(index, value);
+        }
+        else
+        {
+            this.list.add(index + 1, value);
         }
     }
     
