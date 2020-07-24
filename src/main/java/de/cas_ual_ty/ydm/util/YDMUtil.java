@@ -65,7 +65,7 @@ public class YdmUtil
     
     public static int getPow2(int pow)
     {
-        assert pow >= 0 && pow < POW_2.length;
+        assert pow >= 0 && pow < YdmUtil.POW_2.length;
         return YdmUtil.POW_2[pow];
     }
     
