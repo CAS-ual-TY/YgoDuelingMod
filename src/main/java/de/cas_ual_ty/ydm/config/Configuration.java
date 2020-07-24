@@ -27,8 +27,8 @@ public class Configuration
     
     public static void bakeClient()
     {
-        YDM.activeInfoImageSize = YdmUtil.toPow2(Configuration.CLIENT.activeInfoImageSize.get());
-        YDM.activeItemImageSize = YdmUtil.toPow2(Configuration.CLIENT.activeItemImageSize.get());
+        YDM.activeInfoImageSize = YdmUtil.toPow2ConfigValue(Configuration.CLIENT.activeInfoImageSize.get(), 4);
+        YDM.activeItemImageSize = YdmUtil.toPow2ConfigValue(Configuration.CLIENT.activeItemImageSize.get(), 4);
         YDM.keepCachedImages = Configuration.CLIENT.keepCachedImages.get();
         YDM.itemsUseCardImages = Configuration.CLIENT.itemsUseCardImages.get();
         YDM.dbSourceUrl = Configuration.CLIENT.dbSourceUrl.get();

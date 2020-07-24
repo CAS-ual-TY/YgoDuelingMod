@@ -65,7 +65,7 @@ public class YdmUtil
     
     public static int getPow2(int pow)
     {
-        assert pow >= 0 && pow < 10;
+        assert pow >= 0 && pow < POW_2.length;
         return YdmUtil.POW_2[pow];
     }
     
@@ -79,8 +79,13 @@ public class YdmUtil
         return () -> new IllegalArgumentException("[" + YDM.MOD_ID + "] Capability can not be null!");
     }
     
-    public static int toPow2(int i)
+    public static int toPow2ConfigValue(int i, int min)
     {
-        return MathHelper.log2(i);
+        return YdmUtil.getPow2(YdmUtil.range(MathHelper.log2(i), min, YdmUtil.POW_2.length - 1));
+    }
+    
+    public static int range(int i, int min, int max)
+    {
+        return Math.max(min, Math.min(max, i));
     }
 }
