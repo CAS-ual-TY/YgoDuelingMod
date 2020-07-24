@@ -57,7 +57,7 @@ public class XyzMonsterProperties extends DefMonsterProperties
     @Override
     public void addMonsterHeader1(List<String> list)
     {
-        list.add(this.getAttribute().name + " / " + " Rank " + this.getRank());
+        list.add(this.getAttribute().name + " / Rank " + this.getRank());
     }
     
     // --- Getters ---

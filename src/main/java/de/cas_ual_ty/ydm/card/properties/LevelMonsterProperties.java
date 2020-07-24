@@ -62,7 +62,7 @@ public class LevelMonsterProperties extends DefMonsterProperties
     @Override
     public void addMonsterHeader1(List<String> list)
     {
-        list.add(this.getAttribute().name + " / " + " Level " + this.getLevel());
+        list.add(this.getAttribute().name + " / Level " + this.getLevel());
     }
     
     @Override
