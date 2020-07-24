@@ -19,7 +19,7 @@ public class ClientConfig
         
         this.activeInfoImageSize = builder
             .comment("The size of card images in shown card infos.")
-            .defineInRange("activeInfoImageSize", 256, 16, 256);
+            .defineInRange("activeInfoImageSize", 256, 16, 1024);
         this.activeItemImageSize = builder
             .comment("The size of card images used for items (only if itemsUseCardImages is set to true).")
             .defineInRange("activeItemImageSize", 64, 16, 256);
