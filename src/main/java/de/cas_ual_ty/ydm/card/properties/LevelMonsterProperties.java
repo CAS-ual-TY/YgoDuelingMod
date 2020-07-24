@@ -68,7 +68,7 @@ public class LevelMonsterProperties extends DefMonsterProperties
     @Override
     public void addMonsterTextHeader(List<String> list)
     {
-        String s = "";
+        String s = this.getSpecies().name + " / ";
         
         if(this.getMonsterType() != null)
         {

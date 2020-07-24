@@ -206,7 +206,7 @@ public class MonsterProperties extends Properties
     
     public void addMonsterTextHeader(List<String> list)
     {
-        String s = "";
+        String s = this.getSpecies().name + " / ";
         
         if(this.getMonsterType() != null)
         {
