@@ -142,7 +142,7 @@ public class MonsterProperties extends Properties
     
     public boolean getHasLevel()
     {
-        return this.getType() == null || this.getIsFusion() || this.getIsRitual() || this.getIsSynchro();
+        return this.getMonsterType() == null || this.getIsFusion() || this.getIsRitual() || this.getIsSynchro();
     }
     
     @Override
