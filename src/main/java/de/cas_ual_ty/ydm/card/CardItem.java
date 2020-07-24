@@ -51,6 +51,12 @@ public class CardItem extends Item
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
     {
+        if(group != YDM.ydmItemGroup)
+        {
+            super.fillItemGroup(group, items);
+            return;
+        }
+        
         YDM.log("Creating card item variants (" + Database.CARDS_LIST.size() + " different variants)");
         
         ItemStack itemStack;
