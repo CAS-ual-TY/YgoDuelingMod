@@ -148,6 +148,11 @@ public class MonsterProperties extends Properties
         return this.getMonsterType() == null || this.getIsFusion() || this.getIsRitual() || this.getIsSynchro();
     }
     
+    public boolean getHasDef()
+    {
+        return this.getMonsterType() == null || this.getIsFusion() || this.getIsRitual() || this.getIsSynchro() || this.getIsXyz();
+    }
+    
     @Override
     public void addHeader(List<String> list)
     {

@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.card.properties.DefMonsterProperties;
 import de.cas_ual_ty.ydm.card.properties.LevelMonsterProperties;
 import de.cas_ual_ty.ydm.card.properties.LinkMonsterProperties;
 import de.cas_ual_ty.ydm.card.properties.MonsterProperties;
@@ -35,13 +36,18 @@ public class YdmUtil
         {
             MonsterProperties p1 = new MonsterProperties(p0, j);
             
-            if(p1.getHasLevel())
+            if(p1.getHasDef())
             {
-                return new LevelMonsterProperties(p1, j);
-            }
-            else if(p1.getIsXyz())
-            {
-                return new XyzMonsterProperties(p1, j);
+                p1 = new DefMonsterProperties(p1, j);
+                
+                if(p1.getHasLevel())
+                {
+                    return new LevelMonsterProperties(p1, j);
+                }
+                else if(p1.getIsXyz())
+                {
+                    return new XyzMonsterProperties(p1, j);
+                }
             }
             else if(p1.getIsLink())
             {
