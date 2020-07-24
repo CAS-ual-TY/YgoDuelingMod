@@ -2,5 +2,7 @@
     "itemGroup.ydm": "Ygo Dueling Mod",
     "item.ydm.card": "Card",
     "item.ydm.card_back": "Card Back",
-    "item.ydm.card_back.desc": "Just a cosmetic Item!"
+    "item.ydm.card_back.desc": "Just a cosmetic Item!",
+    "item.ydm.card_binder": "Card Binder",
+    "item.ydm.card_binder.uuid": "Unique Identifier (UUID):"
 }

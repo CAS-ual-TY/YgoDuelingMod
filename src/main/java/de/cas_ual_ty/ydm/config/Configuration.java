@@ -32,5 +32,6 @@ public class Configuration
         YDM.keepCachedImages = Configuration.CLIENT.keepCachedImages.get();
         YDM.itemsUseCardImages = Configuration.CLIENT.itemsUseCardImages.get();
         YDM.dbSourceUrl = Configuration.CLIENT.dbSourceUrl.get();
+        YDM.showBinderId = Configuration.CLIENT.showBinderId.get();
     }
 }

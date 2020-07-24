@@ -56,6 +56,7 @@ public class YDM
     public static boolean keepCachedImages;
     public static boolean itemsUseCardImages;
     public static String dbSourceUrl;
+    public static boolean showBinderId;
     
     public static SimpleChannel channel;
     

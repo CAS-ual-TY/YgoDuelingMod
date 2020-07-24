@@ -12,6 +12,7 @@ public class ClientConfig
     public final BooleanValue keepCachedImages;
     public final BooleanValue itemsUseCardImages;
     public final ConfigValue<String> dbSourceUrl;
+    public final BooleanValue showBinderId;
     
     public ClientConfig(ForgeConfigSpec.Builder builder)
     {
@@ -32,6 +33,9 @@ public class ClientConfig
         this.dbSourceUrl = builder
             .comment("Download link for the cards and sets database. Must be a .zip file.")
             .define("dbSourceUrl", "https://github.com/CAS-ual-TY/YDM2-DB/archive/master.zip");
+        this.showBinderId = builder
+            .comment("Show card binder UUIDs when hovering over them.")
+            .define("showBinderId", false);
         
         builder.pop();
     }
