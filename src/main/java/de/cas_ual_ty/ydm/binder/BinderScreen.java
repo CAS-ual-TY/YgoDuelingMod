@@ -3,12 +3,13 @@ package de.cas_ual_ty.ydm.binder;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
+import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 
-public class BinderScreen extends ContainerScreen<BinderContainer>
+public class BinderScreen extends ContainerScreen<BinderContainer> implements IHasContainer<BinderContainer>
 {
     private static final ResourceLocation BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
     

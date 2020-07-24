@@ -79,7 +79,7 @@ public class ClientProxy implements ISidedProxy
             }
         }
         
-        ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, (container, playerInv, text) -> new BinderScreen(container, playerInv, text));
+        ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, BinderScreen::new);
     }
     
     private void textureStitch(TextureStitchEvent.Pre event)
