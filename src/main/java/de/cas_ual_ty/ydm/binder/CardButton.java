@@ -27,7 +27,7 @@ public class CardButton extends Button
         if(card != null)
         {
             Minecraft minecraft = Minecraft.getInstance();
-            minecraft.getTextureManager().bindTexture(card.getCard().getInfoImageResourceLocation());
+            minecraft.getTextureManager().bindTexture(card.getInfoImageResourceLocation());
             AbstractGui.blit(this.x + 1, this.y + 1, 16, 16, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
             this.renderBg(minecraft, mouseX, mouseY);
         }

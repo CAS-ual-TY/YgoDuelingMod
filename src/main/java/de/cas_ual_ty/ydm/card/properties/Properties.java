@@ -6,7 +6,10 @@ import java.util.List;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.client.ImageHandler;
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -95,9 +98,34 @@ public class Properties
         return this.getType() == Type.MONSTER;
     }
     
-    public String getImage(byte imageIndex)
+    public String getImageURL(byte imageIndex)
     {
         return this.getImages()[imageIndex];
+    }
+    
+    public String getImageName(byte imageIndex)
+    {
+        return this.getId() + "_" + imageIndex;
+    }
+    
+    public String getItemImageName(byte imageIndex)
+    {
+        return ImageHandler.addItemSuffix(this.getImageName(imageIndex));
+    }
+    
+    public String getInfoImageName(byte imageIndex)
+    {
+        return ImageHandler.addInfoSuffix(this.getImageName(imageIndex));
+    }
+    
+    public ResourceLocation getItemImageResourceLocation(byte imageIndex)
+    {
+        return new ResourceLocation(YDM.MOD_ID, "item/" + this.getItemImageName(imageIndex));
+    }
+    
+    public ResourceLocation getInfoImageResourceLocation(byte imageIndex)
+    {
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ImageHandler.getInfoReplacementImage(this, imageIndex) + ".png");
     }
     
     public void addInformation(List<ITextComponent> list)

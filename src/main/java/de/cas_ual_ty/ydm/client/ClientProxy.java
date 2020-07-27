@@ -13,6 +13,7 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.binder.BinderScreen;
 import de.cas_ual_ty.ydm.card.Card;
+import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.config.Configuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -123,7 +124,6 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
-    //    private void renderGameOverlay(RenderGameOverlayEvent.Post event)
     private void renderGameOverlay(TickEvent.RenderTickEvent event)
     {
         if(event.type != TickEvent.Type.RENDER || event.phase != TickEvent.Phase.END)
@@ -131,7 +131,7 @@ public class ClientProxy implements ISidedProxy
             return;
         }
         
-        Card card = null;
+        CardHolder card = null;
         
         Screen screen = Minecraft.getInstance().currentScreen;
         
@@ -141,7 +141,7 @@ public class ClientProxy implements ISidedProxy
             
             if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty() && containerScreen.getSlotUnderMouse().getStack().getItem() == YdmItems.CARD)
             {
-                card = YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()).getCard();
+                card = YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack());
             }
         }
         else if(Minecraft.getInstance().player != null)
@@ -159,16 +159,16 @@ public class ClientProxy implements ISidedProxy
                 itemStack = player.getHeldItemOffhand();
             }
             
-            card = YdmItems.CARD.getCardHolder(itemStack).getCard();
+            card = YdmItems.CARD.getCardHolder(itemStack);
         }
         
-        if(card != null)
+        if(card != null && card.getCard() != null)
         {
             ClientProxy.renderCardInfo(card);
         }
     }
     
-    public static void renderCardInfo(Card card)
+    public static void renderCardInfo(CardHolder card)
     {
         float f = 0.5f;
         

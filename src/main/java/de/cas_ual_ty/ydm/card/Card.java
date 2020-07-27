@@ -2,9 +2,7 @@ package de.cas_ual_ty.ydm.card;
 
 import com.google.gson.JsonObject;
 
-import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import de.cas_ual_ty.ydm.client.ImageHandler;
 import net.minecraft.util.ResourceLocation;
 
 public class Card
@@ -27,34 +25,24 @@ public class Card
         this.rarity = Rarity.COMMON;
     }
     
-    public String getDirectImageName()
+    public String getImageName()
     {
-        return this.getProperties().getId() + "_" + this.getImageIndex();
+        return this.getProperties().getImageName(this.getImageIndex());
     }
     
-    public String getInfoImageName()
+    public String getItemImageURL()
     {
-        return ImageHandler.addInfoSuffix(this.getDirectImageName());
-    }
-    
-    public String getItemImageName()
-    {
-        return ImageHandler.addItemSuffix(this.getDirectImageName());
-    }
-    
-    public String getImageURL()
-    {
-        return this.getProperties().getImage(this.getImageIndex());
-    }
-    
-    public ResourceLocation getInfoImageResourceLocation()
-    {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ImageHandler.getInfoReplacementImage(this) + ".png");
+        return this.getProperties().getImageURL(this.getImageIndex());
     }
     
     public ResourceLocation getItemImageResourceLocation()
     {
-        return new ResourceLocation(YDM.MOD_ID, "item/" + this.getItemImageName());
+        return this.getProperties().getItemImageResourceLocation(this.getImageIndex());
+    }
+    
+    public String getItemImageName()
+    {
+        return this.getProperties().getItemImageName(this.getImageIndex());
     }
     
     // --- Getters ---

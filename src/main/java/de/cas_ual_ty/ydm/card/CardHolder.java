@@ -6,6 +6,7 @@ import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
 
 public class CardHolder
 {
@@ -37,6 +38,31 @@ public class CardHolder
     
     protected CardHolder()
     {
+    }
+    
+    public String getImageName()
+    {
+        return this.getProperties().getImageName(this.getActiveImageIndex());
+    }
+    
+    public String getInfoImageName()
+    {
+        return this.getProperties().getInfoImageName(this.getActiveImageIndex());
+    }
+    
+    public String getItemImageName()
+    {
+        return this.getProperties().getItemImageName(this.getActiveImageIndex());
+    }
+    
+    public String getImageURL()
+    {
+        return this.getProperties().getImageURL(this.getActiveImageIndex());
+    }
+    
+    public ResourceLocation getInfoImageResourceLocation()
+    {
+        return this.getProperties().getInfoImageResourceLocation(this.getActiveImageIndex());
     }
     
     public void override(CardHolder cardHolder)

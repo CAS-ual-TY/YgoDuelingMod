@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.Card;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 
@@ -65,9 +66,9 @@ public class ImageHandler
         return imageName.endsWith(ImageHandler.ITEM_SUFFIX);
     }
     
-    public static String getInfoReplacementImage(Card card)
+    public static String getInfoReplacementImage(Properties properties, byte imageIndex)
     {
-        String imageName = card.getInfoImageName();
+        String imageName = properties.getInfoImageName(imageIndex);
         
         int index = ImageHandler.FINAL_IMAGE_READY_LIST.getIndex(imageName);
         
@@ -91,7 +92,7 @@ public class ImageHandler
                 else
                 {
                     // image does not exist and has not been tried, so make it ready and return replacement
-                    ImageHandler.makeInfoImageReady(card);
+                    ImageHandler.makeInfoImageReady(properties, imageIndex);
                     return ImageHandler.IN_PROGRESS_IMAGE + "_" + YDM.activeInfoImageSize;
                 }
             }
@@ -154,10 +155,10 @@ public class ImageHandler
         }
     }
     
-    private static void makeInfoImageReady(Card card)
+    private static void makeInfoImageReady(Properties properties, byte imageIndex)
     {
-        ImageHandler.setInfoImageInProgress(card.getInfoImageName());
-        Thread t = new Thread(new InfoImageWizard(card), "YDM Image Downloader");
+        ImageHandler.setInfoImageInProgress(properties.getInfoImageName(imageIndex));
+        Thread t = new Thread(new InfoImageWizard(properties, imageIndex), "YDM Image Downloader");
         t.start();
     }
     
@@ -247,7 +248,7 @@ public class ImageHandler
         List<Card> list = new LinkedList<>();
         for(Card card : Database.CARDS_LIST)
         {
-            if(!ImageHandler.getItemFile(card.getDirectImageName()).exists())
+            if(!ImageHandler.getItemFile(card.getImageName()).exists())
             {
                 list.add(card);
             }
@@ -333,17 +334,19 @@ public class ImageHandler
     
     private static class InfoImageWizard implements Runnable
     {
-        private final Card card;
+        private final Properties properties;
+        private final byte imageIndex;
         
-        public InfoImageWizard(Card card)
+        public InfoImageWizard(Properties properties, byte imageIndex)
         {
-            this.card = card;
+            this.properties = properties;
+            this.imageIndex = imageIndex;
         }
         
         @Override
         public void run()
         {
-            ImageHandler.imagePipeline(this.card.getDirectImageName(), this.card.getImageURL(), ImageHandler.getInfoFile(this.card.getDirectImageName()), YDM.activeInfoImageSize, (failed) -> ImageHandler.setFinished(InfoImageWizard.this.card.getInfoImageName(), failed));
+            ImageHandler.imagePipeline(this.properties.getImageName(this.imageIndex), this.properties.getImageURL(this.imageIndex), ImageHandler.getInfoFile(this.properties.getImageName(this.imageIndex)), YDM.activeInfoImageSize, (failed) -> ImageHandler.setFinished(InfoImageWizard.this.properties.getInfoImageName(this.imageIndex), failed));
         }
     }
     
@@ -370,7 +373,7 @@ public class ImageHandler
             {
                 YDM.log("Fetching image of: " + ++j + "/" + this.size + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
                 
-                status = ImageHandler.imagePipeline(card.getDirectImageName(), card.getImageURL(), ImageHandler.getItemFile(card.getDirectImageName()), YDM.activeItemImageSize, (failed) ->
+                status = ImageHandler.imagePipeline(card.getImageName(), card.getItemImageURL(), ImageHandler.getItemFile(card.getImageName()), YDM.activeItemImageSize, (failed) ->
                 {});
                 
                 if(status < 0)
