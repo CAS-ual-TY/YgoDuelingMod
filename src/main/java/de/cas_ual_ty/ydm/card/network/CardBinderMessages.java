@@ -142,11 +142,12 @@ public class CardBinderMessages
         
         public static UpdateList decode(PacketBuffer buf)
         {
-            List<CardHolder> list = new ArrayList<>(buf.readInt());
+            int size = buf.readInt();
+            List<CardHolder> list = new ArrayList<>(size);
             
-            for(int i = 0; i < list.size(); ++i)
+            for(int i = 0; i < size; ++i)
             {
-                list.set(i, new CardHolder(Database.CARDS_LIST.get(buf.readString()), buf.readByte(), Rarity.fromString(buf.readString())));
+                list.add(new CardHolder(Database.CARDS_LIST.get(buf.readString()), buf.readByte(), Rarity.fromString(buf.readString())));
             }
             
             return new UpdateList(list);

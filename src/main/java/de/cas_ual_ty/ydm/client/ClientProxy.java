@@ -111,11 +111,8 @@ public class ClientProxy implements ISidedProxy
                 new ModelResourceLocation(
                     new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory")));
         
-        if(YDM.itemsUseCardImages)
-        {
-            ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
-            event.getModelRegistry().put(key, new CardBakedModel(event.getModelRegistry().get(key)));
-        }
+        ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
+        event.getModelRegistry().put(key, new CardBakedModel(event.getModelRegistry().get(key)));
     }
     
     private void modConfig(final ModConfig.ModConfigEvent event)
