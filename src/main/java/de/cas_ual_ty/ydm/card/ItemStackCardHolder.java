@@ -44,4 +44,11 @@ public class ItemStackCardHolder extends CardHolder
         super.overrideRarity(rarity);
         this.saveToItemStack();
     }
+    
+    @Override
+    public void override(CardHolder cardHolder)
+    {
+        super.override(cardHolder);
+        this.saveToItemStack();
+    }
 }
