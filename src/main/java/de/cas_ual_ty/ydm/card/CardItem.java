@@ -34,6 +34,7 @@ public class CardItem extends Item
         tooltip.add(new StringTextComponent(holder.getCard().getProperties().getName()));
         tooltip.add(new StringTextComponent(holder.getCard().getSetId()));
         tooltip.add(new StringTextComponent(holder.getActiveRarity().name));
+        tooltip.add(new StringTextComponent("Image Variant " + (1 + holder.getActiveImageIndex())));
     }
     
     public CardHolder getCardHolder(ItemStack itemStack)
