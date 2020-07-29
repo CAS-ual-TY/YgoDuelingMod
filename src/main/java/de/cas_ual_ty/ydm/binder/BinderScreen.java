@@ -23,7 +23,7 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
     public BinderScreen(BinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.ySize = 114 + 6 * 18;
+        this.ySize = 114 + CardInventory.DEFAULT_PAGE_ROWS * 18;
     }
     
     @Override
@@ -80,8 +80,8 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
         this.minecraft.getTextureManager().bindTexture(BinderScreen.BINDER_GUI_TEXTURE);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        this.blit(i, j, 0, 0, this.xSize, 6 * 18 + 17);
-        this.blit(i, j + 6 * 18 + 17, 0, 126, this.xSize, 96);
+        this.blit(i, j, 0, 0, this.xSize, CardInventory.DEFAULT_PAGE_ROWS * 18 + 17);
+        this.blit(i, j + CardInventory.DEFAULT_PAGE_ROWS * 18 + 17, 0, 126, this.xSize, 96);
         
         for(CardButton button : this.cardButtons)
         {
