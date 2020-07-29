@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.card;
 
+import java.util.List;
+
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.Database;
@@ -7,6 +9,8 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class CardHolder
 {
@@ -36,6 +40,14 @@ public class CardHolder
     {
         this(null, (byte)-1, (Rarity)null);
         this.readFromJson(json);
+    }
+    
+    public void addInformation(List<ITextComponent> tooltip)
+    {
+        tooltip.add(new StringTextComponent(this.getCard().getProperties().getName()));
+        tooltip.add(new StringTextComponent(this.getCard().getSetId()));
+        tooltip.add(new StringTextComponent(this.getActiveRarity().name));
+        tooltip.add(new StringTextComponent("Image Variant " + (1 + this.getActiveImageIndex())));
     }
     
     public String getImageName()

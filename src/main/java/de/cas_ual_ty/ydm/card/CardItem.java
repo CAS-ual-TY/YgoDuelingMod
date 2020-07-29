@@ -10,7 +10,6 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 public class CardItem extends Item
@@ -31,10 +30,7 @@ public class CardItem extends Item
             return;
         }
         
-        tooltip.add(new StringTextComponent(holder.getCard().getProperties().getName()));
-        tooltip.add(new StringTextComponent(holder.getCard().getSetId()));
-        tooltip.add(new StringTextComponent(holder.getActiveRarity().name));
-        tooltip.add(new StringTextComponent("Image Variant " + (1 + holder.getActiveImageIndex())));
+        holder.addInformation(tooltip);
     }
     
     public CardHolder getCardHolder(ItemStack itemStack)
