@@ -1,24 +1,36 @@
 package de.cas_ual_ty.ydm.binder;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.network.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.client.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class BinderScreen extends ContainerScreen<BinderContainer> implements IHasContainer<BinderContainer>
 {
     private static final ResourceLocation BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
     
     protected CardButton[] cardButtons;
+    
+    protected Button prevButton;
+    protected Button nextButton;
     
     public BinderScreen(BinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -45,6 +57,14 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
                 this.addButton(button);
             }
         }
+        
+        int centerX = this.width / 2;
+        int centerY = this.height / 2;
+        
+        this.prevButton = new Button(centerX + 15, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.prev").getFormattedText(), this::onButtonClicked);
+        this.nextButton = new Button(centerX + 55, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.next").getFormattedText(), this::onButtonClicked);
+        this.addButton(this.prevButton);
+        this.addButton(this.nextButton);
     }
     
     @Override
@@ -53,6 +73,30 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
         this.renderBackground();
         super.render(mouseX, mouseY, partialTicks);
         this.renderHoveredToolTip(mouseX, mouseY);
+        
+        for(CardButton button : this.cardButtons)
+        {
+            if(button.isHovered())
+            {
+                if(button.getCard() != null)
+                {
+                    ClientProxy.renderCardInfo(button.getCard());
+                    
+                    List<ITextComponent> list = new LinkedList<>();
+                    button.getCard().addInformation(list);
+                    
+                    List<String> tooltip = new ArrayList<>(list.size());
+                    for(ITextComponent t : list)
+                    {
+                        tooltip.add(t.getFormattedText());
+                    }
+                    
+                    this.renderTooltip(tooltip, mouseX, mouseY, this.font);
+                }
+                
+                break;
+            }
+        }
     }
     
     @Override
@@ -82,27 +126,32 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
         int j = (this.height - this.ySize) / 2;
         this.blit(i, j, 0, 0, this.xSize, CardInventory.DEFAULT_PAGE_ROWS * 18 + 17);
         this.blit(i, j + CardInventory.DEFAULT_PAGE_ROWS * 18 + 17, 0, 126, this.xSize, 96);
-        
-        for(CardButton button : this.cardButtons)
+    }
+    
+    protected void onButtonClicked(Button button)
+    {
+        if(button == this.prevButton)
         {
-            if(button.isHovered())
-            {
-                if(button.getCard() != null)
-                {
-                    ClientProxy.renderCardInfo(button.getCard());
-                }
-                
-                break;
-            }
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.ChangePage(false));
+        }
+        else if(button == this.nextButton)
+        {
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.ChangePage(true));
         }
     }
     
-    public void onCardClicked(CardButton button, int index)
+    protected void onCardClicked(CardButton button, int index)
     {
-        
+        if(button.getCard() != null)
+        {
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index));
+            
+            ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(button.getCard());
+            YDM.proxy.getClientPlayer().inventory.setItemStack(itemStack);
+        }
     }
     
-    public CardHolder getCard(int index)
+    protected CardHolder getCard(int index)
     {
         return index < this.getContainer().clientList.size() ? this.getContainer().clientList.get(index) : null;
     }

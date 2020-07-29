@@ -117,10 +117,12 @@ public class CardBinderMessages
     // update cards list to client
     public static class UpdateList
     {
+        public int page;
         public List<CardHolder> list;
         
-        public UpdateList(List<CardHolder> list)
+        public UpdateList(int page, List<CardHolder> list)
         {
+            this.page = page;
             this.list = list;
         }
         
@@ -130,8 +132,9 @@ public class CardBinderMessages
         
         public static void encode(UpdateList msg, PacketBuffer buf)
         {
-            buf.writeInt(msg.list.size());
+            buf.writeInt(msg.page);
             
+            buf.writeInt(msg.list.size());
             for(CardHolder cardHolder : msg.list)
             {
                 buf.writeString(cardHolder.getCard().getSetId());
@@ -142,6 +145,8 @@ public class CardBinderMessages
         
         public static UpdateList decode(PacketBuffer buf)
         {
+            int page = buf.readInt();
+            
             int size = buf.readInt();
             List<CardHolder> list = new ArrayList<>(size);
             
@@ -150,7 +155,7 @@ public class CardBinderMessages
                 list.add(new CardHolder(Database.CARDS_LIST.get(buf.readString()), buf.readByte(), Rarity.fromString(buf.readString())));
             }
             
-            return new UpdateList(list);
+            return new UpdateList(page, list);
         }
         
         public static void handle(UpdateList msg, Supplier<NetworkEvent.Context> ctx)
@@ -160,7 +165,7 @@ public class CardBinderMessages
             {
                 CardBinderMessages.doForBinderContainer(YDM.proxy.getClientPlayer(), (container) ->
                 {
-                    container.setClientList(msg.list);
+                    container.setClientList(msg.page, msg.list);
                 });
             });
             

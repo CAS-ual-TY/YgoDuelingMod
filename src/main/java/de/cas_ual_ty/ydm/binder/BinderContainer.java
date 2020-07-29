@@ -102,7 +102,7 @@ public class BinderContainer extends Container
     
     protected void updateListToClient()
     {
-        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CardBinderMessages.UpdateList(this.serverList.getCardsForPage(this.page)));
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CardBinderMessages.UpdateList(this.page, this.serverList.getCardsForPage(this.page)));
     }
     
     protected void updatePagesToClient()
@@ -110,12 +110,14 @@ public class BinderContainer extends Container
         YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CardBinderMessages.UpdatePage(this.page, this.serverList.getPagesAmount()));
     }
     
-    public void setClientList(List<CardHolder> list)
+    public void setClientList(int page, List<CardHolder> list)
     {
         if(!this.loaded)
         {
             this.loaded = true;
         }
+        
+        this.page = page;
         this.clientList = list;
     }
     
@@ -136,7 +138,15 @@ public class BinderContainer extends Container
     
     public void indexClicked(int index)
     {
+        CardHolder card = this.serverList.extractCard(this.page, index);
         
+        if(card != null)
+        {
+            ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(card);
+            this.player.inventory.setItemStack(itemStack);
+        }
+        
+        this.updateListToClient();
     }
     
     public void nextPage()
