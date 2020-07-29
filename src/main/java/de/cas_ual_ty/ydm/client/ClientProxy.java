@@ -93,20 +93,20 @@ public class ClientProxy implements ISidedProxy
                 event.addSprite(card.getItemImageResourceLocation());
             }
         }
-        
-        event.addSprite(new ResourceLocation(YDM.MOD_ID, "item/blanc_card_" + YDM.activeItemImageSize));
     }
     
     private void modelRegistry(ModelRegistryEvent event)
     {
+        ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory"));
         ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory"));
     }
     
     private void modelBake(ModelBakeEvent event)
     {
-        YdmItems.CARD.getRegistryName();
-        
-        YdmItems.CARD_BACK.getRegistryName();
+        event.getModelRegistry().put(new ModelResourceLocation(YdmItems.BLANC_CARD.getRegistryName(), "inventory"),
+            event.getModelRegistry().get(
+                new ModelResourceLocation(
+                    new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory")));
         
         event.getModelRegistry().put(new ModelResourceLocation(YdmItems.CARD_BACK.getRegistryName(), "inventory"),
             event.getModelRegistry().get(

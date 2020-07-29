@@ -9,9 +9,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-public class CardBackItem extends Item
+public class CosmeticItem extends Item
 {
-    public CardBackItem(Properties properties)
+    public CosmeticItem(Properties properties)
     {
         super(properties);
     }
