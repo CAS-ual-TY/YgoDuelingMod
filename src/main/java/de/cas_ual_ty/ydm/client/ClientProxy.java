@@ -21,7 +21,6 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -177,7 +176,6 @@ public class ClientProxy implements ISidedProxy
         
         RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
-        RenderHelper.disableStandardItemLighting();
         RenderSystem.color4f(1F, 1F, 1F, 1F);
         
         RenderSystem.translatef(2, 2, 0);
@@ -210,7 +208,6 @@ public class ClientProxy implements ISidedProxy
             fontRenderer.drawSplitString(string, 0, 139, maxWidth, 0xFFFFFF);
         }
         
-        RenderHelper.enableStandardItemLighting();
         RenderSystem.disableBlend();
         RenderSystem.popMatrix();
     }
