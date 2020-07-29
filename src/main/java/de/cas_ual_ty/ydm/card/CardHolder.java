@@ -80,6 +80,11 @@ public class CardHolder
         return this.getProperties().getInfoImageResourceLocation(this.getActiveImageIndex());
     }
     
+    public ResourceLocation getItemImageResourceLocation()
+    {
+        return this.getProperties().getItemImageResourceLocation(this.getActiveImageIndex());
+    }
+    
     public ResourceLocation getMainImageResourceLocation()
     {
         return this.getProperties().getMainImageResourceLocation(this.getActiveImageIndex());

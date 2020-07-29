@@ -9,7 +9,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.Card;
+import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Quaternion;
@@ -50,18 +50,27 @@ public class FinalCardBakedModel implements IBakedModel
     {
         List<BakedQuad> list = new LinkedList<>();
         
-        ResourceLocation front = null;
         ResourceLocation back = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + YDM.activeItemImageSize);
         
         TextureAtlasSprite spriteBack = this.textureGetter.apply(back);
         
         if(YDM.itemsUseCardImagesActive)
         {
-            Card card = YdmItems.CARD.getCardHolder(this.activeItemStack).getCard();
+            CardHolder card = YdmItems.CARD.getCardHolder(this.activeItemStack);
             
             if(card != null)
             {
-                front = card.getItemImageResourceLocation();
+                ResourceLocation front = null;
+                
+                if(card.getCard() != null)
+                {
+                    front = card.getItemImageResourceLocation();
+                }
+                else
+                {
+                    front = new ResourceLocation(YDM.MOD_ID, "item/blanc_card_" + YDM.activeItemImageSize);
+                }
+                
                 TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
                 
                 float distance = 0.002F;

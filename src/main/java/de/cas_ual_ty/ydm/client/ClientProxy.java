@@ -93,6 +93,8 @@ public class ClientProxy implements ISidedProxy
                 event.addSprite(card.getItemImageResourceLocation());
             }
         }
+        
+        event.addSprite(new ResourceLocation(YDM.MOD_ID, "item/blanc_card_" + YDM.activeItemImageSize));
     }
     
     private void modelRegistry(ModelRegistryEvent event)
