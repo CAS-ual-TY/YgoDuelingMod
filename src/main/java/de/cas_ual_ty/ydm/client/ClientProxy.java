@@ -175,7 +175,7 @@ public class ClientProxy implements ISidedProxy
         int maxWidth = 200;
         
         RenderSystem.pushMatrix();
-        RenderSystem.enableBlend();
+        //        RenderSystem.enableBlend();
         RenderSystem.color4f(1F, 1F, 1F, 1F);
         
         RenderSystem.translatef(2, 2, 0);
@@ -208,7 +208,7 @@ public class ClientProxy implements ISidedProxy
             fontRenderer.drawSplitString(string, 0, 139, maxWidth, 0xFFFFFF);
         }
         
-        RenderSystem.disableBlend();
+        //        RenderSystem.disableBlend();
         RenderSystem.popMatrix();
     }
     
