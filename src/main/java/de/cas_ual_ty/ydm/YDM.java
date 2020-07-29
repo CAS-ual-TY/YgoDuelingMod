@@ -50,10 +50,12 @@ public class YDM
     public static File rawImagesFolder;
     public static File cardInfoImagesFolder;
     public static File cardItemImagesFolder;
+    public static File cardMainImagesFolder;
     public static File bindersFolder;
     
     public static int activeInfoImageSize;
     public static int activeItemImageSize;
+    public static int activeMainImageSize;
     public static boolean keepCachedImages;
     public static boolean itemsUseCardImages;
     public static String dbSourceUrl;
@@ -135,6 +137,7 @@ public class YDM
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
         YDM.cardInfoImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeInfoImageSize);
         YDM.cardItemImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeItemImageSize);
+        YDM.cardMainImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeMainImageSize);
         
         YDM.bindersFolder = new File("ydm_binders");
         

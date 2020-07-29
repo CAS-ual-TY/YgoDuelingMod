@@ -13,6 +13,7 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
@@ -26,19 +27,132 @@ import de.cas_ual_ty.ydm.util.YdmIOUtil;
 
 public class ImageHandler
 {
-    public static final String IN_PROGRESS_IMAGE = "card_back";
-    public static final String FAILED_IMAGE = "blanc_card";
+    private static final String IN_PROGRESS_IMAGE = "card_back";
+    private static final String FAILED_IMAGE = "blanc_card";
     
-    public static final String INFO_SUFFIX = "_info";
-    public static final String ITEM_SUFFIX = "_item";
+    private static final String INFO_SUFFIX = "_info";
+    private static final String ITEM_SUFFIX = "_item";
+    private static final String MAIN_SUFFIX = "_main";
     
-    private static DNCList<String, String> FINAL_IMAGE_READY_LIST = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
-    private static List<String> IN_PROGRESS = new LinkedList<>();
-    private static List<String> FAILED = new LinkedList<>();
+    private static final ImageHandler INFO_IMAGE_HANDLER = new ImageHandler(YDM.activeInfoImageSize, YDM.cardInfoImagesFolder, (p, i) -> p.getInfoImageName(i));
+    private static final ImageHandler MAIN_IMAGE_HANDLER = new ImageHandler(YDM.activeMainImageSize, YDM.cardMainImagesFolder, (p, i) -> p.getMainImageName(i));
+    
+    private DNCList<String, String> FINAL_IMAGE_READY_LIST = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
+    private List<String> IN_PROGRESS = new LinkedList<>();
+    private List<String> FAILED = new LinkedList<>();
+    
+    private int imageSize;
+    private File parentFolder;
+    private BiFunction<Properties, Byte, String> nameGetter;
+    
+    private ImageHandler(int imageSize, File parentFolder, BiFunction<Properties, Byte, String> nameGetter)
+    {
+        this.imageSize = imageSize;
+        this.parentFolder = parentFolder;
+        this.nameGetter = nameGetter;
+    }
+    
+    private String getReplacementImage(Properties properties, byte imageIndex)
+    {
+        //        String imageName = properties.getImageName(imageIndex);
+        String imageName = this.nameGetter.apply(properties, imageIndex);
+        
+        int index = this.FINAL_IMAGE_READY_LIST.getIndex(imageName);
+        
+        if(index == -1)
+        {
+            if(!this.isImageInProgress(imageName))
+            {
+                // not finished, not in progress
+                
+                if(this.getFile(imageName).exists())
+                {
+                    // image exists, so set ready and return
+                    this.setImageFinished(imageName, false);
+                    return imageName;
+                }
+                else if(this.isImageFailed(imageName))
+                {
+                    // image does not exist, check if failed already and return replacement
+                    return ImageHandler.FAILED_IMAGE + "_" + this.imageSize;
+                }
+                else
+                {
+                    // image does not exist and has not been tried, so make it ready and return replacement
+                    this.makeImageReady(imageName, properties, imageIndex);
+                    return ImageHandler.IN_PROGRESS_IMAGE + "_" + this.imageSize;
+                }
+            }
+            else
+            {
+                // in progress
+                return ImageHandler.IN_PROGRESS_IMAGE + "_" + this.imageSize;
+            }
+        }
+        else
+        {
+            // finished
+            return imageName;
+        }
+    }
+    
+    private File getFile(String imageName)
+    {
+        return new File(this.parentFolder, ImageHandler.cutSuffix(imageName) + ".png");
+    }
+    
+    private boolean isImageInProgress(String imageName)
+    {
+        return this.IN_PROGRESS.contains(imageName);
+    }
+    
+    private boolean isImageFailed(String imageName)
+    {
+        return this.FAILED.contains(imageName);
+    }
+    
+    private void setImageInProgress(String imageName)
+    {
+        synchronized(this.IN_PROGRESS)
+        {
+            this.IN_PROGRESS.add(imageName);
+        }
+    }
+    
+    private void setImageFinished(String imageName, boolean failed)
+    {
+        synchronized(this.IN_PROGRESS)
+        {
+            this.IN_PROGRESS.remove(imageName);
+        }
+        
+        if(!failed)
+        {
+            synchronized(this.FINAL_IMAGE_READY_LIST)
+            {
+                this.FINAL_IMAGE_READY_LIST.addKeepSorted(imageName);
+            }
+        }
+        else
+        {
+            synchronized(this.FAILED)
+            {
+                this.FAILED.add(imageName);
+            }
+        }
+    }
+    
+    // true = info; false = main
+    private void makeImageReady(String imageName, Properties properties, byte imageIndex)
+    {
+        this.setImageInProgress(imageName);
+        Thread t = new Thread(new GuiImageWizard(properties, imageIndex, this.imageSize, this.getFile(imageName), (failed) -> this.setImageFinished(imageName, failed)), "YDM Image Downloader");
+        t.start();
+    }
     
     public static String cutSuffix(String imageName)
     {
-        if(ImageHandler.hasInfoSuffix(imageName) || ImageHandler.hasItemSuffix(imageName))
+        if(ImageHandler.hasInfoSuffix(imageName) || ImageHandler.hasItemSuffix(imageName) || ImageHandler.hasMainSuffix(imageName))
         {
             imageName = imageName.substring(0, imageName.length() - 5);
         }
@@ -56,6 +170,11 @@ public class ImageHandler
         return imageName + ImageHandler.ITEM_SUFFIX;
     }
     
+    public static String addMainSuffix(String imageName)
+    {
+        return imageName + ImageHandler.MAIN_SUFFIX;
+    }
+    
     public static boolean hasInfoSuffix(String imageName)
     {
         return imageName.endsWith(ImageHandler.INFO_SUFFIX);
@@ -66,100 +185,19 @@ public class ImageHandler
         return imageName.endsWith(ImageHandler.ITEM_SUFFIX);
     }
     
+    public static boolean hasMainSuffix(String imageName)
+    {
+        return imageName.endsWith(ImageHandler.MAIN_SUFFIX);
+    }
+    
     public static String getInfoReplacementImage(Properties properties, byte imageIndex)
     {
-        String imageName = properties.getInfoImageName(imageIndex);
-        
-        int index = ImageHandler.FINAL_IMAGE_READY_LIST.getIndex(imageName);
-        
-        if(index == -1)
-        {
-            if(!ImageHandler.isInfoImageInProgress(imageName))
-            {
-                // not finished, not in progress
-                
-                if(ImageHandler.getInfoFile(imageName).exists())
-                {
-                    // image exists, so set ready and return
-                    ImageHandler.setFinished(imageName, false);
-                    return imageName;
-                }
-                else if(ImageHandler.isInfoImageFailed(imageName))
-                {
-                    // image does not exist, check if failed already and return replacement
-                    return ImageHandler.FAILED_IMAGE + "_" + YDM.activeInfoImageSize;
-                }
-                else
-                {
-                    // image does not exist and has not been tried, so make it ready and return replacement
-                    ImageHandler.makeInfoImageReady(properties, imageIndex);
-                    return ImageHandler.IN_PROGRESS_IMAGE + "_" + YDM.activeInfoImageSize;
-                }
-            }
-            else
-            {
-                // in progress
-                return ImageHandler.IN_PROGRESS_IMAGE + "_" + YDM.activeInfoImageSize;
-            }
-        }
-        else
-        {
-            // finished
-            return imageName;
-        }
+        return ImageHandler.INFO_IMAGE_HANDLER.getReplacementImage(properties, imageIndex);
     }
     
-    public static boolean isInfoImageReady(String imageName)
+    public static String getMainReplacementImage(Properties properties, byte imageIndex)
     {
-        return ImageHandler.FINAL_IMAGE_READY_LIST.contains(imageName);
-    }
-    
-    private static boolean isInfoImageInProgress(String imageName)
-    {
-        return ImageHandler.IN_PROGRESS.contains(imageName);
-    }
-    
-    private static boolean isInfoImageFailed(String imageName)
-    {
-        return ImageHandler.FAILED.contains(imageName);
-    }
-    
-    private static void setInfoImageInProgress(String imageName)
-    {
-        synchronized(ImageHandler.IN_PROGRESS)
-        {
-            ImageHandler.IN_PROGRESS.add(imageName);
-        }
-    }
-    
-    private static void setFinished(String imageName, boolean failed)
-    {
-        synchronized(ImageHandler.IN_PROGRESS)
-        {
-            ImageHandler.IN_PROGRESS.remove(imageName);
-        }
-        
-        if(!failed)
-        {
-            synchronized(ImageHandler.FINAL_IMAGE_READY_LIST)
-            {
-                ImageHandler.FINAL_IMAGE_READY_LIST.addKeepSorted(imageName);
-            }
-        }
-        else
-        {
-            synchronized(ImageHandler.FAILED)
-            {
-                ImageHandler.FAILED.add(imageName);
-            }
-        }
-    }
-    
-    private static void makeInfoImageReady(Properties properties, byte imageIndex)
-    {
-        ImageHandler.setInfoImageInProgress(properties.getInfoImageName(imageIndex));
-        Thread t = new Thread(new InfoImageWizard(properties, imageIndex), "YDM Image Downloader");
-        t.start();
+        return ImageHandler.MAIN_IMAGE_HANDLER.getReplacementImage(properties, imageIndex);
     }
     
     private static void downloadRawImage(String imageUrl, File rawImageFile) throws MalformedURLException, IOException
@@ -210,7 +248,7 @@ public class ImageHandler
         in.close();
     }
     
-    private static File getRawFile(String imageName)
+    public static File getRawFile(String imageName)
     {
         return new File(YDM.rawImagesFolder, imageName + ".jpg");
     }
@@ -219,23 +257,32 @@ public class ImageHandler
     {
         if(ImageHandler.hasItemSuffix(imageName))
         {
-            return new File(YDM.cardItemImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
+            return ImageHandler.getItemFile(ImageHandler.cutSuffix(imageName));
+        }
+        else if(ImageHandler.hasInfoSuffix(imageName))
+        {
+            return ImageHandler.getInfoFile(ImageHandler.cutSuffix(imageName));
         }
         else
         {
-            // need to return something, so by default we pick the info images
-            return new File(YDM.cardInfoImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
+            // need to return something, so by default we pick the main images
+            return ImageHandler.getMainFile(ImageHandler.cutSuffix(imageName));
         }
     }
     
     public static File getInfoFile(String imageName)
     {
-        return new File(YDM.cardInfoImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
+        return new File(YDM.cardInfoImagesFolder, imageName + ".png");
     }
     
     public static File getItemFile(String imageName)
     {
-        return new File(YDM.cardItemImagesFolder, ImageHandler.cutSuffix(imageName) + ".png");
+        return new File(YDM.cardItemImagesFolder, imageName + ".png");
+    }
+    
+    public static File getMainFile(String imageName)
+    {
+        return new File(YDM.cardMainImagesFolder, imageName + ".png");
     }
     
     public static boolean areAllItemImagesReady()
@@ -332,21 +379,32 @@ public class ImageHandler
         return ret;
     }
     
-    private static class InfoImageWizard implements Runnable
+    private static class GuiImageWizard implements Runnable
     {
         private final Properties properties;
         private final byte imageIndex;
+        private final int size;
+        private final File file;
+        private final Consumer<Boolean> callback;
         
-        public InfoImageWizard(Properties properties, byte imageIndex)
+        private GuiImageWizard(Properties properties, byte imageIndex, int size, File file, Consumer<Boolean> callback)
         {
             this.properties = properties;
             this.imageIndex = imageIndex;
+            this.size = size;
+            this.file = file;
+            this.callback = callback;
         }
         
         @Override
         public void run()
         {
-            ImageHandler.imagePipeline(this.properties.getImageName(this.imageIndex), this.properties.getImageURL(this.imageIndex), ImageHandler.getInfoFile(this.properties.getImageName(this.imageIndex)), YDM.activeInfoImageSize, (failed) -> ImageHandler.setFinished(InfoImageWizard.this.properties.getInfoImageName(this.imageIndex), failed));
+            ImageHandler.imagePipeline(
+                this.properties.getImageName(this.imageIndex),
+                this.properties.getImageURL(this.imageIndex),
+                this.file,
+                this.size,
+                this.callback);
         }
     }
     
@@ -355,7 +413,7 @@ public class ImageHandler
         private Iterable<Card> list;
         private int size;
         
-        public ItemImagesWizard(Iterable<Card> list, int size)
+        private ItemImagesWizard(Iterable<Card> list, int size)
         {
             this.list = list;
             this.size = size;

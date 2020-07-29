@@ -108,14 +108,24 @@ public class Properties
         return this.getId() + "_" + imageIndex;
     }
     
+    public String getInfoImageName(byte imageIndex)
+    {
+        return ImageHandler.addInfoSuffix(this.getImageName(imageIndex));
+    }
+    
     public String getItemImageName(byte imageIndex)
     {
         return ImageHandler.addItemSuffix(this.getImageName(imageIndex));
     }
     
-    public String getInfoImageName(byte imageIndex)
+    public String getMainImageName(byte imageIndex)
     {
-        return ImageHandler.addInfoSuffix(this.getImageName(imageIndex));
+        return ImageHandler.addMainSuffix(this.getImageName(imageIndex));
+    }
+    
+    public ResourceLocation getInfoImageResourceLocation(byte imageIndex)
+    {
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ImageHandler.getInfoReplacementImage(this, imageIndex) + ".png");
     }
     
     public ResourceLocation getItemImageResourceLocation(byte imageIndex)
@@ -123,9 +133,9 @@ public class Properties
         return new ResourceLocation(YDM.MOD_ID, "item/" + this.getItemImageName(imageIndex));
     }
     
-    public ResourceLocation getInfoImageResourceLocation(byte imageIndex)
+    public ResourceLocation getMainImageResourceLocation(byte imageIndex)
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ImageHandler.getInfoReplacementImage(this, imageIndex) + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ImageHandler.getMainReplacementImage(this, imageIndex) + ".png");
     }
     
     public void addInformation(List<ITextComponent> list)

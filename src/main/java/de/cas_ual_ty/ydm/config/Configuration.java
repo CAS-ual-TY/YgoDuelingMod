@@ -29,6 +29,7 @@ public class Configuration
     {
         YDM.activeInfoImageSize = YdmUtil.toPow2ConfigValue(Configuration.CLIENT.activeInfoImageSize.get(), 4);
         YDM.activeItemImageSize = YdmUtil.toPow2ConfigValue(Configuration.CLIENT.activeItemImageSize.get(), 4);
+        YDM.activeMainImageSize = YdmUtil.toPow2ConfigValue(Configuration.CLIENT.activeMainImageSize.get(), 4);
         YDM.keepCachedImages = Configuration.CLIENT.keepCachedImages.get();
         YDM.itemsUseCardImages = Configuration.CLIENT.itemsUseCardImages.get();
         YDM.dbSourceUrl = Configuration.CLIENT.dbSourceUrl.get();

@@ -55,6 +55,11 @@ public class CardHolder
         return this.getProperties().getItemImageName(this.getActiveImageIndex());
     }
     
+    public String getMainImageName()
+    {
+        return this.getProperties().getMainImageName(this.getActiveImageIndex());
+    }
+    
     public String getImageURL()
     {
         return this.getProperties().getImageURL(this.getActiveImageIndex());
@@ -63,6 +68,11 @@ public class CardHolder
     public ResourceLocation getInfoImageResourceLocation()
     {
         return this.getProperties().getInfoImageResourceLocation(this.getActiveImageIndex());
+    }
+    
+    public ResourceLocation getMainImageResourceLocation()
+    {
+        return this.getProperties().getMainImageResourceLocation(this.getActiveImageIndex());
     }
     
     public void override(CardHolder cardHolder)
