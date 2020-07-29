@@ -4,10 +4,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.cardinventory.CardInventory;
+import de.cas_ual_ty.ydm.client.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -16,6 +17,8 @@ import net.minecraft.util.text.TranslationTextComponent;
 public class BinderScreen extends ContainerScreen<BinderContainer> implements IHasContainer<BinderContainer>
 {
     private static final ResourceLocation BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
+    
+    protected CardButton[] cardButtons;
     
     public BinderScreen(BinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -28,14 +31,17 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
     {
         super.init(mc, mouseX, mouseY);
         
-        Button button;
+        int index;
+        CardButton button;
+        this.cardButtons = new CardButton[CardInventory.DEFAULT_CARDS_PER_PAGE];
         
-        for(int y = 0; y < 6; ++y)
+        for(int y = 0; y < CardInventory.DEFAULT_PAGE_ROWS; ++y)
         {
-            for(int x = 0; x < 9; ++x)
+            for(int x = 0; x < CardInventory.DEFAULT_PAGE_COLUMNS; ++x)
             {
-                button = new CardButton(this.guiLeft + 7 + x * 18, this.guiTop + 17 + y * 18, 18, 18, x + y * 9, (b) ->
-                {}, this::getCard);
+                index = x + y * 9;
+                button = new CardButton(this.guiLeft + 7 + x * 18, this.guiTop + 17 + y * 18, 18, 18, index, this::onCardClicked, this::getCard);
+                this.cardButtons[index] = button;
                 this.addButton(button);
             }
         }
@@ -76,6 +82,24 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
         int j = (this.height - this.ySize) / 2;
         this.blit(i, j, 0, 0, this.xSize, 6 * 18 + 17);
         this.blit(i, j + 6 * 18 + 17, 0, 126, this.xSize, 96);
+        
+        for(CardButton button : this.cardButtons)
+        {
+            if(button.isHovered())
+            {
+                if(button.getCard() != null)
+                {
+                    ClientProxy.renderCardInfo(button.getCard());
+                }
+                
+                break;
+            }
+        }
+    }
+    
+    public void onCardClicked(CardButton button, int index)
+    {
+        
     }
     
     public CardHolder getCard(int index)

@@ -1,43 +1,68 @@
 package de.cas_ual_ty.ydm.binder;
 
+import java.util.function.BiConsumer;
 import java.util.function.Function;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.widget.button.AbstractButton;
 
-public class CardButton extends Button
+public class CardButton extends AbstractButton
 {
     public final int index;
-    public Function<Integer, CardHolder> cardHolder;
+    private Function<Integer, CardHolder> cardHolder;
+    private BiConsumer<CardButton, Integer> onPress;
     
-    public CardButton(int posX, int posY, int width, int height, int index, IPressable onPress, Function<Integer, CardHolder> cardHolder)
+    public CardButton(int posX, int posY, int width, int height, int index, BiConsumer<CardButton, Integer> onPress, Function<Integer, CardHolder> cardHolder)
     {
-        super(posX, posY, width, height, "", onPress);
+        super(posX, posY, width, height, "");
         this.index = index;
         this.cardHolder = cardHolder;
+        this.onPress = onPress;
     }
     
     @Override
     public void renderButton(int mouseX, int mouseY, float partialTick)
     {
-        CardHolder card = this.cardHolder.apply(this.index);
+        CardHolder card = this.getCard();
         if(card != null)
         {
             Minecraft minecraft = Minecraft.getInstance();
             minecraft.getTextureManager().bindTexture(card.getMainImageResourceLocation());
             //blit(int x, int y, int desiredWidth, int desiredHeight, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight);
             AbstractGui.blit(this.x + 1, this.y + 1, 16, 16, 0, 0, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize);
-            this.renderBg(minecraft, mouseX, mouseY);
+            
+            if(this.isHovered())
+            {
+                this.drawHover();
+            }
         }
     }
     
-    @Override
-    protected void renderBg(Minecraft p_renderBg_1_, int p_renderBg_2_, int p_renderBg_3_)
+    protected void drawHover()
     {
-        super.renderBg(p_renderBg_1_, p_renderBg_2_, p_renderBg_3_);
+        RenderSystem.disableDepthTest();
+        int x = this.x + 1;
+        int y = this.y + 1;
+        RenderSystem.colorMask(true, true, true, false);
+        int slotColor = -2130706433; // From ContainerScreen::slotColor
+        this.fillGradient(x, y, x + 16, y + 16, slotColor, slotColor);
+        RenderSystem.colorMask(true, true, true, true);
+        RenderSystem.enableDepthTest();
     }
     
+    @Override
+    public void onPress()
+    {
+        this.onPress.accept(this, this.index);
+    }
+    
+    public CardHolder getCard()
+    {
+        return this.cardHolder.apply(this.index);
+    }
 }

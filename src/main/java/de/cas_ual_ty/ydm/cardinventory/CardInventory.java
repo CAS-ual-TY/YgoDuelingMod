@@ -8,7 +8,9 @@ import de.cas_ual_ty.ydm.util.YdmUtil;
 
 public class CardInventory implements ICardInventory
 {
-    public static final int DEFAULT_CARDS_PER_PAGE = 6 * 9;
+    public static final int DEFAULT_PAGE_ROWS = 6;
+    public static final int DEFAULT_PAGE_COLUMNS = 9;
+    public static final int DEFAULT_CARDS_PER_PAGE = CardInventory.DEFAULT_PAGE_ROWS * CardInventory.DEFAULT_PAGE_COLUMNS;
     
     protected List<CardHolder> list;
     protected List<CardHolder> activeList;
