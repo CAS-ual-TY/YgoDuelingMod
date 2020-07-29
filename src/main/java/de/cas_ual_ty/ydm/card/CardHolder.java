@@ -28,16 +28,14 @@ public class CardHolder
     
     public CardHolder(CompoundNBT nbt)
     {
+        this(null, (byte)-1, (Rarity)null);
         this.readCardHolderFromNBT(nbt);
     }
     
     public CardHolder(JsonObject json)
     {
+        this(null, (byte)-1, (Rarity)null);
         this.readFromJson(json);
-    }
-    
-    protected CardHolder()
-    {
     }
     
     public String getImageName()
@@ -140,8 +138,16 @@ public class CardHolder
     public void readCardHolderFromNBT(CompoundNBT nbt)
     {
         this.setCard(Database.CARDS_LIST.get(nbt.getString(JsonKeys.SET_ID)));
-        this.overrideImageIndex(nbt.getByte(JsonKeys.IMAGE_INDEX));
-        this.overrideRarity(Rarity.fromString(nbt.getString(JsonKeys.RARITY)));
+        
+        if(nbt.contains(JsonKeys.IMAGE_INDEX))
+        {
+            this.overrideImageIndex(nbt.getByte(JsonKeys.IMAGE_INDEX));
+        }
+        
+        if(nbt.contains(JsonKeys.RARITY))
+        {
+            this.overrideRarity(Rarity.fromString(nbt.getString(JsonKeys.RARITY)));
+        }
     }
     
     public void writeCardHolderToNBT(CompoundNBT nbt)
@@ -151,23 +157,30 @@ public class CardHolder
             nbt.putString(JsonKeys.SET_ID, this.getCard().getSetId());
         }
         
-        nbt.putByte(JsonKeys.IMAGE_INDEX, this.getOverriddenImageIndex());
+        if(this.isImageIndexOverridden())
+        {
+            nbt.putByte(JsonKeys.IMAGE_INDEX, this.getOverriddenImageIndex());
+        }
         
         if(this.isRarityOverridden())
         {
             nbt.putString(JsonKeys.RARITY, this.getOverriddenRarity().name);
-        }
-        else
-        {
-            nbt.putString(JsonKeys.RARITY, "");
         }
     }
     
     public void readFromJson(JsonObject json)
     {
         this.setCard(Database.CARDS_LIST.get(json.get(JsonKeys.SET_ID).getAsString()));
-        this.overrideImageIndex(json.get(JsonKeys.IMAGE_INDEX).getAsByte());
-        this.overrideRarity(Rarity.fromString(json.get(JsonKeys.RARITY).getAsString()));
+        
+        if(json.has(JsonKeys.IMAGE_INDEX))
+        {
+            this.overrideImageIndex(json.get(JsonKeys.IMAGE_INDEX).getAsByte());
+        }
+        
+        if(json.has(JsonKeys.RARITY))
+        {
+            this.overrideRarity(Rarity.fromString(json.get(JsonKeys.RARITY).getAsString()));
+        }
     }
     
     public void writeToJson(JsonObject json)
@@ -177,15 +190,14 @@ public class CardHolder
             json.addProperty(JsonKeys.SET_ID, this.getCard().getSetId());
         }
         
-        json.addProperty(JsonKeys.IMAGE_INDEX, this.getOverriddenImageIndex());
+        if(this.isImageIndexOverridden())
+        {
+            json.addProperty(JsonKeys.IMAGE_INDEX, this.getOverriddenImageIndex());
+        }
         
         if(this.isRarityOverridden())
         {
             json.addProperty(JsonKeys.RARITY, this.getOverriddenRarity().name);
-        }
-        else
-        {
-            json.addProperty(JsonKeys.RARITY, "");
         }
     }
     

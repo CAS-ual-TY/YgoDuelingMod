@@ -9,6 +9,7 @@ public class ItemStackCardHolder extends CardHolder
     
     public ItemStackCardHolder(ItemStack itemStack)
     {
+        super(null, (byte)-1, (Rarity)null);
         this.itemStack = itemStack;
         this.readCardHolderFromNBT(this.getNBT());
     }
