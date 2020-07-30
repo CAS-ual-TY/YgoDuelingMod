@@ -13,6 +13,8 @@ import de.cas_ual_ty.ydm.cardinventory.JsonCardInventoryManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
@@ -31,6 +33,10 @@ public class BinderContainer extends Container
     
     protected boolean loaded;
     protected int page;
+    
+    protected Slot insertionSlot;
+    
+    protected IInventory containerInv;
     
     public BinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
@@ -51,6 +57,33 @@ public class BinderContainer extends Container
         
         Slot s;
         
+        this.containerInv = new Inventory(1);
+        this.addSlot(this.insertionSlot = new Slot(this.containerInv, 0, 179, 18)
+        {
+            @Override
+            public boolean isItemValid(ItemStack stack)
+            {
+                return stack.getItem() == YdmItems.CARD;
+            }
+            
+            @Override
+            public void putStack(ItemStack stack)
+            {
+                if(BinderContainer.this.serverList != null)
+                {
+                    BinderContainer.this.serverList.addCard(YdmItems.CARD.getCardHolder(stack));
+                    
+                    int maxPage = BinderContainer.this.serverList.getPagesAmount();
+                    BinderContainer.this.updatePagesToClient();
+                    
+                    if(BinderContainer.this.page == maxPage)
+                    {
+                        BinderContainer.this.updateListToClient();
+                    }
+                }
+            }
+        });
+        
         // player inventory
         for(int y = 0; y < 3; ++y)
         {
@@ -60,7 +93,7 @@ public class BinderContainer extends Container
                 
                 if(s.getStack() == itemStack)
                 {
-                    s = new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 139 + y * 18)
+                    s = new Slot(playerInventory, s.slotNumber, s.xPos, s.yPos)
                     {
                         @Override
                         public boolean canTakeStack(PlayerEntity playerIn)
@@ -81,7 +114,7 @@ public class BinderContainer extends Container
             
             if(s.getStack() == itemStack)
             {
-                s = new Slot(playerInventory, x, 8 + x * 18, 197)
+                s = new Slot(playerInventory, s.slotNumber, s.xPos, s.yPos)
                 {
                     @Override
                     public boolean canTakeStack(PlayerEntity playerIn)

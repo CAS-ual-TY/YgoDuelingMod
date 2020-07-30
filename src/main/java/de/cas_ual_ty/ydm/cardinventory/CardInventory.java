@@ -78,7 +78,7 @@ public class CardInventory implements ICardInventory
         int min = this.cardsPerPage() * (page - 1);
         int max = Math.min(this.cardsPerPage() + min, this.list.size());
         
-        return this.activeList.subList(min, max);
+        return this.list.subList(min, max);
     }
     
     @Override
@@ -115,5 +115,11 @@ public class CardInventory implements ICardInventory
         {
             this.activeList.addAll(this.list);
         }
+    }
+    
+    @Override
+    public int totalCardsSize()
+    {
+        return this.list.size();
     }
 }

@@ -15,4 +15,6 @@ public interface ICardInventory
     public CardHolder extractCard(int page, int index);
     
     public void updateCardsList(String search);
+    
+    public int totalCardsSize();
 }
