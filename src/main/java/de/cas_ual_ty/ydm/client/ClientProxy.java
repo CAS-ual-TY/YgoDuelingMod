@@ -125,6 +125,7 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
+    @SuppressWarnings("resource")
     private void renderGameOverlay(TickEvent.RenderTickEvent event)
     {
         if(event.type != TickEvent.Type.RENDER || event.phase != TickEvent.Phase.END)
@@ -169,6 +170,7 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
+    @SuppressWarnings("resource")
     public static void renderCardInfo(CardHolder card)
     {
         float f = 0.5f;
@@ -214,6 +216,7 @@ public class ClientProxy implements ISidedProxy
         RenderSystem.popMatrix();
     }
     
+    @SuppressWarnings("resource")
     @Override
     public PlayerEntity getClientPlayer()
     {
