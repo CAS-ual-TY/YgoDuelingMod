@@ -26,7 +26,10 @@ import net.minecraftforge.fml.network.PacketDistributor;
 public class BinderScreen extends ContainerScreen<BinderContainer> implements IHasContainer<BinderContainer>
 {
     private static final ResourceLocation BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
-    private static final int LEFT_SHIFT = 340; // https://www.glfw.org/docs/latest/group__keys.html
+    
+    // https://www.glfw.org/docs/latest/group__keys.html
+    private static final int LEFT_SHIFT = 340;
+    private static final int Q = 81;
     
     protected CardButton[] cardButtons;
     
@@ -170,6 +173,18 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
         {
             this.shiftDown = true;
         }
+        else if(keyCode == BinderScreen.Q)
+        {
+            for(CardButton button : this.cardButtons)
+            {
+                if(button.isHovered() && button.getCard() != null)
+                {
+                    YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexDropped(button.index));
+                    break;
+                }
+            }
+        }
+        
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
     

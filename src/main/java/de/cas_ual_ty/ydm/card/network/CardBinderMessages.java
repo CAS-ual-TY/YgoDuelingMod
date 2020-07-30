@@ -214,4 +214,42 @@ public class CardBinderMessages
             context.setPacketHandled(true);
         }
     }
+    
+    public static class IndexDropped
+    {
+        public int index;
+        
+        public IndexDropped(int index)
+        {
+            this.index = index;
+        }
+        
+        public IndexDropped()
+        {
+        }
+        
+        public static void encode(IndexDropped msg, PacketBuffer buf)
+        {
+            buf.writeInt(msg.index);
+        }
+        
+        public static IndexDropped decode(PacketBuffer buf)
+        {
+            return new IndexDropped(buf.readInt());
+        }
+        
+        public static void handle(IndexDropped msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->
+                {
+                    container.indexDropped(msg.index);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
 }

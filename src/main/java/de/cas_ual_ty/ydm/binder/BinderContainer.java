@@ -171,11 +171,25 @@ public class BinderContainer extends Container
         this.player.inventory.setItemStack(itemStack);
     }
     
-    public void indexClicked(int index, boolean shiftDown)
+    protected CardHolder extractCard(int index)
     {
         int maxPage = BinderContainer.this.serverList.getPagesAmount();
         
         CardHolder card = this.serverList.extractCard(this.page, index);
+        
+        this.updateListToClient();
+        
+        if(maxPage != this.serverList.getPagesAmount())
+        {
+            this.updatePagesToClient();
+        }
+        
+        return card;
+    }
+    
+    public void indexClicked(int index, boolean shiftDown)
+    {
+        CardHolder card = this.extractCard(index);
         
         if(card != null)
         {
@@ -190,12 +204,16 @@ public class BinderContainer extends Container
                 this.player.inventory.setItemStack(itemStack);
             }
         }
+    }
+    
+    public void indexDropped(int index)
+    {
+        CardHolder card = this.extractCard(index);
         
-        this.updateListToClient();
-        
-        if(maxPage != this.serverList.getPagesAmount())
+        if(card != null)
         {
-            this.updatePagesToClient();
+            ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(card);
+            this.player.dropItem(itemStack, false);
         }
     }
     
