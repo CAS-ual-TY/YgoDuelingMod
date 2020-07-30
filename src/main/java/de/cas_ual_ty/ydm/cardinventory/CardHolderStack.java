@@ -58,8 +58,8 @@ public class CardHolderStack
     
     public static int compareCardHolders(CardHolder h1, CardHolder h2)
     {
-        // Compare set id
-        int comp = h1.getCard().getSetId().compareTo(h2.getCard().getSetId());
+        // Compare card name
+        int comp = h1.getCard().getProperties().getName().compareTo(h2.getCard().getProperties().getName());
         
         if(comp != 0)
         {
