@@ -18,6 +18,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.LazyOptional;
 
 public class CardBinderItem extends Item implements INamedContainerProvider
 {
@@ -36,12 +37,24 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         
-        if(stack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY).isPresent())
+        LazyOptional<BinderCardInventoryManager> l = stack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY);
+        
+        if(l.isPresent())
         {
+            BinderCardInventoryManager m = l.orElse(null);
+            
             if(YDM.showBinderId)
             {
                 tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".uuid"));
-                tooltip.add(new StringTextComponent(this.getInventoryManager(stack).getUUID().toString()));
+                
+                if(m.getUUID() != null)
+                {
+                    tooltip.add(new StringTextComponent(m.getUUID().toString()));
+                }
+                else
+                {
+                    tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".uuid.empty"));
+                }
             }
         }
         else

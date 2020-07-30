@@ -21,6 +21,7 @@ public class BinderCardInventoryManager extends UUIDCardInventoryManager
     @Override
     protected File getFile()
     {
+        this.generateUUIDIfNull();
         return BinderCardInventoryManager.getBinderFile(this.getUUID());
     }
     

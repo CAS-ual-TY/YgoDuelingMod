@@ -9,6 +9,7 @@
     "item.ydm.card_back.desc": "Just a cosmetic Item!",
     "item.ydm.card_binder": "Card Binder",
     "item.ydm.card_binder.uuid": "Unique Identifier (UUID):",
+    "item.ydm.card_binder.uuid.empty": "- Open to generate UUID -",
     "container.ydm.card_binder": "Card Binder",
     "container.ydm.card_binder.loading": "[Loading...]",
     "container.ydm.card_binder.prev": "Prev",

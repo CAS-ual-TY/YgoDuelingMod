@@ -17,12 +17,15 @@ public abstract class UUIDCardInventoryManager extends JsonCardInventoryManager
     
     public UUID getUUID()
     {
+        return this.uuid;
+    }
+    
+    public void generateUUIDIfNull()
+    {
         if(this.uuid == null)
         {
             this.uuid = YdmUtil.createRandomUUID();
         }
-        
-        return this.uuid;
     }
     
     @Override
@@ -34,6 +37,7 @@ public abstract class UUIDCardInventoryManager extends JsonCardInventoryManager
     @Override
     public void writeToNBT(CompoundNBT nbt)
     {
+        this.generateUUIDIfNull();
         nbt.putUniqueId(JsonKeys.UUID, this.getUUID());
     }
 }
