@@ -66,6 +66,14 @@ public class CardHolderStack
             return comp;
         }
         
+        // Compare set id
+        comp = h1.getCard().getSetId().compareTo(h2.getCard().getSetId());
+        
+        if(comp != 0)
+        {
+            return comp;
+        }
+        
         // Compare active image index
         comp = Byte.compare(h1.getActiveImageIndex(), h2.getActiveImageIndex());
         
