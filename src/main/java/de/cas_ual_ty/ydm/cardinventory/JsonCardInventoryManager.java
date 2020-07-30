@@ -68,6 +68,7 @@ public abstract class JsonCardInventoryManager
             Thread t = new Thread(() ->
             {
                 this.loadRunnable().run();
+                YDM.log("Done loading from file: " + this.getFile().getAbsolutePath());
                 this.setIdle();
                 callback.run();
             });
@@ -117,8 +118,6 @@ public abstract class JsonCardInventoryManager
             }
             
             this.stackList.clear();
-            
-            YDM.log("Done loading from file: " + this.getFile().getAbsolutePath());
         };
     }
     
@@ -136,6 +135,7 @@ public abstract class JsonCardInventoryManager
             Thread t = new Thread(() ->
             {
                 this.safeRunnable().run();
+                YDM.log("Done saving to file: " + this.getFile().getAbsolutePath());
                 this.setIdle();
                 callback.run();
             });
@@ -178,8 +178,6 @@ public abstract class JsonCardInventoryManager
             
             this.saveToFile(array);
             this.stackList.clear();
-            
-            YDM.log("Done saving to file: " + this.getFile().getAbsolutePath());
         };
     }
     
