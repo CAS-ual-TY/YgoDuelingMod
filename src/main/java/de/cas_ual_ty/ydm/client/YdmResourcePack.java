@@ -137,7 +137,11 @@ public class YdmResourcePack extends ResourcePack
     @Override
     public <T> T getMetadata(IMetadataSectionSerializer<T> deserializer) throws IOException
     {
-        return deserializer.deserialize(JSONUtils.getJsonObject(this.packMeta, deserializer.getSectionName()));
+        if (deserializer.getSectionName().equals("pack"))
+        {
+            return deserializer.deserialize(JSONUtils.getJsonObject(this.packMeta, deserializer.getSectionName()));
+        }
+        return null;
     }
     
     @Override
