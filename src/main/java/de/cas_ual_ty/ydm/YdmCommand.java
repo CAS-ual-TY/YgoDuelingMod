@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.mojang.brigadier.Command;
@@ -7,14 +8,15 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import de.cas_ual_ty.ydm.binder.BinderCardInventoryManager;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -28,14 +30,22 @@ public class YdmCommand
                 .then(Commands.literal("cards")
                     .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
                     .then(Commands.literal("get")
+                        .requires((source) -> source.getEntity() instanceof PlayerEntity)
                         .then(Commands.argument("set-id", StringArgumentType.word())
-                            .executes((source) -> YdmCommand.cards(source, source.getArgument("set-id", String.class))))))
+                            .executes((context) -> YdmCommand.cards(context, context.getArgument("set-id", String.class)))))
+                    .then(Commands.literal("give")
+                        .then(Commands.argument("targets", EntityArgument.players())
+                            .then(Commands.argument("set-id", StringArgumentType.word())
+                                .executes((context) -> YdmCommand.cardsGive(context, StringArgumentType.getString(context, "set-id"), EntityArgument.getPlayers(context, "targets"), 1))
+                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                    .executes((context) -> YdmCommand.cardsGive(context, StringArgumentType.getString(context, "set-id"), EntityArgument.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "count"))))))))
                 .then(Commands.literal("binders")
                     .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
                     .then(Commands.literal("fill")
-                        .executes((source) -> YdmCommand.bindersFill(source, 3))
-                        .then(Commands.argument("amount", IntegerArgumentType.integer(1, 100))
-                            .executes((source) -> YdmCommand.bindersFill(source, source.getArgument("amount", Integer.class))))))
+                        .requires((source) -> source.getEntity() instanceof PlayerEntity/* && !YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity)source.getEntity()).isEmpty()*/)
+                        .executes((context) -> YdmCommand.bindersFill(context, 3))
+                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                            .executes((context) -> YdmCommand.bindersFill(context, IntegerArgumentType.getInteger(context, "count"))))))
         
         );
     }
@@ -44,26 +54,35 @@ public class YdmCommand
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            try
+            Card card = Database.CARDS_LIST.get(setId);
+            
+            if(card != null)
             {
-                PlayerEntity player = context.getSource().asPlayer();
-                
-                Card card = Database.CARDS_LIST.get(setId);
-                
-                if(card != null)
-                {
-                    player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card));
-                }
-            }
-            catch (CommandSyntaxException e)
-            {
-                e.printStackTrace();
+                PlayerEntity player = (PlayerEntity)context.getSource().getEntity();
+                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card));
             }
             
             return Command.SINGLE_SUCCESS;
         }
         
         return 0;
+    }
+    
+    public static int cardsGive(CommandContext<CommandSource> context, String setId, Collection<ServerPlayerEntity> players, int amount)
+    {
+        Card card = Database.CARDS_LIST.get(setId);
+        
+        if(card != null)
+        {
+            for(ServerPlayerEntity player : players)
+            {
+                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card));
+            }
+        }
+        
+        context.getSource().sendFeedback(new StringTextComponent("Given \"" + card.getProperties().getName() + "\" (" + setId + ") to " + players.size() + " players!"), true);
+        
+        return players.size();
     }
     
     public static int bindersFill(CommandContext<CommandSource> context, int amount)
