@@ -29,7 +29,7 @@ public class CardInventory implements ICardInventory
     @Override
     public int getPagesAmount()
     {
-        return this.activeList.size() / this.cardsPerPage() + 1;
+        return this.list.size() / this.cardsPerPage() + 1;
     }
     
     /*
