@@ -68,8 +68,8 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
         int centerX = this.width / 2;
         int centerY = this.height / 2;
         
-        this.prevButton = new Button(centerX + 15, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.prev").getFormattedText(), this::onButtonClicked);
-        this.nextButton = new Button(centerX + 55, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.next").getFormattedText(), this::onButtonClicked);
+        this.prevButton = new Button(centerX + 40, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.prev").getFormattedText(), this::onButtonClicked);
+        this.nextButton = new Button(centerX + 80, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.next").getFormattedText(), this::onButtonClicked);
         this.addButton(this.prevButton);
         this.addButton(this.nextButton);
     }
