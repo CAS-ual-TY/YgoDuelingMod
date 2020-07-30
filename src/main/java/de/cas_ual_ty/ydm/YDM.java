@@ -25,6 +25,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -85,6 +86,7 @@ public class YDM
         
         bus = MinecraftForge.EVENT_BUS;
         bus.addListener(this::attachItemStackCapabilities);
+        bus.addListener(this::serverStarting);
         YDM.proxy.registerForgeEventListeners(bus);
         
         YDM.proxy.preInit();
@@ -182,6 +184,11 @@ public class YDM
             event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_inventory_manager"), provider);
             event.addListener(instance::invalidate);
         }
+    }
+    
+    private void serverStarting(FMLServerStartingEvent event)
+    {
+        YdmCommand.registerCommand(event.getCommandDispatcher());
     }
     
     public static void log(String s)
