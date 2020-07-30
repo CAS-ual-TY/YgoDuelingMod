@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.util;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -62,6 +61,7 @@ public class YdmIOUtil
         FileWriter fw = new FileWriter(target);
         YdmIOUtil.GSON.toJson(json, fw);
         fw.flush();
+        fw.close();
     }
     
     public static boolean doForDeepSearched(File parent, Predicate<File> predicate, Consumer<File> consumer)
@@ -95,8 +95,11 @@ public class YdmIOUtil
         parent.delete();
     }
     
-    public static JsonElement parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, FileNotFoundException
+    public static JsonElement parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, IOException
     {
-        return Database.JSON_PARSER.parse(new FileReader(file));
+        FileReader fr = new FileReader(file);
+        JsonElement e = Database.JSON_PARSER.parse(fr);
+        fr.close();
+        return e;
     }
 }

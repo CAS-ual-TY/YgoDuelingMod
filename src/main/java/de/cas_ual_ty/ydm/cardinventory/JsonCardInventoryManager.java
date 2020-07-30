@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.cardinventory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -207,7 +206,7 @@ public abstract class JsonCardInventoryManager
             {
                 return YdmIOUtil.parseJsonFile(file).getAsJsonArray();
             }
-            catch (JsonIOException | JsonSyntaxException | FileNotFoundException e)
+            catch (JsonIOException | JsonSyntaxException | IOException e)
             {
                 e.printStackTrace();
                 return new JsonArray();

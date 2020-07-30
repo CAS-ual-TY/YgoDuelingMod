@@ -165,6 +165,10 @@ public class Database
             {
                 e.printStackTrace();
             }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
             catch (Exception e)
             {
                 throw e;
