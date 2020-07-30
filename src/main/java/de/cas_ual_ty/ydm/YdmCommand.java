@@ -5,7 +5,9 @@ import java.util.List;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import de.cas_ual_ty.ydm.binder.BinderCardInventoryManager;
 import de.cas_ual_ty.ydm.card.Card;
@@ -24,7 +26,10 @@ public class YdmCommand
             
             Commands.literal(YDM.MOD_ID)
                 .then(Commands.literal("cards")
-                    .executes(YdmCommand::cards))
+                    .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
+                    .then(Commands.literal("get")
+                        .then(Commands.argument("set-id", StringArgumentType.word())
+                            .executes((source) -> YdmCommand.cards(source, source.getArgument("set-id", String.class))))))
                 .then(Commands.literal("binders")
                     .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
                     .then(Commands.literal("fill")
@@ -35,10 +40,26 @@ public class YdmCommand
         );
     }
     
-    public static int cards(CommandContext<CommandSource> context)
+    public static int cards(CommandContext<CommandSource> context, String setId)
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
+            try
+            {
+                PlayerEntity player = context.getSource().asPlayer();
+                
+                Card card = Database.CARDS_LIST.get(setId);
+                
+                if(card != null)
+                {
+                    player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card));
+                }
+            }
+            catch (CommandSyntaxException e)
+            {
+                e.printStackTrace();
+            }
+            
             return Command.SINGLE_SUCCESS;
         }
         
