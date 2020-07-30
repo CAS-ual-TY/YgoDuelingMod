@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm;
 import de.cas_ual_ty.ydm.binder.CardBinderItem;
 import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.card.CosmeticItem;
+import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
 import net.minecraftforge.event.RegistryEvent;
@@ -20,6 +21,7 @@ public class YdmItems
     public static final Item CARD_BACK = null;
     public static final CardItem CARD = null;
     public static final CardBinderItem CARD_BINDER = null;
+    public static final Item SIMPLE_DUEL_BLOCK = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -29,5 +31,6 @@ public class YdmItems
         registry.register(new CosmeticItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
         registry.register(new CardItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card"));
         registry.register(new CardBinderItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card_binder"));
+        registry.register(new BlockItem(YdmBlocks.SIMPLE_DUEL_BLOCK, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "simple_duel_block"));
     }
 }
