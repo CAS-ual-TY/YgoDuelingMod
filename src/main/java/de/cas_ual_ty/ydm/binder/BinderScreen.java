@@ -26,16 +26,20 @@ import net.minecraftforge.fml.network.PacketDistributor;
 public class BinderScreen extends ContainerScreen<BinderContainer> implements IHasContainer<BinderContainer>
 {
     private static final ResourceLocation BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
+    private static final int LEFT_SHIFT = 340; // https://www.glfw.org/docs/latest/group__keys.html
     
     protected CardButton[] cardButtons;
     
     protected Button prevButton;
     protected Button nextButton;
     
+    protected boolean shiftDown;
+    
     public BinderScreen(BinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.ySize = 114 + CardInventory.DEFAULT_PAGE_ROWS * 18;
+        this.shiftDown = false;
     }
     
     @Override
@@ -144,15 +148,38 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
     {
         if(button.getCard() != null)
         {
-            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index));
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index, this.shiftDown));
             
-            ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(button.getCard());
-            YDM.proxy.getClientPlayer().inventory.setItemStack(itemStack);
+            if(!this.shiftDown)
+            {
+                ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(button.getCard());
+                YDM.proxy.getClientPlayer().inventory.setItemStack(itemStack);
+            }
         }
     }
     
     protected CardHolder getCard(int index)
     {
         return index < this.getContainer().clientList.size() ? this.getContainer().clientList.get(index) : null;
+    }
+    
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    {
+        if(keyCode == BinderScreen.LEFT_SHIFT)
+        {
+            this.shiftDown = true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+    
+    @Override
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers)
+    {
+        if(keyCode == BinderScreen.LEFT_SHIFT)
+        {
+            this.shiftDown = false;
+        }
+        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 }

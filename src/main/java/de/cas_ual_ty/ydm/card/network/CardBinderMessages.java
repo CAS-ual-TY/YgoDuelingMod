@@ -137,7 +137,7 @@ public class CardBinderMessages
             buf.writeInt(msg.list.size());
             for(CardHolder cardHolder : msg.list)
             {
-                buf.writeString(cardHolder.getCard().getSetId());
+                buf.writeString(cardHolder.getCard().getSetId(), 0x100);
                 buf.writeByte(cardHolder.getOverriddenImageIndex());
                 buf.writeString(cardHolder.getOverriddenRarity() != null ? cardHolder.getOverriddenRarity().name : "", 0x100);
             }
@@ -177,10 +177,12 @@ public class CardBinderMessages
     public static class IndexClicked
     {
         public int index;
+        public boolean shiftDown;
         
-        public IndexClicked(int index)
+        public IndexClicked(int index, boolean shiftDown)
         {
             this.index = index;
+            this.shiftDown = shiftDown;
         }
         
         public IndexClicked()
@@ -190,11 +192,12 @@ public class CardBinderMessages
         public static void encode(IndexClicked msg, PacketBuffer buf)
         {
             buf.writeInt(msg.index);
+            buf.writeBoolean(msg.shiftDown);
         }
         
         public static IndexClicked decode(PacketBuffer buf)
         {
-            return new IndexClicked(buf.readInt());
+            return new IndexClicked(buf.readInt(), buf.readBoolean());
         }
         
         public static void handle(IndexClicked msg, Supplier<NetworkEvent.Context> ctx)
@@ -204,7 +207,7 @@ public class CardBinderMessages
             {
                 CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->
                 {
-                    container.indexClicked(msg.index);
+                    container.indexClicked(msg.index, msg.shiftDown);
                 });
             });
             

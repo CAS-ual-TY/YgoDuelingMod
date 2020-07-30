@@ -8,7 +8,6 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.network.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
-import de.cas_ual_ty.ydm.cardinventory.ICardInventory;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardInventoryManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -29,7 +28,7 @@ public class BinderContainer extends Container
     protected List<CardHolder> clientList;
     protected int clientMaxPage;
     
-    protected ICardInventory serverList;
+    protected CardInventory serverList;
     
     protected boolean loaded;
     protected int page;
@@ -63,7 +62,7 @@ public class BinderContainer extends Container
             @Override
             public boolean isItemValid(ItemStack stack)
             {
-                return stack.getItem() == YdmItems.CARD;
+                return stack.getItem() == YdmItems.CARD && YdmItems.CARD.getCardHolder(stack).getCard() != null;
             }
             
             @Override
@@ -71,14 +70,17 @@ public class BinderContainer extends Container
             {
                 if(BinderContainer.this.serverList != null)
                 {
-                    BinderContainer.this.serverList.addCard(YdmItems.CARD.getCardHolder(stack));
-                    
                     int maxPage = BinderContainer.this.serverList.getPagesAmount();
-                    BinderContainer.this.updatePagesToClient();
+                    BinderContainer.this.serverList.addCard(YdmItems.CARD.getCardHolder(stack));
                     
                     if(BinderContainer.this.page == maxPage)
                     {
                         BinderContainer.this.updateListToClient();
+                    }
+                    
+                    if(BinderContainer.this.serverList.getPagesAmount() != maxPage)
+                    {
+                        BinderContainer.this.updatePagesToClient();
                     }
                 }
             }
@@ -169,17 +171,32 @@ public class BinderContainer extends Container
         this.player.inventory.setItemStack(itemStack);
     }
     
-    public void indexClicked(int index)
+    public void indexClicked(int index, boolean shiftDown)
     {
+        int maxPage = BinderContainer.this.serverList.getPagesAmount();
+        
         CardHolder card = this.serverList.extractCard(this.page, index);
         
         if(card != null)
         {
             ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(card);
-            this.player.inventory.setItemStack(itemStack);
+            
+            if(shiftDown)
+            {
+                this.player.addItemStackToInventory(itemStack);
+            }
+            else
+            {
+                this.player.inventory.setItemStack(itemStack);
+            }
         }
         
         this.updateListToClient();
+        
+        if(maxPage != this.serverList.getPagesAmount())
+        {
+            this.updatePagesToClient();
+        }
     }
     
     public void nextPage()
@@ -246,6 +263,25 @@ public class BinderContainer extends Container
                 ((BinderContainer)this.player.openContainer).managerFinished();
             }
         };
+    }
+    
+    @Override
+    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
+    {
+        Slot slot = this.inventorySlots.get(index);
+        
+        if(slot != this.insertionSlot && slot.canTakeStack(playerIn))
+        {
+            ItemStack stack = slot.getStack();
+            
+            if(this.insertionSlot.isItemValid(stack))
+            {
+                slot.putStack(ItemStack.EMPTY);
+                this.insertionSlot.putStack(stack);
+            }
+        }
+        
+        return ItemStack.EMPTY;
     }
     
     @Override
