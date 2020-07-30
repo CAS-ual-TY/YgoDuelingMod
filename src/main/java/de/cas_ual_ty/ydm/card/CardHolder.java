@@ -129,7 +129,7 @@ public class CardHolder
     
     public boolean isImageIndexOverridden()
     {
-        return this.getOverriddenImageIndex() != -1;
+        return this.getOverriddenImageIndex() != -1 && this.getOverriddenImageIndex() != this.getCard().getImageIndex();
     }
     
     public byte getActiveImageIndex()
@@ -139,7 +139,7 @@ public class CardHolder
     
     public boolean isRarityOverridden()
     {
-        return this.getOverriddenRarity() != null;
+        return this.getOverriddenRarity() != null && this.getOverriddenRarity() != this.getCard().getRarity();
     }
     
     public Rarity getActiveRarity()
