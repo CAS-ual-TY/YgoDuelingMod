@@ -55,9 +55,8 @@ public class CardItem extends Item
     @Override
     public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
     {
-        if(group != YDM.ydmItemGroup)
+        if(!this.isInGroup(group))
         {
-            super.fillItemGroup(group, items);
             return;
         }
         

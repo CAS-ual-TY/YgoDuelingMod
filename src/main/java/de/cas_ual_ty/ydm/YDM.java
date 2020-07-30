@@ -40,6 +40,7 @@ public class YDM
     public static YDM instance;
     public static ISidedProxy proxy;
     public static YdmItemGroup ydmItemGroup;
+    public static YdmItemGroup cardsItemGroup;
     public static boolean itemsUseCardImagesActive;
     
     public static File mainFolder;
@@ -74,7 +75,8 @@ public class YDM
             () -> () -> new ISidedProxy()
             {
             });
-        YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID);
+        YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
+        YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD);
         YDM.itemsUseCardImagesActive = false;
         
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
