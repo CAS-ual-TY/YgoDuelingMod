@@ -36,13 +36,18 @@ public abstract class UUIDCardInventoryManager extends JsonCardInventoryManager
     @Override
     public void readFromNBT(CompoundNBT nbt)
     {
-        this.uuid = nbt.getUniqueId(JsonKeys.UUID);
+        if(nbt.hasUniqueId(JsonKeys.UUID))
+        {
+            this.uuid = nbt.getUniqueId(JsonKeys.UUID);
+        }
     }
     
     @Override
     public void writeToNBT(CompoundNBT nbt)
     {
-        this.generateUUIDIfNull();
-        nbt.putUniqueId(JsonKeys.UUID, this.getUUID());
+        if(this.getUUID() != null)
+        {
+            nbt.putUniqueId(JsonKeys.UUID, this.getUUID());
+        }
     }
 }
