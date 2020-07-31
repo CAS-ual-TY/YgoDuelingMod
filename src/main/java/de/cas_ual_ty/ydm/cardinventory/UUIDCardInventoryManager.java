@@ -20,6 +20,11 @@ public abstract class UUIDCardInventoryManager extends JsonCardInventoryManager
         return this.uuid;
     }
     
+    public void setUUID(UUID uuid)
+    {
+        this.uuid = uuid;
+    }
+    
     public void generateUUIDIfNull()
     {
         if(this.uuid == null)
