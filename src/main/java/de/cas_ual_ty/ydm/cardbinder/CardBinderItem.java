@@ -27,7 +27,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
         super(properties);
     }
     
-    public CardBinderCardManager getInventoryManager(ItemStack itemStack)
+    public CardBinderCardsManager getInventoryManager(ItemStack itemStack)
     {
         return itemStack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY).orElseThrow(YdmUtil.throwNullCapabilityException());
     }
@@ -37,11 +37,11 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         
-        LazyOptional<CardBinderCardManager> l = stack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY);
+        LazyOptional<CardBinderCardsManager> l = stack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY);
         
         if(l.isPresent())
         {
-            CardBinderCardManager m = l.orElse(null);
+            CardBinderCardsManager m = l.orElse(null);
             
             if(YDM.showBinderId)
             {

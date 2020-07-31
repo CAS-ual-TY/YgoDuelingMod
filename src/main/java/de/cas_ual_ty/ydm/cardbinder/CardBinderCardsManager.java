@@ -4,16 +4,16 @@ import java.io.File;
 import java.util.UUID;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.cardinventory.UUIDCardManager;
+import de.cas_ual_ty.ydm.cardinventory.UUIDCardsManager;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
-public class CardBinderCardManager extends UUIDCardManager
+public class CardBinderCardsManager extends UUIDCardsManager
 {
-    public CardBinderCardManager()
+    public CardBinderCardsManager()
     {
         super();
     }
@@ -22,7 +22,7 @@ public class CardBinderCardManager extends UUIDCardManager
     protected File getFile()
     {
         this.generateUUIDIfNull();
-        return CardBinderCardManager.getBinderFile(this.getUUID());
+        return CardBinderCardsManager.getBinderFile(this.getUUID());
     }
     
     public static File getBinderFile(UUID uuid)
@@ -30,10 +30,10 @@ public class CardBinderCardManager extends UUIDCardManager
         return new File(YDM.bindersFolder, uuid.toString() + ".json");
     }
     
-    public static class Storage implements IStorage<CardBinderCardManager>
+    public static class Storage implements IStorage<CardBinderCardsManager>
     {
         @Override
-        public INBT writeNBT(Capability<CardBinderCardManager> capability, CardBinderCardManager instance, Direction side)
+        public INBT writeNBT(Capability<CardBinderCardsManager> capability, CardBinderCardsManager instance, Direction side)
         {
             CompoundNBT nbt = new CompoundNBT();
             instance.writeToNBT(nbt);
@@ -41,7 +41,7 @@ public class CardBinderCardManager extends UUIDCardManager
         }
         
         @Override
-        public void readNBT(Capability<CardBinderCardManager> capability, CardBinderCardManager instance, Direction side, INBT nbt)
+        public void readNBT(Capability<CardBinderCardsManager> capability, CardBinderCardsManager instance, Direction side, INBT nbt)
         {
             instance.readFromNBT((CompoundNBT)nbt);
         }

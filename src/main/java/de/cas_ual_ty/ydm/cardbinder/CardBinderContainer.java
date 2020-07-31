@@ -8,7 +8,7 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.network.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
-import de.cas_ual_ty.ydm.cardinventory.JsonCardManager;
+import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class CardBinderContainer extends Container
 {
-    protected final JsonCardManager manager;
+    protected final JsonCardsManager manager;
     protected PlayerEntity player;
     
     protected List<CardHolder> clientList;
@@ -45,7 +45,7 @@ public class CardBinderContainer extends Container
         this.clientMaxPage = 0;
     }
     
-    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, JsonCardManager manager, ItemStack itemStack)
+    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, JsonCardsManager manager, ItemStack itemStack)
     {
         super(type, id);
         this.manager = manager;

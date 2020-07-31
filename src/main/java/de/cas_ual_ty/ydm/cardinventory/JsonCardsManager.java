@@ -18,7 +18,7 @@ import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.nbt.CompoundNBT;
 
-public abstract class JsonCardManager
+public abstract class JsonCardsManager
 {
     protected volatile boolean isIdle;
     protected boolean loaded; // false = last safed, true = last loaded
@@ -27,7 +27,7 @@ public abstract class JsonCardManager
     
     protected List<CardHolder> cardsList;
     
-    public JsonCardManager()
+    public JsonCardsManager()
     {
         this.isIdle = true;
         this.loaded = false;

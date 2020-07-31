@@ -6,11 +6,11 @@ import de.cas_ual_ty.ydm.util.JsonKeys;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.nbt.CompoundNBT;
 
-public abstract class UUIDCardManager extends JsonCardManager
+public abstract class UUIDCardsManager extends JsonCardsManager
 {
     private UUID uuid;
     
-    public UUIDCardManager()
+    public UUIDCardsManager()
     {
         this.uuid = null;
     }

@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.cas_ual_ty.ydm.card.network.CardBinderMessages;
-import de.cas_ual_ty.ydm.cardbinder.CardBinderCardManager;
+import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.item.ItemStack;
@@ -65,8 +65,8 @@ public class YDM
     
     public static SimpleChannel channel;
     
-    @CapabilityInject(CardBinderCardManager.class)
-    public static Capability<CardBinderCardManager> BINDER_INVENTORY_CAPABILITY = null;
+    @CapabilityInject(CardBinderCardsManager.class)
+    public static Capability<CardBinderCardsManager> BINDER_INVENTORY_CAPABILITY = null;
     
     public YDM()
     {
@@ -99,7 +99,7 @@ public class YDM
             YDM.PROTOCOL_VERSION::equals,
             YDM.PROTOCOL_VERSION::equals);
         
-        CapabilityManager.INSTANCE.<CardBinderCardManager>register(CardBinderCardManager.class, new CardBinderCardManager.Storage(), CardBinderCardManager::new);
+        CapabilityManager.INSTANCE.<CardBinderCardsManager>register(CardBinderCardsManager.class, new CardBinderCardsManager.Storage(), CardBinderCardsManager::new);
         
         this.initFiles();
         
@@ -160,7 +160,7 @@ public class YDM
     {
         if(event.getObject() instanceof ItemStack && event.getObject().getItem() == YdmItems.CARD_BINDER)
         {
-            final LazyOptional<CardBinderCardManager> instance = LazyOptional.of(CardBinderCardManager::new);
+            final LazyOptional<CardBinderCardsManager> instance = LazyOptional.of(CardBinderCardsManager::new);
             final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>()
             {
                 @Override
