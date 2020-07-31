@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "ydm:block/playmat",
+        "down": "ydm:block/playmat",
+        "up": "ydm:block/playmat_top",
+        "north": "ydm:block/playmat",
+        "east": "ydm:block/playmat",
+        "south": "ydm:block/playmat",
+        "west": "ydm:block/playmat"
+    }
+}
