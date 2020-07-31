@@ -4,9 +4,9 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.text.ITextComponent;
 
-public class SimpleDuelScreen extends ContainerScreen<SimpleDuelContainer>
+public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
 {
-    public SimpleDuelScreen(SimpleDuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public PlaymatScreen(PlaymatContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
     }

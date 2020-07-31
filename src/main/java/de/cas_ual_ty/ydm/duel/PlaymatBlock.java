@@ -13,9 +13,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.IBlockReader;
 
-public class SimpleDuelBlock extends Block implements INamedContainerProvider
+public class PlaymatBlock extends Block implements INamedContainerProvider
 {
-    public SimpleDuelBlock(Properties properties)
+    public PlaymatBlock(Properties properties)
     {
         super(properties);
     }
@@ -29,7 +29,7 @@ public class SimpleDuelBlock extends Block implements INamedContainerProvider
     @Override
     public TileEntity createTileEntity(BlockState state, IBlockReader world)
     {
-        return YdmTileEntityTypes.SIMPLE_DUEL_TILE_ENTITY.create();
+        return YdmTileEntityTypes.PLAYMAT.create();
     }
     
     @Override
@@ -41,6 +41,6 @@ public class SimpleDuelBlock extends Block implements INamedContainerProvider
     @Override
     public ITextComponent getDisplayName()
     {
-        return new TranslationTextComponent("container." + YDM.MOD_ID + ".simple_duel_block");
+        return new TranslationTextComponent("container." + YDM.MOD_ID + ".playmat");
     }
 }

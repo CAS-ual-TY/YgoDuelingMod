@@ -5,9 +5,9 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 
-public class SimpleDuelContainer extends Container
+public class PlaymatContainer extends Container
 {
-    public SimpleDuelContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
+    public PlaymatContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
         super(type, id);
     }

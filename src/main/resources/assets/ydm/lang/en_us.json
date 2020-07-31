@@ -1,7 +1,7 @@
 {
     "itemGroup.ydm": "YDM: Ygo Dueling Mod",
     "itemGroup.ydm.cards": "YDM Cards",
-    "block.ydm.simple_duel_block": "Simple Duel Block",
+    "block.ydm.playmat": "Playmat",
     "item.ydm.card": "Card",
     "item.ydm.blanc_card": "Blanc Card",
     "item.ydm.blanc_card.desc": "Just a cosmetic Item!",
