@@ -7,9 +7,9 @@ import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.binder.BinderContainer;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
+import de.cas_ual_ty.ydm.cardbinder.CardBinderContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -17,11 +17,11 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public class CardBinderMessages
 {
-    public static void doForBinderContainer(PlayerEntity player, Consumer<BinderContainer> consumer)
+    public static void doForBinderContainer(PlayerEntity player, Consumer<CardBinderContainer> consumer)
     {
-        if(player != null && player.openContainer instanceof BinderContainer)
+        if(player != null && player.openContainer instanceof CardBinderContainer)
         {
-            consumer.accept((BinderContainer)player.openContainer);
+            consumer.accept((CardBinderContainer)player.openContainer);
         }
     }
     

@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.binder;
+package de.cas_ual_ty.ydm.cardbinder;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -23,7 +23,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class BinderScreen extends ContainerScreen<BinderContainer> implements IHasContainer<BinderContainer>
+public class CardBinderScreen extends ContainerScreen<CardBinderContainer> implements IHasContainer<CardBinderContainer>
 {
     private static final ResourceLocation BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
     
@@ -38,7 +38,7 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
     
     protected boolean shiftDown;
     
-    public BinderScreen(BinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public CardBinderScreen(CardBinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.ySize = 114 + CardInventory.DEFAULT_PAGE_ROWS * 18;
@@ -128,7 +128,7 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bindTexture(BinderScreen.BINDER_GUI_TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(CardBinderScreen.BINDER_GUI_TEXTURE);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.blit(i, j, 0, 0, this.xSize + 27, CardInventory.DEFAULT_PAGE_ROWS * 18 + 17);
@@ -169,11 +169,11 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
-        if(keyCode == BinderScreen.LEFT_SHIFT)
+        if(keyCode == CardBinderScreen.LEFT_SHIFT)
         {
             this.shiftDown = true;
         }
-        else if(keyCode == BinderScreen.Q)
+        else if(keyCode == CardBinderScreen.Q)
         {
             for(CardButton button : this.cardButtons)
             {
@@ -191,7 +191,7 @@ public class BinderScreen extends ContainerScreen<BinderContainer> implements IH
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers)
     {
-        if(keyCode == BinderScreen.LEFT_SHIFT)
+        if(keyCode == CardBinderScreen.LEFT_SHIFT)
         {
             this.shiftDown = false;
         }

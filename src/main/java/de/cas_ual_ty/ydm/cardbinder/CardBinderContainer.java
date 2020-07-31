@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.binder;
+package de.cas_ual_ty.ydm.cardbinder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +8,7 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.network.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
-import de.cas_ual_ty.ydm.cardinventory.JsonCardInventoryManager;
+import de.cas_ual_ty.ydm.cardinventory.JsonCardManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -20,9 +20,9 @@ import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class BinderContainer extends Container
+public class CardBinderContainer extends Container
 {
-    protected final JsonCardInventoryManager manager;
+    protected final JsonCardManager manager;
     protected PlayerEntity player;
     
     protected List<CardHolder> clientList;
@@ -37,7 +37,7 @@ public class BinderContainer extends Container
     
     protected IInventory containerInv;
     
-    public BinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
+    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
         this(type, id, playerInventory, null, YdmItems.CARD_BINDER.getActiveBinder(playerInventory.player));
         this.clientList = new ArrayList<>(CardInventory.DEFAULT_CARDS_PER_PAGE);
@@ -45,7 +45,7 @@ public class BinderContainer extends Container
         this.clientMaxPage = 0;
     }
     
-    public BinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, JsonCardInventoryManager manager, ItemStack itemStack)
+    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, JsonCardManager manager, ItemStack itemStack)
     {
         super(type, id);
         this.manager = manager;
@@ -68,19 +68,19 @@ public class BinderContainer extends Container
             @Override
             public void putStack(ItemStack stack)
             {
-                if(BinderContainer.this.serverList != null)
+                if(CardBinderContainer.this.serverList != null)
                 {
-                    int maxPage = BinderContainer.this.serverList.getPagesAmount();
-                    BinderContainer.this.serverList.addCard(YdmItems.CARD.getCardHolder(stack));
+                    int maxPage = CardBinderContainer.this.serverList.getPagesAmount();
+                    CardBinderContainer.this.serverList.addCard(YdmItems.CARD.getCardHolder(stack));
                     
-                    if(BinderContainer.this.page == maxPage)
+                    if(CardBinderContainer.this.page == maxPage)
                     {
-                        BinderContainer.this.updateListToClient();
+                        CardBinderContainer.this.updateListToClient();
                     }
                     
-                    if(BinderContainer.this.serverList.getPagesAmount() != maxPage)
+                    if(CardBinderContainer.this.serverList.getPagesAmount() != maxPage)
                     {
-                        BinderContainer.this.updatePagesToClient();
+                        CardBinderContainer.this.updatePagesToClient();
                     }
                 }
             }
@@ -173,7 +173,7 @@ public class BinderContainer extends Container
     
     protected CardHolder extractCard(int index)
     {
-        int maxPage = BinderContainer.this.serverList.getPagesAmount();
+        int maxPage = CardBinderContainer.this.serverList.getPagesAmount();
         
         CardHolder card = this.serverList.extractCard(this.page, index);
         
@@ -276,9 +276,9 @@ public class BinderContainer extends Container
     {
         return () ->
         {
-            if(this.player.openContainer instanceof BinderContainer)
+            if(this.player.openContainer instanceof CardBinderContainer)
             {
-                ((BinderContainer)this.player.openContainer).managerFinished();
+                ((CardBinderContainer)this.player.openContainer).managerFinished();
             }
         };
     }

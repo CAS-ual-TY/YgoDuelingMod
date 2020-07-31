@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.binder;
+package de.cas_ual_ty.ydm.cardbinder;
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;

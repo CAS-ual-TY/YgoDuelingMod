@@ -10,9 +10,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
-import de.cas_ual_ty.ydm.binder.BinderCardInventoryManager;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.cardbinder.CardBinderCardManager;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
@@ -104,7 +104,7 @@ public class YdmCommand
             
             if(!itemStack.isEmpty())
             {
-                BinderCardInventoryManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
+                CardBinderCardManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
                 context.getSource().sendFeedback(new StringTextComponent("Binder UUID: " + m.getUUID()), true);
             }
         }
@@ -118,7 +118,7 @@ public class YdmCommand
         {
             UUID uuid = UUID.fromString(uuidArg);
             ItemStack itemStack = new ItemStack(YdmItems.CARD_BINDER);
-            BinderCardInventoryManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
+            CardBinderCardManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
             m.setUUID(uuid);
             context.getSource().sendFeedback(new StringTextComponent("Created Binder with UUID: " + uuid.toString()), true);
             ((PlayerEntity)context.getSource().getEntity()).addItemStackToInventory(itemStack);
@@ -136,7 +136,7 @@ public class YdmCommand
             
             if(!itemStack.isEmpty())
             {
-                BinderCardInventoryManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
+                CardBinderCardManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
                 
                 UUID uuidOld = m.getUUID();
                 m.setUUID(uuid);
@@ -165,7 +165,7 @@ public class YdmCommand
             
             if(!itemStack.isEmpty())
             {
-                BinderCardInventoryManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
+                CardBinderCardManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
                 
                 if(m.isInIdleState())
                 {

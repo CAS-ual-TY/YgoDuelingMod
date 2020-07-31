@@ -11,9 +11,9 @@ import de.cas_ual_ty.ydm.ISidedProxy;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.binder.BinderScreen;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.config.Configuration;
 import de.cas_ual_ty.ydm.duel.SimpleDuelScreen;
 import net.minecraft.client.Minecraft;
@@ -80,7 +80,7 @@ public class ClientProxy implements ISidedProxy
             }
         }
         
-        ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, BinderScreen::new);
+        ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.SIMPLE_DUEL_CONTAINER_TYPE, SimpleDuelScreen::new);
     }
     

@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.binder;
+package de.cas_ual_ty.ydm.cardbinder;
 
 import java.util.List;
 
@@ -27,7 +27,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
         super(properties);
     }
     
-    public BinderCardInventoryManager getInventoryManager(ItemStack itemStack)
+    public CardBinderCardManager getInventoryManager(ItemStack itemStack)
     {
         return itemStack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY).orElseThrow(YdmUtil.throwNullCapabilityException());
     }
@@ -37,11 +37,11 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         
-        LazyOptional<BinderCardInventoryManager> l = stack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY);
+        LazyOptional<CardBinderCardManager> l = stack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY);
         
         if(l.isPresent())
         {
-            BinderCardInventoryManager m = l.orElse(null);
+            CardBinderCardManager m = l.orElse(null);
             
             if(YDM.showBinderId)
             {
@@ -81,7 +81,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
     {
         ItemStack s = this.getActiveBinder(player);
-        return new BinderContainer(YdmContainerTypes.CARD_BINDER, id, playerInv, this.getInventoryManager(s), s);
+        return new CardBinderContainer(YdmContainerTypes.CARD_BINDER, id, playerInv, this.getInventoryManager(s), s);
     }
     
     @Override
