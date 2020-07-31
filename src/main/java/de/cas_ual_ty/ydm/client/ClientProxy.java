@@ -15,6 +15,7 @@ import de.cas_ual_ty.ydm.binder.BinderScreen;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.config.Configuration;
+import de.cas_ual_ty.ydm.duel.SimpleDuelScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -80,6 +81,7 @@ public class ClientProxy implements ISidedProxy
         }
         
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, BinderScreen::new);
+        ScreenManager.registerFactory(YdmContainerTypes.SIMPLE_DUEL_CONTAINER_TYPE, SimpleDuelScreen::new);
     }
     
     private void textureStitch(TextureStitchEvent.Pre event)
