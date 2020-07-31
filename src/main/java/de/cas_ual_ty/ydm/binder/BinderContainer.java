@@ -95,7 +95,7 @@ public class BinderContainer extends Container
                 
                 if(s.getStack() == itemStack)
                 {
-                    s = new Slot(playerInventory, s.slotNumber, s.xPos, s.yPos)
+                    s = new Slot(playerInventory, s.getSlotIndex(), s.xPos, s.yPos)
                     {
                         @Override
                         public boolean canTakeStack(PlayerEntity playerIn)
@@ -116,7 +116,7 @@ public class BinderContainer extends Container
             
             if(s.getStack() == itemStack)
             {
-                s = new Slot(playerInventory, s.slotNumber, s.xPos, s.yPos)
+                s = new Slot(playerInventory, s.getSlotIndex(), s.xPos, s.yPos)
                 {
                     @Override
                     public boolean canTakeStack(PlayerEntity playerIn)
