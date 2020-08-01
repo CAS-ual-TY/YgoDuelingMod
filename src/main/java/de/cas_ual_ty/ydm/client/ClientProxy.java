@@ -148,7 +148,7 @@ public class ClientProxy implements ISidedProxy
                 card = YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack());
             }
         }
-        else if(Minecraft.getInstance().player != null)
+        else if(Minecraft.getInstance().player != null && screen == null)
         {
             PlayerEntity player = Minecraft.getInstance().player;
             
