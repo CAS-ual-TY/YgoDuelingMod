@@ -1,15 +1,14 @@
-package de.cas_ual_ty.ydm.card.network;
+package de.cas_ual_ty.ydm.cardbinder;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
-import de.cas_ual_ty.ydm.cardbinder.CardBinderContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -152,7 +151,7 @@ public class CardBinderMessages
             
             for(int i = 0; i < size; ++i)
             {
-                list.add(new CardHolder(Database.CARDS_LIST.get(buf.readString()), buf.readByte(), Rarity.fromString(buf.readString())));
+                list.add(new CardHolder(YdmDatabase.CARDS_LIST.get(buf.readString()), buf.readByte(), Rarity.fromString(buf.readString())));
             }
             
             return new UpdateList(page, list);

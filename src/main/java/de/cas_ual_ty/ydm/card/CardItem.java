@@ -2,8 +2,8 @@ package de.cas_ual_ty.ydm.card;
 
 import java.util.List;
 
-import de.cas_ual_ty.ydm.Database;
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -60,12 +60,12 @@ public class CardItem extends Item
             return;
         }
         
-        YDM.log("Creating card item variants (" + Database.CARDS_LIST.size() + " different variants)");
+        YDM.log("Creating card item variants (" + YdmDatabase.CARDS_LIST.size() + " different variants)");
         
         ItemStack itemStack;
         CardHolder holder;
         
-        for(Card card : Database.CARDS_LIST)
+        for(Card card : YdmDatabase.CARDS_LIST)
         {
             // not using ::createItemForCard to conserve the memory of the method calls
             itemStack = new ItemStack(this);

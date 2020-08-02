@@ -1,9 +1,9 @@
-package de.cas_ual_ty.ydm.config;
+package de.cas_ual_ty.ydm.util;
 
 import org.apache.commons.lang3.tuple.Pair;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.util.YdmUtil;
+import de.cas_ual_ty.ydm.clientutil.ClientConfig;
 import net.minecraftforge.common.ForgeConfigSpec;
 
 public class Configuration

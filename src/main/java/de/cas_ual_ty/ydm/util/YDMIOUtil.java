@@ -17,7 +17,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-import de.cas_ual_ty.ydm.Database;
+import de.cas_ual_ty.ydm.YdmDatabase;
 
 public class YdmIOUtil
 {
@@ -98,7 +98,7 @@ public class YdmIOUtil
     public static JsonElement parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, IOException
     {
         FileReader fr = new FileReader(file);
-        JsonElement e = Database.JSON_PARSER.parse(fr);
+        JsonElement e = YdmDatabase.JSON_PARSER.parse(fr);
         fr.close();
         return e;
     }

@@ -18,8 +18,8 @@ import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 
-import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.DNCList;

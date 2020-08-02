@@ -6,7 +6,6 @@ import java.util.List;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.card.network.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
 import net.minecraft.entity.player.PlayerEntity;

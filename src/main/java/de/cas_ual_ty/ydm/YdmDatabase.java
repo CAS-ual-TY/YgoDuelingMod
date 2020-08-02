@@ -21,7 +21,7 @@ import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 
-public class Database
+public class YdmDatabase
 {
     public static final DNCList<Long, Properties> PROPERTIES_LIST = new DNCList<>((p) -> p.getId(), Long::compare);
     public static final DNCList<String, Card> CARDS_LIST = new DNCList<>((c) -> c.getSetId(), (s1, s2) -> s1.compareTo(s2));
@@ -44,7 +44,7 @@ public class Database
             return;
         }
         
-        Database.readCards(YDM.cardsFolder);
+        YdmDatabase.readCards(YDM.cardsFolder);
         
         if(!YDM.setsFolder.exists())
         {
@@ -52,7 +52,7 @@ public class Database
             return;
         }
         
-        Database.readSets(YDM.setsFolder);
+        YdmDatabase.readSets(YDM.setsFolder);
     }
     
     public static void downloadDatabase() throws IOException
@@ -144,7 +144,7 @@ public class Database
         YDM.log("Reading card files from: " + cardsFolder.getAbsolutePath());
         
         File[] cardsFiles = cardsFolder.listFiles(YdmIOUtil.JSON_FILTER);
-        Database.PROPERTIES_LIST.ensureExtraCapacity(cardsFiles.length);
+        YdmDatabase.PROPERTIES_LIST.ensureExtraCapacity(cardsFiles.length);
         
         JsonObject j;
         Properties p;
@@ -155,7 +155,7 @@ public class Database
             {
                 j = YdmIOUtil.parseJsonFile(cardFile).getAsJsonObject();
                 p = YdmUtil.buildProperties(j);
-                Database.PROPERTIES_LIST.add(p);
+                YdmDatabase.PROPERTIES_LIST.add(p);
             }
             catch (JsonSyntaxException e)
             {
@@ -175,7 +175,7 @@ public class Database
             }
         }
         
-        Database.PROPERTIES_LIST.sort();
+        YdmDatabase.PROPERTIES_LIST.sort();
         
         YDM.log("Done reading card files!");
     }
@@ -186,15 +186,15 @@ public class Database
         
         //TODO
         
-        Database.CARDS_LIST.ensureExtraCapacity(Database.PROPERTIES_LIST.size());
-        for(Properties properties : Database.PROPERTIES_LIST)
+        YdmDatabase.CARDS_LIST.ensureExtraCapacity(YdmDatabase.PROPERTIES_LIST.size());
+        for(Properties properties : YdmDatabase.PROPERTIES_LIST)
         {
             for(byte imageIndex = 0; imageIndex < properties.images.length; ++imageIndex)
             {
-                Database.CARDS_LIST.add(new Card(properties, imageIndex));
+                YdmDatabase.CARDS_LIST.add(new Card(properties, imageIndex));
             }
         }
-        Database.CARDS_LIST.sort();
+        YdmDatabase.CARDS_LIST.sort();
         
         YDM.log("Done reading set files!");
     }

@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm;
+package de.cas_ual_ty.ydm.util;
 
 import javax.annotation.Nullable;
 

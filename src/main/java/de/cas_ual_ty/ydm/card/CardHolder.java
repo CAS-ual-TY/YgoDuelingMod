@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 
-import de.cas_ual_ty.ydm.Database;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.nbt.CompoundNBT;
@@ -154,7 +154,7 @@ public class CardHolder
     
     public void readCardHolderFromNBT(CompoundNBT nbt)
     {
-        this.setCard(Database.CARDS_LIST.get(nbt.getString(JsonKeys.SET_ID)));
+        this.setCard(YdmDatabase.CARDS_LIST.get(nbt.getString(JsonKeys.SET_ID)));
         
         if(nbt.contains(JsonKeys.IMAGE_INDEX))
         {
@@ -187,7 +187,7 @@ public class CardHolder
     
     public void readFromJson(JsonObject json)
     {
-        this.setCard(Database.CARDS_LIST.get(json.get(JsonKeys.SET_ID).getAsString()));
+        this.setCard(YdmDatabase.CARDS_LIST.get(json.get(JsonKeys.SET_ID).getAsString()));
         
         if(json.has(JsonKeys.IMAGE_INDEX))
         {

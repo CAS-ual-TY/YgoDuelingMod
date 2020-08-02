@@ -4,9 +4,10 @@ import java.util.Random;
 
 public class PlayField
 {
+    public DuelManager duelManager;
     public Zone[] zones;
     
-    public PlayField()
+    public PlayField(DuelManager duelManager)
     {
         this.zones = new Zone[] {
             new Zone(this, ZoneType.HAND, ZoneOwner.PLAYER1, 75, false),
@@ -75,6 +76,11 @@ public class PlayField
                 return this.zones[ZoneOwner.convertIndex(zone.getIndex())];
             }
         }
+    }
+    
+    public DuelManager getDuelManager()
+    {
+        return this.duelManager;
     }
     
     public Random getRandom()

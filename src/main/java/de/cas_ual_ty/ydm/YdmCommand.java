@@ -65,7 +65,7 @@ public class YdmCommand
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            Card card = Database.CARDS_LIST.get(setId);
+            Card card = YdmDatabase.CARDS_LIST.get(setId);
             
             if(card != null)
             {
@@ -81,7 +81,7 @@ public class YdmCommand
     
     public static int cardsGive(CommandContext<CommandSource> context, String setId, Collection<ServerPlayerEntity> players, int amount)
     {
-        Card card = Database.CARDS_LIST.get(setId);
+        Card card = YdmDatabase.CARDS_LIST.get(setId);
         
         if(card != null)
         {
@@ -190,7 +190,7 @@ public class YdmCommand
                     int i;
                     CardHolder h;
                     
-                    for(Card card : Database.CARDS_LIST)
+                    for(Card card : YdmDatabase.CARDS_LIST)
                     {
                         for(i = 0; i < amount; ++i)
                         {

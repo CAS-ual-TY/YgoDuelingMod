@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.config;
+package de.cas_ual_ty.ydm.clientutil;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
