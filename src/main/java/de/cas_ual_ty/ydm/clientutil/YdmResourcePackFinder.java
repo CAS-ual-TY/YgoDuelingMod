@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.client;
+package de.cas_ual_ty.ydm.clientutil;
 
 import java.util.Map;
 import java.util.function.Supplier;

@@ -7,7 +7,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.client.ImageHandler;
+import de.cas_ual_ty.ydm.clientutil.ImageHandler;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;

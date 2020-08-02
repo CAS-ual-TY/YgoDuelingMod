@@ -6,8 +6,9 @@ import java.io.IOException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import de.cas_ual_ty.ydm.card.network.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
+import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
+import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.item.ItemStack;
@@ -72,7 +73,7 @@ public class YDM
     {
         YDM.instance = this;
         YDM.proxy = DistExecutor.runForDist(
-            () -> de.cas_ual_ty.ydm.client.ClientProxy::new,
+            () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
             () -> () -> new ISidedProxy()
             {
             });
@@ -121,7 +122,7 @@ public class YDM
         {
             try
             {
-                Database.downloadDatabase();
+                YdmDatabase.downloadDatabase();
                 YDM.mainFolder = new File("ydm_db");
             }
             catch (IOException e)
@@ -153,7 +154,7 @@ public class YDM
         YdmIOUtil.createDirIfNonExistant(YDM.bindersFolder);
         
         YdmIOUtil.setAgent();
-        Database.readFiles();
+        YdmDatabase.readFiles();
     }
     
     private void attachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event)

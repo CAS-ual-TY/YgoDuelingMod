@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.client;
+package de.cas_ual_ty.ydm.clientutil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,16 +6,16 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import de.cas_ual_ty.ydm.Database;
-import de.cas_ual_ty.ydm.ISidedProxy;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
-import de.cas_ual_ty.ydm.config.Configuration;
-import de.cas_ual_ty.ydm.duel.PlaymatScreen;
+import de.cas_ual_ty.ydm.playmat.PlaymatScreen;
+import de.cas_ual_ty.ydm.util.Configuration;
+import de.cas_ual_ty.ydm.util.ISidedProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -90,7 +90,7 @@ public class ClientProxy implements ISidedProxy
         {
             YDM.log("Stitching card item textures!");
             
-            for(Card card : Database.CARDS_LIST)
+            for(Card card : YdmDatabase.CARDS_LIST)
             {
                 event.addSprite(card.getItemImageResourceLocation());
             }

@@ -1,6 +1,6 @@
 package de.cas_ual_ty.ydm;
 
-import de.cas_ual_ty.ydm.duel.PlaymatBlock;
+import de.cas_ual_ty.ydm.playmat.PlaymatBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;

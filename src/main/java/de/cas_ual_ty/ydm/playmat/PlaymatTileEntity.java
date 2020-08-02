@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.playmat;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;

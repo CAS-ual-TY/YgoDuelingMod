@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm;
 
 import de.cas_ual_ty.ydm.cardbinder.CardBinderContainer;
-import de.cas_ual_ty.ydm.duel.PlaymatContainer;
+import de.cas_ual_ty.ydm.playmat.PlaymatContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

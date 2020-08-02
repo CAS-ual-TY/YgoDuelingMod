@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.client;
+package de.cas_ual_ty.ydm.clientutil;
 
 import java.awt.Graphics;
 import java.awt.geom.AffineTransform;
@@ -18,7 +18,7 @@ import java.util.function.Consumer;
 
 import javax.imageio.ImageIO;
 
-import de.cas_ual_ty.ydm.Database;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
@@ -293,7 +293,7 @@ public class ImageHandler
     public static List<Card> getMissingItemImages()
     {
         List<Card> list = new LinkedList<>();
-        for(Card card : Database.CARDS_LIST)
+        for(Card card : YdmDatabase.CARDS_LIST)
         {
             if(!ImageHandler.getItemFile(card.getImageName()).exists())
             {
@@ -305,7 +305,7 @@ public class ImageHandler
     
     public static void downloadAllCardImages()
     {
-        Thread t = new Thread(new ItemImagesWizard(Database.CARDS_LIST, Database.CARDS_LIST.size()));
+        Thread t = new Thread(new ItemImagesWizard(YdmDatabase.CARDS_LIST, YdmDatabase.CARDS_LIST.size()));
         t.start();
     }
     

@@ -1,6 +1,6 @@
 package de.cas_ual_ty.ydm;
 
-import de.cas_ual_ty.ydm.duel.PlaymatTileEntity;
+import de.cas_ual_ty.ydm.playmat.PlaymatTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
