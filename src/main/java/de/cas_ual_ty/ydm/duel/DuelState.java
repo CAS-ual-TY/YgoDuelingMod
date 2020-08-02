@@ -2,11 +2,11 @@ package de.cas_ual_ty.ydm.duel;
 
 public enum DuelState
 {
-    IDLE, DUELING, SIDING;
+    IDLE, DUELING, SIDING, END;
     
     public static final DuelState[] VALUES = DuelState.values();
     
-    public DuelState getFromIndex(int index)
+    public static DuelState getFromIndex(int index)
     {
         return DuelState.VALUES[index];
     }

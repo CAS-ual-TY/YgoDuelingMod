@@ -11,7 +11,24 @@ public enum PlayerRole
         }
     };
     
+    public static final PlayerRole[] VALUES = PlayerRole.values();
+    
+    public static PlayerRole getFromIndex(int index)
+    {
+        return PlayerRole.VALUES[index];
+    }
+    
+    static
+    {
+        int index = 0;
+        for(PlayerRole playerRole : PlayerRole.VALUES)
+        {
+            playerRole.index = index++;
+        }
+    }
+    
     public final Player player;
+    private int index;
     
     private PlayerRole(Player player)
     {
@@ -21,5 +38,10 @@ public enum PlayerRole
     public boolean hasAccess(Player player)
     {
         return player == this.player;
+    }
+    
+    public int getIndex()
+    {
+        return this.index;
     }
 }
