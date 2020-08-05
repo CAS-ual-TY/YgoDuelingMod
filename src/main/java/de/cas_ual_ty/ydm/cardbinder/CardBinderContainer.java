@@ -53,8 +53,6 @@ public class CardBinderContainer extends Container
         
         this.loaded = false;
         
-        Slot s;
-        
         this.containerInv = new Inventory(1);
         this.addSlot(this.insertionSlot = new Slot(this.containerInv, 0, 179, 18)
         {
@@ -90,25 +88,12 @@ public class CardBinderContainer extends Container
         {
             for(int x = 0; x < 9; ++x)
             {
-                s = new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 139 + y * 18);
-                
-                if(s.getStack() == itemStack)
-                {
-                    s = new Slot(playerInventory, s.getSlotIndex(), s.xPos, s.yPos)
-                    {
-                        @Override
-                        public boolean canTakeStack(PlayerEntity playerIn)
-                        {
-                            return false;
-                        }
-                    };
-                }
-                
-                this.addSlot(s);
+                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 139 + y * 18));
             }
         }
         
         // player hot bar
+        Slot s;
         for(int x = 0; x < 9; ++x)
         {
             s = new Slot(playerInventory, x, 8 + x * 18, 197);
