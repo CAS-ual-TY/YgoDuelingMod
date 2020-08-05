@@ -3,11 +3,15 @@ package de.cas_ual_ty.ydm;
 import java.io.File;
 import java.io.IOException;
 
+import javax.annotation.Nonnull;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
+import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
+import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -30,6 +34,9 @@ import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 @Mod(YDM.MOD_ID)
 public class YDM
@@ -183,6 +190,39 @@ public class YDM
                 }
             };
             event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_inventory_manager"), provider);
+            event.addListener(instance::invalidate);
+        }
+        else if(event.getObject() instanceof ItemStack && event.getObject().getItem() instanceof DeckBoxItem)
+        {
+            final LazyOptional<IItemHandler> instance = LazyOptional.of(() -> new ItemStackHandler(IDeckHolder.TOTAL_DECK_SIZE)
+            {
+                @Override
+                public boolean isItemValid(int slot, @Nonnull ItemStack stack)
+                {
+                    return stack.getItem() == YdmItems.CARD;
+                }
+            });
+            final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>()
+            {
+                @Override
+                public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
+                {
+                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, instance);
+                }
+                
+                @Override
+                public INBT serializeNBT()
+                {
+                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null);
+                }
+                
+                @Override
+                public void deserializeNBT(INBT nbt)
+                {
+                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null, nbt);
+                }
+            };
+            event.addCapability(new ResourceLocation(YDM.MOD_ID, "item_handler"), provider);
             event.addListener(instance::invalidate);
         }
     }

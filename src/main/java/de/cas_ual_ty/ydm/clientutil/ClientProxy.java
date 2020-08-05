@@ -13,6 +13,7 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
+import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.playmat.PlaymatScreen;
 import de.cas_ual_ty.ydm.util.Configuration;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
@@ -82,6 +83,7 @@ public class ClientProxy implements ISidedProxy
         
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.PLAYMAT, PlaymatScreen::new);
+        ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
     }
     
     private void textureStitch(TextureStitchEvent.Pre event)
