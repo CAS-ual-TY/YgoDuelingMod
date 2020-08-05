@@ -14,4 +14,6 @@ public interface IDuelSynchronizer
     void sendDuelStateTo(PlayerEntity player, DuelState state);
     
     void sendRoleTo(PlayerEntity player, PlayerRole role);
+    
+    void sendChatTo(PlayerEntity player, String message);
 }

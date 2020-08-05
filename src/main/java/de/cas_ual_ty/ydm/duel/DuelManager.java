@@ -26,6 +26,7 @@ public class DuelManager
     public PlayField playField;
     
     public List<Action> actions;
+    public List<String> messages;
     
     public DuelManager(IDuelSynchronizer synchronizer, @Nullable IDuelTicker ticker)
     {
@@ -33,6 +34,7 @@ public class DuelManager
         this.ticker = ticker;
         this.spectators = new LinkedList<>();
         this.actions = new LinkedList<>();
+        this.messages = new LinkedList<>();
         this.reset();
     }
     
@@ -44,6 +46,9 @@ public class DuelManager
         this.player2Id = -1;
         this.player1 = null;
         this.player2 = null;
+        this.spectators.clear();
+        this.actions.clear();
+        this.messages.clear();
         this.playField = new PlayField(this);
     }
     
@@ -227,7 +232,13 @@ public class DuelManager
     public void receiveActionFrom(PlayerRole role, Action action)
     {
         this.sendActionToAll(action);
+        this.logAction(action);
         action.doAction();
+    }
+    
+    public void logAction(Action action)
+    {
+        this.actions.add(action);
     }
     
     // is this really needed?
@@ -341,5 +352,10 @@ public class DuelManager
     protected void sendRoleTo(PlayerEntity player, PlayerRole role)
     {
         this.synchronizer.sendRoleTo(player, role);
+    }
+    
+    protected void sendMessageTo(PlayerEntity player, String message)
+    {
+        this.synchronizer.sendChatTo(player, message);
     }
 }
