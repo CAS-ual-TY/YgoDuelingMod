@@ -45,7 +45,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         // main deck
         
         amount = 0;
-        for(int i = 0; i < IDeckHolder.MAIN_DECK_SIZE; ++i)
+        for(int i = IDeckHolder.MAIN_DECK_INDEX_START; i < IDeckHolder.MAIN_DECK_INDEX_END; ++i)
         {
             s = this.getContainer().getSlot(i);
             
@@ -61,7 +61,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         // extra deck
         
         amount = 0;
-        for(int i = IDeckHolder.MAIN_DECK_SIZE; i < IDeckHolder.MAIN_DECK_SIZE + IDeckHolder.EXTRA_DECK_SIZE; ++i)
+        for(int i = IDeckHolder.EXTRA_DECK_INDEX_START; i < IDeckHolder.EXTRA_DECK_INDEX_END; ++i)
         {
             s = this.getContainer().getSlot(i);
             
@@ -77,7 +77,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         // side deck
         
         amount = 0;
-        for(int i = IDeckHolder.MAIN_DECK_SIZE + IDeckHolder.EXTRA_DECK_SIZE; i < IDeckHolder.TOTAL_DECK_SIZE; ++i)
+        for(int i = IDeckHolder.SIDE_DECK_INDEX_START; i < IDeckHolder.SIDE_DECK_INDEX_END; ++i)
         {
             s = this.getContainer().getSlot(i);
             
@@ -101,45 +101,5 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         int x = (this.width - this.xSize) / 2;
         int y = (this.height - this.ySize) / 2;
         this.blit(x, y, 0, 0, this.xSize, this.ySize);
-        
-        Slot s;
-        String text;
-        int width;
-        
-        for(int i = 0; i < IDeckHolder.MAIN_DECK_SIZE; ++i)
-        {
-            s = this.getContainer().getSlot(i);
-            
-            if(s != null && !s.getHasStack())
-            {
-                text = String.valueOf(s.getSlotIndex() + 1);
-                width = this.font.getStringWidth(text);
-                this.font.drawString(text, this.guiLeft + s.xPos + (16 - width) / 2, this.guiTop + s.yPos + (16 - this.font.FONT_HEIGHT) / 2 + 1, 0x404040);
-            }
-        }
-        
-        for(int i = 0; i < IDeckHolder.EXTRA_DECK_SIZE; ++i)
-        {
-            s = this.getContainer().getSlot(IDeckHolder.MAIN_DECK_SIZE + i);
-            
-            if(s != null && !s.getHasStack())
-            {
-                text = String.valueOf(s.getSlotIndex() + 1 - IDeckHolder.MAIN_DECK_SIZE);
-                width = this.font.getStringWidth(text);
-                this.font.drawString(text, this.guiLeft + s.xPos + (16 - width) / 2, this.guiTop + s.yPos + (16 - this.font.FONT_HEIGHT) / 2 + 1, 0x404040);
-            }
-        }
-        
-        for(int i = 0; i < IDeckHolder.SIDE_DECK_SIZE; ++i)
-        {
-            s = this.getContainer().getSlot(IDeckHolder.MAIN_DECK_SIZE + IDeckHolder.EXTRA_DECK_SIZE + i);
-            
-            if(s != null && !s.getHasStack())
-            {
-                text = String.valueOf(s.getSlotIndex() + 1 - IDeckHolder.MAIN_DECK_SIZE - IDeckHolder.EXTRA_DECK_SIZE);
-                width = this.font.getStringWidth(text);
-                this.font.drawString(text, this.guiLeft + s.xPos + (16 - width) / 2, this.guiTop + s.yPos + (16 - this.font.FONT_HEIGHT) / 2 + 1, 0x404040);
-            }
-        }
     }
 }

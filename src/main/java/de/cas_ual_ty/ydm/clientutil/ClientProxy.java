@@ -4,6 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
@@ -140,10 +142,11 @@ public class ClientProxy implements ISidedProxy
         CardHolder card = null;
         
         Screen screen = Minecraft.getInstance().currentScreen;
+        ContainerScreen<?> containerScreen = null;
         
         if(screen instanceof ContainerScreen)
         {
-            ContainerScreen<?> containerScreen = (ContainerScreen<?>)screen;
+            containerScreen = (ContainerScreen<?>)screen;
             
             if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty() && containerScreen.getSlotUnderMouse().getStack().getItem() == YdmItems.CARD)
             {
@@ -170,17 +173,25 @@ public class ClientProxy implements ISidedProxy
         
         if(card != null && card.getCard() != null)
         {
-            ClientProxy.renderCardInfo(card);
+            ClientProxy.renderCardInfo(card, containerScreen);
         }
     }
     
     @SuppressWarnings("resource")
-    public static void renderCardInfo(CardHolder card)
+    public static void renderCardInfo(CardHolder card, @Nullable ContainerScreen<?> screen)
     {
         float f = 0.5f;
         
         // TODO make width dependent on current screen
         int maxWidth = 200;
+        
+        /*
+        if(screen != null)
+        {
+            Minecraft.getInstance().getMainWindow().SC
+            maxWidth = screen.getGuiLeft() - 4;
+        }
+        */
         
         RenderSystem.pushMatrix();
         //        RenderSystem.enableBlend();

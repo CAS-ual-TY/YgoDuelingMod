@@ -86,7 +86,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
             {
                 if(button.getCard() != null)
                 {
-                    ClientProxy.renderCardInfo(button.getCard());
+                    ClientProxy.renderCardInfo(button.getCard(), this);
                     
                     List<ITextComponent> list = new LinkedList<>();
                     button.getCard().addInformation(list);

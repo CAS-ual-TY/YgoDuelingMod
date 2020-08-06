@@ -23,25 +23,27 @@ public class DeckBoxContainer extends Container
         
         IItemHandler itemHandler = YdmItems.BLACK_DECK_BOX.getItemHandler(itemStack);
         
+        final int itemsPerRow = 15;
+        
         // main deck
-        for(int y = 0; y < 4; ++y)
+        for(int y = 0; y < IDeckHolder.MAIN_DECK_SIZE / itemsPerRow; ++y)
         {
-            for(int x = 0; x < 15; ++x)
+            for(int x = 0; x < itemsPerRow && x + y * itemsPerRow < IDeckHolder.MAIN_DECK_SIZE; ++x)
             {
-                this.addSlot(new SlotItemHandler(itemHandler, x + y * 15, 8 + x * 16, 17 + y * 16));
+                this.addSlot(new SlotItemHandler(itemHandler, x + y * itemsPerRow + IDeckHolder.MAIN_DECK_INDEX_START, 8 + x * 16, 17 + y * 16));
             }
         }
         
         // extra deck
-        for(int x = 0; x < 15; ++x)
+        for(int x = 0; x < IDeckHolder.EXTRA_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + 60, 8 + x * 16, 95));
+            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 16, 95));
         }
         
         // side deck
-        for(int x = 0; x < 15; ++x)
+        for(int x = 0; x < IDeckHolder.SIDE_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + 75, 8 + x * 16, 125));
+            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.SIDE_DECK_INDEX_START, 8 + x * 16, 125));
         }
         
         // player inventory
