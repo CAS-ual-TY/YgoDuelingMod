@@ -51,6 +51,7 @@ public class YDM
     public static YdmItemGroup ydmItemGroup;
     public static YdmItemGroup cardsItemGroup;
     public static volatile boolean itemsUseCardImagesActive;
+    public static volatile boolean itemsUseCardImagesFailed;
     
     public static File mainFolder;
     public static File cardsFolder;
@@ -87,6 +88,7 @@ public class YDM
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
         YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD);
         YDM.itemsUseCardImagesActive = false;
+        YDM.itemsUseCardImagesFailed = false;
         
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);

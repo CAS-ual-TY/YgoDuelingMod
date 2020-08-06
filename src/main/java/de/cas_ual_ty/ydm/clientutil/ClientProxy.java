@@ -81,6 +81,7 @@ public class ClientProxy implements ISidedProxy
             {
                 YDM.log("Items will not use card images, still missing " + list.size() + " images. Fetching...");
                 ImageHandler.downloadCardImages(list);
+                YDM.itemsUseCardImagesFailed = true;
             }
         }
         
@@ -91,11 +92,13 @@ public class ClientProxy implements ISidedProxy
     
     private void textureStitch(TextureStitchEvent.Pre event)
     {
-        if(YDM.itemsUseCardImages)
+        if(YDM.itemsUseCardImages && !YDM.itemsUseCardImagesFailed && !YDM.itemsUseCardImagesActive)
         {
             // sometimes this gets done before YDM.itemsUseCardImagesActive is set to true
             // so lets wait 3 seconds to make sure the value is correct
+            
             YDM.log("Sleeping for 3 seconds to give the worker enough time to check the images...");
+            
             try
             {
                 TimeUnit.SECONDS.sleep(3);
