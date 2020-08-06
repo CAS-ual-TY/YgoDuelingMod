@@ -24,22 +24,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScreenManager;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.config.ModConfig.Type;
 
 public class ClientProxy implements ISidedProxy
 {
@@ -55,14 +53,15 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void registerForgeEventListeners(IEventBus bus)
     {
-        bus.addListener(this::renderGameOverlay);
+        bus.addListener(this::guiScreen);
+        bus.addListener(this::renderGameOverlayPost);
     }
     
     @Override
     public void preInit()
     {
-        Minecraft.getInstance().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
-        ModLoadingContext.get().registerConfig(Type.CLIENT, Configuration.CLIENT_SPEC);
+        ClientProxy.getMinecraft().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Configuration.CLIENT_SPEC);
     }
     
     @Override
@@ -88,6 +87,13 @@ public class ClientProxy implements ISidedProxy
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.PLAYMAT, PlaymatScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
+    }
+    
+    @SuppressWarnings("resource")
+    @Override
+    public PlayerEntity getClientPlayer()
+    {
+        return Minecraft.getInstance().player;
     }
     
     private void textureStitch(TextureStitchEvent.Pre event)
@@ -152,110 +158,87 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
-    @SuppressWarnings("resource")
-    private void renderGameOverlay(TickEvent.RenderTickEvent event)
+    private void guiScreen(GuiScreenEvent.DrawScreenEvent event)
     {
-        if(event.type != TickEvent.Type.RENDER || event.phase != TickEvent.Phase.END)
+        if(event.getGui() instanceof ContainerScreen)
         {
-            return;
-        }
-        
-        CardHolder card = null;
-        
-        Screen screen = Minecraft.getInstance().currentScreen;
-        ContainerScreen<?> containerScreen = null;
-        
-        if(screen instanceof ContainerScreen)
-        {
-            containerScreen = (ContainerScreen<?>)screen;
+            ContainerScreen<?> containerScreen = (ContainerScreen<?>)event.getGui();
             
             if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty() && containerScreen.getSlotUnderMouse().getStack().getItem() == YdmItems.CARD)
             {
-                card = YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack());
+                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()), containerScreen);
             }
-        }
-        else if(Minecraft.getInstance().player != null && screen == null)
-        {
-            PlayerEntity player = Minecraft.getInstance().player;
-            
-            ItemStack itemStack = ItemStack.EMPTY;
-            
-            if(player.getHeldItemMainhand().getItem() == YdmItems.CARD)
-            {
-                itemStack = player.getHeldItemMainhand();
-            }
-            else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
-            {
-                itemStack = player.getHeldItemOffhand();
-            }
-            
-            card = YdmItems.CARD.getCardHolder(itemStack);
-        }
-        
-        if(card != null && card.getCard() != null)
-        {
-            ClientProxy.renderCardInfo(card, containerScreen);
         }
     }
     
     @SuppressWarnings("resource")
+    private void renderGameOverlayPost(RenderGameOverlayEvent.Post event)
+    {
+        if(event.getType() != RenderGameOverlayEvent.ElementType.ALL)
+        {
+            return;
+        }
+        
+        if(this.getClientPlayer() != null && ClientProxy.getMinecraft().currentScreen == null)
+        {
+            PlayerEntity player = this.getClientPlayer();
+            
+            if(player.getHeldItemMainhand().getItem() == YdmItems.CARD)
+            {
+                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()), null);
+            }
+            else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
+            {
+                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()), null);
+            }
+        }
+    }
+    
     public static void renderCardInfo(CardHolder card, @Nullable ContainerScreen<?> screen)
     {
-        float f = 0.5f;
+        final float f = 0.5f;
+        final int imageSize = 64;
+        int margin = 2;
         
-        // TODO make width dependent on current screen
-        int maxWidth = 200;
+        int maxWidth = 100;
         
-        /*
         if(screen != null)
         {
-            Minecraft.getInstance().getMainWindow().SC
-            maxWidth = screen.getGuiLeft() - 4;
+            maxWidth = (screen.width - screen.getXSize()) / 2 - margin * 2;
         }
-        */
         
         RenderSystem.pushMatrix();
-        //        RenderSystem.enableBlend();
         RenderSystem.color4f(1F, 1F, 1F, 1F);
         
-        RenderSystem.translatef(2, 2, 0);
+        {
+            // card texture
+            Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
+            AbstractGui.blit(margin /*(maxWidth - imageSize) / 2 + margin <- do draw it centered */, margin, imageSize, imageSize, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
+        }
+        
+        // need to multiply x2 because we are scaling the text to x0.5
+        maxWidth *= 2;
+        margin *= 2;
         RenderSystem.scalef(f, f, f);
         
         {
-            RenderSystem.pushMatrix();
+            // card description text
             
-            RenderSystem.scalef(f, f, f);
-            
-            Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
-            
-            // 256 somehow needs to be hardcoded
-            // still uses YDM.activeInfoImageSize as size for pictures
-            // and renders them properly
-            // I believe the scalef calls do it but I dont know
-            final int size = 256;
-            AbstractGui.blit(0, 0, 0, 0, 0, size, size, 256, 256);
-            
-            RenderSystem.popMatrix();
-        }
-        
-        {
-            FontRenderer fontRenderer = Minecraft.getInstance().fontRenderer;
+            @SuppressWarnings("resource")
+            FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
             
             List<ITextComponent> list = new LinkedList<>();
             card.getProperties().addInformation(list);
             
             String string = list.stream().map((t) -> t.getFormattedText()).collect(Collectors.joining("\n"));
-            fontRenderer.drawSplitString(string, 0, 139, maxWidth, 0xFFFFFF);
+            fontRenderer.drawSplitString(string, margin, imageSize * 2 + margin * 2 /* extra margin of image */, maxWidth, 0xFFFFFF);
         }
         
-        //        RenderSystem.disableBlend();
         RenderSystem.popMatrix();
     }
     
-    @SuppressWarnings("resource")
-    @Override
-    public PlayerEntity getClientPlayer()
+    public static Minecraft getMinecraft()
     {
-        return Minecraft.getInstance().player;
+        return Minecraft.getInstance();
     }
 }

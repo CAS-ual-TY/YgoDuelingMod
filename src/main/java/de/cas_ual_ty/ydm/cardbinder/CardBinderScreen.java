@@ -24,7 +24,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class CardBinderScreen extends ContainerScreen<CardBinderContainer> implements IHasContainer<CardBinderContainer>
 {
-    private static final ResourceLocation BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
+    private static final ResourceLocation CARD_BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
     
     // https://www.glfw.org/docs/latest/group__keys.html
     private static final int LEFT_SHIFT = 340;
@@ -128,7 +128,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        this.minecraft.getTextureManager().bindTexture(CardBinderScreen.BINDER_GUI_TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(CardBinderScreen.CARD_BINDER_GUI_TEXTURE);
         int x = (this.width - this.xSize) / 2;
         int y = (this.height - this.ySize) / 2;
         this.blit(x, y, 0, 0, this.xSize + 27, CardInventory.DEFAULT_PAGE_ROWS * 18 + 17);
