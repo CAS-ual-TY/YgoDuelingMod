@@ -32,7 +32,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
     {
-        ItemStack stack = this.getActiveDeckBox(player);
+        ItemStack stack = DeckBoxItem.getActiveDeckBox(player);
         
         if(player.getHeldItem(hand) == stack)
         {
@@ -46,7 +46,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     @Override
     public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
     {
-        return new DeckBoxContainer(YdmContainerTypes.DECK_BOX, id, playerInv, this.getActiveDeckBox(player));
+        return new DeckBoxContainer(YdmContainerTypes.DECK_BOX, id, playerInv, DeckBoxItem.getActiveDeckBox(player));
     }
     
     @Override
@@ -60,13 +60,13 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         return new ItemHandlerDeckHolder(this.getItemHandler(itemStack));
     }
     
-    public ItemStack getActiveDeckBox(PlayerEntity player)
+    public static ItemStack getActiveDeckBox(PlayerEntity player)
     {
-        if(player.getHeldItemMainhand().getItem() == this)
+        if(player.getHeldItemMainhand().getItem() instanceof DeckBoxItem)
         {
             return player.getHeldItemMainhand();
         }
-        else if(player.getHeldItemOffhand().getItem() == this)
+        else if(player.getHeldItemOffhand().getItem() instanceof DeckBoxItem)
         {
             return player.getHeldItemOffhand();
         }

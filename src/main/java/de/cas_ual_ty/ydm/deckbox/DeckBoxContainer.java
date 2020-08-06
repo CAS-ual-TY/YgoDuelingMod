@@ -14,7 +14,7 @@ public class DeckBoxContainer extends Container
 {
     public DeckBoxContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
-        this(type, id, playerInventory, YdmItems.BLACK_DECK_BOX.getActiveDeckBox(playerInventory.player));
+        this(type, id, playerInventory, DeckBoxItem.getActiveDeckBox(playerInventory.player));
     }
     
     public DeckBoxContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, ItemStack itemStack)
