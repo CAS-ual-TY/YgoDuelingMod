@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.clientutil;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -90,6 +91,23 @@ public class ClientProxy implements ISidedProxy
     
     private void textureStitch(TextureStitchEvent.Pre event)
     {
+        if(YDM.itemsUseCardImages)
+        {
+            // sometimes this gets done before YDM.itemsUseCardImagesActive is set to true
+            // so lets wait 3 seconds to make sure the value is correct
+            YDM.log("Sleeping for 3 seconds to give the worker enough time to check the images...");
+            try
+            {
+                TimeUnit.SECONDS.sleep(3);
+                YDM.log("A W A K E N I N G from 3 seconds sleep.");
+            }
+            catch (InterruptedException e)
+            {
+                YDM.log("Tried sleeping to give textures enough time... It didnt work :(");
+                e.printStackTrace();
+            }
+        }
+        
         if(YDM.itemsUseCardImagesActive)
         {
             YDM.log("Stitching card item textures!");

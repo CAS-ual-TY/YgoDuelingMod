@@ -50,7 +50,7 @@ public class YDM
     public static ISidedProxy proxy;
     public static YdmItemGroup ydmItemGroup;
     public static YdmItemGroup cardsItemGroup;
-    public static boolean itemsUseCardImagesActive;
+    public static volatile boolean itemsUseCardImagesActive;
     
     public static File mainFolder;
     public static File cardsFolder;
