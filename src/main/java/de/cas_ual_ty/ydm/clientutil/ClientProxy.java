@@ -171,7 +171,6 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
-    @SuppressWarnings("resource")
     private void renderGameOverlayPost(RenderGameOverlayEvent.Post event)
     {
         if(event.getType() != RenderGameOverlayEvent.ElementType.ALL)
@@ -211,10 +210,19 @@ public class ClientProxy implements ISidedProxy
         RenderSystem.color4f(1F, 1F, 1F, 1F);
         
         {
+            int x = margin;
+            
+            if(maxWidth < imageSize)
+            {
+                // draw it centered if the space we got is limited
+                // to make sure the image is NOT rendered more to the right of the center
+                x = (maxWidth - imageSize) / 2 + margin;
+            }
+            
             // card texture
             Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
             //blit(int x, int y, int desiredWidth, int desiredHeight, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight);
-            AbstractGui.blit(margin /*(maxWidth - imageSize) / 2 + margin <- do draw it centered */, margin, imageSize, imageSize, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
+            AbstractGui.blit(x, margin, imageSize, imageSize, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
         }
         
         // need to multiply x2 because we are scaling the text to x0.5
