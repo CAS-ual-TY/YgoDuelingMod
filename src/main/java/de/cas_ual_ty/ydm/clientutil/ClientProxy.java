@@ -203,7 +203,7 @@ public class ClientProxy implements ISidedProxy
         
         if(screen != null)
         {
-            maxWidth = (screen.width - screen.getXSize()) / 2 - margin * 2;
+            maxWidth = /*(screen.width - screen.getXSize()) / 2*/ screen.getGuiLeft() - margin * 2;
         }
         
         RenderSystem.pushMatrix();

@@ -37,17 +37,19 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     
     protected boolean shiftDown;
     
+    protected int centerX;
+    protected int centerY;
+    
     public CardBinderScreen(CardBinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.ySize = 114 + CardInventory.DEFAULT_PAGE_ROWS * 18;
         this.shiftDown = false;
     }
     
     @Override
-    public void init(Minecraft mc, int mouseX, int mouseY)
+    public void init(Minecraft mc, int width, int height)
     {
-        super.init(mc, mouseX, mouseY);
+        super.init(mc, width, height);
         
         int index;
         CardButton button;
@@ -71,6 +73,15 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
         this.nextButton = new Button(centerX + 80, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.next").getFormattedText(), this::onButtonClicked);
         this.addButton(this.prevButton);
         this.addButton(this.nextButton);
+    }
+    
+    @Override
+    protected void init()
+    {
+        this.xSize = 176;
+        this.ySize = 114 + CardInventory.DEFAULT_PAGE_ROWS * 18; //222
+        super.init();
+        this.xSize += 27; //insertion slot on the right; gui is not centered
     }
     
     @Override
@@ -129,10 +140,8 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(CardBinderScreen.CARD_BINDER_GUI_TEXTURE);
-        int x = (this.width - this.xSize) / 2;
-        int y = (this.height - this.ySize) / 2;
-        this.blit(x, y, 0, 0, this.xSize + 27, CardInventory.DEFAULT_PAGE_ROWS * 18 + 17);
-        this.blit(x, y + CardInventory.DEFAULT_PAGE_ROWS * 18 + 17, 0, 126, this.xSize + 27, 96);
+        this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize + 27, CardInventory.DEFAULT_PAGE_ROWS * 18 + 17);
+        this.blit(this.guiLeft, this.guiTop + CardInventory.DEFAULT_PAGE_ROWS * 18 + 17, 0, 126, this.xSize + 27, 96);
     }
     
     protected void onButtonClicked(Button button)

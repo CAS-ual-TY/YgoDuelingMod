@@ -19,14 +19,20 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
     public DeckBoxScreen(DeckBoxContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.xSize = 284;
-        this.ySize = 250;
     }
     
     @Override
-    public void init(Minecraft mc, int mouseX, int mouseY)
+    public void init(Minecraft mc, int width, int height)
     {
-        super.init(mc, mouseX, mouseY);
+        super.init(mc, width, height);
+    }
+    
+    @Override
+    protected void init()
+    {
+        this.xSize = 284;
+        this.ySize = 250;
+        super.init();
     }
     
     @Override
@@ -99,8 +105,6 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(DeckBoxScreen.DECK_BOX_GUI_TEXTURE);
-        int x = (this.width - this.xSize) / 2;
-        int y = (this.height - this.ySize) / 2;
-        ClientProxy.blit(x, y, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
+        ClientProxy.blit(this.guiLeft, this.guiTop, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
     }
 }
