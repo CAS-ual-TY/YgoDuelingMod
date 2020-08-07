@@ -7,8 +7,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 
 public class CardButton extends AbstractButton
@@ -33,8 +33,7 @@ public class CardButton extends AbstractButton
         {
             Minecraft minecraft = Minecraft.getInstance();
             minecraft.getTextureManager().bindTexture(card.getMainImageResourceLocation());
-            //blit(int x, int y, int desiredWidth, int desiredHeight, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight);
-            AbstractGui.blit(this.x + 1, this.y + 1, 16, 16, 0, 0, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize);
+            ClientProxy.blit(this.x + 1, this.y + 1, 16, 16, 0, 0, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize);
             
             if(this.isHovered())
             {

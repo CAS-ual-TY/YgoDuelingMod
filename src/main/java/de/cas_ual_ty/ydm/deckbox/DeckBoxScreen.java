@@ -3,8 +3,8 @@ package de.cas_ual_ty.ydm.deckbox;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
@@ -101,7 +101,6 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         this.minecraft.getTextureManager().bindTexture(DeckBoxScreen.DECK_BOX_GUI_TEXTURE);
         int x = (this.width - this.xSize) / 2;
         int y = (this.height - this.ySize) / 2;
-        //blit(int x, int y, int desiredWidth, int desiredHeight, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight);
-        AbstractGui.blit(x, y, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
+        ClientProxy.blit(x, y, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
     }
 }

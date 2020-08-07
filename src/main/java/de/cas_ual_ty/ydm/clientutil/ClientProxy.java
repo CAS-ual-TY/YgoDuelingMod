@@ -221,8 +221,7 @@ public class ClientProxy implements ISidedProxy
             
             // card texture
             Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
-            //blit(int x, int y, int desiredWidth, int desiredHeight, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight);
-            AbstractGui.blit(x, margin, imageSize, imageSize, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
+            ClientProxy.blit(x, margin, imageSize, imageSize, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
         }
         
         // need to multiply x2 because we are scaling the text to x0.5
@@ -244,6 +243,27 @@ public class ClientProxy implements ISidedProxy
         }
         
         RenderSystem.popMatrix();
+    }
+    
+    /**
+     * Param 1-4: Where to and how big to draw on the screen
+     * Param 5-8: What part of the texture file to cut out and draw
+     * Param 9-10: How big the entire texture file is in general (pow2 only)
+     * 
+     * @param renderPosX Where to draw on the screen
+     * @param renderPosY Where to draw on the screen
+     * @param renderWidth How big to draw on the screen
+     * @param renderHeight How big to draw on the screen
+     * @param textureX
+     * @param textureY
+     * @param textureWidth
+     * @param textureHeight
+     * @param totalTextureWidth The total texture file size
+     * @param totalTextureHeight The total texture file size
+     */
+    public static void blit(int renderPosX, int renderPosY, int renderWidth, int renderHeight, int textureX, int textureY, int textureWidth, int textureHeight, int totalTextureWidth, int totalTextureHeight)
+    {
+        AbstractGui.blit(renderPosX, renderPosY, renderWidth, renderHeight, textureX, textureY, textureWidth, textureHeight, totalTextureWidth, totalTextureHeight);
     }
     
     public static Minecraft getMinecraft()
