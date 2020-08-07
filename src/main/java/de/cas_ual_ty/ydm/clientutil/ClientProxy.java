@@ -213,6 +213,7 @@ public class ClientProxy implements ISidedProxy
         {
             // card texture
             Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
+            //blit(int x, int y, int desiredWidth, int desiredHeight, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight);
             AbstractGui.blit(margin /*(maxWidth - imageSize) / 2 + margin <- do draw it centered */, margin, imageSize, imageSize, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
         }
         

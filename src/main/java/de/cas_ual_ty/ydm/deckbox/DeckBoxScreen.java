@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Slot;
@@ -18,8 +19,8 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
     public DeckBoxScreen(DeckBoxContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.xSize = 256;
-        this.ySize = 238;
+        this.xSize = 284;
+        this.ySize = 250;
     }
     
     @Override
@@ -72,7 +73,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         }
         
         String extra = new TranslationTextComponent("container.ydm.deck_box.extra").getFormattedText() + " " + amount + "/" + IDeckHolder.EXTRA_DECK_SIZE;
-        this.font.drawString(extra, 8F, 84F, 0x404040);
+        this.font.drawString(extra, 8F, 92F, 0x404040);
         
         // side deck
         
@@ -88,7 +89,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         }
         
         String side = new TranslationTextComponent("container.ydm.deck_box.side").getFormattedText() + " " + amount + "/" + IDeckHolder.SIDE_DECK_SIZE;
-        this.font.drawString(side, 8F, 114F, 0x404040);
+        this.font.drawString(side, 8F, 124F, 0x404040);
         
         this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8F, (float)(this.ySize - 96 + 2), 0x404040);
     }
@@ -100,6 +101,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         this.minecraft.getTextureManager().bindTexture(DeckBoxScreen.DECK_BOX_GUI_TEXTURE);
         int x = (this.width - this.xSize) / 2;
         int y = (this.height - this.ySize) / 2;
-        this.blit(x, y, 0, 0, this.xSize, this.ySize);
+        //blit(int x, int y, int desiredWidth, int desiredHeight, int textureX, int textureY, int width, int height, int textureWidth, int textureHeight);
+        AbstractGui.blit(x, y, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
     }
 }

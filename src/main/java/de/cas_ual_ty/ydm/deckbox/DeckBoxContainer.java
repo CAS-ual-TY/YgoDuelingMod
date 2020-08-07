@@ -30,20 +30,20 @@ public class DeckBoxContainer extends Container
         {
             for(int x = 0; x < itemsPerRow && x + y * itemsPerRow < IDeckHolder.MAIN_DECK_SIZE; ++x)
             {
-                this.addSlot(new SlotItemHandler(itemHandler, x + y * itemsPerRow + IDeckHolder.MAIN_DECK_INDEX_START, 8 + x * 16, 17 + y * 16));
+                this.addSlot(new SlotItemHandler(itemHandler, x + y * itemsPerRow + IDeckHolder.MAIN_DECK_INDEX_START, 8 + x * 18, 18 + y * 18));
             }
         }
         
         // extra deck
         for(int x = 0; x < IDeckHolder.EXTRA_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 16, 95));
+            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 18, 104));
         }
         
         // side deck
         for(int x = 0; x < IDeckHolder.SIDE_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.SIDE_DECK_INDEX_START, 8 + x * 16, 125));
+            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
         
         // player inventory
@@ -51,7 +51,7 @@ public class DeckBoxContainer extends Container
         {
             for(int x = 0; x < 9; ++x)
             {
-                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 48 + x * 18, 156 + y * 18));
+                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 62 + x * 18, 168 + y * 18));
             }
         }
         
@@ -59,7 +59,7 @@ public class DeckBoxContainer extends Container
         Slot s;
         for(int x = 0; x < 9; ++x)
         {
-            s = new Slot(playerInventory, x, 48 + x * 18, 214);
+            s = new Slot(playerInventory, x, 62 + x * 18, 226);
             
             if(s.getStack() == itemStack)
             {
