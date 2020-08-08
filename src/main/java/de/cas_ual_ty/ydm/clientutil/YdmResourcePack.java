@@ -85,24 +85,35 @@ public class YdmResourcePack extends ResourcePack
             return null;
         }
         
-        // remove .png
-        filename = filename.substring(0, filename.length() - ".png".length());
-        
         // We only look for assets with this path as prefix (so eg. no models)
-        if(ImageHandler.hasSuffix(filename) && filename.startsWith("assets/ydm/textures/item/"))
+        if(!filename.startsWith("assets/ydm/textures/item/"))
         {
-            // We remove that prefix part
-            filename = filename.substring("assets/ydm/textures/item/".length());
-            
-            File image = ImageHandler.getFileBySuffix(filename);
-            
-            if(image.exists())
-            {
-                return image;
-            }
+            return null;
         }
         
-        return null;
+        // remove .png to check for suffix
+        filename = filename.substring(0, filename.length() - ".png".length());
+        
+        if(!ImageHandler.hasSuffix(filename))
+        {
+            return null;
+        }
+        
+        // all checks passed. Now lets see if it exists.
+        
+        // We remove that prefix part
+        filename = filename.substring("assets/ydm/textures/item/".length());
+        
+        File image = ImageHandler.getFileBySuffix(filename);
+        
+        if(image.exists())
+        {
+            return image;
+        }
+        else
+        {
+            return null;
+        }
     }
     
     @Override
