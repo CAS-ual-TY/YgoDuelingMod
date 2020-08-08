@@ -119,7 +119,7 @@ public class ClientProxy implements ISidedProxy
         
         if(YDM.itemsUseCardImagesActive)
         {
-            YDM.log("Stitching card item textures!");
+            YDM.log("Stitching " + YdmDatabase.CARDS_LIST.size() + " card item textures!");
             
             for(Card card : YdmDatabase.CARDS_LIST)
             {
@@ -137,6 +137,8 @@ public class ClientProxy implements ISidedProxy
     
     private void modelBake(ModelBakeEvent event)
     {
+        YDM.log("Baking models (size: " + YDM.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
+        
         event.getModelRegistry().put(new ModelResourceLocation(YdmItems.BLANC_CARD.getRegistryName(), "inventory"),
             event.getModelRegistry().get(
                 new ModelResourceLocation(
