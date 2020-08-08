@@ -152,12 +152,17 @@ public class ImageHandler
     
     public static String cutSuffix(String imageName)
     {
-        if(ImageHandler.hasInfoSuffix(imageName) || ImageHandler.hasItemSuffix(imageName) || ImageHandler.hasMainSuffix(imageName))
+        if(ImageHandler.hasSuffix(imageName))
         {
             imageName = imageName.substring(0, imageName.length() - 5);
         }
         
         return imageName;
+    }
+    
+    public static boolean hasSuffix(String imageName)
+    {
+        return ImageHandler.hasInfoSuffix(imageName) || ImageHandler.hasItemSuffix(imageName) || ImageHandler.hasMainSuffix(imageName);
     }
     
     public static String addInfoSuffix(String imageName)
