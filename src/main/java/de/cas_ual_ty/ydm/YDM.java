@@ -105,7 +105,7 @@ public class YDM
     
     private void init(FMLCommonSetupEvent event)
     {
-        YDM.log("Sizes from config (info/item/main): " + YDM.activeInfoImageSize + " / " + YDM.activeItemImageSize + "(" + YDM.itemsUseCardImages + "/" + YDM.itemsUseCardImagesActive + ") / " + YDM.activeMainImageSize);
+        YDM.log("Sizes from config (info/item/main): " + YDM.activeInfoImageSize + " / " + YDM.activeItemImageSize + " (" + YDM.itemsUseCardImages + ") / " + YDM.activeMainImageSize);
         
         YDM.channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(YDM.MOD_ID, "main"),
             () -> YDM.PROTOCOL_VERSION,

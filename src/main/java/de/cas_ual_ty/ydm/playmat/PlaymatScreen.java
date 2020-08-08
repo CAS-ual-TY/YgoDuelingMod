@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.playmat;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -32,13 +33,19 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         super.init();
     }
     
+    protected void drawFullRectForeground(float r, float g, float b, float a)
+    {
+        ClientProxy.drawRect(0, 0, this.xSize, this.ySize, r, g, b, a);
+    }
+    
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         String text = this.getContainer().getDuelManager().duelState.name();
         int width = this.font.getStringWidth(text);
         int height = this.font.FONT_HEIGHT;
-        this.font.drawString(text, (this.xSize - width) / 2F, (this.ySize - height) / 2F, 0x404040);
+        this.drawFullRectForeground(0, 0, 0, 0.5F);
+        this.font.drawString(text, (this.xSize - width) / 2F, (this.ySize - height) / 2F, 0xFF4040);
     }
     
     @Override

@@ -7,6 +7,9 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import org.lwjgl.opengl.GL11;
+
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
@@ -25,7 +28,10 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.renderer.BufferBuilder;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
@@ -267,6 +273,38 @@ public class ClientProxy implements ISidedProxy
     public static void blit(int renderX, int renderY, int renderWidth, int renderHeight, int textureX, int textureY, int textureWidth, int textureHeight, int totalTextureFileWidth, int totalTextureFileHeight)
     {
         AbstractGui.blit(renderX, renderY, renderWidth, renderHeight, textureX, textureY, textureWidth, textureHeight, totalTextureFileWidth, totalTextureFileHeight);
+    }
+    
+    public static void drawRect(int x, int y, int w, int h, float r, float g, float b, float a)
+    {
+        Tessellator tessellator = Tessellator.getInstance();
+        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        
+        // Prep time
+        GlStateManager.enableBlend(); // We do need blending
+        GlStateManager.disableTexture(); // We dont need textures
+        
+        // Make sure alpha is working
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
+        
+        // Set the color!
+        RenderSystem.color4f(r, g, b, a);
+        
+        // Start drawing
+        bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
+        
+        // Add vertices
+        bufferbuilder.pos(x, y + h, 0.0D).endVertex(); // BL
+        bufferbuilder.pos(x + w, y + h, 0.0D).endVertex(); // BR
+        bufferbuilder.pos(x + w, y, 0.0D).endVertex(); // TR
+        bufferbuilder.pos(x, y, 0.0D).endVertex(); // TL
+        
+        // End drawing
+        tessellator.draw();
+        
+        // Cleanup time
+        GlStateManager.enableTexture(); // Turn textures back on
+        GlStateManager.disableBlend(); // Turn blending uhh... back off?
     }
     
     public static Minecraft getMinecraft()
