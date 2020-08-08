@@ -34,8 +34,8 @@ public class ImageHandler
     private static final String ITEM_SUFFIX = "_item";
     private static final String MAIN_SUFFIX = "_main";
     
-    private static final ImageHandler INFO_IMAGE_HANDLER = new ImageHandler(YDM.activeInfoImageSize, YDM.cardInfoImagesFolder, (p, i) -> p.getInfoImageName(i));
-    private static final ImageHandler MAIN_IMAGE_HANDLER = new ImageHandler(YDM.activeMainImageSize, YDM.cardMainImagesFolder, (p, i) -> p.getMainImageName(i));
+    private static ImageHandler INFO_IMAGE_HANDLER = null;
+    private static ImageHandler MAIN_IMAGE_HANDLER = null;
     
     private DNCList<String, String> FINAL_IMAGE_READY_LIST = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
     private List<String> IN_PROGRESS = new LinkedList<>();
@@ -44,6 +44,12 @@ public class ImageHandler
     private int imageSize;
     private File parentFolder;
     private BiFunction<Properties, Byte, String> nameGetter;
+    
+    public static void init()
+    {
+        ImageHandler.INFO_IMAGE_HANDLER = new ImageHandler(YDM.activeInfoImageSize, YDM.cardInfoImagesFolder, (p, i) -> p.getInfoImageName(i));
+        ImageHandler.MAIN_IMAGE_HANDLER = new ImageHandler(YDM.activeMainImageSize, YDM.cardMainImagesFolder, (p, i) -> p.getMainImageName(i));
+    }
     
     private ImageHandler(int imageSize, File parentFolder, BiFunction<Properties, Byte, String> nameGetter)
     {

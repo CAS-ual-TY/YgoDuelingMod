@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
+import de.cas_ual_ty.ydm.clientutil.ImageHandler;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
@@ -104,6 +105,8 @@ public class YDM
     
     private void init(FMLCommonSetupEvent event)
     {
+        YDM.log("Sizes from config (info/item/main): " + YDM.activeInfoImageSize + " / " + YDM.activeItemImageSize + "(" + YDM.itemsUseCardImages + "/" + YDM.itemsUseCardImagesActive + ") / " + YDM.activeMainImageSize);
+        
         YDM.channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(YDM.MOD_ID, "main"),
             () -> YDM.PROTOCOL_VERSION,
             YDM.PROTOCOL_VERSION::equals,
@@ -162,6 +165,7 @@ public class YDM
         YdmIOUtil.createDirIfNonExistant(YDM.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.bindersFolder);
         
+        ImageHandler.init();
         YdmIOUtil.setAgent();
         YdmDatabase.readFiles();
     }
