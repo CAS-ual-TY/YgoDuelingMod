@@ -50,10 +50,10 @@ public class PlayField
             new Zone(this, ZoneType.EXTRA_MONSTER, ZoneOwner.NONE),
         };
         
-        int index = 0;
+        byte index = 0;
         for(Zone zone : this.zones)
         {
-            zone.initIndex(index);
+            zone.initIndex(index++);
         }
     }
     
@@ -83,6 +83,11 @@ public class PlayField
     public DuelManager getDuelManager()
     {
         return this.duelManager;
+    }
+    
+    public Zone getZone(byte zoneId)
+    {
+        return this.zones[zoneId];
     }
     
     public Random getRandom()

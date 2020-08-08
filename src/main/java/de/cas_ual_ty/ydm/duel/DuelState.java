@@ -6,23 +6,23 @@ public enum DuelState
     
     public static final DuelState[] VALUES = DuelState.values();
     
-    public static DuelState getFromIndex(int index)
+    public static DuelState getFromIndex(byte index)
     {
         return DuelState.VALUES[index];
     }
     
     static
     {
-        int index = 0;
+        byte index = 0;
         for(DuelState duelState : DuelState.VALUES)
         {
             duelState.index = index++;
         }
     }
     
-    private int index;
+    private byte index;
     
-    public int getIndex()
+    public byte getIndex()
     {
         return this.index;
     }

@@ -1,17 +1,23 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import de.cas_ual_ty.ydm.duel.Zone;
+import net.minecraft.network.PacketBuffer;
 
-public class ViewZoneAction extends VisualAction
+public class ViewZoneAction extends SingleZoneAction
 {
-    public ViewZoneAction(ActionType actionType, Zone from, Zone to, int cardIndex)
+    public ViewZoneAction(ActionType actionType, byte sourceZoneId)
     {
-        super(actionType, from, to, cardIndex);
+        super(actionType, sourceZoneId);
+    }
+    
+    public ViewZoneAction(ActionType actionType, PacketBuffer buf)
+    {
+        super(actionType, buf);
     }
     
     @Override
     public void doAction()
     {
         // TODO view zone action
+        // log it
     }
 }

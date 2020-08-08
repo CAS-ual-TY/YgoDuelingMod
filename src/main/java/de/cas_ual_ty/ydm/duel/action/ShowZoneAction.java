@@ -1,12 +1,17 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import de.cas_ual_ty.ydm.duel.Zone;
+import net.minecraft.network.PacketBuffer;
 
-public class ShowZoneAction extends VisualAction
+public class ShowZoneAction extends SingleZoneAction
 {
-    public ShowZoneAction(ActionType actionType, Zone from, Zone to, int cardIndex)
+    public ShowZoneAction(ActionType actionType, byte sourceZoneId)
     {
-        super(actionType, from, to, cardIndex);
+        super(actionType, sourceZoneId);
+    }
+    
+    public ShowZoneAction(ActionType actionType, PacketBuffer buf)
+    {
+        super(actionType, buf);
     }
     
     @Override

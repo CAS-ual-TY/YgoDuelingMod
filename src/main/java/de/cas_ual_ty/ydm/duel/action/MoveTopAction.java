@@ -1,18 +1,24 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import de.cas_ual_ty.ydm.duel.Zone;
+import de.cas_ual_ty.ydm.duel.CardPosition;
+import net.minecraft.network.PacketBuffer;
 
 public class MoveTopAction extends MoveAction
 {
-    public MoveTopAction(ActionType actionType, Zone from, Zone to, int cardIndex)
+    public MoveTopAction(ActionType actionType, byte zoneId, short cardIndex, byte zoneDestinationId, CardPosition destinationCardPosition)
     {
-        super(actionType, from, to, cardIndex);
+        super(actionType, zoneId, cardIndex, zoneDestinationId, destinationCardPosition);
+    }
+    
+    public MoveTopAction(ActionType actionType, PacketBuffer buf)
+    {
+        super(actionType, buf);
     }
     
     @Override
     protected void doMoveAction()
     {
-        this.getFrom().removeCard(this.getCardIndex());
-        this.getTo().addTopCard(this.getCard());
+        this.sourceZone.removeCard(this.sourceCardIndex);
+        this.destinationZone.addTopCard(this.card);
     }
 }

@@ -1,21 +1,22 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import de.cas_ual_ty.ydm.duel.DuelCard;
-import de.cas_ual_ty.ydm.duel.Zone;
+import net.minecraft.network.PacketBuffer;
 
-public class ShowCardAction extends VisualAction
+public class ShowCardAction extends SingleCardAction
 {
-    protected DuelCard card;
-    
-    public ShowCardAction(ActionType actionType, Zone from, Zone to, int cardIndex)
+    public ShowCardAction(ActionType actionType, byte sourceZoneId, short sourceCardIndex)
     {
-        super(actionType, from, to, cardIndex);
+        super(actionType, sourceZoneId, sourceCardIndex);
+    }
+    
+    public ShowCardAction(ActionType actionType, PacketBuffer buf)
+    {
+        super(actionType, buf);
     }
     
     @Override
     public void doAction()
     {
-        this.card = this.getFrom().getCard(this.getCardIndex());
         // TODO show card action
     }
 }

@@ -231,6 +231,7 @@ public class DuelManager
     
     public void receiveActionFrom(PlayerRole role, Action action)
     {
+        action.init(this.getPlayField());
         this.sendActionToAll(action);
         this.logAction(action);
         action.doAction();

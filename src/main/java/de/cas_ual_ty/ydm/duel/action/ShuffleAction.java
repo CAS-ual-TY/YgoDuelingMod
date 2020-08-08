@@ -3,35 +3,40 @@ package de.cas_ual_ty.ydm.duel.action;
 import java.util.List;
 
 import de.cas_ual_ty.ydm.duel.DuelCard;
-import de.cas_ual_ty.ydm.duel.Zone;
+import net.minecraft.network.PacketBuffer;
 
-public class ShuffleAction extends Action
+public class ShuffleAction extends SingleZoneAction
 {
     protected List<DuelCard> before;
     protected List<DuelCard> after;
     
-    public ShuffleAction(ActionType actionType, Zone from, Zone to, int cardIndex)
+    public ShuffleAction(ActionType actionType, byte sourceZoneId)
     {
-        super(actionType, from, to, cardIndex);
+        super(actionType, sourceZoneId);
+    }
+    
+    public ShuffleAction(ActionType actionType, PacketBuffer buf)
+    {
+        super(actionType, buf);
     }
     
     @Override
     public void doAction()
     {
-        this.before = this.getFrom().shuffle();
-        this.after = this.getFrom().getCardsList();
+        this.before = this.sourceZone.getCardsList();
+        this.sourceZone.shuffle();
+        this.after = this.sourceZone.getCardsList();
     }
     
     @Override
     public void undoAction()
     {
-        this.getFrom().setCardsList(this.before);
+        this.sourceZone.setCardsList(this.before);
     }
     
     @Override
     public void redoAction()
     {
-        this.getTo().setCardsList(this.after);
+        this.sourceZone.setCardsList(this.after);
     }
-    
 }

@@ -20,7 +20,7 @@ public class Zone
     // facedown cards can always only be seen by zone owner
     public boolean isSecret;
     
-    public int index;
+    public byte index;
     
     public Zone(PlayField playField, ZoneType type, ZoneOwner owner, int size, boolean isSecret)
     {
@@ -39,7 +39,7 @@ public class Zone
         this(playField, type, owner, 1, false);
     }
     
-    public void initIndex(int index)
+    public void initIndex(byte index)
     {
         this.index = index;
     }
@@ -54,9 +54,14 @@ public class Zone
         return this.getOwner() != ZoneOwner.NONE;
     }
     
-    public DuelCard getCard(int index)
+    public DuelCard getCard(short index)
     {
         return this.getCardsList().get(index);
+    }
+    
+    public short getCardIndexShort(DuelCard card)
+    {
+        return (short)this.getCardIndex(card);
     }
     
     public int getCardIndex(DuelCard card)
@@ -104,17 +109,12 @@ public class Zone
         return this.getCardsList().size();
     }
     
-    // shuffles and returns the old cards list (old "shuffle")
-    public List<DuelCard> shuffle()
+    public void shuffle()
     {
-        List<DuelCard> oldList = this.getCardsList();
-        
         this.cardsList = new ArrayList<>(this.size);
-        this.cardsList.addAll(oldList);
+        this.cardsList.addAll(this.getCardsList());
         
         Collections.shuffle(this.cardsList, this.playField.getRandom());
-        
-        return oldList;
     }
     
     public void setCardsList(List<DuelCard> list)
@@ -139,7 +139,7 @@ public class Zone
         return this.cardsList;
     }
     
-    public int getIndex()
+    public byte getIndex()
     {
         return this.index;
     }

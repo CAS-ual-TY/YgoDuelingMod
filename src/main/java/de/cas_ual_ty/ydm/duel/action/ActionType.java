@@ -1,21 +1,21 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import de.cas_ual_ty.ydm.duel.Zone;
+import net.minecraft.network.PacketBuffer;
 
 public enum ActionType
 {
-    MOVE_ON_TOP(MoveTopAction::new), MOVE_TO_BOTTOM(MoveBottomAction::new), SHUFFLE(ShuffleAction::new), SHOW_CARD(null), SHOW_ZONE(ShowZoneAction::new), VIEW_ZONE(ViewZoneAction::new), ATTACK(AttackAction::new);
+    MOVE_ON_TOP(MoveTopAction::new), MOVE_TO_BOTTOM(MoveBottomAction::new), SHUFFLE(ShuffleAction::new), SHOW_CARD(ShowCardAction::new), SHOW_ZONE(ShowZoneAction::new), VIEW_ZONE(ViewZoneAction::new), ATTACK(AttackAction::new);
     
     public static final ActionType[] VALUES = ActionType.values();
     
-    public ActionType getFromIndex(int index)
+    public static ActionType getFromIndex(byte index)
     {
         return ActionType.VALUES[index];
     }
     
     static
     {
-        int index = 0;
+        byte index = 0;
         for(ActionType actionType : ActionType.VALUES)
         {
             actionType.index = index++;
@@ -23,7 +23,7 @@ public enum ActionType
     }
     
     public final ActionType.Factory factory;
-    private int index;
+    private byte index;
     
     private ActionType(ActionType.Factory factory)
     {
@@ -35,16 +35,13 @@ public enum ActionType
         return this.factory;
     }
     
-    public int getIndex()
+    public byte getIndex()
     {
         return this.index;
     }
     
     public static interface Factory
     {
-        // from and to can be the same, eg when shuffling
-        // cardIndex to specify which card exactly (eg. which card from hand, which from grave etc.)
-        // ... can be -1 (eg. for shuffle action)
-        Action create(ActionType type, Zone from, Zone to, int cardIndex);
+        Action create(ActionType type, PacketBuffer buf);
     }
 }

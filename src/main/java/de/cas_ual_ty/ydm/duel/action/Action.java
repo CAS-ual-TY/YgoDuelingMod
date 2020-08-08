@@ -1,20 +1,29 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import de.cas_ual_ty.ydm.duel.Zone;
+import de.cas_ual_ty.ydm.duel.PlayField;
+import net.minecraft.network.PacketBuffer;
 
 public abstract class Action
 {
     public final ActionType actionType;
-    public final Zone from;
-    public final Zone to;
-    public final int cardIndex;
     
-    public Action(ActionType actionType, Zone from, Zone to, int cardIndex)
+    public Action(ActionType actionType)
     {
         this.actionType = actionType;
-        this.from = from;
-        this.to = to;
-        this.cardIndex = cardIndex;
+    }
+    
+    public Action(ActionType actionType, PacketBuffer buf)
+    {
+        this(actionType);
+    }
+    
+    public void writeToBuf(PacketBuffer buf)
+    {
+        buf.writeByte(this.actionType.getIndex());
+    }
+    
+    public void init(PlayField playField)
+    {
     }
     
     public abstract void doAction();
@@ -26,20 +35,5 @@ public abstract class Action
     public ActionType getActionType()
     {
         return this.actionType;
-    }
-    
-    public Zone getFrom()
-    {
-        return this.from;
-    }
-    
-    public Zone getTo()
-    {
-        return this.to;
-    }
-    
-    public int getCardIndex()
-    {
-        return this.cardIndex;
     }
 }

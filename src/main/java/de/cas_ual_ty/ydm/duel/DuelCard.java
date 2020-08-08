@@ -39,6 +39,11 @@ public class DuelCard
         return this.isToken;
     }
     
+    public CardPosition getCardPosition()
+    {
+        return this.position;
+    }
+    
     public Player getOwner()
     {
         return this.owner;
