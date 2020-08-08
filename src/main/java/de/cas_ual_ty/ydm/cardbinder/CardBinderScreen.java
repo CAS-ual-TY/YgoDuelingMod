@@ -140,8 +140,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(CardBinderScreen.CARD_BINDER_GUI_TEXTURE);
-        this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize + 27, CardInventory.DEFAULT_PAGE_ROWS * 18 + 17);
-        this.blit(this.guiLeft, this.guiTop + CardInventory.DEFAULT_PAGE_ROWS * 18 + 17, 0, 126, this.xSize + 27, 96);
+        this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }
     
     protected void onButtonClicked(Button button)
