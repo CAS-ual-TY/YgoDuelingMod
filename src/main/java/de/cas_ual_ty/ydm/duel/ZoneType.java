@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duel;
 
 public enum ZoneType
 {
-    HAND, DECK, SPELL_TRAP, SPELL_TRAP_PENDULUM, EXTRA_DECK, GRAVEYARD(true), MONSTER(false, false), FIELD_SPELL, BANISHED(true), EXTRA_MONSTER;
+    HAND, DECK, SPELL_TRAP, SPELL_TRAP_PENDULUM, EXTRA_DECK, GRAVEYARD(true), MONSTER(false, false), FIELD_SPELL, BANISHED(true), EXTRA_MONSTER, EXTRA;
     
     public final boolean straightOnly;
     public final boolean isStrict;

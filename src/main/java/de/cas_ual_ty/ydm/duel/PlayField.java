@@ -26,6 +26,7 @@ public class PlayField
             new Zone(this, ZoneType.MONSTER, ZoneOwner.PLAYER1),
             new Zone(this, ZoneType.FIELD_SPELL, ZoneOwner.PLAYER1),
             new Zone(this, ZoneType.BANISHED, ZoneOwner.PLAYER1, 15, false),
+            new Zone(this, ZoneType.EXTRA, ZoneOwner.PLAYER1),
             
             new Zone(this, ZoneType.HAND, ZoneOwner.PLAYER2, 75, false),
             new Zone(this, ZoneType.DECK, ZoneOwner.PLAYER2, 60, true),
@@ -43,6 +44,7 @@ public class PlayField
             new Zone(this, ZoneType.MONSTER, ZoneOwner.PLAYER2),
             new Zone(this, ZoneType.FIELD_SPELL, ZoneOwner.PLAYER2),
             new Zone(this, ZoneType.BANISHED, ZoneOwner.PLAYER2, 15, false),
+            new Zone(this, ZoneType.EXTRA, ZoneOwner.PLAYER2),
             
             new Zone(this, ZoneType.EXTRA_MONSTER, ZoneOwner.NONE),
             new Zone(this, ZoneType.EXTRA_MONSTER, ZoneOwner.NONE),
