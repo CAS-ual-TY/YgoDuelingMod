@@ -65,7 +65,7 @@ public class YDM
     public static File bindersFolder;
     
     public static int activeInfoImageSize;
-    public static int activeItemImageSize;
+    public static volatile int activeItemImageSize;
     public static int activeMainImageSize;
     public static boolean keepCachedImages;
     public static boolean itemsUseCardImages;

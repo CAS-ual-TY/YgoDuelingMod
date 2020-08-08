@@ -130,6 +130,7 @@ public class ClientProxy implements ISidedProxy
     
     private void modelRegistry(ModelRegistryEvent event)
     {
+        YDM.log("Registering models (size: " + YDM.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
         ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory"));
         ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory"));
     }
