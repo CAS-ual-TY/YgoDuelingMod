@@ -358,4 +358,36 @@ public class DuelManager
     {
         this.synchronizer.sendChatTo(player, message);
     }
+    
+    // --- Getters ---
+    
+    public IDuelSynchronizer getSynchronizer()
+    {
+        return this.synchronizer;
+    }
+    
+    public IDuelTicker getTicker()
+    {
+        return this.ticker;
+    }
+    
+    public DuelState getDuelState()
+    {
+        return this.duelState;
+    }
+    
+    public PlayField getPlayField()
+    {
+        return this.playField;
+    }
+    
+    public List<Action> getActions()
+    {
+        return this.actions;
+    }
+    
+    public List<String> getMessages()
+    {
+        return this.messages;
+    }
 }
