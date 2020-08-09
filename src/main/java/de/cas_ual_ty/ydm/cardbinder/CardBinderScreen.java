@@ -145,6 +145,11 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     
     protected void onButtonClicked(Button button)
     {
+        if(!this.getContainer().loaded)
+        {
+            return;
+        }
+        
         if(button == this.prevButton)
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.ChangePage(false));
@@ -157,6 +162,11 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     
     protected void onCardClicked(CardButton button, int index)
     {
+        if(!this.getContainer().loaded)
+        {
+            return;
+        }
+        
         if(button.getCard() != null)
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index, this.shiftDown));
@@ -177,18 +187,21 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
-        if(keyCode == CardBinderScreen.LEFT_SHIFT)
+        if(this.getContainer().loaded)
         {
-            this.shiftDown = true;
-        }
-        else if(keyCode == CardBinderScreen.Q)
-        {
-            for(CardButton button : this.cardButtons)
+            if(keyCode == CardBinderScreen.LEFT_SHIFT)
             {
-                if(button.isHovered() && button.getCard() != null)
+                this.shiftDown = true;
+            }
+            else if(keyCode == CardBinderScreen.Q)
+            {
+                for(CardButton button : this.cardButtons)
                 {
-                    YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexDropped(button.index));
-                    break;
+                    if(button.isHovered() && button.getCard() != null)
+                    {
+                        YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexDropped(button.index));
+                        break;
+                    }
                 }
             }
         }

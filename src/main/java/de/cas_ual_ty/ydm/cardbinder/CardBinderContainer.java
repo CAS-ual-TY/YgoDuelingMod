@@ -173,6 +173,11 @@ public class CardBinderContainer extends Container
     
     public void indexClicked(int index, boolean shiftDown)
     {
+        if(!this.manager.isLoaded())
+        {
+            return;
+        }
+        
         CardHolder card = this.extractCard(index);
         
         if(card != null)
@@ -192,6 +197,11 @@ public class CardBinderContainer extends Container
     
     public void indexDropped(int index)
     {
+        if(!this.manager.isLoaded())
+        {
+            return;
+        }
+        
         CardHolder card = this.extractCard(index);
         
         if(card != null)
@@ -203,6 +213,11 @@ public class CardBinderContainer extends Container
     
     public void nextPage()
     {
+        if(!this.manager.isLoaded())
+        {
+            return;
+        }
+        
         /*
         this.page %= this.serverList.getPagesAmount();
         this.page++;
@@ -222,6 +237,11 @@ public class CardBinderContainer extends Container
     
     public void prevPage()
     {
+        if(!this.manager.isLoaded())
+        {
+            return;
+        }
+        
         if(this.page <= 1)
         {
             this.page = this.serverList.getPagesAmount();
