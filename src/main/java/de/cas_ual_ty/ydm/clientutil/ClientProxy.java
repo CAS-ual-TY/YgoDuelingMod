@@ -104,23 +104,37 @@ public class ClientProxy implements ISidedProxy
     
     private void textureStitch(TextureStitchEvent.Pre event)
     {
-        if(YDM.itemsUseCardImages && !YDM.itemsUseCardImagesFailed && !YDM.itemsUseCardImagesActive)
+        boolean flag = false;
+        int i = 0;
+        
+        while(YDM.itemsUseCardImages && !YDM.itemsUseCardImagesFailed && !YDM.itemsUseCardImagesActive)
         {
-            // sometimes this gets done before YDM.itemsUseCardImagesActive is set to true
-            // so lets wait 3 seconds to make sure the value is correct
+            if(!flag)
+            {
+                flag = true;
+                YDM.log("Sleeping for a couple seconds to give the worker enough time to check the images...");
+            }
             
-            YDM.log("Sleeping for 3 seconds to give the worker enough time to check the images...");
+            // sometimes this gets done before YDM.itemsUseCardImagesActive is set to true
+            // so lets wait a bit to make sure the value is correct
+            
+            ++i;
             
             try
             {
-                TimeUnit.SECONDS.sleep(3);
-                YDM.log("A W A K E N I N G from 3 seconds sleep.");
+                TimeUnit.SECONDS.sleep(1);
             }
             catch (InterruptedException e)
             {
                 YDM.log("Tried sleeping to give textures enough time... It didnt work :(");
                 e.printStackTrace();
+                break;
             }
+        }
+        
+        if(i > 0)
+        {
+            YDM.log("Slept for " + i + " seconds.");
         }
         
         if(YDM.itemsUseCardImagesActive)
