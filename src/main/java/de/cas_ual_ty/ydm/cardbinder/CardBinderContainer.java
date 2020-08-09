@@ -88,7 +88,7 @@ public class CardBinderContainer extends Container
         {
             for(int x = 0; x < 9; ++x)
             {
-                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 139 + y * 18));
+                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
             }
         }
         
@@ -96,7 +96,7 @@ public class CardBinderContainer extends Container
         Slot s;
         for(int x = 0; x < 9; ++x)
         {
-            s = new Slot(playerInventory, x, 8 + x * 18, 197);
+            s = new Slot(playerInventory, x, 8 + x * 18, 198);
             
             if(s.getStack() == itemStack)
             {
