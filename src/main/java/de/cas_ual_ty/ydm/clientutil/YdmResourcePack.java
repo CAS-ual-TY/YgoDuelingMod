@@ -35,7 +35,7 @@ public class YdmResourcePack extends ResourcePack
     
     public YdmResourcePack()
     {
-        super(YDM.cardItemImagesFolder);
+        super(ClientProxy.cardItemImagesFolder);
         this.packMeta = new JsonObject();
         JsonObject pack = new JsonObject();
         pack.addProperty("description", "YDM Card Images");
@@ -63,7 +63,7 @@ public class YdmResourcePack extends ResourcePack
         
         if(image == null)
         {
-            throw new ResourcePackFileNotFoundException(YDM.cardInfoImagesFolder, resourcePath);
+            throw new ResourcePackFileNotFoundException(ClientProxy.cardInfoImagesFolder, resourcePath);
         }
         else
         {

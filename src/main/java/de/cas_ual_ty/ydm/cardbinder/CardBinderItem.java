@@ -4,6 +4,7 @@ import java.util.List;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
+import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -43,7 +44,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
         {
             CardBinderCardsManager m = l.orElse(null);
             
-            if(YDM.showBinderId)
+            if(ClientProxy.showBinderId)
             {
                 tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".uuid"));
                 

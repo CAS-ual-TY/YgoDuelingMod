@@ -57,7 +57,7 @@ public class YdmDatabase
     
     public static void downloadDatabase() throws IOException
     {
-        YDM.log("Downloading cards database...");
+        YDM.log("Downloading cards database from " + YDM.dbSourceUrl);
         
         URL url = new URL(YDM.dbSourceUrl);
         

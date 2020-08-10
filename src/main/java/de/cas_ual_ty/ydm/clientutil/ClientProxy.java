@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.clientutil;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -7,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -21,8 +23,9 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.playmat.PlaymatScreen;
-import de.cas_ual_ty.ydm.util.Configuration;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
+import de.cas_ual_ty.ydm.util.YdmIOUtil;
+import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -41,12 +44,32 @@ import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
 
 public class ClientProxy implements ISidedProxy
 {
+    public static ForgeConfigSpec clientConfigSpec;
+    public static ClientConfig clientConfig;
+    
+    public static int activeInfoImageSize;
+    public static volatile int activeItemImageSize;
+    public static int activeMainImageSize;
+    public static boolean keepCachedImages;
+    public static boolean itemsUseCardImages;
+    public static boolean showBinderId;
+    
+    public static volatile boolean itemsUseCardImagesActive;
+    public static volatile boolean itemsUseCardImagesFailed;
+    
+    public static File imagesParentFolder;
+    public static File rawImagesFolder;
+    public static File cardInfoImagesFolder;
+    public static File cardItemImagesFolder;
+    public static File cardMainImagesFolder;
+    
     @Override
     public void registerModEventListeners(IEventBus bus)
     {
@@ -66,33 +89,62 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void preInit()
     {
+        ClientProxy.itemsUseCardImagesActive = false;
+        ClientProxy.itemsUseCardImagesFailed = false;
+        
+        Pair<ClientConfig, ForgeConfigSpec> client = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
+        ClientProxy.clientConfig = client.getLeft();
+        ClientProxy.clientConfigSpec = client.getRight();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientProxy.clientConfigSpec);
+        
         ClientProxy.getMinecraft().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Configuration.CLIENT_SPEC);
     }
     
     @Override
     public void init()
     {
-        if(YDM.itemsUseCardImages)
+        YDM.log("Sizes from client config (info/item/main): " + ClientProxy.activeInfoImageSize + " / " + ClientProxy.activeItemImageSize + " (" + ClientProxy.itemsUseCardImages + ") / " + ClientProxy.activeMainImageSize);
+        
+        if(ClientProxy.itemsUseCardImages)
         {
             List<Card> list = ImageHandler.getMissingItemImages();
             
             if(list.size() == 0)
             {
                 YDM.log("Items will use card images!");
-                YDM.itemsUseCardImagesActive = true;
+                ClientProxy.itemsUseCardImagesActive = true;
             }
             else
             {
                 YDM.log("Items will not use card images, still missing " + list.size() + " images. Fetching...");
                 ImageHandler.downloadCardImages(list);
-                YDM.itemsUseCardImagesFailed = true;
+                ClientProxy.itemsUseCardImagesFailed = true;
             }
         }
         
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.PLAYMAT, PlaymatScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
+    }
+    
+    @Override
+    public void initFiles()
+    {
+        ClientProxy.imagesParentFolder = new File("ydm_db_images");
+        ClientProxy.rawImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_raw");
+        
+        // change this depending on resolution (64/128/256) and anime (yes/no) settings
+        ClientProxy.cardInfoImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_" + ClientProxy.activeInfoImageSize);
+        ClientProxy.cardItemImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_" + ClientProxy.activeItemImageSize);
+        ClientProxy.cardMainImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_" + ClientProxy.activeMainImageSize);
+        
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.imagesParentFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.cardInfoImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.cardItemImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.cardMainImagesFolder);
+        
+        ImageHandler.init();
     }
     
     @SuppressWarnings("resource")
@@ -107,7 +159,7 @@ public class ClientProxy implements ISidedProxy
         boolean flag = false;
         int i = 0;
         
-        while(YDM.itemsUseCardImages && !YDM.itemsUseCardImagesFailed && !YDM.itemsUseCardImagesActive)
+        while(ClientProxy.itemsUseCardImages && !ClientProxy.itemsUseCardImagesFailed && !ClientProxy.itemsUseCardImagesActive)
         {
             if(!flag)
             {
@@ -137,7 +189,7 @@ public class ClientProxy implements ISidedProxy
             YDM.log("Slept for " + i + " seconds.");
         }
         
-        if(YDM.itemsUseCardImagesActive)
+        if(ClientProxy.itemsUseCardImagesActive)
         {
             YDM.log("Stitching " + YdmDatabase.CARDS_LIST.size() + " card item textures!");
             
@@ -150,24 +202,24 @@ public class ClientProxy implements ISidedProxy
     
     private void modelRegistry(ModelRegistryEvent event)
     {
-        YDM.log("Registering models (size: " + YDM.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
-        ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory"));
-        ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory"));
+        YDM.log("Registering models (size: " + ClientProxy.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
+        ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory"));
+        ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory"));
     }
     
     private void modelBake(ModelBakeEvent event)
     {
-        YDM.log("Baking models (size: " + YDM.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
+        YDM.log("Baking models (size: " + ClientProxy.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
         
         event.getModelRegistry().put(new ModelResourceLocation(YdmItems.BLANC_CARD.getRegistryName(), "inventory"),
             event.getModelRegistry().get(
                 new ModelResourceLocation(
-                    new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory")));
+                    new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory")));
         
         event.getModelRegistry().put(new ModelResourceLocation(YdmItems.CARD_BACK.getRegistryName(), "inventory"),
             event.getModelRegistry().get(
                 new ModelResourceLocation(
-                    new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + YDM.activeItemImageSize), "inventory")));
+                    new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory")));
         
         ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
         event.getModelRegistry().put(key, new CardBakedModel(event.getModelRegistry().get(key)));
@@ -175,9 +227,15 @@ public class ClientProxy implements ISidedProxy
     
     private void modConfig(final ModConfig.ModConfigEvent event)
     {
-        if(event.getConfig().getSpec() == Configuration.CLIENT_SPEC)
+        if(event.getConfig().getSpec() == ClientProxy.clientConfigSpec)
         {
-            Configuration.bakeClient();
+            YDM.log("Baking client config!");
+            ClientProxy.activeInfoImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeInfoImageSize.get(), 4);
+            ClientProxy.activeItemImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeItemImageSize.get(), 4);
+            ClientProxy.activeMainImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeMainImageSize.get(), 4);
+            ClientProxy.keepCachedImages = ClientProxy.clientConfig.keepCachedImages.get();
+            ClientProxy.itemsUseCardImages = ClientProxy.clientConfig.itemsUseCardImages.get();
+            ClientProxy.showBinderId = ClientProxy.clientConfig.showBinderId.get();
         }
     }
     
@@ -244,7 +302,7 @@ public class ClientProxy implements ISidedProxy
             
             // card texture
             Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
-            ClientProxy.blit(x, margin, imageSize, imageSize, 0, 0, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize, YDM.activeInfoImageSize);
+            ClientProxy.blit(x, margin, imageSize, imageSize, 0, 0, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize);
         }
         
         // need to multiply x2 because we are scaling the text to x0.5

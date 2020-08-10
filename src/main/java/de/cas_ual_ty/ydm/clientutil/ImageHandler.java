@@ -47,8 +47,8 @@ public class ImageHandler
     
     public static void init()
     {
-        ImageHandler.INFO_IMAGE_HANDLER = new ImageHandler(YDM.activeInfoImageSize, YDM.cardInfoImagesFolder, (p, i) -> p.getInfoImageName(i));
-        ImageHandler.MAIN_IMAGE_HANDLER = new ImageHandler(YDM.activeMainImageSize, YDM.cardMainImagesFolder, (p, i) -> p.getMainImageName(i));
+        ImageHandler.INFO_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeInfoImageSize, ClientProxy.cardInfoImagesFolder, (p, i) -> p.getInfoImageName(i));
+        ImageHandler.MAIN_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeMainImageSize, ClientProxy.cardMainImagesFolder, (p, i) -> p.getMainImageName(i));
     }
     
     private ImageHandler(int imageSize, File parentFolder, BiFunction<Properties, Byte, String> nameGetter)
@@ -261,7 +261,7 @@ public class ImageHandler
     
     public static File getRawFile(String imageName)
     {
-        return new File(YDM.rawImagesFolder, imageName + ".jpg");
+        return new File(ClientProxy.rawImagesFolder, imageName + ".jpg");
     }
     
     public static File getFileBySuffix(String imageName)
@@ -283,17 +283,17 @@ public class ImageHandler
     
     public static File getInfoFile(String imageName)
     {
-        return new File(YDM.cardInfoImagesFolder, imageName + ".png");
+        return new File(ClientProxy.cardInfoImagesFolder, imageName + ".png");
     }
     
     public static File getItemFile(String imageName)
     {
-        return new File(YDM.cardItemImagesFolder, imageName + ".png");
+        return new File(ClientProxy.cardItemImagesFolder, imageName + ".png");
     }
     
     public static File getMainFile(String imageName)
     {
-        return new File(YDM.cardMainImagesFolder, imageName + ".png");
+        return new File(ClientProxy.cardMainImagesFolder, imageName + ".png");
     }
     
     public static boolean areAllItemImagesReady()
@@ -380,7 +380,7 @@ public class ImageHandler
         }
         
         // Delete cache if requested
-        if(!YDM.keepCachedImages)
+        if(!ClientProxy.keepCachedImages)
         {
             raw.delete();
         }
@@ -442,7 +442,7 @@ public class ImageHandler
             {
                 YDM.log("Fetching image of: " + ++j + "/" + this.size + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
                 
-                status = ImageHandler.imagePipeline(card.getImageName(), card.getItemImageURL(), ImageHandler.getItemFile(card.getImageName()), YDM.activeItemImageSize, (failed) ->
+                status = ImageHandler.imagePipeline(card.getImageName(), card.getItemImageURL(), ImageHandler.getItemFile(card.getImageName()), ClientProxy.activeItemImageSize, (failed) ->
                 {});
                 
                 if(status < 0)

@@ -25,6 +25,11 @@ public interface ISidedProxy
         
     }
     
+    public default void initFiles()
+    {
+        
+    }
+    
     @Nullable
     public default PlayerEntity getClientPlayer()
     {

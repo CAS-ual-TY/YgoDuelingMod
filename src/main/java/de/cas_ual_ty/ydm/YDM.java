@@ -5,12 +5,12 @@ import java.io.IOException;
 
 import javax.annotation.Nonnull;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
-import de.cas_ual_ty.ydm.clientutil.ImageHandler;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
@@ -20,6 +20,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
@@ -29,7 +30,9 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -51,27 +54,17 @@ public class YDM
     public static ISidedProxy proxy;
     public static YdmItemGroup ydmItemGroup;
     public static YdmItemGroup cardsItemGroup;
-    public static volatile boolean itemsUseCardImagesActive;
-    public static volatile boolean itemsUseCardImagesFailed;
+    
+    public static ForgeConfigSpec commonConfigSpec;
+    public static CommonConfig commonConfig;
+    
+    public static String dbSourceUrl;
     
     public static File mainFolder;
     public static File cardsFolder;
     public static File setsFolder;
     public static File distributionsFolder;
-    public static File imagesParentFolder;
-    public static File rawImagesFolder;
-    public static File cardInfoImagesFolder;
-    public static File cardItemImagesFolder;
-    public static File cardMainImagesFolder;
     public static File bindersFolder;
-    
-    public static int activeInfoImageSize;
-    public static volatile int activeItemImageSize;
-    public static int activeMainImageSize;
-    public static boolean keepCachedImages;
-    public static boolean itemsUseCardImages;
-    public static String dbSourceUrl;
-    public static boolean showBinderId;
     
     public static SimpleChannel channel;
     
@@ -88,11 +81,15 @@ public class YDM
             });
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
         YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD);
-        YDM.itemsUseCardImagesActive = false;
-        YDM.itemsUseCardImagesFailed = false;
+        
+        Pair<CommonConfig, ForgeConfigSpec> common = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
+        YDM.commonConfig = common.getLeft();
+        YDM.commonConfigSpec = common.getRight();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, YDM.commonConfigSpec);
         
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
+        bus.addListener(this::modConfig);
         YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
@@ -105,8 +102,6 @@ public class YDM
     
     private void init(FMLCommonSetupEvent event)
     {
-        YDM.log("Sizes from config (info/item/main): " + YDM.activeInfoImageSize + " / " + YDM.activeItemImageSize + " (" + YDM.itemsUseCardImages + ") / " + YDM.activeMainImageSize);
-        
         YDM.channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(YDM.MOD_ID, "main"),
             () -> YDM.PROTOCOL_VERSION,
             YDM.PROTOCOL_VERSION::equals,
@@ -149,23 +144,10 @@ public class YDM
         YDM.setsFolder = new File(YDM.mainFolder, "sets");
         YDM.distributionsFolder = new File(YDM.mainFolder, "distributions");
         
-        YDM.imagesParentFolder = new File("ydm_db_images");
-        YDM.rawImagesFolder = new File(YDM.imagesParentFolder, "cards_raw");
-        
-        // change this depending on resolution (64/128/256) and anime (yes/no) settings
-        YDM.cardInfoImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeInfoImageSize);
-        YDM.cardItemImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeItemImageSize);
-        YDM.cardMainImagesFolder = new File(YDM.imagesParentFolder, "cards_" + YDM.activeMainImageSize);
-        
         YDM.bindersFolder = new File("ydm_binders");
-        
-        YdmIOUtil.createDirIfNonExistant(YDM.imagesParentFolder);
-        YdmIOUtil.createDirIfNonExistant(YDM.rawImagesFolder);
-        YdmIOUtil.createDirIfNonExistant(YDM.cardInfoImagesFolder);
-        YdmIOUtil.createDirIfNonExistant(YDM.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(YDM.bindersFolder);
         
-        ImageHandler.init();
+        YDM.proxy.initFiles();
         YdmIOUtil.setAgent();
         YdmDatabase.readFiles();
     }
@@ -236,6 +218,15 @@ public class YDM
     private void serverStarting(FMLServerStartingEvent event)
     {
         YdmCommand.registerCommand(event.getCommandDispatcher());
+    }
+    
+    private void modConfig(final ModConfig.ModConfigEvent event)
+    {
+        if(event.getConfig().getSpec() == YDM.commonConfigSpec)
+        {
+            YDM.log("Baking common config!");
+            YDM.dbSourceUrl = YDM.commonConfig.dbSourceUrl.get();
+        }
     }
     
     public static void log(String s)

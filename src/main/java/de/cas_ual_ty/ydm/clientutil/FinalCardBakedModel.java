@@ -54,7 +54,7 @@ public class FinalCardBakedModel implements IBakedModel
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
     {
-        if(YDM.itemsUseCardImagesActive)
+        if(ClientProxy.itemsUseCardImagesActive)
         {
             CardHolder card = YdmItems.CARD.getCardHolder(this.activeItemStack);
             
@@ -152,7 +152,7 @@ public class FinalCardBakedModel implements IBakedModel
     {
         if(this.singleBackList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + YDM.activeItemImageSize);
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + ClientProxy.activeItemImageSize);
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
             
             this.singleBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1);
@@ -165,7 +165,7 @@ public class FinalCardBakedModel implements IBakedModel
     {
         if(this.partneredBackList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + YDM.activeItemImageSize);
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/card_back_" + ClientProxy.activeItemImageSize);
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
             
             this.partneredBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1);
@@ -178,7 +178,7 @@ public class FinalCardBakedModel implements IBakedModel
     {
         if(this.blancList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/blanc_card_" + YDM.activeItemImageSize);
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/blanc_card_" + ClientProxy.activeItemImageSize);
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
             
             this.blancList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1);

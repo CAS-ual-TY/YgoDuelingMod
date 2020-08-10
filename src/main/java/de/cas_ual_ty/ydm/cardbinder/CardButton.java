@@ -5,7 +5,6 @@ import java.util.function.Function;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import net.minecraft.client.Minecraft;
@@ -33,7 +32,7 @@ public class CardButton extends AbstractButton
         {
             Minecraft minecraft = Minecraft.getInstance();
             minecraft.getTextureManager().bindTexture(card.getMainImageResourceLocation());
-            ClientProxy.blit(this.x + 1, this.y + 1, 16, 16, 0, 0, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize, YDM.activeMainImageSize);
+            ClientProxy.blit(this.x + 1, this.y + 1, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
             
             if(this.isHovered())
             {

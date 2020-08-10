@@ -2,7 +2,6 @@ package de.cas_ual_ty.ydm.clientutil;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.ConfigValue;
 import net.minecraftforge.common.ForgeConfigSpec.IntValue;
 
 public class ClientConfig
@@ -12,7 +11,6 @@ public class ClientConfig
     public final IntValue activeMainImageSize;
     public final BooleanValue keepCachedImages;
     public final BooleanValue itemsUseCardImages;
-    public final ConfigValue<String> dbSourceUrl;
     public final BooleanValue showBinderId;
     
     public ClientConfig(ForgeConfigSpec.Builder builder)
@@ -34,9 +32,6 @@ public class ClientConfig
         this.itemsUseCardImages = builder
             .comment("Make card items use their images instead of only the back side. Requires a lot more resources.")
             .define("itemsUseCardImages", false);
-        this.dbSourceUrl = builder
-            .comment("Download link for the cards and sets database. Must be a .zip file.")
-            .define("dbSourceUrl", "https://github.com/CAS-ual-TY/YDM2-DB/archive/master.zip");
         this.showBinderId = builder
             .comment("Show card binder UUIDs when hovering over them.")
             .define("showBinderId", false);
