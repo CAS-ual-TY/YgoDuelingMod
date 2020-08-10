@@ -22,7 +22,7 @@ public class ClientConfig
             .defineInRange("infoImageSize", 256, 16, 1024);
         this.activeItemImageSize = builder
             .comment("The size of card images used for items (only if itemsUseCardImages is set to true).")
-            .defineInRange("itemImageSize", 64, 16, 256);
+            .defineInRange("itemImageSize", 16, 16, 256);
         this.activeMainImageSize = builder
             .comment("The size of card images in duels and in card inventories.")
             .defineInRange("mainImageSize", 64, 16, 256);
