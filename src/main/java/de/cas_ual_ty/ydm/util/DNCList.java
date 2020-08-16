@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 // Divide and Conquer list
 // V is element type (value)
@@ -229,6 +232,20 @@ public class DNCList<K, V> implements Iterable<V>
     public void clear()
     {
         this.list = new ArrayList<>(0);
+    }
+    
+    @Nullable
+    public V getFirst(Predicate<V> predicate)
+    {
+        for(V v : this.list)
+        {
+            if(predicate.test(v))
+            {
+                return v;
+            }
+        }
+        
+        return null;
     }
     
     @Override
