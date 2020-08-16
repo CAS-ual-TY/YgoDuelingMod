@@ -219,6 +219,12 @@ public class CardHolder
     }
     
     @Override
+    public String toString()
+    {
+        return this.getProperties().getName() + " (" + this.getCard().getSetId() + ")";
+    }
+    
+    @Override
     public boolean equals(Object obj)
     {
         if(!(obj instanceof CardHolder))
