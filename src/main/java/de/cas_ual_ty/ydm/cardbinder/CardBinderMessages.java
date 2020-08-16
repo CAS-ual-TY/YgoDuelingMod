@@ -34,10 +34,6 @@ public class CardBinderMessages
             this.nextPage = nextPage;
         }
         
-        public ChangePage()
-        {
-        }
-        
         public static void encode(ChangePage msg, PacketBuffer buf)
         {
             buf.writeBoolean(msg.nextPage);
@@ -82,10 +78,6 @@ public class CardBinderMessages
             this.maxPage = maxPage;
         }
         
-        public UpdatePage()
-        {
-        }
-        
         public static void encode(UpdatePage msg, PacketBuffer buf)
         {
             buf.writeInt(msg.page);
@@ -125,10 +117,6 @@ public class CardBinderMessages
             this.list = list;
         }
         
-        public UpdateList()
-        {
-        }
-        
         public static void encode(UpdateList msg, PacketBuffer buf)
         {
             buf.writeInt(msg.page);
@@ -151,7 +139,7 @@ public class CardBinderMessages
             
             for(int i = 0; i < size; ++i)
             {
-                list.add(new CardHolder(YdmDatabase.CARDS_LIST.get(buf.readString()), buf.readByte(), Rarity.fromString(buf.readString())));
+                list.add(new CardHolder(YdmDatabase.CARDS_LIST.get(buf.readString(0x100)), buf.readByte(), Rarity.fromString(buf.readString(0x100))));
             }
             
             return new UpdateList(page, list);
@@ -182,10 +170,6 @@ public class CardBinderMessages
         {
             this.index = index;
             this.shiftDown = shiftDown;
-        }
-        
-        public IndexClicked()
-        {
         }
         
         public static void encode(IndexClicked msg, PacketBuffer buf)
@@ -221,10 +205,6 @@ public class CardBinderMessages
         public IndexDropped(int index)
         {
             this.index = index;
-        }
-        
-        public IndexDropped()
-        {
         }
         
         public static void encode(IndexDropped msg, PacketBuffer buf)
