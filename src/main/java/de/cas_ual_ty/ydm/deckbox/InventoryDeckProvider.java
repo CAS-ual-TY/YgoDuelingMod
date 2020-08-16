@@ -1,0 +1,28 @@
+package de.cas_ual_ty.ydm.deckbox;
+
+import de.cas_ual_ty.ydm.YdmItems;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+
+public class InventoryDeckProvider extends DeckProvider
+{
+    public final int slot;
+    
+    public InventoryDeckProvider(int slot)
+    {
+        this.slot = slot;
+    }
+    
+    @Override
+    public IDeckHolder provideDeck(PlayerEntity player)
+    {
+        ItemStack itemStack = player.inventory.getStackInSlot(this.slot);
+        
+        if(itemStack.getItem() instanceof DeckBoxItem)
+        {
+            return YdmItems.BLACK_DECK_BOX.getDeckHolder(itemStack);
+        }
+        
+        return null;
+    }
+}

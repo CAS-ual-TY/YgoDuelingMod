@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
+import de.cas_ual_ty.ydm.deckbox.DeckProvider;
 import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
@@ -28,6 +29,7 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -41,6 +43,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 
 @Mod(YDM.MOD_ID)
 public class YDM
@@ -54,6 +58,8 @@ public class YDM
     public static ISidedProxy proxy;
     public static YdmItemGroup ydmItemGroup;
     public static YdmItemGroup cardsItemGroup;
+    
+    public static IForgeRegistry<DeckProvider> DECK_PROVIDERS_REGISTRY;
     
     public static ForgeConfigSpec commonConfigSpec;
     public static CommonConfig commonConfig;
@@ -90,6 +96,7 @@ public class YDM
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
         bus.addListener(this::modConfig);
+        bus.addListener(this::newRegistry);
         YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
@@ -229,6 +236,11 @@ public class YDM
         }
     }
     
+    private void newRegistry(RegistryEvent.NewRegistry event)
+    {
+        YDM.DECK_PROVIDERS_REGISTRY = new RegistryBuilder<DeckProvider>().setName(new ResourceLocation(YDM.MOD_ID, "deck_providers")).setType(DeckProvider.class).setMaxID(1024).create();
+    }
+    
     public static void log(String s)
     {
         YDM.LOGGER.info("[" + YDM.MOD_ID + "] " + s);
@@ -236,7 +248,7 @@ public class YDM
     
     public static void debug(String s)
     {
-        YDM.LOGGER.debug(s);
+        YDM.LOGGER.debug("[" + YDM.MOD_ID + "_debug] " + s);
     }
     
     public static void debug(Object s)
