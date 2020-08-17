@@ -2,22 +2,27 @@ package de.cas_ual_ty.ydm.duel;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraftforge.fml.network.PacketDistributor;
 
 public class DuelManager
 {
-    public final IDuelSynchronizer synchronizer;
+    public final boolean isRemote;
     public final IDuelTicker ticker;
     
     public DuelState duelState;
     
-    public int player1Id;
-    public int player2Id;
+    public UUID player1Id;
+    public UUID player2Id;
     
     public PlayerEntity player1;
     public PlayerEntity player2;
@@ -28,9 +33,12 @@ public class DuelManager
     public List<Action> actions;
     public List<String> messages;
     
-    public DuelManager(IDuelSynchronizer synchronizer, @Nullable IDuelTicker ticker)
+    public IDeckHolder player1Deck;
+    public IDeckHolder player2Deck;
+    
+    public DuelManager(boolean isRemote, @Nullable IDuelTicker ticker)
     {
-        this.synchronizer = synchronizer;
+        this.isRemote = isRemote;
         this.ticker = ticker;
         this.spectators = new LinkedList<>();
         this.actions = new LinkedList<>();
@@ -42,20 +50,20 @@ public class DuelManager
     {
         this.kickAllPlayers();
         this.duelState = DuelState.IDLE;
-        this.player1Id = -1;
-        this.player2Id = -1;
-        this.player1 = null;
-        this.player2 = null;
-        this.spectators.clear();
+        this.resetPlayer1();
+        this.resetPlayer2();
+        this.resetSpectators();
         this.actions.clear();
         this.messages.clear();
         this.playField = new PlayField(this);
+        this.player1Deck = null;
+        this.player2Deck = null;
     }
     
     public void setDuelStateAndUpdate(DuelState duelState)
     {
         this.duelState = duelState;
-        this.sendDuelStateToAll();
+        this.updateDuelStateToAll();
     }
     
     public void kickAllPlayers()
@@ -72,13 +80,138 @@ public class DuelManager
         // any other cases that require kicking all?
     }
     
+    public void setPlayer1(PlayerEntity player)
+    {
+        this.player1 = player;
+        this.player1Id = player.getUniqueID();
+    }
+    
+    public void setPlayer2(PlayerEntity player)
+    {
+        this.player2 = player;
+        this.player2Id = player.getUniqueID();
+    }
+    
+    public void setSpectator(PlayerEntity player)
+    {
+        this.spectators.add(player);
+    }
+    
+    public void removePlayer1()
+    {
+        if(this.hasStarted())
+        {
+            // set it to null, but keep the id, in case of a disconnect
+            this.player1 = null;
+        }
+        else
+        {
+            this.resetPlayer1();
+        }
+    }
+    
+    public void resetPlayer1()
+    {
+        this.player1 = null;
+        this.player1Id = null;
+    }
+    
+    public void removePlayer2()
+    {
+        if(this.hasStarted())
+        {
+            this.player2 = null;
+        }
+        else
+        {
+            this.resetPlayer2();
+        }
+    }
+    
+    public void resetPlayer2()
+    {
+        this.player2 = null;
+        this.player2Id = null;
+    }
+    
+    public void removeSpectator(PlayerEntity player)
+    {
+        this.spectators.remove(player);
+    }
+    
+    public void resetSpectators()
+    {
+        this.spectators.clear();
+    }
+    
+    public boolean hasStarted()
+    {
+        return this.duelState == DuelState.DUELING || this.duelState == DuelState.SIDING;
+    }
+    
+    public void onPlayerOpenContainer(PlayerEntity player)
+    {
+        // if it has started, give player back his role
+        if(this.hasStarted())
+        {
+            PlayerRole role = this.getRoleFor(player);
+            
+            if(role == PlayerRole.PLAYER1)
+            {
+                this.setPlayer1(player);
+            }
+            else if(role == PlayerRole.PLAYER2)
+            {
+                this.setPlayer2(player);
+            }
+            else
+            {
+                this.setSpectator(player);
+            }
+        }
+        else
+        {
+            // set spectator by default
+            this.setSpectator(player);
+        }
+        
+        if(!this.isRemote)
+        {
+            this.sendAllTo(player);
+        }
+    }
+    
+    public void onPlayerCloseContainer(PlayerEntity player)
+    {
+        // just call removal methods
+        // they will differentiate between the game states
+        
+        PlayerRole role = this.getRoleFor(player);
+        
+        if(role == PlayerRole.PLAYER1)
+        {
+            this.removePlayer1();
+            this.handlePlayerLeave(player, role);
+        }
+        else if(role == PlayerRole.PLAYER2)
+        {
+            this.removePlayer2();
+            this.handlePlayerLeave(player, role);
+        }
+        else if(role == PlayerRole.SPECTATOR)
+        {
+            this.removeSpectator(player);
+        }
+    }
+    
+    @Nullable
     public PlayerRole getRoleFor(PlayerEntity player)
     {
-        if(this.player1Id == player.getEntityId())
+        if(player.getUniqueID().equals(this.player1Id))
         {
             return PlayerRole.PLAYER1;
         }
-        else if(this.player2Id == player.getEntityId())
+        if(player.getUniqueID().equals(this.player2Id))
         {
             return PlayerRole.PLAYER2;
         }
@@ -91,46 +224,34 @@ public class DuelManager
         return null;
     }
     
-    public List<PlayerRole> getAvailableRoles(PlayerEntity player)
+    public List<PlayerRole> getAvailablePlayerRoles(PlayerEntity player)
     {
+        // only the player roles
+        
         List<PlayerRole> list = new LinkedList<>();
         
-        if(this.player1Id == player.getEntityId())
+        if(this.player1Id == null)
         {
             list.add(PlayerRole.PLAYER1);
         }
-        else if(this.player2Id == player.getEntityId())
+        
+        if(this.player2Id == null)
         {
             list.add(PlayerRole.PLAYER2);
-        }
-        else
-        {
-            if(this.player1Id == -1)
-            {
-                list.add(PlayerRole.PLAYER1);
-            }
-            
-            if(this.player2Id == -1)
-            {
-                list.add(PlayerRole.PLAYER2);
-            }
-            
-            list.add(PlayerRole.SPECTATOR);
-            //TODO judge
         }
         
         return list;
     }
     
-    public boolean canJoinAs(PlayerEntity player, PlayerRole role)
+    public boolean canPlayerSelectRole(PlayerEntity player, PlayerRole role)
     {
         if(role == PlayerRole.PLAYER1)
         {
-            return this.player1Id == -1;
+            return this.player1Id == null;
         }
         else if(role == PlayerRole.PLAYER2)
         {
-            return this.player2Id == -1;
+            return this.player2Id == null;
         }
         else
         {
@@ -138,28 +259,77 @@ public class DuelManager
         }
     }
     
-    public boolean playerJoin(PlayerEntity player, PlayerRole role)
+    // client side, received
+    public void setRoleForPlayer(PlayerEntity player, PlayerRole role)
     {
-        if(this.canJoinAs(player, role))
+        if(player != null)
+        {
+            this.playerSelectRole(player, role);
+        }
+        else
         {
             if(role == PlayerRole.PLAYER1)
             {
-                this.player1Id = player.getEntityId();
-                this.player1 = player;
+                this.removePlayer1();
             }
             else if(role == PlayerRole.PLAYER2)
             {
-                this.player2Id = player.getEntityId();
-                this.player2 = player;
+                this.removePlayer2();
             }
-            else if(role == PlayerRole.SPECTATOR)
+        }
+    }
+    
+    // player selects a role, if successful send update to everyone
+    public boolean playerSelectRole(PlayerEntity player, PlayerRole role)
+    {
+        YDM.debug("player select role 1 " + role + " " + this.spectators + " " + player);
+        
+        if(this.canPlayerSelectRole(player, role))
+        {
+            // remove previous role
+            
+            PlayerRole previous = this.getRoleFor(player);
+            
+            YDM.debug("player select role 2 " + previous);
+            
+            if(previous != null)
             {
-                this.spectators.add(player);
+                if(previous == PlayerRole.PLAYER1)
+                {
+                    this.removePlayer1();
+                }
+                else if(previous == PlayerRole.PLAYER2)
+                {
+                    this.removePlayer2();
+                }
+                else if(previous == PlayerRole.SPECTATOR)
+                {
+                    YDM.debug("player select role REMOVING");
+                    this.removeSpectator(player);
+                }
             }
             
-            this.sendAllTo(player, role);
+            // ---
             
-            //TODO judge
+            if(role == PlayerRole.PLAYER1)
+            {
+                this.setPlayer1(player);
+            }
+            else if(role == PlayerRole.PLAYER2)
+            {
+                this.setPlayer2(player);
+            }
+            else// if(role == PlayerRole.SPECTATOR) // player must have a default role //TODO judge
+            {
+                this.setSpectator(player);
+            }
+            
+            YDM.debug("player select role 3 " + this.spectators);
+            
+            if(!this.isRemote)
+            {
+                this.updateRoleToAll(role, player);
+            }
             
             return true;
         }
@@ -169,53 +339,12 @@ public class DuelManager
         }
     }
     
-    public void playerLeave(PlayerEntity player)
+    public void handlePlayerLeave(PlayerEntity player, PlayerRole role)
     {
-        PlayerRole role = this.getRoleFor(player);
-        
-        if(role == PlayerRole.PLAYER1)
+        if(this.hasStarted())
         {
-            this.handleDuelistLeave(player, role);
-            this.player1 = null;
-        }
-        else if(role == PlayerRole.PLAYER2)
-        {
-            this.handleDuelistLeave(player, role);
-            this.player2 = null;
-        }
-        else if(role == PlayerRole.SPECTATOR)
-        {
-            this.spectators.remove(player);
-        }
-        
-        //TODO judge
-    }
-    
-    public void handleDuelistLeave(PlayerEntity player, PlayerRole role)
-    {
-        if(this.duelState == DuelState.DUELING || this.duelState == DuelState.SIDING)
-        {
-            // notify players in case actual duelist left
+            // TODO notify players in case actual duelist left
             // spectators can always be ignored
-        }
-        else // idle or end state
-        {
-            if(role == PlayerRole.PLAYER1)
-            {
-                this.player1Id = -1;
-            }
-            else if(role == PlayerRole.PLAYER2)
-            {
-                this.player2Id = -1;
-            }
-            
-            if(this.duelState == DuelState.END)
-            {
-                if(this.player1Id == -1 && this.player2Id == -1)
-                {
-                    this.endDuelAndReset();
-                }
-            }
         }
     }
     
@@ -232,59 +361,29 @@ public class DuelManager
     public void receiveActionFrom(PlayerRole role, Action action)
     {
         action.init(this.getPlayField());
-        this.sendActionToAll(action);
-        this.logAction(action);
-        action.doAction();
-    }
-    
-    public void logAction(Action action)
-    {
+        if(!this.isRemote)
+        {
+            this.sendActionToAll(action);
+        }
         this.actions.add(action);
-    }
-    
-    // is this really needed?
-    public void sendActionTo(PlayerRole role, Action action)
-    {
-        if(role == PlayerRole.PLAYER1 && this.player1.isAlive())
-        {
-            this.sendActionTo(this.player1, action);
-        }
-        else if(role == PlayerRole.PLAYER2 && this.player2.isAlive())
-        {
-            this.sendActionTo(this.player2, action);
-        }
-        else if(role == PlayerRole.SPECTATOR)
-        {
-            //this.spectators.stream().filter(player -> player.isAlive()).forEach(player -> this.sendAction(player, action));
-            
-            for(PlayerEntity player : this.spectators)
-            {
-                if(player.isAlive())
-                {
-                    this.sendActionTo(player, action);
-                }
-            }
-        }
+        action.doAction();
     }
     
     public void doForAllPlayers(Consumer<PlayerEntity> consumer)
     {
-        if(this.player1 != null && this.player1.isAlive())
+        if(this.player1 != null)
         {
             consumer.accept(this.player1);
         }
         
-        if(this.player2 != null && this.player2.isAlive())
+        if(this.player2 != null)
         {
             consumer.accept(this.player2);
         }
         
         for(PlayerEntity player : this.spectators)
         {
-            if(player.isAlive())
-            {
-                consumer.accept(player);
-            }
+            consumer.accept(player);
         }
     }
     
@@ -293,79 +392,84 @@ public class DuelManager
         this.doForAllPlayers((player) -> this.sendActionTo(player, action));
     }
     
-    public void sendActionsToAll()
+    public void updateActionsToAll()
     {
         this.doForAllPlayers((player) -> this.sendActionsTo(player));
     }
     
-    public void sendDuelStateToAll()
+    public void updateDuelStateToAll()
     {
         this.doForAllPlayers((player) -> this.sendDuelStateTo(player));
     }
     
-    public void sendRoleToAll()
+    public void updateRoleToAll(PlayerRole role, PlayerEntity rolePlayer)
     {
         this.doForAllPlayers((player) ->
         {
-            PlayerRole role = this.getRoleFor(player);
-            
             if(role != null)
             {
-                this.sendRoleTo(player, role);
+                this.updateRoleTo(player, role, rolePlayer);
             }
         });
     }
     
+    // synchronize everything
     public void sendAllTo(PlayerEntity player)
     {
-        PlayerRole role = this.getRoleFor(player);
-        
-        if(role != null)
-        {
-            this.sendAllTo(player, role);
-        }
-    }
-    
-    public void sendAllTo(PlayerEntity player, PlayerRole role)
-    {
         this.sendDuelStateTo(player);
-        this.sendActionsTo(player);
-        this.sendRoleTo(player, role);
+        
+        this.updateRoleTo(player, PlayerRole.PLAYER1, this.player1);
+        this.updateRoleTo(player, PlayerRole.PLAYER2, this.player2);
+        
+        for(PlayerEntity spectator : this.spectators)
+        {
+            this.updateRoleTo(player, PlayerRole.SPECTATOR, spectator);
+        }
+        
+        // playfield is updated via actions
+        
+        if(this.duelState == DuelState.DUELING)
+        {
+            this.sendActionsTo(player);
+        }
+        
+        // TODO synchronize messages (via actions?)
     }
-    
-    // --- synchronizer passing ---
     
     protected void sendActionTo(PlayerEntity player, Action action)
     {
-        this.synchronizer.sendActionTo(player, action);
     }
     
     protected void sendActionsTo(PlayerEntity player)
     {
-        this.synchronizer.sendActionsTo(player, this.actions);
     }
     
     protected void sendDuelStateTo(PlayerEntity player)
     {
-        this.synchronizer.sendDuelStateTo(player, this.duelState);
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateDuelState(this.duelState));
     }
     
-    protected void sendRoleTo(PlayerEntity player, PlayerRole role)
+    protected void updateRoleTo(PlayerEntity player, PlayerRole role, @Nullable PlayerEntity rolePlayer)
     {
-        this.synchronizer.sendRoleTo(player, role);
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateRole(role, rolePlayer));
     }
     
     protected void sendMessageTo(PlayerEntity player, String message)
     {
-        this.synchronizer.sendChatTo(player, message);
+        // TODO
+    }
+    
+    protected void sendAvailableRolesTo(PlayerEntity player)
+    {
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.AvailableRoles(this.getAvailablePlayerRoles(player)));
+    }
+    
+    protected <MSG> void sendGeneralPacketTo(ServerPlayerEntity player, MSG msg)
+    {
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> player), msg);
     }
     
     // --- Getters ---
-    
-    public IDuelSynchronizer getSynchronizer()
-    {
-        return this.synchronizer;
-    }
     
     public IDuelTicker getTicker()
     {

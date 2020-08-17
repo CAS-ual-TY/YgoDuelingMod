@@ -25,6 +25,7 @@ public class PlaymatContainer extends Container
         super(type, id);
         this.pos = blockPos;
         this.te = (PlaymatTileEntity)playerInventory.player.world.getTileEntity(this.pos);
+        this.onContainerOpened(playerInventory.player);
     }
     
     @Override
@@ -48,5 +49,17 @@ public class PlaymatContainer extends Container
     public void handleAction(PlayerRole source, Action action)
     {
         
+    }
+    
+    public void onContainerOpened(PlayerEntity player)
+    {
+        this.getDuelManager().onPlayerOpenContainer(player);
+    }
+    
+    @Override
+    public void onContainerClosed(PlayerEntity player)
+    {
+        this.getDuelManager().onPlayerCloseContainer(player);
+        super.onContainerClosed(player);
     }
 }

@@ -147,11 +147,10 @@ public class ClientProxy implements ISidedProxy
         ImageHandler.init();
     }
     
-    @SuppressWarnings("resource")
     @Override
     public PlayerEntity getClientPlayer()
     {
-        return Minecraft.getInstance().player;
+        return ClientProxy.getPlayer();
     }
     
     private void textureStitch(TextureStitchEvent.Pre event)
@@ -382,5 +381,10 @@ public class ClientProxy implements ISidedProxy
     public static Minecraft getMinecraft()
     {
         return Minecraft.getInstance();
+    }
+    
+    public static PlayerEntity getPlayer()
+    {
+        return ClientProxy.getMinecraft().player;
     }
 }

@@ -14,6 +14,7 @@ import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.DeckProvider;
 import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
+import de.cas_ual_ty.ydm.duel.DuelMessages;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -124,6 +125,11 @@ public class YDM
         YDM.channel.registerMessage(index++, CardBinderMessages.UpdateList.class, CardBinderMessages.UpdateList::encode, CardBinderMessages.UpdateList::decode, CardBinderMessages.UpdateList::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexClicked.class, CardBinderMessages.IndexClicked::encode, CardBinderMessages.IndexClicked::decode, CardBinderMessages.IndexClicked::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexDropped.class, CardBinderMessages.IndexDropped::encode, CardBinderMessages.IndexDropped::decode, CardBinderMessages.IndexDropped::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.AvailableRoles.class, DuelMessages.AvailableRoles::encode, DuelMessages.AvailableRoles::decode, DuelMessages.AvailableRoles::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.SelectRole.class, DuelMessages.SelectRole::encode, DuelMessages.SelectRole::decode, DuelMessages.SelectRole::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.UpdateRole.class, DuelMessages.UpdateRole::encode, DuelMessages.UpdateRole::decode, DuelMessages.UpdateRole::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.AvailableDeckProviders.class, DuelMessages.AvailableDeckProviders::encode, DuelMessages.AvailableDeckProviders::decode, DuelMessages.AvailableDeckProviders::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.UpdateDuelState.class, DuelMessages.UpdateDuelState::encode, DuelMessages.UpdateDuelState::decode, DuelMessages.UpdateDuelState::handle);
         
         YDM.proxy.init();
     }
