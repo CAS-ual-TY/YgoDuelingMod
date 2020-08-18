@@ -12,6 +12,7 @@ import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 public class Properties
 {
@@ -169,6 +170,14 @@ public class Properties
     public void addHeader(List<String> list)
     {
         list.add(this.getName());
+        
+        if(this.custom)
+        {
+            ITextComponent c = new StringTextComponent("Custom Card");
+            c.getStyle().setColor(TextFormatting.RED);
+            list.add(c.getFormattedText());
+        }
+        
         list.add("");
         this.addCardType(list);
     }
