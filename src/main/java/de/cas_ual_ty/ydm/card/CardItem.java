@@ -10,6 +10,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
 public class CardItem extends Item
@@ -27,10 +28,27 @@ public class CardItem extends Item
         if(holder.getCard() == null)
         {
             super.addInformation(itemStack, worldIn, tooltip, flagIn);
-            return;
         }
+        else
+        {
+            tooltip.clear();
+            holder.addInformation(tooltip);
+        }
+    }
+    
+    @Override
+    public ITextComponent getDisplayName(ItemStack itemStack)
+    {
+        CardHolder holder = this.getCardHolder(itemStack);
         
-        holder.addInformation(tooltip);
+        if(holder.getCard() == null)
+        {
+            return super.getDisplayName(itemStack);
+        }
+        else
+        {
+            return new StringTextComponent(holder.getProperties().getName());
+        }
     }
     
     public CardHolder getCardHolder(ItemStack itemStack)
