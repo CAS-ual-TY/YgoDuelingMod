@@ -157,20 +157,29 @@ public class YdmDatabase
                 p = YdmUtil.buildProperties(j);
                 YdmDatabase.PROPERTIES_LIST.add(p);
             }
+            catch (NullPointerException e)
+            {
+                YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
+                e.printStackTrace();
+            }
             catch (JsonSyntaxException e)
             {
+                YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
             }
             catch (JsonIOException | FileNotFoundException e)
             {
+                YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
             }
             catch (IOException e)
             {
+                YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
             }
             catch (Exception e)
             {
+                YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 throw e;
             }
         }
