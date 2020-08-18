@@ -383,6 +383,7 @@ public class ClientProxy implements ISidedProxy
         return Minecraft.getInstance();
     }
     
+    @SuppressWarnings("resource")
     public static PlayerEntity getPlayer()
     {
         return ClientProxy.getMinecraft().player;
