@@ -42,11 +42,19 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
+            args '--username', 'Dev'
+
             mods {
                 examplemod {
                     source sourceSets.main
                 }
             }
+        }
+
+        client2 {
+            parent runs.client
+
+            args '--username', 'Dev2'
         }
 
         server {
