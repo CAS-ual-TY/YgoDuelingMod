@@ -130,6 +130,7 @@ public class YDM
         YDM.channel.registerMessage(index++, DuelMessages.UpdateRole.class, DuelMessages.UpdateRole::encode, DuelMessages.UpdateRole::decode, DuelMessages.UpdateRole::handle);
         YDM.channel.registerMessage(index++, DuelMessages.AvailableDeckProviders.class, DuelMessages.AvailableDeckProviders::encode, DuelMessages.AvailableDeckProviders::decode, DuelMessages.AvailableDeckProviders::handle);
         YDM.channel.registerMessage(index++, DuelMessages.UpdateDuelState.class, DuelMessages.UpdateDuelState::encode, DuelMessages.UpdateDuelState::decode, DuelMessages.UpdateDuelState::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.RequestFullUpdate.class, DuelMessages.RequestFullUpdate::encode, DuelMessages.RequestFullUpdate::decode, DuelMessages.RequestFullUpdate::handle);
         
         YDM.proxy.init();
     }
@@ -259,6 +260,13 @@ public class YDM
     
     public static void debug(Object s)
     {
-        YDM.debug(s.toString());
+        if(s == null)
+        {
+            YDM.debug("null");
+        }
+        else
+        {
+            YDM.debug(s.toString());
+        }
     }
 }

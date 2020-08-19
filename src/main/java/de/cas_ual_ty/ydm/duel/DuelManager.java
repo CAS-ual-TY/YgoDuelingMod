@@ -151,10 +151,12 @@ public class DuelManager
     
     public void onPlayerOpenContainer(PlayerEntity player)
     {
+        PlayerRole role;
+        
         // if it has started, give player back his role
         if(this.hasStarted())
         {
-            PlayerRole role = this.getRoleFor(player);
+            role = this.getRoleFor(player);
             
             if(role == PlayerRole.PLAYER1)
             {
@@ -171,14 +173,25 @@ public class DuelManager
         }
         else
         {
+            role = PlayerRole.SPECTATOR;
+            
             // set spectator by default
             this.setSpectator(player);
         }
         
+        // tell all the other players that this player has joined
+        // apparently this is not called on client
+        this.doForAllPlayersExcept((p) ->
+        {
+            this.updateRoleTo(p, role, player);
+        }, player);
+        
+        /*// this is instead now done on request by client. At this point the client constructor has not been constructed yet, so packets dont work yet
         if(!this.isRemote)
         {
             this.sendAllTo(player);
         }
+        */
     }
     
     public void onPlayerCloseContainer(PlayerEntity player)
@@ -260,7 +273,7 @@ public class DuelManager
     }
     
     // client side, received
-    public void setRoleForPlayer(PlayerEntity player, PlayerRole role)
+    public void setRoleForPlayer(@Nullable PlayerEntity player, PlayerRole role)
     {
         if(player != null)
         {
@@ -282,15 +295,11 @@ public class DuelManager
     // player selects a role, if successful send update to everyone
     public boolean playerSelectRole(PlayerEntity player, PlayerRole role)
     {
-        YDM.debug("player select role 1 " + role + " " + this.spectators + " " + player);
-        
         if(this.canPlayerSelectRole(player, role))
         {
             // remove previous role
             
             PlayerRole previous = this.getRoleFor(player);
-            
-            YDM.debug("player select role 2 " + previous);
             
             if(previous != null)
             {
@@ -304,7 +313,6 @@ public class DuelManager
                 }
                 else if(previous == PlayerRole.SPECTATOR)
                 {
-                    YDM.debug("player select role REMOVING");
                     this.removeSpectator(player);
                 }
             }
@@ -323,8 +331,6 @@ public class DuelManager
             {
                 this.setSpectator(player);
             }
-            
-            YDM.debug("player select role 3 " + this.spectators);
             
             if(!this.isRemote)
             {
@@ -385,6 +391,17 @@ public class DuelManager
         {
             consumer.accept(player);
         }
+    }
+    
+    public void doForAllPlayersExcept(Consumer<PlayerEntity> consumer, PlayerEntity exception)
+    {
+        this.doForAllPlayers((player) ->
+        {
+            if(player != exception)
+            {
+                consumer.accept(player);
+            }
+        });
     }
     
     public void sendActionToAll(Action action)

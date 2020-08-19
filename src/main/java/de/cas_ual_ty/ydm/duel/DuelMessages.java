@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -15,7 +14,6 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.deckbox.DeckProvider;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionType;
-import de.cas_ual_ty.ydm.playmat.PlaymatClientContainer;
 import de.cas_ual_ty.ydm.playmat.PlaymatContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -25,19 +23,11 @@ import net.minecraftforge.fml.network.NetworkEvent.Context;
 
 public class DuelMessages
 {
-    public static void doForContainer(PlayerEntity player, Consumer<PlaymatContainer> consumer)
+    public static void doForContainer(PlayerEntity player, BiConsumer<PlaymatContainer, PlayerEntity> consumer)
     {
         if(player != null && player.openContainer instanceof PlaymatContainer)
         {
-            consumer.accept((PlaymatContainer)player.openContainer);
-        }
-    }
-    
-    public static void doForClientContainer(PlayerEntity player, Consumer<PlaymatClientContainer> consumer)
-    {
-        if(player != null && player.openContainer instanceof PlaymatClientContainer)
-        {
-            consumer.accept((PlaymatClientContainer)player.openContainer);
+            consumer.accept((PlaymatContainer)player.openContainer, player);
         }
     }
     
@@ -170,7 +160,7 @@ public class DuelMessages
             Context context = ctx.get();
             context.enqueueWork(() ->
             {
-                DuelMessages.doForClientContainer(YDM.proxy.getClientPlayer(), (container) ->
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
                     // TODO
                 });
@@ -204,9 +194,9 @@ public class DuelMessages
             Context context = ctx.get();
             context.enqueueWork(() ->
             {
-                DuelMessages.doForContainer(context.getSender(), (container) ->
+                DuelMessages.doForContainer(context.getSender(), (container, player) ->
                 {
-                    container.getDuelManager().playerSelectRole(context.getSender(), msg.playerRole);
+                    container.getDuelManager().playerSelectRole(player, msg.playerRole);
                 });
             });
             
@@ -217,6 +207,8 @@ public class DuelMessages
     public static class UpdateRole
     {
         public PlayerRole role;
+        
+        @Nullable
         public UUID rolePlayerId;
         
         public UpdateRole(PlayerRole role, @Nullable UUID rolePlayerId)
@@ -255,12 +247,21 @@ public class DuelMessages
             Context context = ctx.get();
             context.enqueueWork(() ->
             {
-                PlayerEntity player = YDM.proxy.getClientPlayer();
-                
-                DuelMessages.doForContainer(player, (container) ->
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
-                    PlayerEntity entity = player.world.getPlayerByUuid(msg.rolePlayerId);
-                    container.getDuelManager().setRoleForPlayer(entity, msg.role);
+                    
+                    PlayerEntity rolePlayer;
+                    
+                    if(msg.rolePlayerId != null)
+                    {
+                        rolePlayer = player.world.getPlayerByUuid(msg.rolePlayerId);
+                    }
+                    else
+                    {
+                        rolePlayer = null;
+                    }
+                    
+                    container.getDuelManager().setRoleForPlayer(rolePlayer, msg.role);
                 });
             });
             
@@ -292,7 +293,7 @@ public class DuelMessages
             Context context = ctx.get();
             context.enqueueWork(() ->
             {
-                DuelMessages.doForClientContainer(YDM.proxy.getClientPlayer(), (container) ->
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
                     // TODO
                 });
@@ -326,9 +327,39 @@ public class DuelMessages
             Context context = ctx.get();
             context.enqueueWork(() ->
             {
-                DuelMessages.doForContainer(context.getSender(), (container) ->
+                DuelMessages.doForContainer(context.getSender(), (container, player) ->
                 {
                     container.getDuelManager().setDuelStateAndUpdate(msg.duelState);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
+    public static class RequestFullUpdate
+    {
+        public RequestFullUpdate()
+        {
+        }
+        
+        public static void encode(RequestFullUpdate msg, PacketBuffer buf)
+        {
+        }
+        
+        public static RequestFullUpdate decode(PacketBuffer buf)
+        {
+            return new RequestFullUpdate();
+        }
+        
+        public static void handle(RequestFullUpdate msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(context.getSender(), (container, player) ->
+                {
+                    container.getDuelManager().sendAllTo(player);
                 });
             });
             

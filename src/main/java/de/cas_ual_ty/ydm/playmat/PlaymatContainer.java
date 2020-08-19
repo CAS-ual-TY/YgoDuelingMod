@@ -1,5 +1,8 @@
 package de.cas_ual_ty.ydm.playmat;
 
+import java.util.List;
+
+import de.cas_ual_ty.ydm.deckbox.DeckProvider;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.action.Action;
@@ -47,6 +50,11 @@ public class PlaymatContainer extends Container
     }
     
     public void handleAction(PlayerRole source, Action action)
+    {
+        
+    }
+    
+    public void receiveDeckProviders(List<DeckProvider> deckProviders)
     {
         
     }
