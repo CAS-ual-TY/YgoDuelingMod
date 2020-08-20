@@ -25,4 +25,17 @@ public class InventoryDeckProvider extends DeckProvider
         
         return null;
     }
+    
+    @Override
+    public ItemStack getShownItem(PlayerEntity player)
+    {
+        ItemStack itemStack = player.inventory.getStackInSlot(this.slot);
+        
+        if(itemStack.getItem() instanceof DeckBoxItem)
+        {
+            return itemStack;
+        }
+        
+        return super.getShownItem(player);
+    }
 }
