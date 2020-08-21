@@ -43,6 +43,7 @@ public class PlaymatClientContainer extends PlaymatContainer
         YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestFullUpdate());
     }
     
+    // only called on own client
     @Override
     public void onContainerClosed(PlayerEntity player)
     {

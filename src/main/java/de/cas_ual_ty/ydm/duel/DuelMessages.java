@@ -206,40 +206,40 @@ public class DuelMessages
     
     public static class UpdateRole
     {
+        @Nullable
         public PlayerRole role;
         
-        @Nullable
         public UUID rolePlayerId;
         
-        public UpdateRole(PlayerRole role, @Nullable UUID rolePlayerId)
+        public UpdateRole(@Nullable PlayerRole role, UUID rolePlayerId)
         {
             this.role = role;
             this.rolePlayerId = rolePlayerId;
         }
         
-        public UpdateRole(PlayerRole role, @Nullable PlayerEntity rolePlayer)
+        public UpdateRole(@Nullable PlayerRole role, PlayerEntity rolePlayer)
         {
-            this(role, rolePlayer != null ? rolePlayer.getUniqueID() : null);
+            this(role, rolePlayer.getUniqueID());
         }
         
         public static void encode(UpdateRole msg, PacketBuffer buf)
         {
-            DuelMessages.encodePlayerRole(msg.role, buf);
-            
-            if(msg.rolePlayerId != null)
+            if(msg.role != null)
             {
                 buf.writeBoolean(true);
-                buf.writeUniqueId(msg.rolePlayerId);
+                DuelMessages.encodePlayerRole(msg.role, buf);
             }
             else
             {
                 buf.writeBoolean(false);
             }
+            
+            buf.writeUniqueId(msg.rolePlayerId);
         }
         
         public static UpdateRole decode(PacketBuffer buf)
         {
-            return new UpdateRole(DuelMessages.decodePlayerRole(buf), buf.readBoolean() ? buf.readUniqueId() : null);
+            return new UpdateRole(buf.readBoolean() ? DuelMessages.decodePlayerRole(buf) : null, buf.readUniqueId());
         }
         
         public static void handle(UpdateRole msg, Supplier<NetworkEvent.Context> ctx)
@@ -249,19 +249,16 @@ public class DuelMessages
             {
                 DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
+                    PlayerEntity rolePlayer = player.world.getPlayerByUuid(msg.rolePlayerId);
                     
-                    PlayerEntity rolePlayer;
-                    
-                    if(msg.rolePlayerId != null)
+                    if(msg.role != null)
                     {
-                        rolePlayer = player.world.getPlayerByUuid(msg.rolePlayerId);
+                        container.getDuelManager().playerSelectRole(rolePlayer, msg.role);
                     }
                     else
                     {
-                        rolePlayer = null;
+                        container.getDuelManager().onPlayerCloseContainer(rolePlayer);
                     }
-                    
-                    container.getDuelManager().setRoleForPlayer(rolePlayer, msg.role);
                 });
             });
             
@@ -327,7 +324,7 @@ public class DuelMessages
             Context context = ctx.get();
             context.enqueueWork(() ->
             {
-                DuelMessages.doForContainer(context.getSender(), (container, player) ->
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
                     container.getDuelManager().setDuelStateAndUpdate(msg.duelState);
                 });
@@ -360,6 +357,77 @@ public class DuelMessages
                 DuelMessages.doForContainer(context.getSender(), (container, player) ->
                 {
                     container.getDuelManager().sendAllTo(player);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
+    public static class RequestReady
+    {
+        public boolean ready;
+        
+        public RequestReady(boolean ready)
+        {
+            this.ready = ready;
+        }
+        
+        public static void encode(RequestReady msg, PacketBuffer buf)
+        {
+            buf.writeBoolean(msg.ready);
+        }
+        
+        public static RequestReady decode(PacketBuffer buf)
+        {
+            return new RequestReady(buf.readBoolean());
+        }
+        
+        public static void handle(RequestReady msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(context.getSender(), (container, player) ->
+                {
+                    container.getDuelManager().requestReady(player, msg.ready);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
+    public static class UpdateReady
+    {
+        public PlayerRole role;
+        public boolean ready;
+        
+        public UpdateReady(PlayerRole role, boolean ready)
+        {
+            this.role = role;
+            this.ready = ready;
+        }
+        
+        public static void encode(UpdateReady msg, PacketBuffer buf)
+        {
+            DuelMessages.encodePlayerRole(msg.role, buf);
+            buf.writeBoolean(msg.ready);
+        }
+        
+        public static UpdateReady decode(PacketBuffer buf)
+        {
+            return new UpdateReady(DuelMessages.decodePlayerRole(buf), buf.readBoolean());
+        }
+        
+        public static void handle(UpdateReady msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
+                {
+                    container.getDuelManager().updateReady(msg.role, msg.ready);
                 });
             });
             

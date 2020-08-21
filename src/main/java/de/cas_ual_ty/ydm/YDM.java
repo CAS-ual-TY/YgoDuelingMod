@@ -131,6 +131,8 @@ public class YDM
         YDM.channel.registerMessage(index++, DuelMessages.AvailableDeckProviders.class, DuelMessages.AvailableDeckProviders::encode, DuelMessages.AvailableDeckProviders::decode, DuelMessages.AvailableDeckProviders::handle);
         YDM.channel.registerMessage(index++, DuelMessages.UpdateDuelState.class, DuelMessages.UpdateDuelState::encode, DuelMessages.UpdateDuelState::decode, DuelMessages.UpdateDuelState::handle);
         YDM.channel.registerMessage(index++, DuelMessages.RequestFullUpdate.class, DuelMessages.RequestFullUpdate::encode, DuelMessages.RequestFullUpdate::decode, DuelMessages.RequestFullUpdate::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.RequestReady.class, DuelMessages.RequestReady::encode, DuelMessages.RequestReady::decode, DuelMessages.RequestReady::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.UpdateReady.class, DuelMessages.UpdateReady::encode, DuelMessages.UpdateReady::decode, DuelMessages.UpdateReady::handle);
         
         YDM.proxy.init();
     }
