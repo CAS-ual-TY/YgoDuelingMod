@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
+import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -33,8 +33,8 @@ public class DuelManager
     public List<Action> actions;
     public List<String> messages;
     
-    public IDeckHolder player1Deck;
-    public IDeckHolder player2Deck;
+    public DeckHolder player1Deck;
+    public DeckHolder player2Deck;
     
     public DuelManager(boolean isRemote, @Nullable IDuelTicker ticker)
     {

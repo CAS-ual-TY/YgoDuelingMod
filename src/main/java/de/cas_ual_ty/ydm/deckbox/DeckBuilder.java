@@ -124,7 +124,7 @@ public class DeckBuilder
         return this;
     }
     
-    public Supplier<IDeckHolder> build()
+    public Supplier<DeckHolder> build()
     {
         if(this.mode >= 0)
         {

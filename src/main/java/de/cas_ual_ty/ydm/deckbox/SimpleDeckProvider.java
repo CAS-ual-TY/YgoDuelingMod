@@ -7,22 +7,22 @@ import net.minecraft.item.ItemStack;
 
 public class SimpleDeckProvider extends DeckProvider
 {
-    public Supplier<IDeckHolder> supplier;
+    public Supplier<DeckHolder> supplier;
     public ItemStack item;
     
-    public SimpleDeckProvider(Supplier<IDeckHolder> supplier, ItemStack item)
+    public SimpleDeckProvider(Supplier<DeckHolder> supplier, ItemStack item)
     {
         this.supplier = supplier;
         this.item = item;
     }
     
-    public SimpleDeckProvider(Supplier<IDeckHolder> supplier)
+    public SimpleDeckProvider(Supplier<DeckHolder> supplier)
     {
         this(supplier, ItemStack.EMPTY);
     }
     
     @Override
-    public IDeckHolder provideDeck(PlayerEntity player)
+    public DeckHolder provideDeck(PlayerEntity player)
     {
         return this.supplier.get();
     }

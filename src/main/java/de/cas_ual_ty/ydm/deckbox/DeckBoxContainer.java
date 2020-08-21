@@ -26,24 +26,24 @@ public class DeckBoxContainer extends Container
         final int itemsPerRow = 15;
         
         // main deck
-        for(int y = 0; y < IDeckHolder.MAIN_DECK_SIZE / itemsPerRow; ++y)
+        for(int y = 0; y < DeckHolder.MAIN_DECK_SIZE / itemsPerRow; ++y)
         {
-            for(int x = 0; x < itemsPerRow && x + y * itemsPerRow < IDeckHolder.MAIN_DECK_SIZE; ++x)
+            for(int x = 0; x < itemsPerRow && x + y * itemsPerRow < DeckHolder.MAIN_DECK_SIZE; ++x)
             {
-                this.addSlot(new SlotItemHandler(itemHandler, x + y * itemsPerRow + IDeckHolder.MAIN_DECK_INDEX_START, 8 + x * 18, 18 + y * 18));
+                this.addSlot(new SlotItemHandler(itemHandler, x + y * itemsPerRow + DeckHolder.MAIN_DECK_INDEX_START, 8 + x * 18, 18 + y * 18));
             }
         }
         
         // extra deck
-        for(int x = 0; x < IDeckHolder.EXTRA_DECK_SIZE; ++x)
+        for(int x = 0; x < DeckHolder.EXTRA_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 18, 104));
+            this.addSlot(new SlotItemHandler(itemHandler, x + DeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 18, 104));
         }
         
         // side deck
-        for(int x = 0; x < IDeckHolder.SIDE_DECK_SIZE; ++x)
+        for(int x = 0; x < DeckHolder.SIDE_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + IDeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
+            this.addSlot(new SlotItemHandler(itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
         
         // player inventory
@@ -80,7 +80,7 @@ public class DeckBoxContainer extends Container
     @Override
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
     {
-        if(index >= 0 && index < IDeckHolder.TOTAL_DECK_SIZE)
+        if(index >= 0 && index < DeckHolder.TOTAL_DECK_SIZE)
         {
             // TODO
         }

@@ -55,7 +55,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         return new TranslationTextComponent("container." + YDM.MOD_ID + ".deck_box");
     }
     
-    public IDeckHolder getDeckHolder(ItemStack itemStack)
+    public DeckHolder getDeckHolder(ItemStack itemStack)
     {
         return new ItemHandlerDeckHolder(this.getItemHandler(itemStack));
     }

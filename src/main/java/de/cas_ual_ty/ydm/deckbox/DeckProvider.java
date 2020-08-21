@@ -9,7 +9,7 @@ import net.minecraftforge.registries.ForgeRegistryEntry;
 public abstract class DeckProvider extends ForgeRegistryEntry<DeckProvider>
 {
     @Nullable
-    public abstract IDeckHolder provideDeck(PlayerEntity player);
+    public abstract DeckHolder provideDeck(PlayerEntity player);
     
     public ItemStack getShownItem(PlayerEntity player)
     {

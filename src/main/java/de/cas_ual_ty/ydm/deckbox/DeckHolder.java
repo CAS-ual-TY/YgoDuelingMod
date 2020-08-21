@@ -5,32 +5,41 @@ import java.util.List;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
 
-public class DeckHolder implements IDeckHolder
+public class DeckHolder
 {
+    public static final int MAIN_DECK_SIZE = 60;
+    public static final int EXTRA_DECK_SIZE = 15;
+    public static final int SIDE_DECK_SIZE = 15;
+    public static final int TOTAL_DECK_SIZE = DeckHolder.MAIN_DECK_SIZE + DeckHolder.EXTRA_DECK_SIZE + DeckHolder.SIDE_DECK_SIZE;
+    // _end index is excluded
+    public static final int MAIN_DECK_INDEX_START = 0;
+    public static final int MAIN_DECK_INDEX_END = DeckHolder.MAIN_DECK_INDEX_START + DeckHolder.MAIN_DECK_SIZE;
+    public static final int EXTRA_DECK_INDEX_START = DeckHolder.MAIN_DECK_INDEX_END;
+    public static final int EXTRA_DECK_INDEX_END = DeckHolder.EXTRA_DECK_INDEX_START + DeckHolder.EXTRA_DECK_SIZE;
+    public static final int SIDE_DECK_INDEX_START = DeckHolder.EXTRA_DECK_INDEX_END;
+    public static final int SIDE_DECK_INDEX_END = DeckHolder.SIDE_DECK_INDEX_START + DeckHolder.SIDE_DECK_SIZE;
+    
     protected List<CardHolder> mainDeck;
     protected List<CardHolder> extraDeck;
     protected List<CardHolder> sideDeck;
     
     public DeckHolder()
     {
-        this.mainDeck = new ArrayList<>(IDeckHolder.MAIN_DECK_SIZE);
-        this.extraDeck = new ArrayList<>(IDeckHolder.EXTRA_DECK_SIZE);
-        this.sideDeck = new ArrayList<>(IDeckHolder.SIDE_DECK_SIZE);
+        this.mainDeck = new ArrayList<>(DeckHolder.MAIN_DECK_SIZE);
+        this.extraDeck = new ArrayList<>(DeckHolder.EXTRA_DECK_SIZE);
+        this.sideDeck = new ArrayList<>(DeckHolder.SIDE_DECK_SIZE);
     }
     
-    @Override
     public List<CardHolder> getMainDeck()
     {
         return this.mainDeck;
     }
     
-    @Override
     public List<CardHolder> getExtraDeck()
     {
         return this.extraDeck;
     }
     
-    @Override
     public List<CardHolder> getSideDeck()
     {
         return this.sideDeck;

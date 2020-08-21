@@ -14,7 +14,7 @@ public class InventoryDeckProvider extends DeckProvider
     }
     
     @Override
-    public IDeckHolder provideDeck(PlayerEntity player)
+    public DeckHolder provideDeck(PlayerEntity player)
     {
         ItemStack itemStack = player.inventory.getStackInSlot(this.slot);
         

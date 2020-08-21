@@ -2,8 +2,8 @@ package de.cas_ual_ty.ydm;
 
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.DeckBuilder;
+import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckProvider;
-import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
 import de.cas_ual_ty.ydm.deckbox.InventoryDeckProvider;
 import de.cas_ual_ty.ydm.deckbox.SimpleDeckProvider;
 import net.minecraft.entity.player.PlayerEntity;
@@ -118,7 +118,7 @@ public class YdmDeckProviders
         {
             
             @Override
-            public IDeckHolder provideDeck(PlayerEntity player)
+            public DeckHolder provideDeck(PlayerEntity player)
             {
                 ItemStack itemStack = player.getHeldItemOffhand();
                 

@@ -12,8 +12,8 @@ import org.apache.logging.log4j.Logger;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
+import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckProvider;
-import de.cas_ual_ty.ydm.deckbox.IDeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelMessages;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
@@ -196,7 +196,7 @@ public class YDM
         }
         else if(event.getObject() instanceof ItemStack && event.getObject().getItem() instanceof DeckBoxItem)
         {
-            final LazyOptional<IItemHandler> instance = LazyOptional.of(() -> new ItemStackHandler(IDeckHolder.TOTAL_DECK_SIZE)
+            final LazyOptional<IItemHandler> instance = LazyOptional.of(() -> new ItemStackHandler(DeckHolder.TOTAL_DECK_SIZE)
             {
                 @Override
                 public boolean isItemValid(int slot, @Nonnull ItemStack stack)

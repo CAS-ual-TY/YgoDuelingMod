@@ -52,7 +52,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         // main deck
         
         amount = 0;
-        for(int i = IDeckHolder.MAIN_DECK_INDEX_START; i < IDeckHolder.MAIN_DECK_INDEX_END; ++i)
+        for(int i = DeckHolder.MAIN_DECK_INDEX_START; i < DeckHolder.MAIN_DECK_INDEX_END; ++i)
         {
             s = this.getContainer().getSlot(i);
             
@@ -62,13 +62,13 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
             }
         }
         
-        String main = new TranslationTextComponent("container.ydm.deck_box.main").getFormattedText() + " " + amount + "/" + IDeckHolder.MAIN_DECK_SIZE;
+        String main = new TranslationTextComponent("container.ydm.deck_box.main").getFormattedText() + " " + amount + "/" + DeckHolder.MAIN_DECK_SIZE;
         this.font.drawString(main, 8F, 6F, 0x404040);
         
         // extra deck
         
         amount = 0;
-        for(int i = IDeckHolder.EXTRA_DECK_INDEX_START; i < IDeckHolder.EXTRA_DECK_INDEX_END; ++i)
+        for(int i = DeckHolder.EXTRA_DECK_INDEX_START; i < DeckHolder.EXTRA_DECK_INDEX_END; ++i)
         {
             s = this.getContainer().getSlot(i);
             
@@ -78,13 +78,13 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
             }
         }
         
-        String extra = new TranslationTextComponent("container.ydm.deck_box.extra").getFormattedText() + " " + amount + "/" + IDeckHolder.EXTRA_DECK_SIZE;
+        String extra = new TranslationTextComponent("container.ydm.deck_box.extra").getFormattedText() + " " + amount + "/" + DeckHolder.EXTRA_DECK_SIZE;
         this.font.drawString(extra, 8F, 92F, 0x404040);
         
         // side deck
         
         amount = 0;
-        for(int i = IDeckHolder.SIDE_DECK_INDEX_START; i < IDeckHolder.SIDE_DECK_INDEX_END; ++i)
+        for(int i = DeckHolder.SIDE_DECK_INDEX_START; i < DeckHolder.SIDE_DECK_INDEX_END; ++i)
         {
             s = this.getContainer().getSlot(i);
             
@@ -94,7 +94,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
             }
         }
         
-        String side = new TranslationTextComponent("container.ydm.deck_box.side").getFormattedText() + " " + amount + "/" + IDeckHolder.SIDE_DECK_SIZE;
+        String side = new TranslationTextComponent("container.ydm.deck_box.side").getFormattedText() + " " + amount + "/" + DeckHolder.SIDE_DECK_SIZE;
         this.font.drawString(side, 8F, 124F, 0x404040);
         
         this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8F, (float)(this.ySize - 96 + 2), 0x404040);
