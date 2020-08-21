@@ -34,6 +34,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ResourceLocation;
@@ -73,7 +74,7 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void registerModEventListeners(IEventBus bus)
     {
-        bus.addListener(this::textureStitch);
+        bus.addListener(this::textureStitchPre);
         bus.addListener(this::modelRegistry);
         bus.addListener(this::modelBake);
         bus.addListener(this::modConfig);
@@ -82,7 +83,7 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void registerForgeEventListeners(IEventBus bus)
     {
-        bus.addListener(this::guiScreen);
+        bus.addListener(this::guiScreenDrawScreenPost);
         bus.addListener(this::renderGameOverlayPost);
     }
     
@@ -153,7 +154,7 @@ public class ClientProxy implements ISidedProxy
         return ClientProxy.getPlayer();
     }
     
-    private void textureStitch(TextureStitchEvent.Pre event)
+    private void textureStitchPre(TextureStitchEvent.Pre event)
     {
         boolean flag = false;
         int i = 0;
@@ -238,7 +239,7 @@ public class ClientProxy implements ISidedProxy
         }
     }
     
-    private void guiScreen(GuiScreenEvent.DrawScreenEvent event)
+    private void guiScreenDrawScreenPost(GuiScreenEvent.DrawScreenEvent.Post event)
     {
         if(event.getGui() instanceof ContainerScreen)
         {
@@ -275,6 +276,11 @@ public class ClientProxy implements ISidedProxy
     
     public static void renderCardInfo(CardHolder card, @Nullable ContainerScreen<?> screen)
     {
+        if(card == null || card.getCard() == null)
+        {
+            return;
+        }
+        
         final float f = 0.5f;
         final int imageSize = 64;
         int margin = 2;

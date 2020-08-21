@@ -66,4 +66,10 @@ public class Card
     {
         return this.rarity;
     }
+    
+    @Override
+    public String toString()
+    {
+        return this.getSetId();
+    }
 }
