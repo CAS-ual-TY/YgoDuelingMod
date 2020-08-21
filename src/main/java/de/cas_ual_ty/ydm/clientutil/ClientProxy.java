@@ -154,8 +154,14 @@ public class ClientProxy implements ISidedProxy
         return ClientProxy.getPlayer();
     }
     
+    @SuppressWarnings("deprecation")
     private void textureStitchPre(TextureStitchEvent.Pre event)
     {
+        if(event.getMap().getTextureLocation() != AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+        {
+            return;
+        }
+        
         boolean flag = false;
         int i = 0;
         
