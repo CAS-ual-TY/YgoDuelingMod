@@ -7,29 +7,29 @@ import net.minecraft.util.ResourceLocation;
 
 public class SimpleDeckProvider extends DeckProvider
 {
-    public Supplier<DeckHolder> supplier;
-    public ResourceLocation icon;
+    public Supplier<DeckHolder> deck;
+    public Supplier<ResourceLocation> icon;
     
-    public SimpleDeckProvider(Supplier<DeckHolder> supplier, ResourceLocation icon)
+    public SimpleDeckProvider(Supplier<DeckHolder> supplier, Supplier<ResourceLocation> icon)
     {
-        this.supplier = supplier;
+        this.deck = supplier;
         this.icon = icon;
     }
     
     public SimpleDeckProvider(Supplier<DeckHolder> supplier)
     {
-        this(supplier, null);
+        this(supplier, () -> null);
     }
     
     @Override
     public DeckHolder provideDeck(PlayerEntity player)
     {
-        return this.supplier.get();
+        return this.deck.get();
     }
     
     @Override
     public ResourceLocation getShownIcon(PlayerEntity player)
     {
-        return this.icon;
+        return this.icon.get();
     }
 }
