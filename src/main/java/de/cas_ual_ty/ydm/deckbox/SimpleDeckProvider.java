@@ -3,22 +3,22 @@ package de.cas_ual_ty.ydm.deckbox;
 import java.util.function.Supplier;
 
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 public class SimpleDeckProvider extends DeckProvider
 {
     public Supplier<DeckHolder> supplier;
-    public ItemStack item;
+    public ResourceLocation icon;
     
-    public SimpleDeckProvider(Supplier<DeckHolder> supplier, ItemStack item)
+    public SimpleDeckProvider(Supplier<DeckHolder> supplier, ResourceLocation icon)
     {
         this.supplier = supplier;
-        this.item = item;
+        this.icon = icon;
     }
     
     public SimpleDeckProvider(Supplier<DeckHolder> supplier)
     {
-        this(supplier, ItemStack.EMPTY);
+        this(supplier, null);
     }
     
     @Override
@@ -28,8 +28,8 @@ public class SimpleDeckProvider extends DeckProvider
     }
     
     @Override
-    public ItemStack getShownItem(PlayerEntity player)
+    public ResourceLocation getShownIcon(PlayerEntity player)
     {
-        return this.item;
+        return this.icon;
     }
 }

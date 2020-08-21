@@ -1,8 +1,10 @@
 package de.cas_ual_ty.ydm.deckbox;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 public class InventoryDeckProvider extends DeckProvider
 {
@@ -27,15 +29,15 @@ public class InventoryDeckProvider extends DeckProvider
     }
     
     @Override
-    public ItemStack getShownItem(PlayerEntity player)
+    public ResourceLocation getShownIcon(PlayerEntity player)
     {
         ItemStack itemStack = player.inventory.getStackInSlot(this.slot);
         
         if(itemStack.getItem() instanceof DeckBoxItem)
         {
-            return itemStack;
+            return new ResourceLocation(YDM.MOD_ID, "textures/item/" + itemStack.getItem().getRegistryName().getPath() + ".png");
         }
         
-        return super.getShownItem(player);
+        return super.getShownIcon(player);
     }
 }
