@@ -60,7 +60,6 @@ public class ImageHandler
     
     private String getReplacementImage(Properties properties, byte imageIndex)
     {
-        //        String imageName = properties.getImageName(imageIndex);
         String imageName = this.nameGetter.apply(properties, imageIndex);
         
         int index = this.FINAL_IMAGE_READY_LIST.getIndex(imageName);
@@ -148,11 +147,11 @@ public class ImageHandler
         }
     }
     
-    // true = info; false = main
     private void makeImageReady(String imageName, Properties properties, byte imageIndex)
     {
         this.setImageInProgress(imageName);
         Thread t = new Thread(new GuiImageWizard(properties, imageIndex, this.imageSize, this.getFile(imageName), (failed) -> this.setImageFinished(imageName, failed)), "YDM Image Downloader");
+        t.setDaemon(false);
         t.start();
     }
     
@@ -314,15 +313,10 @@ public class ImageHandler
         return list;
     }
     
-    public static void downloadAllCardImages()
-    {
-        Thread t = new Thread(new ItemImagesWizard(YdmDatabase.CARDS_LIST, YdmDatabase.CARDS_LIST.size()));
-        t.start();
-    }
-    
     public static void downloadCardImages(List<Card> list)
     {
-        Thread t = new Thread(new ItemImagesWizard(list, list.size()));
+        Thread t = new Thread(new ItemImagesWizard(list, list.size()), "YDM Item Image Downloader");
+        t.setDaemon(false);
         t.start();
     }
     
@@ -347,7 +341,6 @@ public class ImageHandler
         {
             try
             {
-                ret = 1;
                 ImageHandler.downloadRawImage(imageUrl, raw);
                 ret += 1;
             }
@@ -440,6 +433,11 @@ public class ImageHandler
             
             for(Card card : this.list)
             {
+                if(!ClientProxy.getMinecraft().isRunning())
+                {
+                    return;
+                }
+                
                 YDM.log("Fetching image of: " + ++j + "/" + this.size + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
                 
                 status = ImageHandler.imagePipeline(card.getImageName(), card.getItemImageURL(), ImageHandler.getItemFile(card.getImageName()), ClientProxy.activeItemImageSize, (failed) ->
@@ -456,7 +454,7 @@ public class ImageHandler
                         YDM.log("Failed converting image to square format!");
                     }
                 }
-                else if(status % 2 == 1)
+                else if(status % 2 == 1) // this means that the image needed to be downloaded
                 {
                     ++i;
                 }
@@ -483,8 +481,6 @@ public class ImageHandler
                     }
                     
                     millies = System.currentTimeMillis();
-                    
-                    break;
                 }
             }
             
