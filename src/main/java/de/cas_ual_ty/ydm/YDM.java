@@ -125,14 +125,15 @@ public class YDM
         YDM.channel.registerMessage(index++, CardBinderMessages.UpdateList.class, CardBinderMessages.UpdateList::encode, CardBinderMessages.UpdateList::decode, CardBinderMessages.UpdateList::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexClicked.class, CardBinderMessages.IndexClicked::encode, CardBinderMessages.IndexClicked::decode, CardBinderMessages.IndexClicked::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexDropped.class, CardBinderMessages.IndexDropped::encode, CardBinderMessages.IndexDropped::decode, CardBinderMessages.IndexDropped::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.AvailableRoles.class, DuelMessages.AvailableRoles::encode, DuelMessages.AvailableRoles::decode, DuelMessages.AvailableRoles::handle);
         YDM.channel.registerMessage(index++, DuelMessages.SelectRole.class, DuelMessages.SelectRole::encode, DuelMessages.SelectRole::decode, DuelMessages.SelectRole::handle);
         YDM.channel.registerMessage(index++, DuelMessages.UpdateRole.class, DuelMessages.UpdateRole::encode, DuelMessages.UpdateRole::decode, DuelMessages.UpdateRole::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.AvailableDeckProviders.class, DuelMessages.AvailableDeckProviders::encode, DuelMessages.AvailableDeckProviders::decode, DuelMessages.AvailableDeckProviders::handle);
         YDM.channel.registerMessage(index++, DuelMessages.UpdateDuelState.class, DuelMessages.UpdateDuelState::encode, DuelMessages.UpdateDuelState::decode, DuelMessages.UpdateDuelState::handle);
         YDM.channel.registerMessage(index++, DuelMessages.RequestFullUpdate.class, DuelMessages.RequestFullUpdate::encode, DuelMessages.RequestFullUpdate::decode, DuelMessages.RequestFullUpdate::handle);
         YDM.channel.registerMessage(index++, DuelMessages.RequestReady.class, DuelMessages.RequestReady::encode, DuelMessages.RequestReady::decode, DuelMessages.RequestReady::handle);
         YDM.channel.registerMessage(index++, DuelMessages.UpdateReady.class, DuelMessages.UpdateReady::encode, DuelMessages.UpdateReady::decode, DuelMessages.UpdateReady::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.SendDeckProviders.class, DuelMessages.SendDeckProviders::encode, DuelMessages.SendDeckProviders::decode, DuelMessages.SendDeckProviders::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.RequestDeck.class, DuelMessages.RequestDeck::encode, DuelMessages.RequestDeck::decode, DuelMessages.RequestDeck::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.SendDeck.class, DuelMessages.SendDeck::encode, DuelMessages.SendDeck::decode, DuelMessages.SendDeck::handle);
         
         YDM.proxy.init();
     }

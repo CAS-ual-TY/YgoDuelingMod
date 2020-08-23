@@ -105,7 +105,7 @@ public class YdmDeckProviders
                 .name("Solemn Judgment")
                 .name("Rescue Cat")
                 
-                .build()).setRegistryName(YDM.MOD_ID, "debug_deck"));
+                .build(), () -> YdmDatabase.PROPERTIES_LIST.get(12482652L).getInfoImageResourceLocation((byte)0)).setRegistryName(YDM.MOD_ID, "debug_deck"));
         
         // player inventory incl main hand, excl armor
         for(int i = 0; i < 36; ++i)

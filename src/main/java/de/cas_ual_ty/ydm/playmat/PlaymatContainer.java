@@ -2,8 +2,9 @@ package de.cas_ual_ty.ydm.playmat;
 
 import java.util.List;
 
-import de.cas_ual_ty.ydm.deckbox.DeckProvider;
+import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelManager;
+import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
@@ -11,6 +12,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
 public class PlaymatContainer extends Container
@@ -21,6 +23,11 @@ public class PlaymatContainer extends Container
     public PlaymatContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, PacketBuffer extraData)
     {
         this(type, id, playerInventory, extraData.readBlockPos());
+    }
+    
+    public void updateDuelState(DuelState duelState)
+    {
+        this.getDuelManager().setDuelStateAndUpdate(duelState);
     }
     
     public PlaymatContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, BlockPos blockPos)
@@ -54,7 +61,12 @@ public class PlaymatContainer extends Container
         
     }
     
-    public void receiveDeckProviders(List<DeckProvider> deckProviders)
+    public void receiveDeckProviders(List<ResourceLocation> deckProvidersRLs)
+    {
+        
+    }
+    
+    public void receiveSingleDeckProvider(ResourceLocation rl, DeckHolder deck)
     {
         
     }

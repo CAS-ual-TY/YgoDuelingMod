@@ -23,11 +23,16 @@ public class DeckHolder
     protected List<CardHolder> extraDeck;
     protected List<CardHolder> sideDeck;
     
+    public DeckHolder(List<CardHolder> mainDeck, List<CardHolder> extraDeck, List<CardHolder> sideDeck)
+    {
+        this.mainDeck = mainDeck;
+        this.extraDeck = extraDeck;
+        this.sideDeck = sideDeck;
+    }
+    
     public DeckHolder()
     {
-        this.mainDeck = new ArrayList<>(DeckHolder.MAIN_DECK_SIZE);
-        this.extraDeck = new ArrayList<>(DeckHolder.EXTRA_DECK_SIZE);
-        this.sideDeck = new ArrayList<>(DeckHolder.SIDE_DECK_SIZE);
+        this(new ArrayList<>(DeckHolder.MAIN_DECK_SIZE), new ArrayList<>(DeckHolder.EXTRA_DECK_SIZE), new ArrayList<>(DeckHolder.SIDE_DECK_SIZE));
     }
     
     public List<CardHolder> getMainDeck()

@@ -9,9 +9,11 @@ import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.deckbox.DeckProvider;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class DuelManager
@@ -180,6 +182,35 @@ public class DuelManager
     {
         // both players are ready
         this.setDuelStateAndUpdate(DuelState.PREPARING);
+        this.sendDeckProvidersToPlayers();
+    }
+    
+    public void sendDeckProvidersToPlayers()
+    {
+        this.sendDeckProvidersTo(this.player1);
+        this.sendDeckProvidersTo(this.player2);
+    }
+    
+    public void requestDeck(ResourceLocation deckProviderRL, PlayerEntity player)
+    {
+        PlayerRole role = this.getRoleFor(player);
+        
+        if(role != PlayerRole.PLAYER1 && role != PlayerRole.PLAYER2)
+        {
+            return;
+        }
+        
+        DeckProvider d = YDM.DECK_PROVIDERS_REGISTRY.getValue(deckProviderRL);
+        
+        if(d != null)
+        {
+            DeckHolder deck = d.provideDeck(player);
+            
+            if(deck != null)
+            {
+                this.sendDeckTo(player, deckProviderRL, deck);
+            }
+        }
     }
     
     public void requestReady(PlayerEntity player, boolean ready)
@@ -412,6 +443,21 @@ public class DuelManager
         }
     }
     
+    public List<ResourceLocation> getAvailableDeckProviders(PlayerEntity player)
+    {
+        List<ResourceLocation> list = new LinkedList<>();
+        
+        for(DeckProvider d : YDM.DECK_PROVIDERS_REGISTRY)
+        {
+            if(d.provideDeck(player) != null)
+            {
+                list.add(d.getRegistryName());
+            }
+        }
+        
+        return list;
+    }
+    
     // on client side the player can be null
     public void handlePlayerLeave(@Nullable PlayerEntity player, PlayerRole role)
     {
@@ -564,9 +610,14 @@ public class DuelManager
         // TODO
     }
     
-    protected void sendAvailableRolesTo(PlayerEntity player)
+    protected void sendDeckProvidersTo(PlayerEntity player)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.AvailableRoles(this.getAvailablePlayerRoles(player)));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendDeckProviders(this.getAvailableDeckProviders(player)));
+    }
+    
+    protected void sendDeckTo(PlayerEntity player, ResourceLocation deckProviderRL, DeckHolder deck)
+    {
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendDeck(deckProviderRL, deck));
     }
     
     protected <MSG> void sendGeneralPacketTo(ServerPlayerEntity player, MSG msg)

@@ -11,11 +11,13 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.deckbox.DeckProvider;
+import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionType;
 import de.cas_ual_ty.ydm.playmat.PlaymatContainer;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -110,64 +112,32 @@ public class DuelMessages
         return PlayerRole.getFromIndex(buf.readByte());
     }
     
-    public static void encodeDeckProviders(List<DeckProvider> deckProviders, PacketBuffer buf)
+    public static void encodeCardHolder(CardHolder card, PacketBuffer buf)
     {
-        DuelMessages.encodeList(deckProviders, buf, (deckProvider, buf1) -> buf1.writeString(deckProvider.getRegistryName().toString(), 0x100));
+        CompoundNBT nbt = new CompoundNBT();
+        card.writeCardHolderToNBT(nbt);
+        buf.writeCompoundTag(nbt);
     }
     
-    public static List<DeckProvider> decodeDeckProviders(PacketBuffer buf)
+    public static CardHolder decodeCardHolder(PacketBuffer buf)
     {
-        // we only add the non-null ones, so not using the #decodeList method
-        
-        int size = buf.readInt();
-        List<DeckProvider> deckProviders = new ArrayList<>(size);
-        
-        DeckProvider deckProvider;
-        for(int i = 0; i < size; ++i)
-        {
-            deckProvider = YDM.DECK_PROVIDERS_REGISTRY.getValue(new ResourceLocation(buf.readString(0x100)));
-            
-            if(deckProvider != null)
-            {
-                deckProviders.add(deckProvider);
-            }
-        }
-        
-        return deckProviders;
+        return new CardHolder(buf.readCompoundTag());
     }
     
-    public static class AvailableRoles
+    public static void encodeDeckHolder(DeckHolder deck, PacketBuffer buf)
     {
-        public List<PlayerRole> playerRoles;
+        DuelMessages.encodeList(deck.getMainDeck(), buf, (card, buf1) -> DuelMessages.encodeCardHolder(card, buf1));
+        DuelMessages.encodeList(deck.getExtraDeck(), buf, (card, buf1) -> DuelMessages.encodeCardHolder(card, buf1));
+        DuelMessages.encodeList(deck.getSideDeck(), buf, (card, buf1) -> DuelMessages.encodeCardHolder(card, buf1));
+    }
+    
+    public static DeckHolder decodeDeckHolder(PacketBuffer buf)
+    {
+        List<CardHolder> mainDeck = DuelMessages.decodeList(buf, (buf1) -> DuelMessages.decodeCardHolder(buf1));
+        List<CardHolder> extraDeck = DuelMessages.decodeList(buf, (buf1) -> DuelMessages.decodeCardHolder(buf1));
+        List<CardHolder> sideDeck = DuelMessages.decodeList(buf, (buf1) -> DuelMessages.decodeCardHolder(buf1));
         
-        public AvailableRoles(List<PlayerRole> playerRoles)
-        {
-            this.playerRoles = playerRoles;
-        }
-        
-        public static void encode(AvailableRoles msg, PacketBuffer buf)
-        {
-            DuelMessages.encodeList(msg.playerRoles, buf, DuelMessages::encodePlayerRole);
-        }
-        
-        public static AvailableRoles decode(PacketBuffer buf)
-        {
-            return new AvailableRoles(DuelMessages.decodeList(buf, DuelMessages::decodePlayerRole));
-        }
-        
-        public static void handle(AvailableRoles msg, Supplier<NetworkEvent.Context> ctx)
-        {
-            Context context = ctx.get();
-            context.enqueueWork(() ->
-            {
-                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
-                {
-                    // TODO
-                });
-            });
-            
-            context.setPacketHandled(true);
-        }
+        return new DeckHolder(mainDeck, extraDeck, sideDeck);
     }
     
     public static class SelectRole
@@ -266,40 +236,6 @@ public class DuelMessages
         }
     }
     
-    public static class AvailableDeckProviders
-    {
-        public List<DeckProvider> deckProviders;
-        
-        public AvailableDeckProviders(List<DeckProvider> deckProviders)
-        {
-            this.deckProviders = deckProviders;
-        }
-        
-        public static void encode(AvailableDeckProviders msg, PacketBuffer buf)
-        {
-            DuelMessages.encodeDeckProviders(msg.deckProviders, buf);
-        }
-        
-        public static AvailableDeckProviders decode(PacketBuffer buf)
-        {
-            return new AvailableDeckProviders(DuelMessages.decodeDeckProviders(buf));
-        }
-        
-        public static void handle(AvailableDeckProviders msg, Supplier<NetworkEvent.Context> ctx)
-        {
-            Context context = ctx.get();
-            context.enqueueWork(() ->
-            {
-                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
-                {
-                    // TODO
-                });
-            });
-            
-            context.setPacketHandled(true);
-        }
-    }
-    
     public static class UpdateDuelState
     {
         public DuelState duelState;
@@ -326,7 +262,7 @@ public class DuelMessages
             {
                 DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
-                    container.getDuelManager().setDuelStateAndUpdate(msg.duelState);
+                    container.updateDuelState(msg.duelState);
                 });
             });
             
@@ -428,6 +364,111 @@ public class DuelMessages
                 DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
                     container.getDuelManager().updateReady(msg.role, msg.ready);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
+    public static class SendDeckProviders
+    {
+        public List<ResourceLocation> deckProviderRLs;
+        
+        public SendDeckProviders(List<ResourceLocation> deckProviderRLs)
+        {
+            this.deckProviderRLs = deckProviderRLs;
+        }
+        
+        public static void encode(SendDeckProviders msg, PacketBuffer buf)
+        {
+            DuelMessages.encodeList(msg.deckProviderRLs, buf, (deckProviderRL, buf1) -> buf1.writeResourceLocation(deckProviderRL));
+        }
+        
+        public static SendDeckProviders decode(PacketBuffer buf)
+        {
+            return new SendDeckProviders(DuelMessages.decodeList(buf, (buf1) -> buf1.readResourceLocation()));
+        }
+        
+        public static void handle(SendDeckProviders msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
+                {
+                    container.receiveDeckProviders(msg.deckProviderRLs);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
+    public static class RequestDeck
+    {
+        public ResourceLocation deckProviderRL;
+        
+        public RequestDeck(ResourceLocation deckProviderRL)
+        {
+            this.deckProviderRL = deckProviderRL;
+        }
+        
+        public static void encode(RequestDeck msg, PacketBuffer buf)
+        {
+            buf.writeResourceLocation(msg.deckProviderRL);
+        }
+        
+        public static RequestDeck decode(PacketBuffer buf)
+        {
+            return new RequestDeck(buf.readResourceLocation());
+        }
+        
+        public static void handle(RequestDeck msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(context.getSender(), (container, player) ->
+                {
+                    container.getDuelManager().requestDeck(msg.deckProviderRL, player);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
+    public static class SendDeck
+    {
+        public ResourceLocation deckProviderRL;
+        public DeckHolder deck;
+        
+        public SendDeck(ResourceLocation deckProviderRL, DeckHolder deck)
+        {
+            this.deckProviderRL = deckProviderRL;
+            this.deck = deck;
+        }
+        
+        public static void encode(SendDeck msg, PacketBuffer buf)
+        {
+            buf.writeResourceLocation(msg.deckProviderRL);
+            DuelMessages.encodeDeckHolder(msg.deck, buf);
+        }
+        
+        public static SendDeck decode(PacketBuffer buf)
+        {
+            return new SendDeck(buf.readResourceLocation(), DuelMessages.decodeDeckHolder(buf));
+        }
+        
+        public static void handle(SendDeck msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
+                {
+                    container.receiveSingleDeckProvider(msg.deckProviderRL, msg.deck);
                 });
             });
             
