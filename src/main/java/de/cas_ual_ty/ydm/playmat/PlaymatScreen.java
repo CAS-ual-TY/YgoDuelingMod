@@ -12,6 +12,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDeckProviders;
+import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckProvider;
@@ -30,6 +31,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
@@ -37,6 +39,7 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
     private static final ResourceLocation PLAYMAT_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/playmat_foreground.png");
     private static final ResourceLocation PLAYMAT_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/playmat_background.png");
     
+    private static final ResourceLocation DECK_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
     private static final ResourceLocation DECK_REPLACEMENT = new ResourceLocation(YDM.MOD_ID, "textures/item/card_back_" + ClientProxy.activeInfoImageSize + ".png");
     
     protected AbstractButton player1Button;
@@ -177,7 +180,7 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         {
             if(this.renderDeckChoosing())
             {
-                //without x+1 its technically not centered, i dont get why :(
+                /*
                 this.addButton(this.prevDeckButton = new Button(x - 64 - 32, height - 20 - 10 - 10 - 32 - 10, 20, 20, "<", (button) -> this.prevDeckClicked()));
                 this.addButton(this.nextDeckButton = new Button(x + 32 + 32 + 10, height - 20 - 10 - 10 - 32 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
                 this.addButton(this.chooseDeckButton = new Button(x - 50, height - 20 - 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
@@ -185,6 +188,16 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
                 this.addButton(this.prevDeckWidget = new SimpleWidget(x - 64, height - 20 - 10 - 10 - 32 - 16, 32));
                 this.addButton(this.activeDeckWidget = new SimpleWidget(x - 32, height - 20 - 10 - 10 - 64, 64));
                 this.addButton(this.nextDeckWidget = new SimpleWidget(x + 32, height - 20 - 10 - 10 - 32 - 16, 32));
+                */
+                
+                //without x+1 its technically not centered, i dont get why :(
+                this.addButton(this.prevDeckButton = new Button(x - 16 - 16 - 10 - 5 - 10, height - 20 - 10 - 5 - 16 - 10, 20, 20, "<", (button) -> this.prevDeckClicked()));
+                this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, height - 20 - 10 - 5 - 16 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
+                this.addButton(this.chooseDeckButton = new Button(x - 50, height - 20 - 5, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
+                
+                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 16 - 16, height - 20 - 10 - 5 - 16 - 8, 16));
+                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 16, height - 20 - 10 - 5 - 32, 32));
+                this.addButton(this.nextDeckWidget = new SimpleWidget(x - 16 + 32, height - 20 - 10 - 5 - 16 - 8, 16));
                 this.prevDeckWidget.visible = false;
                 this.activeDeckWidget.visible = false;
                 this.nextDeckWidget.visible = false;
@@ -219,7 +232,7 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
             {
                 if(this.renderDeckChoosing())
                 {
-                    //TODO render deck name (itemstack name)
+                    this.drawActiveDeckForeground(mouseX, mouseY);
                 }
                 else
                 {
@@ -247,16 +260,204 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         this.minecraft.getTextureManager().bindTexture(PlaymatScreen.PLAYMAT_BACKGROUND_GUI_TEXTURE);
         this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         
-        if(this.getState() == DuelState.DUELING)
+        if(this.getState() == DuelState.PREPARING)
+        {
+            this.drawActiveDeckBackground(partialTicks, mouseX, mouseY);
+        }
+        else if(this.getState() == DuelState.DUELING)
         {
             this.minecraft.getTextureManager().bindTexture(PlaymatScreen.PLAYMAT_FOREGROUND_GUI_TEXTURE);
             this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         }
     }
     
-    protected void drawFullRectBackground(float r, float g, float b, float a)
+    protected void drawActiveDeckForeground(int mouseX, int mouseY)
     {
-        ClientProxy.drawRect(this.guiLeft, this.guiTop, this.xSize, this.ySize, r, g, b, a);
+        DeckProviderHolder h = this.getActiveDeckProviderHolder();
+        
+        if(h != DeckProviderHolder.DUMMY)
+        {
+            DeckHolder d = h.deckHolder;
+            
+            if(d != null && d != DeckHolder.DUMMY)
+            {
+                // coordinates from #drawActiveDeckBackground
+                int xSize = 284;
+                //                int ySize = 153;
+                int actualGuiLeft = (this.width - xSize) / 2;
+                int guiLeft = actualGuiLeft - this.guiLeft;
+                int guiTop = this.guiTop + 6 + 5 + this.font.FONT_HEIGHT - this.guiTop;
+                
+                // from DeckBoxScreen#drawGuiContainerForegroundLayer
+                
+                mouseX -= (this.guiLeft + guiLeft) - 1;
+                mouseY -= (this.guiTop + guiTop) - 1;
+                
+                // main deck
+                String main = new TranslationTextComponent("container.ydm.deck_box.main").getFormattedText() + " " + d.getMainDeckSize() + "/" + DeckHolder.MAIN_DECK_SIZE;
+                this.font.drawString(main, guiLeft + 8F, guiTop + 6F, 0x404040);
+                
+                // extra deck
+                String extra = new TranslationTextComponent("container.ydm.deck_box.extra").getFormattedText() + " " + d.getExtraDeckSize() + "/" + DeckHolder.EXTRA_DECK_SIZE;
+                this.font.drawString(extra, guiLeft + 8F, guiTop + 92F, 0x404040);
+                
+                // side deck
+                String side = new TranslationTextComponent("container.ydm.deck_box.side").getFormattedText() + " " + d.getSideDeckSize() + "/" + DeckHolder.SIDE_DECK_SIZE;
+                this.font.drawString(side, guiLeft + 8F, guiTop + 124F, 0x404040);
+                
+                int size = 18;
+                CardHolder c;
+                
+                //following code from DeckBoxContainer#<init>
+                
+                final int itemsPerRow = 15;
+                
+                // main deck
+                boolean broken = false;
+                int offX = 8;
+                int offY = 18;
+                for(int y = 0; y < DeckHolder.MAIN_DECK_SIZE / itemsPerRow; ++y)
+                {
+                    for(int x = 0; x < itemsPerRow && x + y * itemsPerRow < DeckHolder.MAIN_DECK_SIZE; ++x)
+                    {
+                        if(d.getMainDeck().size() <= x + y * itemsPerRow)
+                        {
+                            broken = true;
+                            break;
+                        }
+                        
+                        c = d.getMainDeck().get(x + y * itemsPerRow);
+                        
+                        if(c != null && c.getCard() != null)
+                        {
+                            this.minecraft.getTextureManager().bindTexture(c.getMainImageResourceLocation());
+                            ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                            
+                            if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
+                            {
+                                this.renderHoverRect(guiLeft + offX, guiTop + offY, 16, 16);
+                                this.renderCardInfoForeground(c, actualGuiLeft);
+                            }
+                        }
+                        
+                        offX += size;
+                    }
+                    
+                    if(broken)
+                    {
+                        break;
+                    }
+                    
+                    offX = 8;
+                    offY += size;
+                }
+                
+                // extra deck
+                offX = 8;
+                offY = 104;
+                for(int x = 0; x < DeckHolder.EXTRA_DECK_SIZE; ++x)
+                {
+                    if(d.getExtraDeck().size() <= x)
+                    {
+                        break;
+                    }
+                    
+                    c = d.getExtraDeck().get(x);
+                    
+                    if(c != null && c.getCard() != null)
+                    {
+                        this.minecraft.getTextureManager().bindTexture(c.getMainImageResourceLocation());
+                        ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                        
+                        if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
+                        {
+                            this.renderHoverRect(guiLeft + offX, guiTop + offY, 16, 16);
+                            this.renderCardInfoForeground(c, actualGuiLeft);
+                        }
+                    }
+                    
+                    offX += size;
+                }
+                
+                // side deck
+                offX = 8;
+                offY = 136;
+                for(int x = 0; x < DeckHolder.SIDE_DECK_SIZE; ++x)
+                {
+                    if(d.getSideDeck().size() <= x)
+                    {
+                        break;
+                    }
+                    
+                    c = d.getSideDeck().get(x);
+                    
+                    if(c != null && c.getCard() != null)
+                    {
+                        this.minecraft.getTextureManager().bindTexture(c.getMainImageResourceLocation());
+                        ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                        
+                        if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
+                        {
+                            this.renderHoverRect(guiLeft + offX, guiTop + offY, 16, 16);
+                            this.renderCardInfoForeground(c, actualGuiLeft);
+                        }
+                    }
+                    
+                    offX += size;
+                }
+            }
+        }
+    }
+    
+    protected void drawActiveDeckBackground(float partialTicks, int mouseX, int mouseY)
+    {
+        DeckProviderHolder h = this.getActiveDeckProviderHolder();
+        
+        if(h != DeckProviderHolder.DUMMY)
+        {
+            DeckHolder d = h.deckHolder;
+            
+            if(d != null && d != DeckHolder.DUMMY)
+            {
+                int xSize = 284;
+                int ySize = 153;
+                int guiLeft = (this.width - xSize) / 2;
+                int guiTop = this.guiTop + 6 + 5 + this.font.FONT_HEIGHT;
+                
+                this.minecraft.getTextureManager().bindTexture(PlaymatScreen.DECK_BACKGROUND_GUI_TEXTURE);
+                ClientProxy.blit(guiLeft, guiTop, xSize, ySize, 0, 0, xSize, ySize, 512, 256);
+                ClientProxy.blit(guiLeft, guiTop + ySize, xSize, 7, 0, 243, xSize, 7, 512, 256);
+            }
+        }
+    }
+    
+    public void renderCardInfoForeground(CardHolder c)
+    {
+        this.renderCardInfoForeground(c, this.guiLeft);
+    }
+    
+    public void renderCardInfoForeground(CardHolder c, int width)
+    {
+        RenderSystem.pushMatrix();
+        
+        RenderSystem.translatef(-this.guiLeft, -this.guiTop, 0F);
+        ClientProxy.renderCardInfo(c, width);
+        
+        RenderSystem.popMatrix();
+    }
+    
+    public void renderHoverRect(int x, int y, int w, int h)
+    {
+        // from ContainerScreen#render
+        
+        RenderSystem.disableDepthTest();
+        int j1 = x;
+        int k1 = y;
+        RenderSystem.colorMask(true, true, true, false);
+        int slotColor = this.slotColor;
+        this.fillGradient(j1, k1, j1 + w, k1 + h, slotColor, slotColor);
+        RenderSystem.colorMask(true, true, true, true);
+        RenderSystem.enableDepthTest();
     }
     
     public DuelManager getDuelManager()
@@ -339,20 +540,21 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         this.activateDeckProviders(this.activeDeckProviderIndex + 1);
     }
     
-    public void chooseDeckClicked()
+    public DeckProviderHolder getActiveDeckProviderHolder()
     {
-        ResourceLocation rl;
-        
-        if(this.deckProviderHolders.size() <= this.activeDeckProviderIndex)
+        if(this.deckProviderHolders == null || this.deckProviderHolders.size() <= this.activeDeckProviderIndex)
         {
-            rl = YdmDeckProviders.DUMMY.getRegistryName();
+            return DeckProviderHolder.DUMMY;
         }
         else
         {
-            rl = this.deckProviderHolders.get(this.activeDeckProviderIndex).deckProviderRL;
+            return this.deckProviderHolders.get(this.activeDeckProviderIndex);
         }
-        
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(rl));
+    }
+    
+    public void chooseDeckClicked()
+    {
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(this.getActiveDeckProviderHolder().deckProviderRL));
     }
     
     public void requestDeckProviderPop(ResourceLocation rl)
@@ -362,6 +564,8 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
     
     public static class DeckProviderHolder
     {
+        public static final DeckProviderHolder DUMMY = new DeckProviderHolder(YdmDeckProviders.DUMMY.getRegistryName());
+        
         public ResourceLocation deckProviderRL;
         public DeckProvider deckProvider;
         

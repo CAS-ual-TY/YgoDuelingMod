@@ -19,7 +19,7 @@ public class DeckHolder
     public static final int SIDE_DECK_INDEX_START = DeckHolder.EXTRA_DECK_INDEX_END;
     public static final int SIDE_DECK_INDEX_END = DeckHolder.SIDE_DECK_INDEX_START + DeckHolder.SIDE_DECK_SIZE;
     
-    public static final DeckHolder DUMMY_DECK = new DeckHolder();
+    public static final DeckHolder DUMMY = new DeckHolder();
     
     protected List<CardHolder> mainDeck;
     protected List<CardHolder> extraDeck;
@@ -50,6 +50,21 @@ public class DeckHolder
     public List<CardHolder> getSideDeck()
     {
         return this.sideDeck;
+    }
+    
+    public int getMainDeckSize()
+    {
+        return this.getMainDeck().size();
+    }
+    
+    public int getExtraDeckSize()
+    {
+        return this.getExtraDeck().size();
+    }
+    
+    public int getSideDeckSize()
+    {
+        return this.getSideDeck().size();
     }
     
     @Override

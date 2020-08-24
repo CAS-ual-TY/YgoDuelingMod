@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import javax.annotation.Nullable;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
@@ -280,16 +278,26 @@ public class ClientProxy implements ISidedProxy
             
             if(player.getHeldItemMainhand().getItem() == YdmItems.CARD)
             {
-                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()), null);
+                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()));
             }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
             {
-                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()), null);
+                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
             }
         }
     }
     
-    public static void renderCardInfo(CardHolder card, @Nullable ContainerScreen<?> screen)
+    public static void renderCardInfo(CardHolder card, ContainerScreen<?> screen)
+    {
+        ClientProxy.renderCardInfo(card, screen.getGuiLeft());
+    }
+    
+    public static void renderCardInfo(CardHolder card)
+    {
+        ClientProxy.renderCardInfo(card, 100);
+    }
+    
+    public static void renderCardInfo(CardHolder card, int width)
     {
         if(card == null || card.getCard() == null)
         {
@@ -300,12 +308,7 @@ public class ClientProxy implements ISidedProxy
         final int imageSize = 64;
         int margin = 2;
         
-        int maxWidth = 100;
-        
-        if(screen != null)
-        {
-            maxWidth = /*(screen.width - screen.getXSize()) / 2*/ screen.getGuiLeft() - margin * 2;
-        }
+        int maxWidth = width - margin * 2;
         
         RenderSystem.pushMatrix();
         RenderSystem.color4f(1F, 1F, 1F, 1F);

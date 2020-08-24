@@ -27,7 +27,7 @@ public class YdmDeckProviders
     {
         IForgeRegistry<DeckProvider> registry = event.getRegistry();
         
-        registry.register(new SimpleDeckProvider(() -> DeckHolder.DUMMY_DECK).setRegistryName(YDM.MOD_ID, "dummy"));
+        registry.register(new SimpleDeckProvider(() -> DeckHolder.DUMMY).setRegistryName(YDM.MOD_ID, "dummy"));
         
         registry.register(new SimpleDeckProvider(
             new DeckBuilder()

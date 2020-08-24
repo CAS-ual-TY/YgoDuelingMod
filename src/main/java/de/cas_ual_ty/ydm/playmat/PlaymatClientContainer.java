@@ -60,11 +60,11 @@ public class PlaymatClientContainer extends PlaymatContainer
         
         if(role == PlayerRole.PLAYER1)
         {
-            this.getDuelManager().player1Deck = DeckHolder.DUMMY_DECK;
+            this.getDuelManager().player1Deck = DeckHolder.DUMMY;
         }
         else if(role == PlayerRole.PLAYER2)
         {
-            this.getDuelManager().player2Deck = DeckHolder.DUMMY_DECK;
+            this.getDuelManager().player2Deck = DeckHolder.DUMMY;
         }
         
         this.doForScreen((screen) -> screen.reInit());
