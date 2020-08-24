@@ -19,6 +19,8 @@ public class DeckHolder
     public static final int SIDE_DECK_INDEX_START = DeckHolder.EXTRA_DECK_INDEX_END;
     public static final int SIDE_DECK_INDEX_END = DeckHolder.SIDE_DECK_INDEX_START + DeckHolder.SIDE_DECK_SIZE;
     
+    public static final DeckHolder DUMMY_DECK = new DeckHolder();
+    
     protected List<CardHolder> mainDeck;
     protected List<CardHolder> extraDeck;
     protected List<CardHolder> sideDeck;

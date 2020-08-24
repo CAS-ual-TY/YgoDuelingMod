@@ -19,12 +19,15 @@ import net.minecraftforge.registries.ObjectHolder;
 @ObjectHolder(YDM.MOD_ID)
 public class YdmDeckProviders
 {
+    public static final SimpleDeckProvider DUMMY = null;
     public static final SimpleDeckProvider DEBUG_DECK = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<DeckProvider> event)
     {
         IForgeRegistry<DeckProvider> registry = event.getRegistry();
+        
+        registry.register(new SimpleDeckProvider(() -> DeckHolder.DUMMY_DECK).setRegistryName(YDM.MOD_ID, "dummy"));
         
         registry.register(new SimpleDeckProvider(
             new DeckBuilder()

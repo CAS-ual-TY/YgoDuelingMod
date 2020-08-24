@@ -475,4 +475,72 @@ public class DuelMessages
             context.setPacketHandled(true);
         }
     }
+    
+    public static class ChooseDeck
+    {
+        public ResourceLocation deckProviderRL;
+        
+        public ChooseDeck(ResourceLocation deckProviderRL)
+        {
+            this.deckProviderRL = deckProviderRL;
+        }
+        
+        public static void encode(ChooseDeck msg, PacketBuffer buf)
+        {
+            buf.writeResourceLocation(msg.deckProviderRL);
+        }
+        
+        public static ChooseDeck decode(PacketBuffer buf)
+        {
+            return new ChooseDeck(buf.readResourceLocation());
+        }
+        
+        public static void handle(ChooseDeck msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(context.getSender(), (container, player) ->
+                {
+                    container.getDuelManager().chooseDeck(msg.deckProviderRL, player);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
+    public static class DeckAccepted
+    {
+        public PlayerRole role;
+        
+        public DeckAccepted(PlayerRole role)
+        {
+            this.role = role;
+        }
+        
+        public static void encode(DeckAccepted msg, PacketBuffer buf)
+        {
+            DuelMessages.encodePlayerRole(msg.role, buf);
+        }
+        
+        public static DeckAccepted decode(PacketBuffer buf)
+        {
+            return new DeckAccepted(DuelMessages.decodePlayerRole(buf));
+        }
+        
+        public static void handle(DeckAccepted msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
+                {
+                    container.deckAccepted(msg.role);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
 }

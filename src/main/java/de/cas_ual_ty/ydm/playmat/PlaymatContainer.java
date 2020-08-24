@@ -71,6 +71,11 @@ public class PlaymatContainer extends Container
         
     }
     
+    public void deckAccepted(PlayerRole role)
+    {
+        
+    }
+    
     public void onContainerOpened(PlayerEntity player)
     {
         this.getDuelManager().onPlayerOpenContainer(player);

@@ -54,6 +54,23 @@ public class PlaymatClientContainer extends PlaymatContainer
     }
     
     @Override
+    public void deckAccepted(PlayerRole role)
+    {
+        super.deckAccepted(role);
+        
+        if(role == PlayerRole.PLAYER1)
+        {
+            this.getDuelManager().player1Deck = DeckHolder.DUMMY_DECK;
+        }
+        else if(role == PlayerRole.PLAYER2)
+        {
+            this.getDuelManager().player2Deck = DeckHolder.DUMMY_DECK;
+        }
+        
+        this.doForScreen((screen) -> screen.reInit());
+    }
+    
+    @Override
     public void onContainerOpened(PlayerEntity player)
     {
         super.onContainerOpened(player);

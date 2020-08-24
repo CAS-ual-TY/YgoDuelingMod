@@ -11,6 +11,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmDeckProviders;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckProvider;
@@ -147,6 +148,12 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         this.nextDeckWidget.visible = true;
     }
     
+    // when true, deck choosing must be rendered, otherwise dont render it
+    public boolean renderDeckChoosing()
+    {
+        return this.getRole() == PlayerRole.PLAYER1 ? this.getDuelManager().player1Deck == null : (this.getRole() == PlayerRole.PLAYER2 ? this.getDuelManager().player2Deck == null : false);
+    }
+    
     @Override
     public void init(Minecraft mc, int width, int height)
     {
@@ -168,19 +175,22 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         }
         else if(this.getState() == DuelState.PREPARING)
         {
-            //without x+1 its technically not centered, i dont get why :(
-            this.addButton(this.prevDeckButton = new Button(x - 64 - 32, y - 32 + 32 - 10, 20, 20, "<", (button) -> this.prevDeckClicked()));
-            this.addButton(this.nextDeckButton = new Button(x + 32 + 32 + 10, y - 32 + 32 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
-            this.addButton(this.chooseDeckButton = new Button(x - 50, y - 32 + 64 + 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
-            
-            this.addButton(this.prevDeckWidget = new SimpleWidget(x - 64, y - 32 + 16, 32));
-            this.addButton(this.activeDeckWidget = new SimpleWidget(x - 32, y - 32, 64));
-            this.addButton(this.nextDeckWidget = new SimpleWidget(x + 32, y - 32 + 16, 32));
-            this.prevDeckWidget.visible = false;
-            this.activeDeckWidget.visible = false;
-            this.nextDeckWidget.visible = false;
-            
-            this.activateDeckProviders(0);
+            if(this.renderDeckChoosing())
+            {
+                //without x+1 its technically not centered, i dont get why :(
+                this.addButton(this.prevDeckButton = new Button(x - 64 - 32, height - 20 - 10 - 10 - 32 - 10, 20, 20, "<", (button) -> this.prevDeckClicked()));
+                this.addButton(this.nextDeckButton = new Button(x + 32 + 32 + 10, height - 20 - 10 - 10 - 32 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
+                this.addButton(this.chooseDeckButton = new Button(x - 50, height - 20 - 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
+                
+                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 64, height - 20 - 10 - 10 - 32 - 16, 32));
+                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 32, height - 20 - 10 - 10 - 64, 64));
+                this.addButton(this.nextDeckWidget = new SimpleWidget(x + 32, height - 20 - 10 - 10 - 32 - 16, 32));
+                this.prevDeckWidget.visible = false;
+                this.activeDeckWidget.visible = false;
+                this.nextDeckWidget.visible = false;
+                
+                this.activateDeckProviders(0);
+            }
         }
     }
     
@@ -192,14 +202,41 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         super.init();
     }
     
-    protected void drawIdle(int mouseX, int mouseY)
-    {
-        
-    }
-    
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
+        if(this.getState() == DuelState.IDLE)
+        {
+            this.font.drawString("Waiting for players...", 8.0F, 6.0F, 0x404040);
+        }
+        else if(this.getState() == DuelState.PREPARING)
+        {
+            this.font.drawString("Choose your decks...", 8.0F, 6.0F, 0x404040);
+            
+            PlayerRole role = this.getRole();
+            
+            if(role == PlayerRole.PLAYER1 || role == PlayerRole.PLAYER2)
+            {
+                if(this.renderDeckChoosing())
+                {
+                    //TODO render deck name (itemstack name)
+                }
+                else
+                {
+                    String text = "Waiting for other player...";
+                    int width = this.font.getStringWidth(text);
+                    int height = this.font.FONT_HEIGHT;
+                    this.font.drawString(text, (this.xSize - width) / 2F, (this.height - height) / 2F, 0x404040);
+                }
+            }
+            else
+            {
+                String text = "Waiting for players...";
+                int width = this.font.getStringWidth(text);
+                int height = this.font.FONT_HEIGHT;
+                this.font.drawString(text, (this.xSize - width) / 2F, (this.ySize - height) / 2F, 0x404040);
+            }
+        }
     }
     
     @Override
@@ -215,11 +252,6 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
             this.minecraft.getTextureManager().bindTexture(PlaymatScreen.PLAYMAT_FOREGROUND_GUI_TEXTURE);
             this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         }
-        
-        String text = this.getContainer().getDuelManager().duelState.name() + " " + this.getRole();
-        int width = this.font.getStringWidth(text);
-        int height = this.font.FONT_HEIGHT;
-        this.font.drawString(text, this.guiLeft + (this.xSize - width) / 2F, -60 + (this.ySize - height) / 2F, 0xFF4040);
     }
     
     protected void drawFullRectBackground(float r, float g, float b, float a)
@@ -309,7 +341,18 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
     
     public void chooseDeckClicked()
     {
-        // TODO CHOOSE DECK
+        ResourceLocation rl;
+        
+        if(this.deckProviderHolders.size() <= this.activeDeckProviderIndex)
+        {
+            rl = YdmDeckProviders.DUMMY.getRegistryName();
+        }
+        else
+        {
+            rl = this.deckProviderHolders.get(this.activeDeckProviderIndex).deckProviderRL;
+        }
+        
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(rl));
     }
     
     public void requestDeckProviderPop(ResourceLocation rl)
