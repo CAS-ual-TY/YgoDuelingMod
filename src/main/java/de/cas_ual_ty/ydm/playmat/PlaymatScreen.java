@@ -180,24 +180,14 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         {
             if(this.renderDeckChoosing())
             {
-                /*
-                this.addButton(this.prevDeckButton = new Button(x - 64 - 32, height - 20 - 10 - 10 - 32 - 10, 20, 20, "<", (button) -> this.prevDeckClicked()));
-                this.addButton(this.nextDeckButton = new Button(x + 32 + 32 + 10, height - 20 - 10 - 10 - 32 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
-                this.addButton(this.chooseDeckButton = new Button(x - 50, height - 20 - 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
-                
-                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 64, height - 20 - 10 - 10 - 32 - 16, 32));
-                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 32, height - 20 - 10 - 10 - 64, 64));
-                this.addButton(this.nextDeckWidget = new SimpleWidget(x + 32, height - 20 - 10 - 10 - 32 - 16, 32));
-                */
-                
                 //without x+1 its technically not centered, i dont get why :(
-                this.addButton(this.prevDeckButton = new Button(x - 16 - 16 - 10 - 5 - 10, height - 20 - 10 - 5 - 16 - 10, 20, 20, "<", (button) -> this.prevDeckClicked()));
-                this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, height - 20 - 10 - 5 - 16 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
-                this.addButton(this.chooseDeckButton = new Button(x - 50, height - 20 - 5, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
+                this.addButton(this.prevDeckButton = new Button(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, "<", (button) -> this.prevDeckClicked()));
+                this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
+                this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
                 
-                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 16 - 16, height - 20 - 10 - 5 - 16 - 8, 16));
-                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 16, height - 20 - 10 - 5 - 32, 32));
-                this.addButton(this.nextDeckWidget = new SimpleWidget(x - 16 + 32, height - 20 - 10 - 5 - 16 - 8, 16));
+                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16));
+                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32));
+                this.addButton(this.nextDeckWidget = new SimpleWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16));
                 this.prevDeckWidget.visible = false;
                 this.activeDeckWidget.visible = false;
                 this.nextDeckWidget.visible = false;
@@ -262,7 +252,10 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         
         if(this.getState() == DuelState.PREPARING)
         {
-            this.drawActiveDeckBackground(partialTicks, mouseX, mouseY);
+            if(this.renderDeckChoosing())
+            {
+                this.drawActiveDeckBackground(partialTicks, mouseX, mouseY);
+            }
         }
         else if(this.getState() == DuelState.DUELING)
         {
