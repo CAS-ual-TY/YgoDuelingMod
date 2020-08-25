@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelMessages;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
@@ -15,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class PlaymatClientContainer extends PlaymatContainer
@@ -40,17 +40,17 @@ public class PlaymatClientContainer extends PlaymatContainer
     }
     
     @Override
-    public void receiveDeckProviders(List<ResourceLocation> deckProvidersRLs)
+    public void receiveDeckSources(List<DeckSource> deckSources)
     {
-        super.receiveDeckProviders(deckProvidersRLs);
-        this.doForScreen((screen) -> screen.populateDeckProviders(deckProvidersRLs));
+        super.receiveDeckSources(deckSources);
+        this.doForScreen((screen) -> screen.populateDeckSources(deckSources));
     }
     
     @Override
-    public void receiveSingleDeckProvider(ResourceLocation rl, DeckHolder deck)
+    public void receiveDeck(int index, DeckHolder deck)
     {
-        super.receiveSingleDeckProvider(rl, deck);
-        this.doForScreen((screen) -> screen.synchDeckProvider(rl, deck));
+        super.receiveDeck(index, deck);
+        this.doForScreen((screen) -> screen.receiveDeck(index, deck));
     }
     
     @Override

@@ -7,14 +7,14 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
+import com.google.common.collect.ImmutableList;
+
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.YdmDeckProviders;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.deckbox.DeckProvider;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class DuelManager
@@ -38,6 +38,9 @@ public class DuelManager
     
     public List<Action> actions;
     public List<String> messages;
+    
+    public List<DeckSource> player1Decks;
+    public List<DeckSource> player2Decks;
     
     public DeckHolder player1Deck;
     public DeckHolder player2Deck;
@@ -109,6 +112,7 @@ public class DuelManager
         {
             // set it to null, but keep the id, in case of a disconnect
             this.player1 = null;
+            this.player1Decks = null;
         }
         else
         {
@@ -123,6 +127,7 @@ public class DuelManager
         this.player1 = null;
         this.player1Id = null;
         this.player1Ready = false;
+        this.player1Decks = null;
     }
     
     public void removePlayer2()
@@ -130,6 +135,7 @@ public class DuelManager
         if(this.hasStarted())
         {
             this.player2 = null;
+            this.player2Decks = null;
         }
         else
         {
@@ -144,6 +150,7 @@ public class DuelManager
         this.player2 = null;
         this.player2Id = null;
         this.player2Ready = false;
+        this.player2Decks = null;
     }
     
     public void removeSpectator(PlayerEntity player)
@@ -179,54 +186,76 @@ public class DuelManager
     {
         // both players are ready
         this.setDuelStateAndUpdate(DuelState.PREPARING);
-        this.sendDeckProvidersToPlayers();
+        this.findDecksForPlayers();
+        this.sendDecksToPlayers();
     }
     
-    public void sendDeckProvidersToPlayers()
+    public void findDecksForPlayers()
     {
-        List<ResourceLocation> list1 = this.getAvailableDeckProviders(this.player1);
+        this.player1Decks = this.getAvailableDecksFor(this.player1);
+        this.player2Decks = this.getAvailableDecksFor(this.player2);
+    }
+    
+    public List<DeckSource> getAvailableDecksFor(PlayerEntity player)
+    {
+        if(this.hasStarted())
+        {
+            return ImmutableList.of();
+        }
         
-        if(list1.isEmpty())
+        FindDecksEvent e = new FindDecksEvent(player, this);
+        MinecraftForge.EVENT_BUS.post(e);
+        return e.decksList;
+    }
+    
+    public void sendDecksToPlayers()
+    {
+        if(this.player1Decks.isEmpty())
         {
             this.kickPlayer(this.player1);
         }
         
-        List<ResourceLocation> list2 = this.getAvailableDeckProviders(this.player2);
-        
-        if(list2.isEmpty())
+        if(this.player2Decks.isEmpty())
         {
             this.kickPlayer(this.player2);
         }
         
-        if(list1.isEmpty() || list2.isEmpty())
+        if(this.player1Decks.isEmpty() || this.player2Decks.isEmpty())
         {
             return;
         }
         
-        this.sendDeckProvidersTo(this.player1, list1);
-        this.sendDeckProvidersTo(this.player2, list2);
+        this.sendDecksTo(this.player1, this.player1Decks);
+        this.sendDecksTo(this.player2, this.player2Decks);
     }
     
-    public void requestDeck(ResourceLocation deckProviderRL, PlayerEntity player)
+    public void requestDeck(int index, PlayerEntity player)
     {
-        PlayerRole role = this.getRoleFor(player);
-        
-        if(role != PlayerRole.PLAYER1 && role != PlayerRole.PLAYER2)
+        if(this.hasStarted())
         {
             return;
         }
         
-        DeckProvider d = YDM.DECK_PROVIDERS_REGISTRY.getValue(deckProviderRL);
+        PlayerRole role = this.getRoleFor(player);
+        List<DeckSource> list = null;
         
-        if(d != null)
+        if(role == PlayerRole.PLAYER1)
         {
-            DeckHolder deck = d.provideDeck(player);
-            
-            if(deck != null)
-            {
-                this.sendDeckTo(player, deckProviderRL, deck);
-            }
+            list = this.player1Decks;
         }
+        else if(role == PlayerRole.PLAYER2)
+        {
+            list = this.player2Decks;
+        }
+        
+        if(list == null || index < 0 || index >= list.size())
+        {
+            return;
+        }
+        
+        DeckHolder deck = list.get(index).deck;
+        
+        this.sendDeckTo(player, index, deck);
     }
     
     public void startDuel()
@@ -240,38 +269,43 @@ public class DuelManager
         
     }
     
-    public void chooseDeck(ResourceLocation deckProviderRL, PlayerEntity player)
+    public void chooseDeck(int index, PlayerEntity player)
     {
         PlayerRole role = this.getRoleFor(player);
+        List<DeckSource> list = null;
         
-        if(role != PlayerRole.PLAYER1 && role != PlayerRole.PLAYER2)
+        if(role == PlayerRole.PLAYER1)
+        {
+            list = this.player1Decks;
+        }
+        else if(role == PlayerRole.PLAYER2)
+        {
+            list = this.player2Decks;
+        }
+        
+        if(list == null || index < 0 || index >= list.size())
         {
             return;
         }
         
-        DeckProvider d = YDM.DECK_PROVIDERS_REGISTRY.getValue(deckProviderRL);
+        DeckHolder deck = list.get(index).deck;
         
-        if(d != null)
+        if(deck != null)
         {
-            DeckHolder deck = d.provideDeck(player);
-            
-            if(deck != null)
+            if(role == PlayerRole.PLAYER1)
             {
-                if(role == PlayerRole.PLAYER1)
-                {
-                    this.player1Deck = deck;
-                    this.updateDeckAcceptedToAll(PlayerRole.PLAYER1);
-                }
-                else if(role == PlayerRole.PLAYER2)
-                {
-                    this.player2Deck = deck;
-                    this.updateDeckAcceptedToAll(PlayerRole.PLAYER2);
-                }
-                
-                if(this.player1Deck != null && this.player2Deck != null)
-                {
-                    this.startDuel();
-                }
+                this.player1Deck = deck;
+                this.updateDeckAcceptedToAll(PlayerRole.PLAYER1);
+            }
+            else if(role == PlayerRole.PLAYER2)
+            {
+                this.player2Deck = deck;
+                this.updateDeckAcceptedToAll(PlayerRole.PLAYER2);
+            }
+            
+            if(this.player1Deck != null && this.player2Deck != null)
+            {
+                this.startDuel();
             }
         }
     }
@@ -426,7 +460,7 @@ public class DuelManager
         
         List<PlayerRole> list = new LinkedList<>();
         
-        if(this.getAvailableDeckProviders(player).isEmpty())
+        if(this.getAvailableDecksFor(player).isEmpty())
         {
             return list;
         }
@@ -511,21 +545,6 @@ public class DuelManager
         }
     }
     
-    public List<ResourceLocation> getAvailableDeckProviders(PlayerEntity player)
-    {
-        List<ResourceLocation> list = new LinkedList<>();
-        
-        for(DeckProvider d : YDM.DECK_PROVIDERS_REGISTRY)
-        {
-            if(d != YdmDeckProviders.DUMMY && d.provideDeck(player) != null)
-            {
-                list.add(d.getRegistryName());
-            }
-        }
-        
-        return list;
-    }
-    
     // on client side the player can be null
     public void handlePlayerLeave(@Nullable PlayerEntity player, PlayerRole role)
     {
@@ -533,6 +552,11 @@ public class DuelManager
         {
             // TODO notify players in case actual duelist left
             // spectators can always be ignored
+            
+            if(this.player1 == null && this.player2 == null)
+            {
+                this.reset(); // TODO do ticking instead
+            }
         }
     }
     
@@ -683,14 +707,14 @@ public class DuelManager
         // TODO
     }
     
-    protected void sendDeckProvidersTo(PlayerEntity player, List<ResourceLocation> list)
+    protected void sendDecksTo(PlayerEntity player, List<DeckSource> list)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendDeckProviders(list));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendAvailableDecks(list));
     }
     
-    protected void sendDeckTo(PlayerEntity player, ResourceLocation deckProviderRL, DeckHolder deck)
+    protected void sendDeckTo(PlayerEntity player, int index, DeckHolder deck)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendDeck(deckProviderRL, deck));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendDeck(index, deck));
     }
     
     protected void sendDeckAcceptedTo(PlayerEntity player, PlayerRole acceptedOf)

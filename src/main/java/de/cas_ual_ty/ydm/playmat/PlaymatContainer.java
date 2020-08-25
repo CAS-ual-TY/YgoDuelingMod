@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.playmat;
 import java.util.List;
 
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
@@ -12,7 +13,6 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
 public class PlaymatContainer extends Container
@@ -61,12 +61,12 @@ public class PlaymatContainer extends Container
         
     }
     
-    public void receiveDeckProviders(List<ResourceLocation> deckProvidersRLs)
+    public void receiveDeckSources(List<DeckSource> deckSources)
     {
         
     }
     
-    public void receiveSingleDeckProvider(ResourceLocation rl, DeckHolder deck)
+    public void receiveDeck(int index, DeckHolder deck)
     {
         
     }

@@ -13,11 +13,14 @@ import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.deckbox.DeckProvider;
+import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
+import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelMessages;
+import de.cas_ual_ty.ydm.duel.FindDecksEvent;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -30,7 +33,6 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -44,8 +46,6 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.RegistryBuilder;
 
 @Mod(YDM.MOD_ID)
 public class YDM
@@ -59,8 +59,6 @@ public class YDM
     public static ISidedProxy proxy;
     public static YdmItemGroup ydmItemGroup;
     public static YdmItemGroup cardsItemGroup;
-    
-    public static IForgeRegistry<DeckProvider> DECK_PROVIDERS_REGISTRY;
     
     public static ForgeConfigSpec commonConfigSpec;
     public static CommonConfig commonConfig;
@@ -97,12 +95,12 @@ public class YDM
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
         bus.addListener(this::modConfig);
-        bus.addListener(this::newRegistry);
         YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
         bus.addListener(this::attachItemStackCapabilities);
         bus.addListener(this::serverStarting);
+        bus.addListener(this::findDecks);
         YDM.proxy.registerForgeEventListeners(bus);
         
         YDM.proxy.preInit();
@@ -131,7 +129,7 @@ public class YDM
         YDM.channel.registerMessage(index++, DuelMessages.RequestFullUpdate.class, DuelMessages.RequestFullUpdate::encode, DuelMessages.RequestFullUpdate::decode, DuelMessages.RequestFullUpdate::handle);
         YDM.channel.registerMessage(index++, DuelMessages.RequestReady.class, DuelMessages.RequestReady::encode, DuelMessages.RequestReady::decode, DuelMessages.RequestReady::handle);
         YDM.channel.registerMessage(index++, DuelMessages.UpdateReady.class, DuelMessages.UpdateReady::encode, DuelMessages.UpdateReady::decode, DuelMessages.UpdateReady::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.SendDeckProviders.class, DuelMessages.SendDeckProviders::encode, DuelMessages.SendDeckProviders::decode, DuelMessages.SendDeckProviders::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.SendAvailableDecks.class, DuelMessages.SendAvailableDecks::encode, DuelMessages.SendAvailableDecks::decode, DuelMessages.SendAvailableDecks::handle);
         YDM.channel.registerMessage(index++, DuelMessages.RequestDeck.class, DuelMessages.RequestDeck::encode, DuelMessages.RequestDeck::decode, DuelMessages.RequestDeck::handle);
         YDM.channel.registerMessage(index++, DuelMessages.SendDeck.class, DuelMessages.SendDeck::encode, DuelMessages.SendDeck::decode, DuelMessages.SendDeck::handle);
         YDM.channel.registerMessage(index++, DuelMessages.ChooseDeck.class, DuelMessages.ChooseDeck::encode, DuelMessages.ChooseDeck::decode, DuelMessages.ChooseDeck::handle);
@@ -248,9 +246,29 @@ public class YDM
         }
     }
     
-    private void newRegistry(RegistryEvent.NewRegistry event)
+    private void findDecks(FindDecksEvent event)
     {
-        YDM.DECK_PROVIDERS_REGISTRY = new RegistryBuilder<DeckProvider>().setName(new ResourceLocation(YDM.MOD_ID, "deck_providers")).setType(DeckProvider.class).setMaxID(1024).create();
+        PlayerEntity player = event.getPlayer();
+        
+        ItemStack itemStack;
+        for(int i = 0; i < player.inventory.getSizeInventory(); ++i)
+        {
+            itemStack = player.inventory.getStackInSlot(i);
+            
+            if(itemStack.getItem() instanceof DeckBoxItem)
+            {
+                event.addDeck(new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack)), itemStack);
+            }
+        }
+        
+        itemStack = player.getHeldItemOffhand();
+        if(itemStack.getItem() instanceof DeckBoxItem)
+        {
+            event.addDeck(new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack)), itemStack);
+        }
+        
+        // TODO debug
+        event.addDeck(DeckSource.getOjamaDeck());
     }
     
     public static void log(String s)

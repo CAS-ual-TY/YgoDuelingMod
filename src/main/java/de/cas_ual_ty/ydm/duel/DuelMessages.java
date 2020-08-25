@@ -19,7 +19,6 @@ import de.cas_ual_ty.ydm.playmat.PlaymatContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
@@ -112,16 +111,24 @@ public class DuelMessages
         return PlayerRole.getFromIndex(buf.readByte());
     }
     
-    public static void encodeCardHolder(CardHolder card, PacketBuffer buf)
+    public static void encodeCardHolder(@Nullable CardHolder card, PacketBuffer buf)
     {
-        CompoundNBT nbt = new CompoundNBT();
-        card.writeCardHolderToNBT(nbt);
-        buf.writeCompoundTag(nbt);
+        if(card != null)
+        {
+            buf.writeBoolean(true);
+            CompoundNBT nbt = new CompoundNBT();
+            card.writeCardHolderToNBT(nbt);
+            buf.writeCompoundTag(nbt);
+        }
+        else
+        {
+            buf.writeBoolean(false);
+        }
     }
     
     public static CardHolder decodeCardHolder(PacketBuffer buf)
     {
-        return new CardHolder(buf.readCompoundTag());
+        return buf.readBoolean() ? new CardHolder(buf.readCompoundTag()) : null;
     }
     
     public static void encodeDeckHolder(DeckHolder deck, PacketBuffer buf)
@@ -371,33 +378,33 @@ public class DuelMessages
         }
     }
     
-    public static class SendDeckProviders
+    public static class SendAvailableDecks
     {
-        public List<ResourceLocation> deckProviderRLs;
+        public List<DeckSource> deckSources;
         
-        public SendDeckProviders(List<ResourceLocation> deckProviderRLs)
+        public SendAvailableDecks(List<DeckSource> deckSources)
         {
-            this.deckProviderRLs = deckProviderRLs;
+            this.deckSources = deckSources;
         }
         
-        public static void encode(SendDeckProviders msg, PacketBuffer buf)
+        public static void encode(SendAvailableDecks msg, PacketBuffer buf)
         {
-            DuelMessages.encodeList(msg.deckProviderRLs, buf, (deckProviderRL, buf1) -> buf1.writeResourceLocation(deckProviderRL));
+            DuelMessages.encodeList(msg.deckSources, buf, (deckSource, buf1) -> buf1.writeItemStack(deckSource.source));
         }
         
-        public static SendDeckProviders decode(PacketBuffer buf)
+        public static SendAvailableDecks decode(PacketBuffer buf)
         {
-            return new SendDeckProviders(DuelMessages.decodeList(buf, (buf1) -> buf1.readResourceLocation()));
+            return new SendAvailableDecks(DuelMessages.decodeList(buf, (buf1) -> new DeckSource(null, buf1.readItemStack())));
         }
         
-        public static void handle(SendDeckProviders msg, Supplier<NetworkEvent.Context> ctx)
+        public static void handle(SendAvailableDecks msg, Supplier<NetworkEvent.Context> ctx)
         {
             Context context = ctx.get();
             context.enqueueWork(() ->
             {
                 DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
-                    container.receiveDeckProviders(msg.deckProviderRLs);
+                    container.receiveDeckSources(msg.deckSources);
                 });
             });
             
@@ -407,21 +414,21 @@ public class DuelMessages
     
     public static class RequestDeck
     {
-        public ResourceLocation deckProviderRL;
+        public int index;
         
-        public RequestDeck(ResourceLocation deckProviderRL)
+        public RequestDeck(int index)
         {
-            this.deckProviderRL = deckProviderRL;
+            this.index = index;
         }
         
         public static void encode(RequestDeck msg, PacketBuffer buf)
         {
-            buf.writeResourceLocation(msg.deckProviderRL);
+            buf.writeInt(msg.index);
         }
         
         public static RequestDeck decode(PacketBuffer buf)
         {
-            return new RequestDeck(buf.readResourceLocation());
+            return new RequestDeck(buf.readInt());
         }
         
         public static void handle(RequestDeck msg, Supplier<NetworkEvent.Context> ctx)
@@ -431,7 +438,7 @@ public class DuelMessages
             {
                 DuelMessages.doForContainer(context.getSender(), (container, player) ->
                 {
-                    container.getDuelManager().requestDeck(msg.deckProviderRL, player);
+                    container.getDuelManager().requestDeck(msg.index, player);
                 });
             });
             
@@ -441,24 +448,24 @@ public class DuelMessages
     
     public static class SendDeck
     {
-        public ResourceLocation deckProviderRL;
+        public int index;
         public DeckHolder deck;
         
-        public SendDeck(ResourceLocation deckProviderRL, DeckHolder deck)
+        public SendDeck(int index, DeckHolder deck)
         {
-            this.deckProviderRL = deckProviderRL;
+            this.index = index;
             this.deck = deck;
         }
         
         public static void encode(SendDeck msg, PacketBuffer buf)
         {
-            buf.writeResourceLocation(msg.deckProviderRL);
+            buf.writeInt(msg.index);
             DuelMessages.encodeDeckHolder(msg.deck, buf);
         }
         
         public static SendDeck decode(PacketBuffer buf)
         {
-            return new SendDeck(buf.readResourceLocation(), DuelMessages.decodeDeckHolder(buf));
+            return new SendDeck(buf.readInt(), DuelMessages.decodeDeckHolder(buf));
         }
         
         public static void handle(SendDeck msg, Supplier<NetworkEvent.Context> ctx)
@@ -468,7 +475,7 @@ public class DuelMessages
             {
                 DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
                 {
-                    container.receiveSingleDeckProvider(msg.deckProviderRL, msg.deck);
+                    container.receiveDeck(msg.index, msg.deck);
                 });
             });
             
@@ -478,21 +485,21 @@ public class DuelMessages
     
     public static class ChooseDeck
     {
-        public ResourceLocation deckProviderRL;
+        public int index;
         
-        public ChooseDeck(ResourceLocation deckProviderRL)
+        public ChooseDeck(int index)
         {
-            this.deckProviderRL = deckProviderRL;
+            this.index = index;
         }
         
         public static void encode(ChooseDeck msg, PacketBuffer buf)
         {
-            buf.writeResourceLocation(msg.deckProviderRL);
+            buf.writeInt(msg.index);
         }
         
         public static ChooseDeck decode(PacketBuffer buf)
         {
-            return new ChooseDeck(buf.readResourceLocation());
+            return new ChooseDeck(buf.readInt());
         }
         
         public static void handle(ChooseDeck msg, Supplier<NetworkEvent.Context> ctx)
@@ -502,7 +509,7 @@ public class DuelMessages
             {
                 DuelMessages.doForContainer(context.getSender(), (container, player) ->
                 {
-                    container.getDuelManager().chooseDeck(msg.deckProviderRL, player);
+                    container.getDuelManager().chooseDeck(msg.index, player);
                 });
             });
             

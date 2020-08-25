@@ -5,17 +5,16 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import javax.annotation.Nullable;
-
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.YdmDeckProviders;
+import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.deckbox.DeckProvider;
+import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.DuelMessages;
 import de.cas_ual_ty.ydm.duel.DuelState;
@@ -27,11 +26,20 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
@@ -54,13 +62,13 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
     protected SimpleWidget activeDeckWidget;
     protected SimpleWidget nextDeckWidget;
     
-    protected List<DeckProviderHolder> deckProviderHolders;
-    protected int activeDeckProviderIndex;
+    protected List<DeckWrapper> deckWrappers;
+    protected int activeDeckWrapperIdx;
     
     public PlaymatScreen(PlaymatContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.activeDeckProviderIndex = 0;
+        this.activeDeckWrapperIdx = 0;
     }
     
     public void reInit()
@@ -68,87 +76,80 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
         this.init(this.getMinecraft(), this.width, this.height);
     }
     
-    public void populateDeckProviders(List<ResourceLocation> deckProviderRLs)
+    public void populateDeckSources(List<DeckSource> deckSources)
     {
-        this.deckProviderHolders = new ArrayList<>(deckProviderRLs.size());
-        this.activeDeckProviderIndex = 0;
+        this.deckWrappers = new ArrayList<>(deckSources.size());
+        this.activeDeckWrapperIdx = 0;
         
-        DeckProviderHolder p;
-        for(ResourceLocation rl : deckProviderRLs)
+        for(int index = 0; index < deckSources.size(); ++index)
         {
-            this.deckProviderHolders.add(p = new DeckProviderHolder(rl));
-            
-            if(p.hasDeckProvider())
-            {
-                p.populate();
-            }
-            else
-            {
-                this.requestDeckProviderPop(p.deckProviderRL);
-            }
+            this.deckWrappers.add(new DeckWrapper(deckSources.get(index), index));
         }
         
-        this.activateDeckProviders(0);
+        this.setActiveDeckWrapper(0);
     }
     
-    public void synchDeckProvider(ResourceLocation deckProviderRL, DeckHolder deck)
+    public void receiveDeck(int index, DeckHolder deck)
     {
-        for(DeckProviderHolder provider : this.deckProviderHolders)
+        if(index >= 0 && index < this.deckWrappers.size())
         {
-            if(provider.deckProviderRL.equals(deckProviderRL))
-            {
-                provider.deckHolder = deck;
-                break;
-            }
+            this.deckWrappers.get(index).deck = deck;
+            this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
         }
-        
-        this.activateDeckProviders(0);
     }
     
-    public void activateDeckProviders(int index)
+    public void setActiveDeckWrapper(int index)
     {
-        if(this.deckProviderHolders == null)
+        if(this.deckWrappers == null)
         {
             return;
         }
         
-        if(index >= this.deckProviderHolders.size())
+        if(index >= this.deckWrappers.size())
         {
             index = 0;
         }
         else if(index < 0)
         {
-            index = this.deckProviderHolders.size() - 1;
+            index = this.deckWrappers.size() - 1;
         }
         
         int prev = index - 1;
         
         if(prev < 0)
         {
-            prev = this.deckProviderHolders.size() - 1;
+            prev = this.deckWrappers.size() - 1;
         }
         
         int next = index + 1;
         
-        if(next >= this.deckProviderHolders.size())
+        if(next >= this.deckWrappers.size())
         {
             next = 0;
         }
         
-        this.activeDeckProviderIndex = index;
+        this.activeDeckWrapperIdx = index;
         
-        DeckProviderHolder dPrev = this.deckProviderHolders.get(prev);
-        this.prevDeckWidget.setRL(dPrev.getShownTexture() != null ? () -> dPrev.getShownTexture() : () -> PlaymatScreen.DECK_REPLACEMENT);
+        DeckWrapper dPrev = this.deckWrappers.get(prev);
+        dPrev.index = prev;
+        this.prevDeckWidget.setItemStack(dPrev.source);
         
-        DeckProviderHolder dActive = this.deckProviderHolders.get(index);
-        this.activeDeckWidget.setRL(dActive.getShownTexture() != null ? () -> dActive.getShownTexture() : () -> PlaymatScreen.DECK_REPLACEMENT);
+        DeckWrapper dActive = this.deckWrappers.get(index);
+        dActive.index = index;
+        this.activeDeckWidget.setItemStack(dActive.source);
         
-        DeckProviderHolder dNext = this.deckProviderHolders.get(next);
-        this.nextDeckWidget.setRL(dNext.getShownTexture() != null ? () -> dNext.getShownTexture() : () -> PlaymatScreen.DECK_REPLACEMENT);
+        DeckWrapper dNext = this.deckWrappers.get(next);
+        dNext.index = next;
+        this.nextDeckWidget.setItemStack(dNext.source);
         
         this.prevDeckWidget.visible = true;
         this.activeDeckWidget.visible = true;
         this.nextDeckWidget.visible = true;
+        
+        if(!dActive.hasDeck())
+        {
+            this.requestDeck(dActive.index);
+        }
     }
     
     // when true, deck choosing must be rendered, otherwise dont render it
@@ -185,14 +186,14 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
                 this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
                 this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
                 
-                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16));
-                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32));
-                this.addButton(this.nextDeckWidget = new SimpleWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16));
+                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
+                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer));
+                this.addButton(this.nextDeckWidget = new SimpleWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
                 this.prevDeckWidget.visible = false;
                 this.activeDeckWidget.visible = false;
                 this.nextDeckWidget.visible = false;
                 
-                this.activateDeckProviders(0);
+                this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
             }
         }
     }
@@ -266,11 +267,11 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
     
     protected void drawActiveDeckForeground(int mouseX, int mouseY)
     {
-        DeckProviderHolder h = this.getActiveDeckProviderHolder();
+        DeckWrapper h = this.getActiveDeckWrapper();
         
-        if(h != DeckProviderHolder.DUMMY)
+        if(h != DeckWrapper.DUMMY)
         {
-            DeckHolder d = h.deckHolder;
+            DeckHolder d = h.deck;
             
             if(d != null && d != DeckHolder.DUMMY)
             {
@@ -404,11 +405,11 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
     
     protected void drawActiveDeckBackground(float partialTicks, int mouseX, int mouseY)
     {
-        DeckProviderHolder h = this.getActiveDeckProviderHolder();
+        DeckWrapper h = this.getActiveDeckWrapper();
         
-        if(h != DeckProviderHolder.DUMMY)
+        if(h != DeckWrapper.DUMMY)
         {
-            DeckHolder d = h.deckHolder;
+            DeckHolder d = h.deck;
             
             if(d != null && d != DeckHolder.DUMMY)
             {
@@ -525,116 +526,149 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
     
     public void prevDeckClicked()
     {
-        this.activateDeckProviders(this.activeDeckProviderIndex - 1);
+        this.setActiveDeckWrapper(this.activeDeckWrapperIdx - 1);
     }
     
     public void nextDeckClicked()
     {
-        this.activateDeckProviders(this.activeDeckProviderIndex + 1);
+        this.setActiveDeckWrapper(this.activeDeckWrapperIdx + 1);
     }
     
-    public DeckProviderHolder getActiveDeckProviderHolder()
+    public DeckWrapper getActiveDeckWrapper()
     {
-        if(this.deckProviderHolders == null || this.deckProviderHolders.size() <= this.activeDeckProviderIndex)
+        if(this.deckWrappers == null || this.deckWrappers.size() <= this.activeDeckWrapperIdx)
         {
-            return DeckProviderHolder.DUMMY;
+            return DeckWrapper.DUMMY;
         }
         else
         {
-            return this.deckProviderHolders.get(this.activeDeckProviderIndex);
+            return this.deckWrappers.get(this.activeDeckWrapperIdx);
         }
     }
     
     public void chooseDeckClicked()
     {
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(this.getActiveDeckProviderHolder().deckProviderRL));
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(this.getActiveDeckWrapper().index));
     }
     
-    public void requestDeckProviderPop(ResourceLocation rl)
+    public void requestDeck(int index)
     {
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDeck(rl));
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDeck(index));
     }
     
-    public static class DeckProviderHolder
+    public static class DeckWrapper
     {
-        public static final DeckProviderHolder DUMMY = new DeckProviderHolder(YdmDeckProviders.DUMMY.getRegistryName());
+        public static final DeckWrapper DUMMY = new DeckWrapper(new DeckSource(DeckHolder.DUMMY, new ItemStack(YdmItems.BLANC_CARD)), -1);
         
-        public ResourceLocation deckProviderRL;
-        public DeckProvider deckProvider;
+        public ItemStack source;
+        public DeckHolder deck;
+        public int index;
         
-        public DeckHolder deckHolder;
-        
-        public DeckProviderHolder(ResourceLocation deckProviderRL)
+        public DeckWrapper(DeckSource source, int index)
         {
-            this.deckProviderRL = deckProviderRL;
-            this.deckProvider = YDM.DECK_PROVIDERS_REGISTRY.getValue(this.deckProviderRL);
+            this.source = source.source;
+            this.deck = source.deck; //should be null
         }
         
-        public void populate()
+        public boolean hasDeck()
         {
-            this.deckHolder = this.deckProvider.provideDeck(ClientProxy.getPlayer());
+            return this.deck != null;
         }
         
-        public boolean hasDeckProvider()
+        public ItemStack getShownItemStack()
         {
-            return this.deckProvider != null;
-        }
-        
-        @Nullable
-        public ResourceLocation getShownTexture()
-        {
-            if(this.deckProvider != null)
-            {
-                return this.deckProvider.getShownIcon(ClientProxy.getPlayer());
-            }
-            else
-            {
-                return null;
-            }
+            return this.source;
         }
     }
     
     public static class SimpleWidget extends Widget
     {
-        public Supplier<ResourceLocation> rl;
+        public ItemStack itemStack;
+        public ItemRenderer itemRenderer;
         
-        public SimpleWidget(int xIn, int yIn, int size)
+        public SimpleWidget(int xIn, int yIn, int size, ItemRenderer itemRenderer)
         {
             super(xIn, yIn, size, size, "");
-            this.rl = null;
+            this.itemStack = ItemStack.EMPTY;
+            this.itemRenderer = itemRenderer;
         }
         
-        public SimpleWidget setRL(Supplier<ResourceLocation> rl)
+        public SimpleWidget setItemStack(ItemStack itemStack)
         {
-            this.rl = rl;
+            this.itemStack = itemStack;
             return this;
         }
         
-        public SimpleWidget setMsg(String msg)
-        {
-            this.setMessage(msg);
-            return this;
-        }
-        
+        @SuppressWarnings("deprecation")
         @Override
         public void renderButton(int mouseX, int mouseY, float partial)
         {
-            if(this.rl != null)
+            Minecraft minecraft = Minecraft.getInstance();
+            ResourceLocation rl = PlaymatScreen.DECK_REPLACEMENT;
+            
+            if(!this.itemStack.isEmpty())
             {
-                Minecraft minecraft = Minecraft.getInstance();
-                FontRenderer fontrenderer = minecraft.fontRenderer;
-                minecraft.getTextureManager().bindTexture(this.rl.get());
-                RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-                
-                ClientProxy.blit(this.x, this.y, this.width, this.height, 0, 0, 256, 256, 256, 256);
-                
-                this.renderBg(minecraft, mouseX, mouseY);
-                int j = this.getFGColor();
-                this.drawCenteredString(fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+                if(this.itemStack.getItem() == YdmItems.CARD)
+                {
+                    CardHolder c = YdmItems.CARD.getCardHolder(this.itemStack);
+                    
+                    if(c.getCard() != null)
+                    {
+                        rl = c.getMainImageResourceLocation();
+                    }
+                }
+                else
+                {
+                    // do custom rendering and return so the bottom code isnt executed
+                    
+                    // from ItemRenderer#renderItemModelIntoGUI
+                    
+                    IBakedModel bakedmodel = this.itemRenderer.getItemModelWithOverrides(this.itemStack, (World)null, (LivingEntity)null);
+                    
+                    RenderSystem.pushMatrix();
+                    minecraft.getTextureManager().bindTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+                    minecraft.getTextureManager().getTexture(AtlasTexture.LOCATION_BLOCKS_TEXTURE).setBlurMipmapDirect(false, false);
+                    RenderSystem.enableRescaleNormal();
+                    RenderSystem.enableAlphaTest();
+                    RenderSystem.defaultAlphaFunc();
+                    RenderSystem.enableBlend();
+                    RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                    RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+                    RenderSystem.translatef((float)this.x, (float)this.y, 100.0F + this.itemRenderer.zLevel);
+                    RenderSystem.translatef(this.width / 2F, this.height / 2F, 0.0F);
+                    RenderSystem.scalef(1.0F, -1.0F, 1.0F);
+                    RenderSystem.scalef(this.width, this.height, 16.0F);
+                    MatrixStack matrixstack = new MatrixStack();
+                    IRenderTypeBuffer.Impl irendertypebuffer$impl = Minecraft.getInstance().getRenderTypeBuffers().getBufferSource();
+                    boolean flag = !bakedmodel.func_230044_c_();
+                    if(flag)
+                    {
+                        RenderHelper.setupGuiFlatDiffuseLighting();
+                    }
+                    
+                    this.itemRenderer.renderItem(this.itemStack, net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType.GUI, false, matrixstack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+                    irendertypebuffer$impl.finish();
+                    RenderSystem.enableDepthTest();
+                    if(flag)
+                    {
+                        RenderHelper.setupGui3DDiffuseLighting();
+                    }
+                    
+                    RenderSystem.disableAlphaTest();
+                    RenderSystem.disableRescaleNormal();
+                    RenderSystem.popMatrix();
+                    
+                    return;
+                }
             }
+            
+            minecraft.getTextureManager().bindTexture(rl);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            
+            ClientProxy.blit(this.x, this.y, this.width, this.height, 0, 0, 256, 256, 256, 256);
         }
     }
     
