@@ -132,7 +132,6 @@ public class YdmResourcePack extends ResourcePack
     {
         // This is only needed for fonts and sounds afaik
         /*
-        
         List<ResourceLocation> list = Lists.newArrayList();
         
         if(type == ResourcePackType.CLIENT_RESOURCES)
@@ -143,7 +142,6 @@ public class YdmResourcePack extends ResourcePack
             {
                 for(File f : listFiles)
                 {
-                    YDM.debug("addResourceLocation: " + new ResourceLocation(YDM.MOD_ID, f.getName().replace(this.filter.getRequiredSuffix(), "")).toString());
                     list.add(new ResourceLocation(YDM.MOD_ID, f.getName().replace(this.filter.getRequiredSuffix(), "")));
                 }
             }

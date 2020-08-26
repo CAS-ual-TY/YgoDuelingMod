@@ -22,6 +22,7 @@ import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
@@ -58,8 +59,8 @@ public class YDM
     
     public static YDM instance;
     public static ISidedProxy proxy;
-    public static YdmItemGroup ydmItemGroup;
-    public static YdmItemGroup cardsItemGroup;
+    public static ItemGroup ydmItemGroup;
+    public static ItemGroup cardsItemGroup;
     
     public static ForgeConfigSpec commonConfigSpec;
     public static CommonConfig commonConfig;
@@ -84,7 +85,14 @@ public class YDM
             () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
             () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
-        YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD);
+        YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD)
+        {
+            @Override
+            public boolean hasSearchBar()
+            {
+                return true;
+            }
+        }.setBackgroundImageName("item_search.png");
         
         Pair<CommonConfig, ForgeConfigSpec> common = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
         YDM.commonConfig = common.getLeft();

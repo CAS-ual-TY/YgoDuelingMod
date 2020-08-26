@@ -2,7 +2,6 @@ package de.cas_ual_ty.ydm.card;
 
 import java.util.List;
 
-import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -78,7 +77,7 @@ public class CardItem extends Item
             return;
         }
         
-        YDM.log("Creating card item variants (" + YdmDatabase.CARDS_LIST.size() + " different variants)");
+        //        YDM.log("Creating card item variants (" + YdmDatabase.CARDS_LIST.size() + " different variants)");
         
         ItemStack itemStack;
         CardHolder holder;
