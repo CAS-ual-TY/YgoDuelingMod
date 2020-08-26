@@ -6,8 +6,8 @@ public class JsonKeys
     
     public static final String NAME = "name";
     public static final String ID = "id";
-    public static final String ILLEGAL = "illegal";
-    public static final String CUSTOM = "custom";
+    public static final String IS_ILLEGAL = "is_illegal";
+    public static final String IS_CUSTOM = "is_custom";
     public static final String TEXT = "text";
     public static final String TYPE = "type";
     public static final String IMAGES = "images";

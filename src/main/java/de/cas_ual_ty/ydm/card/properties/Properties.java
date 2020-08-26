@@ -18,8 +18,8 @@ public class Properties
 {
     public String name;
     public long id;
-    public boolean illegal;
-    public boolean custom;
+    public boolean isIllegal;
+    public boolean isCustom;
     public String text;
     public Type type;
     public String[] images;
@@ -28,8 +28,8 @@ public class Properties
     {
         this.name = p0.name;
         this.id = p0.id;
-        this.illegal = p0.illegal;
-        this.custom = p0.custom;
+        this.isIllegal = p0.isIllegal;
+        this.isCustom = p0.isCustom;
         this.text = p0.text;
         this.type = p0.type;
         this.images = p0.images;
@@ -58,8 +58,8 @@ public class Properties
     {
         this.name = j.get(JsonKeys.NAME).getAsString();
         this.id = j.get(JsonKeys.ID).getAsLong();
-        this.illegal = j.get(JsonKeys.ILLEGAL).getAsBoolean();
-        this.custom = j.get(JsonKeys.CUSTOM).getAsBoolean();
+        this.isIllegal = j.get(JsonKeys.IS_ILLEGAL).getAsBoolean();
+        this.isCustom = j.get(JsonKeys.IS_CUSTOM).getAsBoolean();
         this.text = j.get(JsonKeys.TEXT).getAsString();
         this.type = Type.fromString(j.get(JsonKeys.TYPE).getAsString());
         
@@ -75,8 +75,8 @@ public class Properties
     {
         j.addProperty(JsonKeys.NAME, this.name);
         j.addProperty(JsonKeys.ID, this.id);
-        j.addProperty(JsonKeys.ILLEGAL, this.illegal);
-        j.addProperty(JsonKeys.CUSTOM, this.custom);
+        j.addProperty(JsonKeys.IS_ILLEGAL, this.isIllegal);
+        j.addProperty(JsonKeys.IS_CUSTOM, this.isCustom);
         j.addProperty(JsonKeys.TEXT, this.text);
         j.addProperty(JsonKeys.TYPE, this.type.name);
         
@@ -171,7 +171,7 @@ public class Properties
     {
         list.add(this.getName());
         
-        if(this.custom)
+        if(this.isCustom)
         {
             ITextComponent c = new StringTextComponent("Custom Card");
             c.getStyle().setColor(TextFormatting.RED);
@@ -206,12 +206,12 @@ public class Properties
     
     public boolean getIllegal()
     {
-        return this.illegal;
+        return this.isIllegal;
     }
     
     public boolean getCustom()
     {
-        return this.custom;
+        return this.isCustom;
     }
     
     public String getText()
