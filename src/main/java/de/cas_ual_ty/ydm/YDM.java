@@ -17,6 +17,7 @@ import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelMessages;
 import de.cas_ual_ty.ydm.duel.FindDecksEvent;
+import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -81,9 +82,7 @@ public class YDM
         YDM.instance = this;
         YDM.proxy = DistExecutor.runForDist(
             () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
-            () -> () -> new ISidedProxy()
-            {
-            });
+            () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
         YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD);
         

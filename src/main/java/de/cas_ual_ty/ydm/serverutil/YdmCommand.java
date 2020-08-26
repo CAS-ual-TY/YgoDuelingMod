@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm;
+package de.cas_ual_ty.ydm.serverutil;
 
 import java.util.Collection;
 import java.util.List;
@@ -10,6 +10,9 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
+import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmDatabase;
+import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
