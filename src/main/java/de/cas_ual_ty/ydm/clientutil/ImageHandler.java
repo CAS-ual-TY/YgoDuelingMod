@@ -24,6 +24,7 @@ import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
+import de.cas_ual_ty.ydm.util.YdmUtil;
 
 public class ImageHandler
 {
@@ -44,6 +45,26 @@ public class ImageHandler
     {
         ImageHandler.INFO_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeInfoImageSize, (p, i) -> p.getInfoImageName(i));
         ImageHandler.MAIN_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeMainImageSize, (p, i) -> p.getMainImageName(i));
+    }
+    
+    // only for dev workspace! requires raw image to be manually put in the raw images folder
+    @Deprecated // so I get a warning
+    public static void createCustomCardImages(Card card)
+    {
+        YDM.debug("creating custom card images!");
+        
+        File parent = new File(ClientProxy.cardImagesFolder, "custom");
+        YdmIOUtil.createDirIfNonExistant(parent);
+        
+        // size 16 to 1024
+        int size;
+        for(int i = 4; i <= 10; ++i)
+        {
+            size = YdmUtil.getPow2(i);
+            YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
+            ImageHandler.imagePipeline(card.getImageName(), null, new File(parent, size + "/" + card.getImageName() + ".png"), size, (failed) ->
+            {});
+        }
     }
     
     private ImageHandler(int imageSize, BiFunction<Properties, Byte, String> nameGetter)
