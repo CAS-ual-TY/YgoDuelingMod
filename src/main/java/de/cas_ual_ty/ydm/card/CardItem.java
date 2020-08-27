@@ -86,7 +86,7 @@ public class CardItem extends Item
         {
             if(card == CustomCards.DUMMY_CARD)
             {
-                //                continue;
+                continue;
             }
             
             // not using ::createItemForCard to conserve the memory of the method calls
