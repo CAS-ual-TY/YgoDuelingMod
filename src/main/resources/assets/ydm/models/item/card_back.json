@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "ydm:item/card_back_16"
+        "layer0": "ydm:item/16/card_back"
     }
 }

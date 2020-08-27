@@ -56,6 +56,12 @@ public class ImageHandler
     {
         String imageName = this.nameGetter.apply(properties, imageIndex);
         
+        // if its hardcoded, image should already exist
+        if(properties.getIsHardcoded())
+        {
+            return imageName;
+        }
+        
         int index = this.FINAL_IMAGE_READY_LIST.getIndex(imageName);
         
         if(index == -1)
@@ -73,19 +79,19 @@ public class ImageHandler
                 else if(this.isImageFailed(imageName))
                 {
                     // image does not exist, check if failed already and return replacement
-                    return ImageHandler.FAILED_IMAGE + "_" + this.imageSize;
+                    return ImageHandler.tagWithSize(ImageHandler.FAILED_IMAGE, this.imageSize);
                 }
                 else
                 {
                     // image does not exist and has not been tried, so make it ready and return replacement
                     this.makeImageReady(imageName, properties, imageIndex);
-                    return ImageHandler.IN_PROGRESS_IMAGE + "_" + this.imageSize;
+                    return ImageHandler.tagWithSize(ImageHandler.IN_PROGRESS_IMAGE, this.imageSize);
                 }
             }
             else
             {
                 // in progress
-                return ImageHandler.IN_PROGRESS_IMAGE + "_" + this.imageSize;
+                return ImageHandler.tagWithSize(ImageHandler.IN_PROGRESS_IMAGE, this.imageSize);
             }
         }
         else
@@ -144,19 +150,24 @@ public class ImageHandler
         t.start();
     }
     
+    private static String tagWithSize(String imageName, int size)
+    {
+        return size + "/" + imageName;
+    }
+    
     public static String addInfoTag(String imageName)
     {
-        return ClientProxy.activeInfoImageSize + "/" + imageName;
+        return ImageHandler.tagWithSize(imageName, ClientProxy.activeInfoImageSize);
     }
     
     public static String addItemTag(String imageName)
     {
-        return ClientProxy.activeItemImageSize + "/" + imageName;
+        return ImageHandler.tagWithSize(imageName, ClientProxy.activeItemImageSize);
     }
     
     public static String addMainTag(String imageName)
     {
-        return ClientProxy.activeMainImageSize + "/" + imageName;
+        return ImageHandler.tagWithSize(imageName, ClientProxy.activeMainImageSize);
     }
     
     public static String getInfoReplacementImage(Properties properties, byte imageIndex)
@@ -242,7 +253,7 @@ public class ImageHandler
         List<Card> list = new LinkedList<>();
         for(Card card : YdmDatabase.CARDS_LIST)
         {
-            if(!ImageHandler.getTaggedFile(card.getItemImageName()).exists())
+            if(!card.isHardcoded() && !ImageHandler.getTaggedFile(card.getItemImageName()).exists())
             {
                 list.add(card);
             }
@@ -370,6 +381,12 @@ public class ImageHandler
             
             for(Card card : this.list)
             {
+                // should never be true, but lets make sure
+                if(card.isHardcoded())
+                {
+                    continue;
+                }
+                
                 if(!ClientProxy.getMinecraft().isRunning())
                 {
                     return;

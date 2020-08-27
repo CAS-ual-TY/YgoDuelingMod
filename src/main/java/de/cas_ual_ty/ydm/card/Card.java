@@ -25,6 +25,15 @@ public class Card
         this.rarity = Rarity.COMMON;
     }
     
+    public Card()
+    {
+    }
+    
+    public boolean isHardcoded()
+    {
+        return this.getProperties().getIsHardcoded();
+    }
+    
     public String getImageName()
     {
         return this.getProperties().getImageName(this.getImageIndex());

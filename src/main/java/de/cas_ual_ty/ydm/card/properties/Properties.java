@@ -15,6 +15,7 @@ import net.minecraft.util.text.TextFormatting;
 
 public class Properties
 {
+    public boolean isHardcoded;
     public String name;
     public long id;
     public boolean isIllegal;
@@ -25,6 +26,7 @@ public class Properties
     
     public Properties(Properties p0)
     {
+        this.isHardcoded = false;
         this.name = p0.name;
         this.id = p0.id;
         this.isIllegal = p0.isIllegal;
@@ -36,11 +38,13 @@ public class Properties
     
     public Properties(JsonObject j)
     {
+        this.isHardcoded = false;
         this.readAllProperties(j);
     }
     
     public Properties()
     {
+        this.isHardcoded = false;
     }
     
     public void readAllProperties(JsonObject j)
@@ -85,6 +89,11 @@ public class Properties
             images.add(image);
         }
         j.add(JsonKeys.IMAGES, images);
+    }
+    
+    public boolean getIsHardcoded()
+    {
+        return this.isHardcoded;
     }
     
     public boolean getIsSpell()

@@ -16,6 +16,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
 import de.cas_ual_ty.ydm.card.Card;
+import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
@@ -31,6 +32,8 @@ public class YdmDatabase
     public static void readFiles()
     {
         YDM.log("Reading database!");
+        
+        CustomCards.createAndRegisterEverything();
         
         if(!YDM.mainFolder.exists())
         {
@@ -198,6 +201,11 @@ public class YdmDatabase
         YdmDatabase.CARDS_LIST.ensureExtraCapacity(YdmDatabase.PROPERTIES_LIST.size());
         for(Properties properties : YdmDatabase.PROPERTIES_LIST)
         {
+            if(properties.getIsHardcoded())
+            {
+                continue;
+            }
+            
             for(byte imageIndex = 0; imageIndex < properties.images.length; ++imageIndex)
             {
                 YdmDatabase.CARDS_LIST.add(new Card(properties, imageIndex));

@@ -84,6 +84,11 @@ public class CardItem extends Item
         
         for(Card card : YdmDatabase.CARDS_LIST)
         {
+            if(card == CustomCards.DUMMY_CARD)
+            {
+                //                continue;
+            }
+            
             // not using ::createItemForCard to conserve the memory of the method calls
             itemStack = new ItemStack(this);
             holder = this.getCardHolder(itemStack);

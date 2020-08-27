@@ -104,6 +104,8 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void init()
     {
+        ImageHandler.init();
+        
         YDM.log("Sizes from client config (info/item/main): " + ClientProxy.activeInfoImageSize + " / " + ClientProxy.activeItemImageSize + " (" + ClientProxy.itemsUseCardImages + ") / " + ClientProxy.activeMainImageSize);
         
         if(ClientProxy.itemsUseCardImages)
@@ -138,7 +140,7 @@ public class ClientProxy implements ISidedProxy
     }
     
     @Override
-    public void initFiles()
+    public void initFiles() // done before #init
     {
         ClientProxy.imagesParentFolder = new File("ydm_db_images");
         ClientProxy.cardImagesFolder = new File(ClientProxy.imagesParentFolder, "cards");
@@ -155,8 +157,6 @@ public class ClientProxy implements ISidedProxy
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardMainImagesFolder);
-        
-        ImageHandler.init();
     }
     
     @Override
