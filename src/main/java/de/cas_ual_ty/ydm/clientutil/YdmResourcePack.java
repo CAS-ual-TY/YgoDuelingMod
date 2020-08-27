@@ -35,7 +35,7 @@ public class YdmResourcePack extends ResourcePack
     
     public YdmResourcePack()
     {
-        super(ClientProxy.cardItemImagesFolder);
+        super(null);
         this.packMeta = new JsonObject();
         JsonObject pack = new JsonObject();
         pack.addProperty("description", "YDM Card Images");
@@ -63,7 +63,7 @@ public class YdmResourcePack extends ResourcePack
         
         if(image == null)
         {
-            throw new ResourcePackFileNotFoundException(ClientProxy.cardInfoImagesFolder, resourcePath);
+            throw new ResourcePackFileNotFoundException(ClientProxy.cardImagesFolder, resourcePath);
         }
         else
         {
@@ -91,20 +91,11 @@ public class YdmResourcePack extends ResourcePack
             return null;
         }
         
-        // remove .png to check for suffix
-        filename = filename.substring(0, filename.length() - ".png".length());
-        
-        if(!ImageHandler.hasSuffix(filename))
-        {
-            return null;
-        }
-        
-        // all checks passed. Now lets see if it exists.
-        
         // We remove that prefix part
         filename = filename.substring("assets/ydm/textures/item/".length());
         
-        File image = ImageHandler.getFileBySuffix(filename);
+        // Get the file
+        File image = ImageHandler.getFile(filename);
         
         if(image.exists())
         {
@@ -136,7 +127,7 @@ public class YdmResourcePack extends ResourcePack
         
         if(type == ResourcePackType.CLIENT_RESOURCES)
         {
-            File[] listFiles = this.file.listFiles(this.filter);
+            File[] listFiles = ClientProxy.cardImagesFolder.listFiles(this.filter);
             
             if(listFiles != null)
             {

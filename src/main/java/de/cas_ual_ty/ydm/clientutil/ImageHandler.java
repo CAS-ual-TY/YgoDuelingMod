@@ -30,10 +30,6 @@ public class ImageHandler
     private static final String IN_PROGRESS_IMAGE = "card_back";
     private static final String FAILED_IMAGE = "blanc_card";
     
-    private static final String INFO_SUFFIX = "_info";
-    private static final String ITEM_SUFFIX = "_item";
-    private static final String MAIN_SUFFIX = "_main";
-    
     private static ImageHandler INFO_IMAGE_HANDLER = null;
     private static ImageHandler MAIN_IMAGE_HANDLER = null;
     
@@ -42,19 +38,17 @@ public class ImageHandler
     private List<String> FAILED = new LinkedList<>();
     
     private int imageSize;
-    private File parentFolder;
     private BiFunction<Properties, Byte, String> nameGetter;
     
     public static void init()
     {
-        ImageHandler.INFO_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeInfoImageSize, ClientProxy.cardInfoImagesFolder, (p, i) -> p.getInfoImageName(i));
-        ImageHandler.MAIN_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeMainImageSize, ClientProxy.cardMainImagesFolder, (p, i) -> p.getMainImageName(i));
+        ImageHandler.INFO_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeInfoImageSize, (p, i) -> p.getInfoImageName(i));
+        ImageHandler.MAIN_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeMainImageSize, (p, i) -> p.getMainImageName(i));
     }
     
-    private ImageHandler(int imageSize, File parentFolder, BiFunction<Properties, Byte, String> nameGetter)
+    private ImageHandler(int imageSize, BiFunction<Properties, Byte, String> nameGetter)
     {
         this.imageSize = imageSize;
-        this.parentFolder = parentFolder;
         this.nameGetter = nameGetter;
     }
     
@@ -70,7 +64,7 @@ public class ImageHandler
             {
                 // not finished, not in progress
                 
-                if(this.getFile(imageName).exists())
+                if(ImageHandler.getTaggedFile(imageName).exists())
                 {
                     // image exists, so set ready and return
                     this.setImageFinished(imageName, false);
@@ -99,11 +93,6 @@ public class ImageHandler
             // finished
             return imageName;
         }
-    }
-    
-    private File getFile(String imageName)
-    {
-        return new File(this.parentFolder, ImageHandler.cutSuffix(imageName) + ".png");
     }
     
     private boolean isImageInProgress(String imageName)
@@ -150,54 +139,24 @@ public class ImageHandler
     private void makeImageReady(String imageName, Properties properties, byte imageIndex)
     {
         this.setImageInProgress(imageName);
-        Thread t = new Thread(new GuiImageWizard(properties, imageIndex, this.imageSize, this.getFile(imageName), (failed) -> this.setImageFinished(imageName, failed)), "YDM Image Downloader");
+        Thread t = new Thread(new GuiImageWizard(properties, imageIndex, this.imageSize, ImageHandler.getTaggedFile(imageName), (failed) -> this.setImageFinished(imageName, failed)), "YDM Image Downloader");
         t.setDaemon(false);
         t.start();
     }
     
-    public static String cutSuffix(String imageName)
+    public static String addInfoTag(String imageName)
     {
-        if(ImageHandler.hasSuffix(imageName))
-        {
-            imageName = imageName.substring(0, imageName.length() - 5);
-        }
-        
-        return imageName;
+        return ClientProxy.activeInfoImageSize + "/" + imageName;
     }
     
-    public static boolean hasSuffix(String imageName)
+    public static String addItemTag(String imageName)
     {
-        return ImageHandler.hasInfoSuffix(imageName) || ImageHandler.hasItemSuffix(imageName) || ImageHandler.hasMainSuffix(imageName);
+        return ClientProxy.activeItemImageSize + "/" + imageName;
     }
     
-    public static String addInfoSuffix(String imageName)
+    public static String addMainTag(String imageName)
     {
-        return imageName + ImageHandler.INFO_SUFFIX;
-    }
-    
-    public static String addItemSuffix(String imageName)
-    {
-        return imageName + ImageHandler.ITEM_SUFFIX;
-    }
-    
-    public static String addMainSuffix(String imageName)
-    {
-        return imageName + ImageHandler.MAIN_SUFFIX;
-    }
-    
-    public static boolean hasInfoSuffix(String imageName)
-    {
-        return imageName.endsWith(ImageHandler.INFO_SUFFIX);
-    }
-    
-    public static boolean hasItemSuffix(String imageName)
-    {
-        return imageName.endsWith(ImageHandler.ITEM_SUFFIX);
-    }
-    
-    public static boolean hasMainSuffix(String imageName)
-    {
-        return imageName.endsWith(ImageHandler.MAIN_SUFFIX);
+        return ClientProxy.activeMainImageSize + "/" + imageName;
     }
     
     public static String getInfoReplacementImage(Properties properties, byte imageIndex)
@@ -260,39 +219,17 @@ public class ImageHandler
     
     public static File getRawFile(String imageName)
     {
-        return new File(ClientProxy.rawImagesFolder, imageName + ".jpg");
+        return new File(ClientProxy.rawCardImagesFolder, imageName + ".jpg");
     }
     
-    public static File getFileBySuffix(String imageName)
+    public static File getTaggedFile(String taggedImageName)
     {
-        if(ImageHandler.hasItemSuffix(imageName))
-        {
-            return ImageHandler.getItemFile(ImageHandler.cutSuffix(imageName));
-        }
-        else if(ImageHandler.hasInfoSuffix(imageName))
-        {
-            return ImageHandler.getInfoFile(ImageHandler.cutSuffix(imageName));
-        }
-        else
-        {
-            // need to return something, so by default we pick the main images
-            return ImageHandler.getMainFile(ImageHandler.cutSuffix(imageName));
-        }
+        return ImageHandler.getFile(taggedImageName + ".png");
     }
     
-    public static File getInfoFile(String imageName)
+    public static File getFile(String imageName)
     {
-        return new File(ClientProxy.cardInfoImagesFolder, imageName + ".png");
-    }
-    
-    public static File getItemFile(String imageName)
-    {
-        return new File(ClientProxy.cardItemImagesFolder, imageName + ".png");
-    }
-    
-    public static File getMainFile(String imageName)
-    {
-        return new File(ClientProxy.cardMainImagesFolder, imageName + ".png");
+        return new File(ClientProxy.cardImagesFolder, imageName);
     }
     
     public static boolean areAllItemImagesReady()
@@ -305,7 +242,7 @@ public class ImageHandler
         List<Card> list = new LinkedList<>();
         for(Card card : YdmDatabase.CARDS_LIST)
         {
-            if(!ImageHandler.getItemFile(card.getImageName()).exists())
+            if(!ImageHandler.getTaggedFile(card.getItemImageName()).exists())
             {
                 list.add(card);
             }
@@ -440,7 +377,7 @@ public class ImageHandler
                 
                 YDM.log("Fetching image of: " + ++j + "/" + this.size + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
                 
-                status = ImageHandler.imagePipeline(card.getImageName(), card.getItemImageURL(), ImageHandler.getItemFile(card.getImageName()), ClientProxy.activeItemImageSize, (failed) ->
+                status = ImageHandler.imagePipeline(card.getImageName(), card.getItemImageURL(), ImageHandler.getTaggedFile(card.getItemImageName()), ClientProxy.activeItemImageSize, (failed) ->
                 {});
                 
                 if(status < 0)

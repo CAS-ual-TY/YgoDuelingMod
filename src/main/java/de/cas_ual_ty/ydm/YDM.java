@@ -52,6 +52,15 @@ import net.minecraftforge.items.ItemStackHandler;
 @Mod(YDM.MOD_ID)
 public class YDM
 {
+    /*
+     * TODO
+     * - Thread Pools
+     *   - Seperate Raw Downloading from Converting
+     * - Shutdown Hook
+     *   - Properly wait and finish image downloading
+     *   - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
+     */
+    
     public static final String MOD_ID = "ydm";
     public static final String PROTOCOL_VERSION = "1";
     

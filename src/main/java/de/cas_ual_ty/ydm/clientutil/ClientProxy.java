@@ -18,6 +18,7 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.playmat.PlaymatScreen;
@@ -64,10 +65,11 @@ public class ClientProxy implements ISidedProxy
     public static volatile boolean itemsUseCardImagesFailed;
     
     public static File imagesParentFolder;
-    public static File rawImagesFolder;
-    public static File cardInfoImagesFolder;
-    public static File cardItemImagesFolder;
-    public static File cardMainImagesFolder;
+    public static File cardImagesFolder;
+    public static File rawCardImagesFolder;
+    private static File cardInfoImagesFolder;
+    private static File cardItemImagesFolder;
+    private static File cardMainImagesFolder;
     
     @Override
     public void registerModEventListeners(IEventBus bus)
@@ -106,17 +108,26 @@ public class ClientProxy implements ISidedProxy
         
         if(ClientProxy.itemsUseCardImages)
         {
-            List<Card> list = ImageHandler.getMissingItemImages();
-            
-            if(list.size() == 0)
+            try
             {
-                YDM.log("Items will use card images!");
-                ClientProxy.itemsUseCardImagesActive = true;
+                List<Card> list = ImageHandler.getMissingItemImages();
+                
+                if(list.size() == 0)
+                {
+                    YDM.log("Items will use card images!");
+                    ClientProxy.itemsUseCardImagesActive = true;
+                }
+                else
+                {
+                    YDM.log("Items will not use card images, still missing " + list.size() + " images. Fetching...");
+                    ImageHandler.downloadCardImages(list);
+                    ClientProxy.itemsUseCardImagesFailed = true;
+                }
             }
-            else
+            catch (Exception e)
             {
-                YDM.log("Items will not use card images, still missing " + list.size() + " images. Fetching...");
-                ImageHandler.downloadCardImages(list);
+                YDM.log("Failed checking missing item images!");
+                e.printStackTrace();
                 ClientProxy.itemsUseCardImagesFailed = true;
             }
         }
@@ -130,15 +141,17 @@ public class ClientProxy implements ISidedProxy
     public void initFiles()
     {
         ClientProxy.imagesParentFolder = new File("ydm_db_images");
-        ClientProxy.rawImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_raw");
+        ClientProxy.cardImagesFolder = new File(ClientProxy.imagesParentFolder, "cards");
+        ClientProxy.rawCardImagesFolder = new File(ClientProxy.cardImagesFolder, "raw");
         
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
-        ClientProxy.cardInfoImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_" + ClientProxy.activeInfoImageSize);
-        ClientProxy.cardItemImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_" + ClientProxy.activeItemImageSize);
-        ClientProxy.cardMainImagesFolder = new File(ClientProxy.imagesParentFolder, "cards_" + ClientProxy.activeMainImageSize);
+        ClientProxy.cardInfoImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeInfoImageSize);
+        ClientProxy.cardItemImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeItemImageSize);
+        ClientProxy.cardMainImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeMainImageSize);
         
         YdmIOUtil.createDirIfNonExistant(ClientProxy.imagesParentFolder);
-        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.cardImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawCardImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardMainImagesFolder);
@@ -150,6 +163,36 @@ public class ClientProxy implements ISidedProxy
     public PlayerEntity getClientPlayer()
     {
         return ClientProxy.getPlayer();
+    }
+    
+    @Override
+    public String addInfoTag(String imageName)
+    {
+        return ClientProxy.activeInfoImageSize + "/" + imageName;
+    }
+    
+    @Override
+    public String addItemTag(String imageName)
+    {
+        return ClientProxy.activeItemImageSize + "/" + imageName;
+    }
+    
+    @Override
+    public String addMainTag(String imageName)
+    {
+        return ClientProxy.activeMainImageSize + "/" + imageName;
+    }
+    
+    @Override
+    public String getInfoReplacementImage(Properties properties, byte imageIndex)
+    {
+        return ImageHandler.getInfoReplacementImage(properties, imageIndex);
+    }
+    
+    @Override
+    public String getMainReplacementImage(Properties properties, byte imageIndex)
+    {
+        return ImageHandler.getMainReplacementImage(properties, imageIndex);
     }
     
     @SuppressWarnings("deprecation")
@@ -168,7 +211,7 @@ public class ClientProxy implements ISidedProxy
             if(!flag)
             {
                 flag = true;
-                YDM.log("Sleeping for a couple seconds to give the worker enough time to check the images...");
+                YDM.log("Sleeping for a couple seconds to give the worker enough time to check the item images...");
             }
             
             // sometimes this gets done before YDM.itemsUseCardImagesActive is set to true
