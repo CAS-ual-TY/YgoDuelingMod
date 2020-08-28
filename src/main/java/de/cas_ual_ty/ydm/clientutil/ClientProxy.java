@@ -60,6 +60,8 @@ public class ClientProxy implements ISidedProxy
     public static boolean keepCachedImages;
     public static boolean itemsUseCardImages;
     public static boolean showBinderId;
+    public static int maxInfoImages;
+    public static int maxMainImages;
     
     public static volatile boolean itemsUseCardImagesActive;
     public static volatile boolean itemsUseCardImagesFailed;
@@ -70,6 +72,9 @@ public class ClientProxy implements ISidedProxy
     private static File cardInfoImagesFolder;
     private static File cardItemImagesFolder;
     private static File cardMainImagesFolder;
+    
+    public static LimitedTextureBinder infoTextureBinder;
+    public static LimitedTextureBinder mainTextureBinder;
     
     @Override
     public void registerModEventListeners(IEventBus bus)
@@ -137,6 +142,9 @@ public class ClientProxy implements ISidedProxy
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.PLAYMAT, PlaymatScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
+        
+        ClientProxy.infoTextureBinder = new LimitedTextureBinder(ClientProxy.getMinecraft(), ClientProxy.maxInfoImages);
+        ClientProxy.mainTextureBinder = new LimitedTextureBinder(ClientProxy.getMinecraft(), ClientProxy.maxMainImages);
     }
     
     @Override
@@ -292,6 +300,8 @@ public class ClientProxy implements ISidedProxy
             ClientProxy.keepCachedImages = ClientProxy.clientConfig.keepCachedImages.get();
             ClientProxy.itemsUseCardImages = ClientProxy.clientConfig.itemsUseCardImages.get();
             ClientProxy.showBinderId = ClientProxy.clientConfig.showBinderId.get();
+            ClientProxy.maxInfoImages = ClientProxy.clientConfig.maxInfoImages.get();
+            ClientProxy.maxMainImages = ClientProxy.clientConfig.maxMainImages.get();
         }
     }
     
@@ -367,7 +377,7 @@ public class ClientProxy implements ISidedProxy
             }
             
             // card texture
-            Minecraft.getInstance().getTextureManager().bindTexture(card.getInfoImageResourceLocation());
+            ClientProxy.bindInfoResourceLocation(card);
             ClientProxy.blit(x, margin, imageSize, imageSize, 0, 0, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize);
         }
         
@@ -390,6 +400,26 @@ public class ClientProxy implements ISidedProxy
         }
         
         RenderSystem.popMatrix();
+    }
+    
+    public static void bindInfoResourceLocation(CardHolder c)
+    {
+        ClientProxy.infoTextureBinder.bind(c.getInfoImageResourceLocation());
+    }
+    
+    public static void bindMainResourceLocation(CardHolder c)
+    {
+        ClientProxy.mainTextureBinder.bind(c.getMainImageResourceLocation());
+    }
+    
+    public static void bindInfoResourceLocation(Properties p, byte imageIndex)
+    {
+        ClientProxy.infoTextureBinder.bind(p.getInfoImageResourceLocation(imageIndex));
+    }
+    
+    public static void bindMainResourceLocation(Properties p, byte imageIndex)
+    {
+        ClientProxy.mainTextureBinder.bind(p.getMainImageResourceLocation(imageIndex));
     }
     
     /**

@@ -324,7 +324,7 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
                         
                         if(c != null && c.getCard() != null)
                         {
-                            this.minecraft.getTextureManager().bindTexture(c.getMainImageResourceLocation());
+                            ClientProxy.bindMainResourceLocation(c);
                             ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
                             
                             if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
@@ -360,7 +360,7 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
                     
                     if(c != null && c.getCard() != null)
                     {
-                        this.minecraft.getTextureManager().bindTexture(c.getMainImageResourceLocation());
+                        ClientProxy.bindMainResourceLocation(c);
                         ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
@@ -387,7 +387,7 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
                     
                     if(c != null && c.getCard() != null)
                     {
-                        this.minecraft.getTextureManager().bindTexture(c.getMainImageResourceLocation());
+                        ClientProxy.bindMainResourceLocation(c);
                         ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
