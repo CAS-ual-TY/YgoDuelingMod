@@ -251,7 +251,17 @@ public class ImageHandler
     
     public static File getRawFile(String imageName)
     {
-        return new File(ClientProxy.rawCardImagesFolder, imageName + ".jpg");
+        File f = new File(ClientProxy.rawCardImagesFolder, imageName + ".png");
+        
+        // prefer png over jpg
+        if(f.exists())
+        {
+            return f;
+        }
+        else
+        {
+            return new File(ClientProxy.rawCardImagesFolder, imageName + ".jpg");
+        }
     }
     
     public static File getTaggedFile(String taggedImageName)
