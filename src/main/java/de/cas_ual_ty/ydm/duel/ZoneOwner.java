@@ -21,27 +21,27 @@ public enum ZoneOwner
      * = 34
      */
     
-    PLAYER1(Player.PLAYER1, 0), PLAYER2(Player.PLAYER1, 17), NONE(null, PLAYER2.offset * 2);
+    PLAYER1(PlayerRole.PLAYER1, 0), PLAYER2(PlayerRole.PLAYER1, 17), NONE(null, PLAYER2.offset * 2);
     
     public static final int ZONES_PER_PLAYER = PLAYER2.offset;
     
-    public final Player player;
+    public final PlayerRole player;
     public final int offset;
     
-    private ZoneOwner(Player player, int offset)
+    private ZoneOwner(PlayerRole player, int offset)
     {
         this.player = player;
         this.offset = offset;
     }
     
-    public Player getPlayer()
+    public PlayerRole getPlayer()
     {
         return this.player;
     }
     
     public boolean hasAccess(PlayerRole player)
     {
-        return this.getPlayer() == null || player.hasAccess(this.getPlayer());
+        return this.getPlayer() == null || player == this.getPlayer();
     }
     
     public static int convertIndex(int index)

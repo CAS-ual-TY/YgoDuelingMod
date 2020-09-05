@@ -44,7 +44,7 @@ public class Zone
         this.index = index;
     }
     
-    public boolean isOwner(Player player)
+    public boolean isOwner(PlayerRole player)
     {
         return this.getOwner().getPlayer() == player;
     }
@@ -119,7 +119,8 @@ public class Zone
     
     public void setCardsList(List<DuelCard> list)
     {
-        this.cardsList = list;
+        this.cardsList.clear();
+        this.cardsList.addAll(list);
     }
     
     // --- Getters ---

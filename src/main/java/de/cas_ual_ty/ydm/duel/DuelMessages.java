@@ -147,6 +147,29 @@ public class DuelMessages
         return new DeckHolder(mainDeck, extraDeck, sideDeck);
     }
     
+    public static void encodeCardPosition(CardPosition cardPosition, PacketBuffer buf)
+    {
+        buf.writeByte(cardPosition.getIndex());
+    }
+    
+    public static CardPosition decodeCardPosition(PacketBuffer buf)
+    {
+        return CardPosition.getFromIndex(buf.readByte());
+    }
+    
+    public static void encodeDuelCard(DuelCard card, PacketBuffer buf)
+    {
+        DuelMessages.encodeCardHolder(card.getCardHolder(), buf);
+        buf.writeBoolean(card.getIsToken());
+        DuelMessages.encodeCardPosition(card.getCardPosition(), buf);
+        DuelMessages.encodePlayerRole(card.getOwner(), buf);
+    }
+    
+    public static DuelCard decodeDuelCard(PacketBuffer buf)
+    {
+        return new DuelCard(DuelMessages.decodeCardHolder(buf), buf.readBoolean(), DuelMessages.decodeCardPosition(buf), DuelMessages.decodePlayerRole(buf));
+    }
+    
     public static class SelectRole
     {
         public PlayerRole playerRole;

@@ -4,7 +4,7 @@ import net.minecraft.network.PacketBuffer;
 
 public enum ActionType
 {
-    MOVE_ON_TOP(MoveTopAction::new), MOVE_TO_BOTTOM(MoveBottomAction::new), SHUFFLE(ShuffleAction::new), SHOW_CARD(ShowCardAction::new), SHOW_ZONE(ShowZoneAction::new), VIEW_ZONE(ViewZoneAction::new), ATTACK(AttackAction::new);
+    POPULATE(Populate::new), MOVE_ON_TOP(MoveTopAction::new), MOVE_TO_BOTTOM(MoveBottomAction::new), SHUFFLE(ShuffleAction::new), SHOW_CARD(ShowCardAction::new), SHOW_ZONE(ShowZoneAction::new), VIEW_ZONE(ViewZoneAction::new), ATTACK(AttackAction::new);
     
     public static final ActionType[] VALUES = ActionType.values();
     

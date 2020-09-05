@@ -7,14 +7,19 @@ public class DuelCard
     public CardHolder cardHolder;
     public boolean isToken;
     public CardPosition position;
-    public Player owner;
+    public PlayerRole owner;
     
-    public DuelCard(CardHolder cardHolder, Player owner)
+    public DuelCard(CardHolder cardHolder, boolean isToken, CardPosition position, PlayerRole owner)
     {
         this.cardHolder = cardHolder;
-        this.isToken = false;
-        this.position = CardPosition.FACE_DOWN;
+        this.isToken = isToken;
+        this.position = position;
         this.owner = owner;
+    }
+    
+    public DuelCard(CardHolder cardHolder, PlayerRole owner)
+    {
+        this(cardHolder, false, CardPosition.FACE_DOWN, owner);
     }
     
     public DuelCard setToken()
@@ -44,7 +49,7 @@ public class DuelCard
         return this.position;
     }
     
-    public Player getOwner()
+    public PlayerRole getOwner()
     {
         return this.owner;
     }

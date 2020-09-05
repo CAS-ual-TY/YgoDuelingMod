@@ -241,6 +241,10 @@ public class PlaymatScreen extends ContainerScreen<PlaymatContainer>
                 this.font.drawString(text, (this.xSize - width) / 2F, (this.ySize - height) / 2F, 0x404040);
             }
         }
+        else if(this.getState() == DuelState.DUELING)
+        {
+            
+        }
     }
     
     @Override
