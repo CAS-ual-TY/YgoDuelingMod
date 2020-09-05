@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 public class Zone
 {
     public final PlayField playField;
@@ -20,6 +22,9 @@ public class Zone
     // facedown cards can always only be seen by zone owner
     public boolean isSecret;
     
+    @Nullable
+    public CardPosition defaultCardPosition;
+    
     public byte index;
     
     public Zone(PlayField playField, ZoneType type, ZoneOwner owner, int size, boolean isSecret)
@@ -30,6 +35,7 @@ public class Zone
         this.cardsList = new ArrayList<>(size);
         this.size = size;
         this.isSecret = isSecret;
+        this.defaultCardPosition = this.type.defaultCardPosition;
         
         this.index = -1;
     }
@@ -138,6 +144,21 @@ public class Zone
     public List<DuelCard> getCardsList()
     {
         return this.cardsList;
+    }
+    
+    // this is for when you have to flip the main deck, to make sure all new cards go in the right way
+    @Nullable
+    public CardPosition getDefaultCardPosition()
+    {
+        return this.defaultCardPosition;
+    }
+    
+    public void flipDefaultCardPosition()
+    {
+        if(this.defaultCardPosition != null)
+        {
+            this.defaultCardPosition = this.defaultCardPosition.flip();
+        }
     }
     
     public byte getIndex()

@@ -35,4 +35,24 @@ public enum CardPosition
     {
         return this.index;
     }
+    
+    public CardPosition flip()
+    {
+        if(this == ATK)
+        {
+            return FACE_DOWN;
+        }
+        else if(this == DEF)
+        {
+            return SET;
+        }
+        else if(this == SET)
+        {
+            return DEF;
+        }
+        else //if(this == FACE_DOWN)
+        {
+            return ATK;
+        }
+    }
 }
