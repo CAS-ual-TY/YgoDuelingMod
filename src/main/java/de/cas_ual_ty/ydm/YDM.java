@@ -90,7 +90,7 @@ public class YDM
     public YDM()
     {
         YDM.instance = this;
-        YDM.proxy = DistExecutor.runForDist(
+        YDM.proxy = DistExecutor.safeRunForDist(
             () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
             () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
