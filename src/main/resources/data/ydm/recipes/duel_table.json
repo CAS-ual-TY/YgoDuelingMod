@@ -1,0 +1,25 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "RPB",
+        " W "
+    ],
+    "key": {
+        "R": {
+            "item": "minecraft:red_concrete"
+        },
+        "P": {
+            "item": "ydm:duel_playmat"
+        },
+        "B": {
+            "item": "minecraft:blue_concrete"
+        },
+        "W": {
+            "item": "minecraft:white_concrete"
+        }
+    },
+    "result": {
+        "item": "ydm:duel_table",
+        "count": 1
+    }
+}
