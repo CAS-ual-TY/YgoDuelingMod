@@ -1,6 +1,6 @@
 package de.cas_ual_ty.ydm;
 
-import de.cas_ual_ty.ydm.playmat.PlaymatTileEntity;
+import de.cas_ual_ty.ydm.duel.DuelTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -13,12 +13,12 @@ import net.minecraftforge.registries.ObjectHolder;
 @ObjectHolder(YDM.MOD_ID)
 public class YdmTileEntityTypes
 {
-    public static final TileEntityType<?> PLAYMAT = null;
+    public static final TileEntityType<?> DUEL = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<TileEntityType<?>> event)
     {
         IForgeRegistry<TileEntityType<?>> registry = event.getRegistry();
-        registry.register(TileEntityType.Builder.create(() -> new PlaymatTileEntity(YdmTileEntityTypes.PLAYMAT), YdmBlocks.PLAYMAT).build(null).setRegistryName(YDM.MOD_ID, "playmat"));
+        registry.register(TileEntityType.Builder.create(() -> new DuelTileEntity(YdmTileEntityTypes.DUEL), YdmBlocks.DUEL_PLAYMAT, YdmBlocks.DUEL_TABLE).build(null).setRegistryName(YDM.MOD_ID, "duel"));
     }
 }

@@ -23,7 +23,8 @@ public class YdmItems
     public static final Item CARD_BACK = null;
     public static final CardItem CARD = null;
     public static final CardBinderItem CARD_BINDER = null;
-    public static final Item PLAYMAT = null;
+    public static final Item DUEL_PLAYMAT = null;
+    public static final Item DUEL_TABLE = null;
     public static final Item DUEL_DISK = null;
     
     public static final DeckBoxItem BLACK_DECK_BOX = null;
@@ -55,7 +56,8 @@ public class YdmItems
         registry.register(new CosmeticItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
         registry.register(new CardItem(new Properties().group(YDM.cardsItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card"));
         registry.register(new CardBinderItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card_binder"));
-        registry.register(new BlockItem(YdmBlocks.PLAYMAT, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "playmat"));
+        registry.register(new BlockItem(YdmBlocks.DUEL_PLAYMAT, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
+        registry.register(new BlockItem(YdmBlocks.DUEL_TABLE, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_table"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "duel_disk"));
         
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "black_deck_box"));

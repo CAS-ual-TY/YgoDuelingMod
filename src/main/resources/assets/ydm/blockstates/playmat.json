@@ -1,8 +1,0 @@
-{
-    "variants": {
-        "facing=north": { "model": "ydm:block/playmat" },
-        "facing=south": { "model": "ydm:block/playmat", "y": 180 },
-        "facing=west":  { "model": "ydm:block/playmat", "y": 270 },
-        "facing=east":  { "model": "ydm:block/playmat", "y": 90 }
-    }
-}

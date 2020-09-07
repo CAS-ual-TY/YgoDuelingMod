@@ -1,0 +1,8 @@
+{
+    "variants": {
+        "facing=north": { "model": "ydm:block/duel_table" },
+        "facing=south": { "model": "ydm:block/duel_table", "y": 180 },
+        "facing=west":  { "model": "ydm:block/duel_table", "y": 270 },
+        "facing=east":  { "model": "ydm:block/duel_table", "y": 90 }
+    }
+}
