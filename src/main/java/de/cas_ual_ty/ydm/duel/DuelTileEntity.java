@@ -31,7 +31,7 @@ public class DuelTileEntity extends TileEntity implements INamedContainerProvide
         super.setWorldAndPos(world, pos);
         
         // world is still null at constructor, so we gotta do this here
-        this.duelManager = new DuelManager(this.world.isRemote, this);
+        this.duelManager = this.createDuelManager();
     }
     
     @Override
@@ -44,5 +44,10 @@ public class DuelTileEntity extends TileEntity implements INamedContainerProvide
     public ITextComponent getDisplayName()
     {
         return new TranslationTextComponent("container." + YDM.MOD_ID + "." + YdmTileEntityTypes.DUEL.getRegistryName().getPath());
+    }
+    
+    public DuelManager createDuelManager()
+    {
+        return new DuelManager(this.world.isRemote, this);
     }
 }
