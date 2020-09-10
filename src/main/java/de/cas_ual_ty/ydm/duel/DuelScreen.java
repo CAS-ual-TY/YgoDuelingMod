@@ -58,9 +58,9 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
     protected AbstractButton nextDeckButton;
     protected AbstractButton chooseDeckButton;
     
-    protected SimpleWidget prevDeckWidget;
-    protected SimpleWidget activeDeckWidget;
-    protected SimpleWidget nextDeckWidget;
+    protected ItemStackWidget prevDeckWidget;
+    protected ItemStackWidget activeDeckWidget;
+    protected ItemStackWidget nextDeckWidget;
     
     protected List<DeckWrapper> deckWrappers;
     protected int activeDeckWrapperIdx;
@@ -171,9 +171,9 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
             this.addButton(this.player1Button = new RoleButton(x - 100, y - 40, 100, 20, "Player 1", this::roleButtonClicked, () -> this.getDuelManager().player1 == null && this.getRole() != PlayerRole.PLAYER1, PlayerRole.PLAYER1));
             this.addButton(this.player2Button = new RoleButton(x - 100, y - 10, 100, 20, "Player 2", this::roleButtonClicked, () -> this.getDuelManager().player2 == null && this.getRole() != PlayerRole.PLAYER2, PlayerRole.PLAYER2));
             this.addButton(this.spectatorButton = new RoleButton(x - 100, y + 20, 100, 20, "Spectators", this::roleButtonClicked, () -> this.getRole() != PlayerRole.SPECTATOR, PlayerRole.SPECTATOR));
-            this.addButton(new RoleDescriptions(x, y - 40, 80, 20, this::getRoleDescription, PlayerRole.PLAYER1));
-            this.addButton(new RoleDescriptions(x, y - 10, 80, 20, this::getRoleDescription, PlayerRole.PLAYER2));
-            this.addButton(new RoleDescriptions(x, y + 20, 100, 20, this::getRoleDescription, PlayerRole.SPECTATOR));
+            this.addButton(new RoleOccupants(x, y - 40, 80, 20, this::getRoleDescription, PlayerRole.PLAYER1));
+            this.addButton(new RoleOccupants(x, y - 10, 80, 20, this::getRoleDescription, PlayerRole.PLAYER2));
+            this.addButton(new RoleOccupants(x, y + 20, 100, 20, this::getRoleDescription, PlayerRole.SPECTATOR));
             this.addButton(new ReadyCheckbox(x + 80, y - 40, 20, 20, "Ready 1", (button) -> this.ready1ButtonClicked(), () -> this.getDuelManager().player1Ready, this::getRole, PlayerRole.PLAYER1));
             this.addButton(new ReadyCheckbox(x + 80, y - 10, 20, 20, "Ready 2", (button) -> this.ready2ButtonClicked(), () -> this.getDuelManager().player2Ready, this::getRole, PlayerRole.PLAYER2));
         }
@@ -186,9 +186,9 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
                 this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
                 this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
                 
-                this.addButton(this.prevDeckWidget = new SimpleWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
-                this.addButton(this.activeDeckWidget = new SimpleWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer));
-                this.addButton(this.nextDeckWidget = new SimpleWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
+                this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
+                this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer));
+                this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
                 this.prevDeckWidget.visible = false;
                 this.activeDeckWidget.visible = false;
                 this.nextDeckWidget.visible = false;
@@ -585,19 +585,19 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
         }
     }
     
-    public static class SimpleWidget extends Widget
+    public static class ItemStackWidget extends Widget
     {
         public ItemStack itemStack;
         public ItemRenderer itemRenderer;
         
-        public SimpleWidget(int xIn, int yIn, int size, ItemRenderer itemRenderer)
+        public ItemStackWidget(int xIn, int yIn, int size, ItemRenderer itemRenderer)
         {
             super(xIn, yIn, size, size, "");
             this.itemStack = ItemStack.EMPTY;
             this.itemRenderer = itemRenderer;
         }
         
-        public SimpleWidget setItemStack(ItemStack itemStack)
+        public ItemStackWidget setItemStack(ItemStack itemStack)
         {
             this.itemStack = itemStack;
             return this;
@@ -696,12 +696,12 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
         }
     }
     
-    private static class RoleDescriptions extends Widget
+    private static class RoleOccupants extends Widget
     {
         public Function<PlayerRole, String> nameGetter;
         public PlayerRole role;
         
-        public RoleDescriptions(int xIn, int yIn, int widthIn, int heightIn, Function<PlayerRole, String> nameGetter, PlayerRole role)
+        public RoleOccupants(int xIn, int yIn, int widthIn, int heightIn, Function<PlayerRole, String> nameGetter, PlayerRole role)
         {
             super(xIn, yIn, widthIn, heightIn, "");
             this.nameGetter = nameGetter;
