@@ -13,10 +13,14 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
+import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
+import de.cas_ual_ty.ydm.duelmanager.DuelRenderingProvider;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import net.minecraft.client.Minecraft;
@@ -42,13 +46,12 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class DuelScreen extends ContainerScreen<DuelContainer>
+public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRenderingProvider
 {
     private static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
     private static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
     
     private static final ResourceLocation DECK_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
-    private static final ResourceLocation DECK_REPLACEMENT = new ResourceLocation(YDM.MOD_ID, "textures/item/card_back_" + ClientProxy.activeInfoImageSize + ".png");
     
     protected AbstractButton player1Button;
     protected AbstractButton player2Button;
@@ -186,9 +189,9 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
                 this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, ">", (button) -> this.nextDeckClicked()));
                 this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, "Choose Deck", (button) -> this.chooseDeckClicked()));
                 
-                this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
-                this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer));
-                this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer));
+                this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ClientProxy.getInfoCardBack()));
+                this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, ClientProxy.getInfoCardBack()));
+                this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ClientProxy.getInfoCardBack()));
                 this.prevDeckWidget.visible = false;
                 this.activeDeckWidget.visible = false;
                 this.nextDeckWidget.visible = false;
@@ -329,7 +332,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
                         if(c != null && c.getCard() != null)
                         {
                             ClientProxy.bindMainResourceLocation(c);
-                            ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                            YdmBlitUtil.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
                             
                             if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                             {
@@ -365,7 +368,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
                     if(c != null && c.getCard() != null)
                     {
                         ClientProxy.bindMainResourceLocation(c);
-                        ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                        YdmBlitUtil.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
@@ -392,7 +395,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
                     if(c != null && c.getCard() != null)
                     {
                         ClientProxy.bindMainResourceLocation(c);
-                        ClientProxy.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                        YdmBlitUtil.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
@@ -423,8 +426,8 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
                 int guiTop = this.guiTop + 6 + 5 + this.font.FONT_HEIGHT;
                 
                 this.minecraft.getTextureManager().bindTexture(DuelScreen.DECK_BACKGROUND_GUI_TEXTURE);
-                ClientProxy.blit(guiLeft, guiTop, xSize, ySize, 0, 0, xSize, ySize, 512, 256);
-                ClientProxy.blit(guiLeft, guiTop + ySize, xSize, 7, 0, 243, xSize, 7, 512, 256);
+                YdmBlitUtil.blit(guiLeft, guiTop, xSize, ySize, 0, 0, xSize, ySize, 512, 256);
+                YdmBlitUtil.blit(guiLeft, guiTop + ySize, xSize, 7, 0, 243, xSize, 7, 512, 256);
             }
         }
     }
@@ -444,6 +447,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
         RenderSystem.popMatrix();
     }
     
+    @Override
     public void renderHoverRect(int x, int y, int w, int h)
     {
         // from ContainerScreen#render
@@ -589,12 +593,14 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
     {
         public ItemStack itemStack;
         public ItemRenderer itemRenderer;
+        public ResourceLocation replacement;
         
-        public ItemStackWidget(int xIn, int yIn, int size, ItemRenderer itemRenderer)
+        public ItemStackWidget(int xIn, int yIn, int size, ItemRenderer itemRenderer, ResourceLocation replacement)
         {
             super(xIn, yIn, size, size, "");
             this.itemStack = ItemStack.EMPTY;
             this.itemRenderer = itemRenderer;
+            this.replacement = replacement;
         }
         
         public ItemStackWidget setItemStack(ItemStack itemStack)
@@ -608,7 +614,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
         public void renderButton(int mouseX, int mouseY, float partial)
         {
             Minecraft minecraft = Minecraft.getInstance();
-            ResourceLocation rl = DuelScreen.DECK_REPLACEMENT;
+            ResourceLocation rl = this.replacement;
             
             if(!this.itemStack.isEmpty())
             {
@@ -672,7 +678,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
             RenderSystem.defaultBlendFunc();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             
-            ClientProxy.blit(this.x, this.y, this.width, this.height, 0, 0, 256, 256, 256, 256);
+            YdmBlitUtil.blit(this.x, this.y, this.width, this.height, 0, 0, 256, 256, 256, 256);
         }
     }
     
@@ -760,5 +766,45 @@ public class DuelScreen extends ContainerScreen<DuelContainer>
             this.renderBg(minecraft, p_renderButton_1_, p_renderButton_2_);
             this.drawString(fontrenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 14737632 | MathHelper.ceil(this.alpha * 255.0F) << 24);
         }
+    }
+    
+    @Override
+    public void renderCard(int x, int y, int width, int height, DuelCard card)
+    {
+        CardPosition p = card.getCardPosition();
+        
+        // bind the texture depending on faceup or facedown
+        if(p.isFaceUp)
+        {
+            ClientProxy.bindMainResourceLocation(card.getCardHolder());
+        }
+        else
+        {
+            this.minecraft.getTextureManager().bindTexture(ClientProxy.getMainCardBack());
+        }
+        
+        // is width and height are more of a rectangle, this centers the texture horizontally
+        x -= (height - width) / 2;
+        
+        if(p.isStraight)
+        {
+            YdmBlitUtil.blit(x, y, width, height, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+        }
+        else
+        {
+            
+        }
+    }
+    
+    @Override
+    public void renderCardReversed(int x, int y, int width, int height, DuelCard card)
+    {
+        
+    }
+    
+    @Override
+    public void renderCardManually(int x, int y, int width, int height, DuelCard card, float widthModifier, float heightModifier, float rotation)
+    {
+        
     }
 }

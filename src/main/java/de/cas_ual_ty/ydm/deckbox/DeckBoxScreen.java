@@ -3,7 +3,7 @@ package de.cas_ual_ty.ydm.deckbox;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
@@ -105,6 +105,6 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(DeckBoxScreen.DECK_BOX_GUI_TEXTURE);
-        ClientProxy.blit(this.guiLeft, this.guiTop, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
+        YdmBlitUtil.blit(this.guiLeft, this.guiTop, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
     }
 }

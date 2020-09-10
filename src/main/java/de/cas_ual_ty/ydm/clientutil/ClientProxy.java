@@ -26,7 +26,6 @@ import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -377,8 +376,9 @@ public class ClientProxy implements ISidedProxy
             }
             
             // card texture
+            
             ClientProxy.bindInfoResourceLocation(card);
-            ClientProxy.blit(x, margin, imageSize, imageSize, 0, 0, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize);
+            YdmBlitUtil.blit(x, margin, imageSize, imageSize, 0, 0, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize);
         }
         
         // need to multiply x2 because we are scaling the text to x0.5
@@ -422,25 +422,24 @@ public class ClientProxy implements ISidedProxy
         ClientProxy.mainTextureBinder.bind(p.getMainImageResourceLocation(imageIndex));
     }
     
-    /**
-     * Param 1-4: Where to and how big to draw on the screen
-     * Param 5-8: What part of the texture file to cut out and draw
-     * Param 9-10: How big the entire texture file is in general (pow2 only)
-     * 
-     * @param renderX Where to draw on the screen
-     * @param renderY Where to draw on the screen
-     * @param renderWidth How big to draw on the screen
-     * @param renderHeight How big to draw on the screen
-     * @param textureX
-     * @param textureY
-     * @param textureWidth
-     * @param textureHeight
-     * @param totalTextureFileWidth The total texture file size
-     * @param totalTextureFileHeight The total texture file size
-     */
-    public static void blit(int renderX, int renderY, int renderWidth, int renderHeight, int textureX, int textureY, int textureWidth, int textureHeight, int totalTextureFileWidth, int totalTextureFileHeight)
+    public static void bindInfoResourceLocation(ResourceLocation r)
     {
-        AbstractGui.blit(renderX, renderY, renderWidth, renderHeight, textureX, textureY, textureWidth, textureHeight, totalTextureFileWidth, totalTextureFileHeight);
+        ClientProxy.infoTextureBinder.bind(r);
+    }
+    
+    public static void bindMainResourceLocation(ResourceLocation r)
+    {
+        ClientProxy.mainTextureBinder.bind(r);
+    }
+    
+    public static ResourceLocation getInfoCardBack()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeInfoImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath());
+    }
+    
+    public static ResourceLocation getMainCardBack()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath());
     }
     
     public static void drawRect(int x, int y, int w, int h, float r, float g, float b, float a)
