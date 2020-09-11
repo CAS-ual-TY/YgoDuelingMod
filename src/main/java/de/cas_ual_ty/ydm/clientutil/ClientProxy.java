@@ -378,7 +378,7 @@ public class ClientProxy implements ISidedProxy
             // card texture
             
             ClientProxy.bindInfoResourceLocation(card);
-            YdmBlitUtil.blit(x, margin, imageSize, imageSize, 0, 0, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize, ClientProxy.activeInfoImageSize);
+            YdmBlitUtil.fullBlit(x, margin, imageSize, imageSize);
         }
         
         // need to multiply x2 because we are scaling the text to x0.5

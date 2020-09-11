@@ -11,6 +11,11 @@ public class YdmBlitUtil
 {
     // custom class making blit easier
     
+    public static void fullBlit(int renderX, int renderY, int renderWidth, int renderHeight)
+    {
+        YdmBlitUtil.customInnerBlit(renderX, renderX + renderWidth, renderY, renderY + renderHeight, 0, 0F, 1F, 0F, 1F);
+    }
+    
     /**
      * Param 1-4: Where to and how big to draw on the screen
      * Param 5-8: What part of the texture file to cut out and draw
@@ -59,12 +64,7 @@ public class YdmBlitUtil
         YdmBlitUtil.customInnerBlit(renderX, renderX + renderWidth, renderY, renderY + renderHeight, 0, x1, y2, x1, y1, x2, y1, x2, y2);
     }
     
-    protected static void innerBlit(int renderX1, int renderX2, int renderY1, int renderY2, int renderZ, float textureX, float textureY, int textureWidth, int textureHeight, int totalTextureFileWidth, int totalTextureFileHeight)
-    {
-        YdmBlitUtil.customInnerBlit(renderX1, renderX2, renderY1, renderY2, renderZ, textureX / (float)totalTextureFileWidth, (textureX + (float)textureWidth) / (float)totalTextureFileWidth, textureY / (float)totalTextureFileHeight, (textureY + (float)textureHeight) / (float)totalTextureFileHeight);
-    }
-    
-    protected static void customInnerBlit(int posX1, int posX2, int posY2, int posY1, int posZ, float texX1, float texX2, float texY2, float texY1)
+    protected static void customInnerBlit(int posX1, int posX2, int posY1, int posY2, int posZ, float texX1, float texX2, float texY1, float texY2)
     {
         YdmBlitUtil.customInnerBlit(posX1, posX2, posY1, posY2, posZ, texX1, texY1, texX2, texY1, texX2, texY2, texX1, texY2);
     }

@@ -31,7 +31,7 @@ public class CardButton extends AbstractButton
         if(card != null)
         {
             ClientProxy.bindMainResourceLocation(card);
-            YdmBlitUtil.blit(this.x + 1, this.y + 1, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+            YdmBlitUtil.fullBlit(this.x + 1, this.y + 1, 16, 16);
             
             if(this.isHovered())
             {

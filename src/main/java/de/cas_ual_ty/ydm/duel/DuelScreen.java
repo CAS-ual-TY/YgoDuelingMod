@@ -332,7 +332,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
                         if(c != null && c.getCard() != null)
                         {
                             ClientProxy.bindMainResourceLocation(c);
-                            YdmBlitUtil.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                            YdmBlitUtil.fullBlit(guiLeft + offX, guiTop + offY, 16, 16);
                             
                             if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                             {
@@ -368,7 +368,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
                     if(c != null && c.getCard() != null)
                     {
                         ClientProxy.bindMainResourceLocation(c);
-                        YdmBlitUtil.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                        YdmBlitUtil.fullBlit(guiLeft + offX, guiTop + offY, 16, 16);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
@@ -395,7 +395,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
                     if(c != null && c.getCard() != null)
                     {
                         ClientProxy.bindMainResourceLocation(c);
-                        YdmBlitUtil.blit(guiLeft + offX, guiTop + offY, 16, 16, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+                        YdmBlitUtil.fullBlit(guiLeft + offX, guiTop + offY, 16, 16);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
@@ -678,7 +678,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
             RenderSystem.defaultBlendFunc();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             
-            YdmBlitUtil.blit(this.x, this.y, this.width, this.height, 0, 0, 256, 256, 256, 256);
+            YdmBlitUtil.fullBlit(this.x, this.y, this.width, this.height);
         }
     }
     
@@ -788,7 +788,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         
         if(p.isStraight)
         {
-            YdmBlitUtil.blit(x, y, width, height, 0, 0, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize, ClientProxy.activeMainImageSize);
+            YdmBlitUtil.fullBlit(x, y, width, height);
         }
         else
         {
