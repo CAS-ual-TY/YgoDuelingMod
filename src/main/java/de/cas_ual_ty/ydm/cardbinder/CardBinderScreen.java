@@ -167,7 +167,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
             return;
         }
         
-        if(button.getCard() != null)
+        if(button.getCard() != null && YDM.proxy.getClientPlayer().inventory.getItemStack().isEmpty())
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index, this.shiftDown));
             
