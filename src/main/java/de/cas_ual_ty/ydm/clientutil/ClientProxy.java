@@ -434,12 +434,22 @@ public class ClientProxy implements ISidedProxy
     
     public static ResourceLocation getInfoCardBack()
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeInfoImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath());
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeInfoImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath() + ".png");
     }
     
     public static ResourceLocation getMainCardBack()
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath());
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath() + ".png");
+    }
+    
+    public static ResourceLocation getInfoTokenOverlay()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeInfoImageSize + "/" + "token_overlay" + ".png");
+    }
+    
+    public static ResourceLocation getMainMainOverlay()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + "token_overlay" + ".png");
     }
     
     public static void drawRect(int x, int y, int w, int h, float r, float g, float b, float a)
