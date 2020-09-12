@@ -15,7 +15,6 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
@@ -48,10 +47,13 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRenderingProvider
 {
-    private static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
-    private static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
+    public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
+    public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
     
-    private static final ResourceLocation DECK_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
+    public static final ResourceLocation DECK_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
+    
+    public static final ResourceLocation DUEL_ACTIONS_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions.png");
+    public static final ResourceLocation DUEL_ACTIONS_LARGE_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions_large.png");
     
     protected AbstractButton player1Button;
     protected AbstractButton player2Button;
@@ -158,7 +160,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     // when true, deck choosing must be rendered, otherwise dont render it
     public boolean renderDeckChoosing()
     {
-        return this.getRole() == PlayerRole.PLAYER1 ? this.getDuelManager().player1Deck == null : (this.getRole() == PlayerRole.PLAYER2 ? this.getDuelManager().player2Deck == null : false);
+        return this.getPlayerRole() == PlayerRole.PLAYER1 ? this.getDuelManager().player1Deck == null : (this.getPlayerRole() == PlayerRole.PLAYER2 ? this.getDuelManager().player2Deck == null : false);
     }
     
     @Override
@@ -171,14 +173,14 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         
         if(this.getState() == DuelState.IDLE)
         {
-            this.addButton(this.player1Button = new RoleButton(x - 100, y - 40, 100, 20, "Player 1", this::roleButtonClicked, () -> this.getDuelManager().player1 == null && this.getRole() != PlayerRole.PLAYER1, PlayerRole.PLAYER1));
-            this.addButton(this.player2Button = new RoleButton(x - 100, y - 10, 100, 20, "Player 2", this::roleButtonClicked, () -> this.getDuelManager().player2 == null && this.getRole() != PlayerRole.PLAYER2, PlayerRole.PLAYER2));
-            this.addButton(this.spectatorButton = new RoleButton(x - 100, y + 20, 100, 20, "Spectators", this::roleButtonClicked, () -> this.getRole() != PlayerRole.SPECTATOR, PlayerRole.SPECTATOR));
+            this.addButton(this.player1Button = new RoleButton(x - 100, y - 40, 100, 20, "Player 1", this::roleButtonClicked, () -> this.getDuelManager().player1 == null && this.getPlayerRole() != PlayerRole.PLAYER1, PlayerRole.PLAYER1));
+            this.addButton(this.player2Button = new RoleButton(x - 100, y - 10, 100, 20, "Player 2", this::roleButtonClicked, () -> this.getDuelManager().player2 == null && this.getPlayerRole() != PlayerRole.PLAYER2, PlayerRole.PLAYER2));
+            this.addButton(this.spectatorButton = new RoleButton(x - 100, y + 20, 100, 20, "Spectators", this::roleButtonClicked, () -> this.getPlayerRole() != PlayerRole.SPECTATOR, PlayerRole.SPECTATOR));
             this.addButton(new RoleOccupants(x, y - 40, 80, 20, this::getRoleDescription, PlayerRole.PLAYER1));
             this.addButton(new RoleOccupants(x, y - 10, 80, 20, this::getRoleDescription, PlayerRole.PLAYER2));
             this.addButton(new RoleOccupants(x, y + 20, 100, 20, this::getRoleDescription, PlayerRole.SPECTATOR));
-            this.addButton(new ReadyCheckbox(x + 80, y - 40, 20, 20, "Ready 1", (button) -> this.ready1ButtonClicked(), () -> this.getDuelManager().player1Ready, this::getRole, PlayerRole.PLAYER1));
-            this.addButton(new ReadyCheckbox(x + 80, y - 10, 20, 20, "Ready 2", (button) -> this.ready2ButtonClicked(), () -> this.getDuelManager().player2Ready, this::getRole, PlayerRole.PLAYER2));
+            this.addButton(new ReadyCheckbox(x + 80, y - 40, 20, 20, "Ready 1", (button) -> this.ready1ButtonClicked(), () -> this.getDuelManager().player1Ready, this::getPlayerRole, PlayerRole.PLAYER1));
+            this.addButton(new ReadyCheckbox(x + 80, y - 10, 20, 20, "Ready 2", (button) -> this.ready2ButtonClicked(), () -> this.getDuelManager().player2Ready, this::getPlayerRole, PlayerRole.PLAYER2));
         }
         else if(this.getState() == DuelState.PREPARING)
         {
@@ -220,7 +222,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         {
             this.font.drawString("Choose your decks...", 8.0F, 6.0F, 0x404040);
             
-            PlayerRole role = this.getRole();
+            PlayerRole role = this.getPlayerRole();
             
             if(role == PlayerRole.PLAYER1 || role == PlayerRole.PLAYER2)
             {
@@ -472,7 +474,8 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         return this.getDuelManager().getDuelState();
     }
     
-    public PlayerRole getRole()
+    @Override
+    public PlayerRole getPlayerRole()
     {
         return this.getDuelManager().getRoleFor(ClientProxy.getPlayer());
     }
@@ -491,7 +494,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         {
             int size = this.getDuelManager().spectators.size();
             
-            if(this.getRole() == PlayerRole.SPECTATOR)
+            if(this.getPlayerRole() == PlayerRole.SPECTATOR)
             {
                 if(size == 1)
                 {
@@ -518,7 +521,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     
     public void ready1ButtonClicked()
     {
-        if(this.player1Button != null && this.player2Button != null && this.getRole() == PlayerRole.PLAYER1)
+        if(this.player1Button != null && this.player2Button != null && this.getPlayerRole() == PlayerRole.PLAYER1)
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestReady(!this.getDuelManager().player1Ready));
         }
@@ -526,7 +529,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     
     public void ready2ButtonClicked()
     {
-        if(this.player1Button != null && this.player2Button != null && this.getRole() == PlayerRole.PLAYER2)
+        if(this.player1Button != null && this.player2Button != null && this.getPlayerRole() == PlayerRole.PLAYER2)
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestReady(!this.getDuelManager().player2Ready));
         }
@@ -768,13 +771,10 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         }
     }
     
-    @Override
-    public void renderCard(int x, int y, int width, int height, DuelCard card)
+    public void renderCardWith(int x, int y, int width, int height, DuelCard card, YdmBlitUtil.FullBlitMethod blitMethod)
     {
-        CardPosition p = card.getCardPosition();
-        
         // bind the texture depending on faceup or facedown
-        if(p.isFaceUp)
+        if(card.getCardPosition().isFaceUp)
         {
             ClientProxy.bindMainResourceLocation(card.getCardHolder());
         }
@@ -783,28 +783,61 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
             this.minecraft.getTextureManager().bindTexture(ClientProxy.getMainCardBack());
         }
         
-        // is width and height are more of a rectangle, this centers the texture horizontally
-        x -= (height - width) / 2;
+        blitMethod.fullBlit(x, y, width, height);
         
-        if(p.isStraight)
+        if(card.getIsToken())
         {
-            YdmBlitUtil.fullBlit(x, y, width, height);
+            this.minecraft.getTextureManager().bindTexture(ClientProxy.getMainCardBack());
+            blitMethod.fullBlit(x, y, width, height);
         }
-        else
-        {
-            
-        }
+    }
+    
+    public void blitAction(int x, int y, int width, int height, int index)
+    {
+        final int textureSize = 4;
+        
+        int row = index / textureSize;
+        int column = index % textureSize;
+        
+        YdmBlitUtil.blit(x, y, width, height, column, row, 1, 1, textureSize, textureSize);
+    }
+    
+    @Override
+    public void renderCard(int x, int y, int width, int height, DuelCard card)
+    {
+        this.renderCardWith(x, y, width, height, card,
+            card.getCardPosition().isStraight
+                ? YdmBlitUtil::fullBlit
+                : YdmBlitUtil::fullBlit90Degree);
     }
     
     @Override
     public void renderCardReversed(int x, int y, int width, int height, DuelCard card)
     {
+        this.renderCardWith(x, y, width, height, card,
+            card.getCardPosition().isStraight
+                ? YdmBlitUtil::fullBlit180Degree
+                : YdmBlitUtil::fullBlit270Degree);
+    }
+    
+    @Override
+    public void renderCardProportionally(int x, int y, int width, int height, DuelCard card, float widthModifier, float heightModifier, float rotation)
+    {
+        // TODO Auto-generated method stub
         
     }
     
     @Override
-    public void renderCardManually(int x, int y, int width, int height, DuelCard card, float widthModifier, float heightModifier, float rotation)
+    public void renderAction(int x, int y, int width, int height, int index)
     {
-        
+        this.minecraft.getTextureManager().bindTexture(DuelScreen.DUEL_ACTIONS_TEXTURE);
+        this.blitAction(x, y, width, height, index);
+    }
+    
+    @Override
+    public void renderLargeAction(int x, int y, int width, int height, int index)
+    {
+        this.minecraft.getTextureManager().bindTexture(DuelScreen.DUEL_ACTIONS_LARGE_TEXTURE);
+        this.blitAction(x, y, width, height, index);
     }
 }
