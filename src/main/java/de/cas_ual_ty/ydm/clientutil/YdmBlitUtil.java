@@ -13,7 +13,22 @@ public class YdmBlitUtil
     
     public static void fullBlit(int renderX, int renderY, int renderWidth, int renderHeight)
     {
-        YdmBlitUtil.customInnerBlit(renderX, renderX + renderWidth, renderY, renderY + renderHeight, 0, 0F, 1F, 0F, 1F);
+        YdmBlitUtil.blit(renderX, renderY, renderWidth, renderHeight, 0, 0, 1, 1, 1, 1);
+    }
+    
+    public static void fullBlit90Degree(int renderX, int renderY, int renderWidth, int renderHeight)
+    {
+        YdmBlitUtil.blit90Degree(renderX, renderY, renderWidth, renderHeight, 0, 0, 1, 1, 1, 1);
+    }
+    
+    public static void fullBlit180Degree(int renderX, int renderY, int renderWidth, int renderHeight)
+    {
+        YdmBlitUtil.blit180Degree(renderX, renderY, renderWidth, renderHeight, 0, 0, 1, 1, 1, 1);
+    }
+    
+    public static void fullBlit270Degree(int renderX, int renderY, int renderWidth, int renderHeight)
+    {
+        YdmBlitUtil.blit270Degree(renderX, renderY, renderWidth, renderHeight, 0, 0, 1, 1, 1, 1);
     }
     
     /**
@@ -80,5 +95,10 @@ public class YdmBlitUtil
         bufferbuilder.finishDrawing();
         RenderSystem.enableAlphaTest();
         WorldVertexBufferUploader.draw(bufferbuilder);
+    }
+    
+    public static interface FullBlitMethod
+    {
+        void fullBlit(int x, int y, int width, int height);
     }
 }
