@@ -19,6 +19,7 @@ import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
+import de.cas_ual_ty.ydm.duelmanager.DuelRenderer;
 import de.cas_ual_ty.ydm.duelmanager.DuelRenderingProvider;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
@@ -70,10 +71,13 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     protected List<DeckWrapper> deckWrappers;
     protected int activeDeckWrapperIdx;
     
+    protected DuelRenderer duelRenderer;
+    
     public DuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.activeDeckWrapperIdx = 0;
+        this.duelRenderer = new DuelRenderer(this, this.getDuelManager());
     }
     
     public void reInit()
@@ -248,7 +252,8 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         }
         else if(this.getState() == DuelState.DUELING)
         {
-            
+            //TODO no access to partial ticks here ??? moved to background
+            //this.duelRenderer.render(mouseX, mouseY, 1F);
         }
     }
     
@@ -271,6 +276,11 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         {
             this.minecraft.getTextureManager().bindTexture(DuelScreen.DUEL_FOREGROUND_GUI_TEXTURE);
             this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+            
+            RenderSystem.pushMatrix();
+            RenderSystem.translatef(this.guiLeft, this.guiTop, 0F);
+            this.duelRenderer.render(mouseX - this.guiLeft, mouseY - this.guiTop, 1F);
+            RenderSystem.popMatrix();
         }
     }
     
@@ -839,5 +849,16 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     {
         this.minecraft.getTextureManager().bindTexture(DuelScreen.DUEL_ACTIONS_LARGE_TEXTURE);
         this.blitAction(x, y, width, height, index);
+    }
+    
+    @Override
+    public void renderLinesCentered(int x, int y, List<String> lines)
+    {
+        y -= this.font.FONT_HEIGHT * lines.size() / 2;
+        int i = 0;
+        for(String text : lines)
+        {
+            this.font.drawString(text, x - this.font.getStringWidth(text) / 2, y + this.font.FONT_HEIGHT * i, 0xFFFFFF);
+        }
     }
 }

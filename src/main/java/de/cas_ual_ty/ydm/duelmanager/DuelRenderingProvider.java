@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.duelmanager;
 
+import java.util.List;
+
 public interface DuelRenderingProvider
 {
     public void renderCard(int x, int y, int width, int height, DuelCard card);
@@ -78,4 +80,6 @@ public interface DuelRenderingProvider
     public void renderHoverRect(int x, int y, int width, int height);
     
     public PlayerRole getPlayerRole();
+    
+    public void renderLinesCentered(int x, int y, List<String> lines);
 }
