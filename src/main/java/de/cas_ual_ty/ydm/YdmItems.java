@@ -26,6 +26,7 @@ public class YdmItems
     public static final Item DUEL_PLAYMAT = null;
     public static final Item DUEL_TABLE = null;
     public static final Item DUEL_DISK = null;
+    public static final Item CHAOS_DISK = null;
     
     public static final DeckBoxItem BLACK_DECK_BOX = null;
     public static final DeckBoxItem RED_DECK_BOX = null;
@@ -59,6 +60,7 @@ public class YdmItems
         registry.register(new BlockItem(YdmBlocks.DUEL_PLAYMAT, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
         registry.register(new BlockItem(YdmBlocks.DUEL_TABLE, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_table"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "duel_disk"));
+        registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "chaos_disk"));
         
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "black_deck_box"));
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "red_deck_box"));
