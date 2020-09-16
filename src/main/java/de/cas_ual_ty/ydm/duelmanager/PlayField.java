@@ -59,7 +59,7 @@ public class PlayField
     
     public Zone getReplacementZoneForCard(Zone zone, DuelCard card)
     {
-        if(!zone.getType().getIsStrict() || !zone.hasOwner())
+        if(!zone.getType().getIsStrict())
         {
             // zone isnt strict (eg. player1's monster zones allow player2's cards in them)
             return zone;
@@ -67,7 +67,7 @@ public class PlayField
         else
         {
             // zone is strict, and zone owner is card owner
-            if(zone.isOwner(card.getOwner()))
+            if(zone.getOwner() == card.getOwner())
             {
                 return zone;
             }

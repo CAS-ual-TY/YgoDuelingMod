@@ -12,6 +12,7 @@ public class Zone
     
     public ZoneType type;
     public ZoneOwner owner;
+    public final boolean isOwnerTemporary;
     
     // cards list, 0 is top, size()-1 is bottom
     public List<DuelCard> cardsList;
@@ -32,6 +33,7 @@ public class Zone
         this.playField = playField;
         this.type = type;
         this.owner = owner;
+        this.isOwnerTemporary = this.hasOwner();
         this.cardsList = new ArrayList<>(size);
         this.size = size;
         this.isSecret = isSecret;
@@ -82,6 +84,11 @@ public class Zone
     
     public void addCard(DuelCard card, int index)
     {
+        if(this.getCardsList().isEmpty())
+        {
+            this.trySetOwner(card.getOwner());
+        }
+        
         this.getCardsList().add(index, card);
     }
     
@@ -115,6 +122,14 @@ public class Zone
         return this.getCardsList().size();
     }
     
+    public void trySetOwner(ZoneOwner owner)
+    {
+        if(this.getIsOwnerTemporary() && this.owner == null)
+        {
+            this.owner = owner;
+        }
+    }
+    
     public void shuffle()
     {
         this.cardsList = new ArrayList<>(this.size);
@@ -139,6 +154,11 @@ public class Zone
     public ZoneOwner getOwner()
     {
         return this.owner;
+    }
+    
+    public boolean getIsOwnerTemporary()
+    {
+        return this.isOwnerTemporary;
     }
     
     public List<DuelCard> getCardsList()

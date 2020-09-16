@@ -25,6 +25,24 @@ public enum ZoneOwner
     
     public static final int ZONES_PER_PLAYER = PLAYER2.offset;
     
+    public static final ZoneOwner[] VALUES = ZoneOwner.values();
+    
+    public static ZoneOwner getFromIndex(byte index)
+    {
+        return ZoneOwner.VALUES[index];
+    }
+    
+    static
+    {
+        byte index = 0;
+        for(ZoneOwner zoneOwner : ZoneOwner.VALUES)
+        {
+            zoneOwner.index = index++;
+        }
+    }
+    
+    private byte index;
+    
     public final PlayerRole player;
     public final int offset;
     
@@ -44,6 +62,11 @@ public enum ZoneOwner
         return this.getPlayer() == null || player == this.getPlayer();
     }
     
+    public byte getIndex()
+    {
+        return this.index;
+    }
+    
     public static int convertIndex(int index)
     {
         if(index >= ZoneOwner.ZONES_PER_PLAYER * 2)
@@ -58,6 +81,22 @@ public enum ZoneOwner
         else
         {
             return index + ZoneOwner.ZONES_PER_PLAYER;
+        }
+    }
+    
+    public static ZoneOwner fromPlayerRole(PlayerRole player)
+    {
+        if(player == PLAYER1.getPlayer())
+        {
+            return PLAYER1;
+        }
+        else if(player == PLAYER2.getPlayer())
+        {
+            return PLAYER2;
+        }
+        else
+        {
+            return null;
         }
     }
 }

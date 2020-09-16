@@ -111,6 +111,16 @@ public class DuelMessages
         return PlayerRole.getFromIndex(buf.readByte());
     }
     
+    public static void encodeZoneOwner(ZoneOwner owner, PacketBuffer buf)
+    {
+        buf.writeByte(owner.getIndex());
+    }
+    
+    public static ZoneOwner decodeZoneOwner(PacketBuffer buf)
+    {
+        return ZoneOwner.getFromIndex(buf.readByte());
+    }
+    
     public static void encodeCardHolder(@Nullable CardHolder card, PacketBuffer buf)
     {
         if(card != null)
@@ -162,12 +172,12 @@ public class DuelMessages
         DuelMessages.encodeCardHolder(card.getCardHolder(), buf);
         buf.writeBoolean(card.getIsToken());
         DuelMessages.encodeCardPosition(card.getCardPosition(), buf);
-        DuelMessages.encodePlayerRole(card.getOwner(), buf);
+        DuelMessages.encodeZoneOwner(card.getOwner(), buf);
     }
     
     public static DuelCard decodeDuelCard(PacketBuffer buf)
     {
-        return new DuelCard(DuelMessages.decodeCardHolder(buf), buf.readBoolean(), DuelMessages.decodeCardPosition(buf), DuelMessages.decodePlayerRole(buf));
+        return new DuelCard(DuelMessages.decodeCardHolder(buf), buf.readBoolean(), DuelMessages.decodeCardPosition(buf), DuelMessages.decodeZoneOwner(buf));
     }
     
     public static class SelectRole

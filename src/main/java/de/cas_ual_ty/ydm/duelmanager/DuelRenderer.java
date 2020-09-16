@@ -1,13 +1,22 @@
 package de.cas_ual_ty.ydm.duelmanager;
 
+import javax.annotation.Nullable;
+
 public class DuelRenderer
 {
     public final DuelRenderingProvider provider;
     public final DuelManager manager;
     public final ZoneWrapper[] zones;
     
+    // for 4-tick animations
+    // values from 0-3, incrementing every tick
+    public int animationPhase;
+    
     // save this to render the cards in the link zones the correct way
     private PlayerRole activeView;
+    
+    public ZoneWrapper mouseHoverZone;
+    public DuelCard mouseHoverCard;
     
     public DuelRenderer(DuelRenderingProvider provider, DuelManager manager)
     {
@@ -15,9 +24,12 @@ public class DuelRenderer
         this.manager = manager;
         
         this.zones = new ZoneWrapper[manager.getPlayField().zones.length];
+        
+        Zone zone;
         for(byte i = 0; i < this.zones.length; ++i)
         {
-            this.zones[i] = new ZoneWrapper(manager.getPlayField().getZone(i));
+            zone = manager.getPlayField().getZone(i);
+            this.zones[i] = new ZoneWrapper(zone, this.renderZoneCardsSpread(zone.getType()), this.getZoneAllegiance(zone));
         }
         
         this.activeView = PlayerRole.PLAYER1;
@@ -28,6 +40,21 @@ public class DuelRenderer
         {
             this.forceFlipBoard();
         }
+        
+        this.animationPhase = 0;
+        
+        this.mouseHoverZone = null;
+        this.mouseHoverCard = null;
+    }
+    
+    private boolean renderZoneCardsSpread(ZoneType type)
+    {
+        return type == ZoneType.HAND || type == ZoneType.MONSTER;
+    }
+    
+    private Boolean getZoneAllegiance(Zone zone)
+    {
+        return true;
     }
     
     // can be called any time, eg. via button
@@ -172,28 +199,49 @@ public class DuelRenderer
     {
         // TODO
         
+        this.mouseHoverZone = null;
+        this.mouseHoverCard = null;
+        
         for(ZoneWrapper zone : this.zones)
         {
+            zone.render(this.provider, partialTicks);
+            
             if(zone.isMouseOver(mouseX, mouseY))
             {
-                this.provider.renderHoverRect(zone.x, zone.y, zone.width, zone.height);
-                break;
+                this.mouseHoverZone = zone;
             }
         }
+        
+        if(this.mouseHoverZone != null)
+        {
+            this.provider.renderHoverRect(this.mouseHoverZone.x, this.mouseHoverZone.y, this.mouseHoverZone.width, this.mouseHoverZone.height);
+            
+            this.mouseHoverCard = this.mouseHoverZone.getHoverCard(mouseX, mouseY);
+        }
+    }
+    
+    // must be called every tick
+    public void tick()
+    {
+        this.animationPhase = (this.animationPhase + 1) % 4;
     }
     
     public static class ZoneWrapper
     {
         public final Zone zone;
+        public final boolean renderCardsSpread;
+        public boolean isOpponent;
         
         public int x;
         public int y;
         public int width;
         public int height;
         
-        public ZoneWrapper(Zone zone)
+        public ZoneWrapper(Zone zone, boolean renderCardsSpread, boolean isOpponent)
         {
             this.zone = zone;
+            this.renderCardsSpread = renderCardsSpread;
+            this.isOpponent = isOpponent;
         }
         
         public void setCoords(int x, int y)
@@ -210,6 +258,12 @@ public class DuelRenderer
         
         public void render(DuelRenderingProvider provider, float partial)
         {
+        }
+        
+        @Nullable
+        public DuelCard getHoverCard(int mouseX, int mouseY)
+        {
+            return null;
         }
         
         public boolean isMouseOver(int mouseX, int mouseY)
