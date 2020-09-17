@@ -1,10 +1,14 @@
-package de.cas_ual_ty.ydm.duelmanager;
+package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
+
+import de.cas_ual_ty.ydm.duelmanager.CardPosition;
+import de.cas_ual_ty.ydm.duelmanager.DuelCard;
+import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 
 public class Zone
 {

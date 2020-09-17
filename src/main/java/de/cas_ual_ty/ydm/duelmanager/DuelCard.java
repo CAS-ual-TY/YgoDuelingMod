@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.duelmanager;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 
 public class DuelCard
 {

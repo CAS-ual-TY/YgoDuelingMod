@@ -1,6 +1,8 @@
-package de.cas_ual_ty.ydm.duelmanager;
+package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import javax.annotation.Nullable;
+
+import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 
 public class ZoneTypeDefinitions
 {

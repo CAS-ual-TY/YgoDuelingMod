@@ -1,4 +1,6 @@
-package de.cas_ual_ty.ydm.duelmanager;
+package de.cas_ual_ty.ydm.duelmanager.playfield;
+
+import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 
 public enum ZoneOwner
 {

@@ -1,6 +1,9 @@
-package de.cas_ual_ty.ydm.duelmanager;
+package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import java.util.Random;
+
+import de.cas_ual_ty.ydm.duelmanager.DuelCard;
+import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 
 public class PlayField
 {

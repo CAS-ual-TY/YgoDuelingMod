@@ -15,6 +15,8 @@ import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
 import de.cas_ual_ty.ydm.duelmanager.action.Populate;
+import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;

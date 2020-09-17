@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.duelmanager.action;
 
 import de.cas_ual_ty.ydm.duelmanager.CardPosition;
-import de.cas_ual_ty.ydm.duelmanager.PlayField;
-import de.cas_ual_ty.ydm.duelmanager.Zone;
+import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
+import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import net.minecraft.network.PacketBuffer;
 
 public abstract class MoveAction extends SingleCardAction

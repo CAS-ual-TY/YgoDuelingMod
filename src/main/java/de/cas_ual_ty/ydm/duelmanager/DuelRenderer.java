@@ -2,6 +2,9 @@ package de.cas_ual_ty.ydm.duelmanager;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
 import net.minecraft.util.math.MathHelper;
 
 public class DuelRenderer

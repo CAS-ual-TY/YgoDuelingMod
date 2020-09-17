@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duelmanager.action;
 
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
-import de.cas_ual_ty.ydm.duelmanager.PlayField;
+import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import net.minecraft.network.PacketBuffer;
 
 public abstract class SingleCardAction extends SingleZoneAction
