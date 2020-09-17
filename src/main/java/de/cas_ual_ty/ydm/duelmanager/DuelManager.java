@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.duelmanager;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,8 @@ import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
 import de.cas_ual_ty.ydm.duelmanager.action.Populate;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -68,9 +71,28 @@ public class DuelManager
         this.resetSpectators();
         this.actions.clear();
         this.messages.clear();
-        this.playField = new PlayField(this);
+        this.playField = new PlayField(this, this.getZoneTypes());
         this.player1Deck = null;
         this.player2Deck = null;
+    }
+    
+    public List<ZoneType> getZoneTypes()
+    {
+        List<ZoneType> list = new ArrayList<>(11);
+        
+        list.add(ZoneTypes.HAND);
+        list.add(ZoneTypes.DECK);
+        list.add(ZoneTypes.SPELL_TRAP);
+        list.add(ZoneTypes.EXTRA_DECK);
+        list.add(ZoneTypes.GRAVEYARD);
+        list.add(ZoneTypes.MONSTER);
+        list.add(ZoneTypes.FIELD_SPELL);
+        list.add(ZoneTypes.BANISHED);
+        list.add(ZoneTypes.EXTRA);
+        list.add(ZoneTypes.EXTRA_MONSTER_RIGHT);
+        list.add(ZoneTypes.EXTRA_MONSTER_LEFT);
+        
+        return list;
     }
     
     public void setDuelStateAndUpdate(DuelState duelState)
@@ -271,21 +293,19 @@ public class DuelManager
     
     public void populatePlayField()
     {
-        // for type offsets see ZoneOwner
-        
-        byte deckOffset = (byte)1;
-        byte extraDeckOffset = (byte)7;
+        byte deckOffset = (byte)this.getPlayField().getSingleZone(ZoneTypes.DECK, ZoneOwner.PLAYER1).index;
+        byte extraDeckOffset = (byte)this.getPlayField().getSingleZone(ZoneTypes.EXTRA_DECK, ZoneOwner.PLAYER1).index;
         
         // send main decks
-        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(deckOffset + ZoneOwner.PLAYER1.offset),
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(deckOffset + this.getPlayField().player1Offset),
             this.player1Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
-        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(deckOffset + ZoneOwner.PLAYER2.offset),
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(deckOffset + this.getPlayField().player2Offset),
             this.player2Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
         
         // send extra decks
-        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(extraDeckOffset + ZoneOwner.PLAYER1.offset),
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(extraDeckOffset + this.getPlayField().player1Offset),
             this.player1Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
-        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(extraDeckOffset + ZoneOwner.PLAYER2.offset),
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(extraDeckOffset + this.getPlayField().player2Offset),
             this.player2Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
     }
     

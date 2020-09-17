@@ -13,47 +13,29 @@ import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 public class Zone
 {
     public final PlayField playField;
+    public final ZoneType type;
+    public final byte index;
+    public final byte childIndex;
     
-    public ZoneType type;
     public ZoneOwner owner;
     public final boolean isOwnerTemporary;
     
     // cards list, 0 is top, size()-1 is bottom
     public List<DuelCard> cardsList;
-    private final int size;
-    
-    // allows you to "take the stack" and see every card thats face up in it
-    // otherwise (false) you can only see the top card
-    // facedown cards can always only be seen by zone owner
-    public boolean isSecret;
     
     @Nullable
     public CardPosition defaultCardPosition;
     
-    public byte index;
-    
-    public Zone(PlayField playField, ZoneType type, ZoneOwner owner, int size, boolean isSecret)
+    public Zone(PlayField playField, ZoneType type, byte index, byte childIndex, ZoneOwner owner)
     {
         this.playField = playField;
         this.type = type;
+        this.index = index;
+        this.childIndex = childIndex;
         this.owner = owner;
         this.isOwnerTemporary = this.hasOwner();
-        this.cardsList = new ArrayList<>(size);
-        this.size = size;
-        this.isSecret = isSecret;
+        this.cardsList = new ArrayList<>(0);
         this.defaultCardPosition = this.type.defaultCardPosition;
-        
-        this.index = -1;
-    }
-    
-    public Zone(PlayField playField, ZoneType type, ZoneOwner owner)
-    {
-        this(playField, type, owner, 1, false);
-    }
-    
-    public void initIndex(byte index)
-    {
-        this.index = index;
     }
     
     public boolean isOwner(PlayerRole player)
@@ -155,7 +137,7 @@ public class Zone
     
     public void shuffle()
     {
-        this.cardsList = new ArrayList<>(this.size);
+        this.cardsList = new ArrayList<>(0);
         this.cardsList.addAll(this.getCardsList());
         
         Collections.shuffle(this.cardsList, this.playField.getRandom());
@@ -202,10 +184,5 @@ public class Zone
         {
             this.defaultCardPosition = this.defaultCardPosition.flip();
         }
-    }
-    
-    public byte getIndex()
-    {
-        return this.index;
     }
 }

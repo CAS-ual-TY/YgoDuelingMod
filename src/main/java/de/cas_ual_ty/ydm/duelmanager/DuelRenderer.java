@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.duelmanager;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
@@ -17,8 +18,7 @@ public class DuelRenderer
     // values from 0-3, incrementing every tick
     public int animationPhase;
     
-    // save this to render the cards in the link zones the correct way
-    private PlayerRole activeView;
+    private ZoneOwner activeView;
     
     public ZoneWrapper mouseHoverZone;
     public DuelCard mouseHoverCard;
@@ -28,20 +28,33 @@ public class DuelRenderer
         this.provider = provider;
         this.manager = manager;
         
-        this.zones = new ZoneWrapper[manager.getPlayField().zones.length];
+        this.zones = new ZoneWrapper[manager.getPlayField().zones.size()];
         
         Zone zone;
+        ZoneType type;
+        ZoneWrapper wrapper;
         for(byte i = 0; i < this.zones.length; ++i)
         {
             zone = manager.getPlayField().getZone(i);
-            this.zones[i] = new ZoneWrapper(zone, this, this.renderZoneCardsSpread(zone.getType()), this.getZoneAllegiance(zone));
+            type = zone.getType();
+            wrapper = new ZoneWrapper(zone, this, this.getZoneAllegiance(zone));
+            
+            wrapper.setCoords(type.getX() + type.getXOffsetForChild(zone.childIndex), type.getY());
+            
+            if(zone.getOwner() == ZoneOwner.PLAYER2)
+            {
+                wrapper.setCoords(-wrapper.x, -wrapper.y);
+            }
+            
+            wrapper.setSizes(type.getWidth(), type.getHeight());
+            wrapper.setCoords(wrapper.x - wrapper.width / 2, wrapper.y - wrapper.height / 2); // moving to top left corner
+            
+            this.zones[i] = wrapper;
         }
         
-        this.activeView = PlayerRole.PLAYER1;
-        this.updateZoneCoordinates();
-        this.updateZoneSizes();
+        this.activeView = ZoneOwner.PLAYER1;
         
-        if(this.provider.getPlayerRole() == PlayerRole.PLAYER2)
+        if(this.provider.getPlayerRole() == ZoneOwner.PLAYER2.getPlayer())
         {
             this.forceFlipBoard();
         }
@@ -52,14 +65,9 @@ public class DuelRenderer
         this.mouseHoverCard = null;
     }
     
-    private boolean renderZoneCardsSpread(ZoneType type)
+    private boolean getZoneAllegiance(Zone zone)
     {
-        return type == ZoneType.HAND || type == ZoneType.MONSTER;
-    }
-    
-    private Boolean getZoneAllegiance(Zone zone)
-    {
-        return true;
+        return zone.getOwner() == this.activeView;
     }
     
     // can be called any time, eg. via button
@@ -75,19 +83,20 @@ public class DuelRenderer
     // swaps player zones from top to bottom, also swaps both link zones
     private void forceFlipBoard()
     {
-        if(this.activeView == PlayerRole.PLAYER1)
+        if(this.activeView == ZoneOwner.PLAYER1)
         {
-            this.activeView = PlayerRole.PLAYER2;
+            this.activeView = ZoneOwner.PLAYER2;
         }
         else
         {
-            this.activeView = PlayerRole.PLAYER1;
+            this.activeView = ZoneOwner.PLAYER1;
         }
         
+        PlayField pf = this.manager.getPlayField();
         ZoneWrapper z;
         
         // swap player zones vertically (actually: point symmetrically, not vertically)
-        for(int i = ZoneOwner.PLAYER1.offset, j = ZoneOwner.PLAYER2.offset; i < ZoneOwner.PLAYER2.offset; ++i, ++j)
+        for(int i = pf.player1Offset, j = pf.player2Offset; i < pf.player2Offset; ++i, ++j)
         {
             z = this.zones[i];
             this.zones[i] = this.zones[j];
@@ -95,7 +104,7 @@ public class DuelRenderer
         }
         
         // swap link zones horizontally
-        for(int i = ZoneOwner.NONE.offset, j = this.zones.length - 1; i < this.zones.length; ++i, --j)
+        for(int i = pf.extraOffset, j = this.zones.length - 1; i < this.zones.length; ++i, --j)
         {
             z = this.zones[i];
             this.zones[i] = this.zones[j];
@@ -104,97 +113,6 @@ public class DuelRenderer
             if(i >= j)
             {
                 break;
-            }
-        }
-        
-        this.updateZoneCoordinates();
-    }
-    
-    protected void updateZoneCoordinates()
-    {
-        // From ZoneOwner class
-        
-        /*
-         * offset player1: 0 (0-16)
-         * offset player2: 17: (17-33)
-         * - 1 hand
-         * - 1 deck
-         * - 5 spell/trap (right to left)
-         * - 1 extra deck
-         * - 1 gy
-         * - 5 monster
-         * - 1 field spell
-         * - 1 banished
-         * - 1 extra
-         * = 17
-         * offset extra monsters: 32 (34-35)
-         * - player 1 zones: 17
-         * - player 2 zones: 17
-         * = 34
-         */
-        
-        this.zones[0].setCoords(33, 211); // hand
-        this.zones[1].setCoords(203, 177); // deck
-        this.zones[2].setCoords(169, 177); // s/t right
-        this.zones[3].setCoords(135, 177); // ...
-        this.zones[4].setCoords(101, 177); // s/t middle
-        this.zones[5].setCoords(67, 177); // ...
-        this.zones[6].setCoords(33, 177); // s/t left
-        this.zones[7].setCoords(7, 177); // exra deck
-        this.zones[8].setCoords(203, 143); // gy
-        this.zones[9].setCoords(169, 143); // monster right
-        this.zones[10].setCoords(135, 143); // ...
-        this.zones[11].setCoords(101, 143); // monster middle
-        this.zones[12].setCoords(67, 143); // ...
-        this.zones[13].setCoords(33, 143); // monster left
-        this.zones[14].setCoords(7, 143); // field spell
-        this.zones[15].setCoords(203, 109); // banished
-        this.zones[16].setCoords(7, 211); // extra
-        
-        this.zones[17].setCoords(7, 7); // hand
-        this.zones[18].setCoords(7, 41); // deck
-        this.zones[19].setCoords(33, 41); // s/t left (opponent's right)
-        this.zones[20].setCoords(67, 41); // ...
-        this.zones[21].setCoords(101, 41); // s/t middle
-        this.zones[22].setCoords(135, 41); // ...
-        this.zones[23].setCoords(169, 41); // s/t right
-        this.zones[24].setCoords(203, 41); // exra deck
-        this.zones[25].setCoords(7, 75); // gy
-        this.zones[26].setCoords(33, 75); // monster left
-        this.zones[27].setCoords(67, 75); // ...
-        this.zones[28].setCoords(101, 75); // monster middle
-        this.zones[29].setCoords(135, 75); // ...
-        this.zones[30].setCoords(169, 75); // monster right
-        this.zones[31].setCoords(203, 75); // field spell
-        this.zones[32].setCoords(7, 109); // banished
-        this.zones[33].setCoords(203, 7); // extra
-        
-        this.zones[34].setCoords(67, 109); // left extra monster (opponent's right)
-        this.zones[35].setCoords(135, 109); // right extra monster
-    }
-    
-    protected void updateZoneSizes()
-    {
-        for(ZoneWrapper zone : this.zones)
-        {
-            if(zone.zone.getType() == ZoneType.HAND)
-            {
-                zone.setSizes(194, 32);
-            }
-            else if(zone.zone.getType() == ZoneType.DECK
-                || zone.zone.getType() == ZoneType.EXTRA_DECK
-                || zone.zone.getType() == ZoneType.GRAVEYARD
-                || zone.zone.getType() == ZoneType.FIELD_SPELL
-                || zone.zone.getType() == ZoneType.BANISHED
-                || zone.zone.getType() == ZoneType.EXTRA)
-            {
-                zone.setSizes(24, 32);
-            }
-            else /*if(zone.zone.getType() == ZoneType.SPELL_TRAP
-                 || zone.zone.getType() == ZoneType.MONSTER
-                 || zone.zone.getType() == ZoneType.EXTRA_MONSTER)*/
-            {
-                zone.setSizes(32, 32);
             }
         }
     }
@@ -240,7 +158,6 @@ public class DuelRenderer
         
         public final Zone zone;
         public final DuelRenderer renderer;
-        public final boolean renderCardsSpread;
         public boolean isOpponent;
         
         public int x;
@@ -248,11 +165,10 @@ public class DuelRenderer
         public int width;
         public int height;
         
-        public ZoneWrapper(Zone zone, DuelRenderer renderer, boolean renderCardsSpread, boolean isOpponent)
+        public ZoneWrapper(Zone zone, DuelRenderer renderer, boolean isOpponent)
         {
             this.zone = zone;
             this.renderer = renderer;
-            this.renderCardsSpread = renderCardsSpread;
             this.isOpponent = isOpponent;
         }
         
@@ -270,7 +186,7 @@ public class DuelRenderer
         
         public void render(DuelRenderingProvider provider, float partial)
         {
-            if(this.renderCardsSpread && this.zone.getCardsAmount() > 1)
+            if(this.zone.getType().getRenderCardsSpread() && this.zone.getCardsAmount() > 1)
             {
                 int left = ZoneWrapper.SPREAD_CARDS_MARGIN;
                 int right = this.width - ZoneWrapper.SPREAD_CARDS_MARGIN - ZoneWrapper.SINGLE_CARDS_WIDTH;
