@@ -216,6 +216,17 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     }
     
     @Override
+    public void tick()
+    {
+        super.tick();
+        
+        if(this.duelRenderer != null)
+        {
+            this.duelRenderer.tick();
+        }
+    }
+    
+    @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         if(this.getState() == DuelState.IDLE)

@@ -150,6 +150,7 @@ public class YDM
         YDM.channel.registerMessage(index++, DuelMessages.SendDeck.class, DuelMessages.SendDeck::encode, DuelMessages.SendDeck::decode, DuelMessages.SendDeck::handle);
         YDM.channel.registerMessage(index++, DuelMessages.ChooseDeck.class, DuelMessages.ChooseDeck::encode, DuelMessages.ChooseDeck::decode, DuelMessages.ChooseDeck::handle);
         YDM.channel.registerMessage(index++, DuelMessages.DeckAccepted.class, DuelMessages.DeckAccepted::encode, DuelMessages.DeckAccepted::decode, DuelMessages.DeckAccepted::handle);
+        YDM.channel.registerMessage(index++, DuelMessages.DuelAction.class, DuelMessages.DuelAction::encode, DuelMessages.DuelAction::decode, DuelMessages.DuelAction::handle);
         
         YDM.proxy.init();
     }

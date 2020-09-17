@@ -583,4 +583,42 @@ public class DuelMessages
             context.setPacketHandled(true);
         }
     }
+    
+    public static class DuelAction
+    {
+        public PlayerRole source;
+        public Action action;
+        
+        // must be player role because Judges will also be able to do stuff
+        public DuelAction(PlayerRole source, Action action)
+        {
+            this.source = source;
+            this.action = action;
+        }
+        
+        public static void encode(DuelAction msg, PacketBuffer buf)
+        {
+            //encodePlayerRole
+            DuelMessages.encodeAction(msg.action, buf);
+        }
+        
+        public static DuelAction decode(PacketBuffer buf)
+        {
+            return new DuelAction(null, DuelMessages.decodeAction(buf));
+        }
+        
+        public static void handle(DuelAction msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                DuelMessages.doForContainer(YDM.proxy.getClientPlayer(), (container, player) ->
+                {
+                    container.handleAction(msg.source, msg.action);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
 }

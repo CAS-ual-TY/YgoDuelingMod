@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 
@@ -12,6 +13,8 @@ import com.google.common.collect.ImmutableList;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
+import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
+import de.cas_ual_ty.ydm.duelmanager.action.Populate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -266,7 +269,22 @@ public class DuelManager
     
     public void populatePlayField()
     {
+        // for type offsets see ZoneOwner
         
+        byte deckOffset = (byte)1;
+        byte extraDeckOffset = (byte)7;
+        
+        // send main decks
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(deckOffset + ZoneOwner.PLAYER1.offset),
+            this.player1Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(deckOffset + ZoneOwner.PLAYER2.offset),
+            this.player2Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
+        
+        // send extra decks
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(extraDeckOffset + ZoneOwner.PLAYER1.offset),
+            this.player1Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+        this.sendActionToAll(new Populate(ActionType.POPULATE, (byte)(extraDeckOffset + ZoneOwner.PLAYER2.offset),
+            this.player2Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
     }
     
     public void chooseDeck(int index, PlayerEntity player)
@@ -612,7 +630,7 @@ public class DuelManager
     
     public void sendActionToAll(Action action)
     {
-        this.doForAllPlayers((player) -> this.sendActionTo(player, action));
+        this.doForAllPlayers((player) -> this.sendActionTo(player, null, action));
     }
     
     public void updateActionsToAll()
@@ -679,8 +697,9 @@ public class DuelManager
         // TODO synchronize messages (via actions?)
     }
     
-    protected void sendActionTo(PlayerEntity player, Action action)
+    protected void sendActionTo(PlayerEntity player, PlayerRole source, Action action)
     {
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.DuelAction(source, action));
     }
     
     protected void sendActionsTo(PlayerEntity player)

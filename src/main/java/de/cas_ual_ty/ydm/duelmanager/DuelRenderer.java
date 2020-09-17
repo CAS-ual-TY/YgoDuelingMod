@@ -2,6 +2,8 @@ package de.cas_ual_ty.ydm.duelmanager;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.util.math.MathHelper;
+
 public class DuelRenderer
 {
     public final DuelRenderingProvider provider;
@@ -29,7 +31,7 @@ public class DuelRenderer
         for(byte i = 0; i < this.zones.length; ++i)
         {
             zone = manager.getPlayField().getZone(i);
-            this.zones[i] = new ZoneWrapper(zone, this.renderZoneCardsSpread(zone.getType()), this.getZoneAllegiance(zone));
+            this.zones[i] = new ZoneWrapper(zone, this, this.renderZoneCardsSpread(zone.getType()), this.getZoneAllegiance(zone));
         }
         
         this.activeView = PlayerRole.PLAYER1;
@@ -228,7 +230,13 @@ public class DuelRenderer
     
     public static class ZoneWrapper
     {
+        public static final int SINGLE_CARDS_HEIGHT = 28;
+        public static final int SINGLE_CARDS_WIDTH = 20;
+        
+        public static final int SPREAD_CARDS_MARGIN = 2;
+        
         public final Zone zone;
+        public final DuelRenderer renderer;
         public final boolean renderCardsSpread;
         public boolean isOpponent;
         
@@ -237,9 +245,10 @@ public class DuelRenderer
         public int width;
         public int height;
         
-        public ZoneWrapper(Zone zone, boolean renderCardsSpread, boolean isOpponent)
+        public ZoneWrapper(Zone zone, DuelRenderer renderer, boolean renderCardsSpread, boolean isOpponent)
         {
             this.zone = zone;
+            this.renderer = renderer;
             this.renderCardsSpread = renderCardsSpread;
             this.isOpponent = isOpponent;
         }
@@ -258,6 +267,72 @@ public class DuelRenderer
         
         public void render(DuelRenderingProvider provider, float partial)
         {
+            if(this.renderCardsSpread && this.zone.getCardsAmount() > 1)
+            {
+                int left = ZoneWrapper.SPREAD_CARDS_MARGIN;
+                int right = this.width - ZoneWrapper.SPREAD_CARDS_MARGIN - ZoneWrapper.SINGLE_CARDS_WIDTH;
+                float area = (right - left) / (this.zone.getCardsAmount() - 1);
+                
+                // most left = 2
+                // most right = 10
+                
+                // two:
+                // 2 = 2 + 0 * 8
+                // 10 = 2 + 1 * 8
+                // 8 / (n-1)
+                
+                // three:
+                // 2 = 2 + 0 * 4
+                // 6 = 2 + 1 * 4
+                // 10 = 2 + 2 * 4
+                // 8 / (n-1)
+                
+                // four:
+                // 2 + 0 * 2.66
+                // 2 + 1 * 2.66 -> 4.66 -> 6
+                // 2 + 2 * 2.66 -> 7.33 -> 8
+                // 2 + 3 * 2.66 -> 10
+                // 8 / (n-1)
+                
+                // five:
+                // 2 = 2 + 0 * 2
+                // 4 = 2 + 1 * 2
+                // 6 = 2 + 2 * 2
+                // 8 = 2 + 3 * 2
+                // 10 = 2 + 4 * 2
+                // 8 / (n-1)
+                
+                // ...
+                
+                int x1;
+                
+                for(short i = 0; i < this.zone.getCardsAmount(); ++i)
+                {
+                    x1 = left + MathHelper.ceil(i * area);
+                    
+                    if(!this.isOpponent)
+                    {
+                        this.renderer.provider.renderCardCentered(this.x + x1, this.y, this.width, this.height, this.zone.getCard(i));
+                    }
+                    else
+                    {
+                        this.renderer.provider.renderCardReversedCentered(this.x + x1, this.y, this.width, this.height, this.zone.getCard(i));
+                    }
+                }
+            }
+            else if(this.zone.getCardsAmount() > 0)
+            {
+                DuelCard card = this.zone.getTopCard();
+                
+                if(!this.isOpponent)
+                {
+                    this.renderer.provider.renderCardCentered(this.x, this.y, this.width, this.height, card);
+                }
+                else
+                {
+                    this.renderer.provider.renderCardReversedCentered(this.x, this.y, this.width, this.height, card);
+                }
+            }
         }
         
         @Nullable

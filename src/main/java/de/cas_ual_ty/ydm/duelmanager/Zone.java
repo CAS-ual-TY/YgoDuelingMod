@@ -62,6 +62,25 @@ public class Zone
         return this.getOwner() != ZoneOwner.NONE;
     }
     
+    // unsafe: error if empty
+    public DuelCard getTopCard()
+    {
+        return this.cardsList.get(0);
+    }
+    
+    @Nullable
+    public DuelCard getTopCardSafely()
+    {
+        if(this.getCardsAmount() > 0)
+        {
+            return this.getTopCard();
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
     public DuelCard getCard(short index)
     {
         return this.getCardsList().get(index);

@@ -58,7 +58,8 @@ public class DuelContainer extends Container
     
     public void handleAction(PlayerRole source, Action action)
     {
-        
+        action.init(this.getDuelManager().getPlayField());
+        action.doAction();
     }
     
     public void receiveDeckSources(List<DeckSource> deckSources)
