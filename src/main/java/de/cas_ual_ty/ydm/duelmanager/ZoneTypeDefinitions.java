@@ -4,22 +4,18 @@ import javax.annotation.Nullable;
 
 public class ZoneTypeDefinitions
 {
-    public static final ZoneTypeDefinitions HAND = new ZoneTypeDefinitions((byte)0, 13, 227);
-    public static final ZoneTypeDefinitions DECK = new ZoneTypeDefinitions((byte)1, 106, 193).defaultCardPosition(CardPosition.FACE_DOWN);
-    public static final ZoneTypeDefinitions SPELL_TRAP = new ZoneTypeDefinitions((byte)2, 68, 193).withChildren(5, -2);
-    public static final ZoneTypeDefinitions EXTRA_DECK = new ZoneTypeDefinitions((byte)7, -90, 193);
-    public static final ZoneTypeDefinitions GRAVEYARD = new ZoneTypeDefinitions((byte)8, 106, 159).strict();
-    public static final ZoneTypeDefinitions MONSTER = new ZoneTypeDefinitions((byte)9, 68, 159).allowSideways().withChildren(5, -2);
-    public static final ZoneTypeDefinitions FIELD_SPELL = new ZoneTypeDefinitions((byte)14, -90, 159);
-    public static final ZoneTypeDefinitions BANISHED = new ZoneTypeDefinitions((byte)15, 106, 125).strict();
-    public static final ZoneTypeDefinitions EXTRA = new ZoneTypeDefinitions((byte)16, -90, 227);
+    public static final ZoneTypeDefinitions HAND = new ZoneTypeDefinitions(13, 227);
+    public static final ZoneTypeDefinitions DECK = new ZoneTypeDefinitions(106, 193).defaultCardPosition(CardPosition.FACE_DOWN);
+    public static final ZoneTypeDefinitions SPELL_TRAP = new ZoneTypeDefinitions(68, 193).withChildren(5, -2);
+    public static final ZoneTypeDefinitions EXTRA_DECK = new ZoneTypeDefinitions(-90, 193);
+    public static final ZoneTypeDefinitions GRAVEYARD = new ZoneTypeDefinitions(106, 159).strict();
+    public static final ZoneTypeDefinitions MONSTER = new ZoneTypeDefinitions(68, 159).allowSideways().withChildren(5, -2);
+    public static final ZoneTypeDefinitions FIELD_SPELL = new ZoneTypeDefinitions(-90, 159);
+    public static final ZoneTypeDefinitions BANISHED = new ZoneTypeDefinitions(106, 125).strict();
+    public static final ZoneTypeDefinitions EXTRA = new ZoneTypeDefinitions(-90, 227);
     
-    // TODO coordinates
-    // index starts back at 0 because they have no owner. player offset will be added automatically
-    public static final ZoneTypeDefinitions EXTRA_MONSTER_1 = new ZoneTypeDefinitions((byte)0, 0, 0).noOwner();
-    public static final ZoneTypeDefinitions EXTRA_MONSTER_2 = new ZoneTypeDefinitions((byte)1, 0, 0).noOwner();
-    
-    public final byte index;
+    public static final ZoneTypeDefinitions EXTRA_MONSTER_RIGHT = new ZoneTypeDefinitions(34, 0).noOwner();
+    public static final ZoneTypeDefinitions EXTRA_MONSTER_LEFT = new ZoneTypeDefinitions(-34, 0).noOwner();
     
     // position of bottom zones ("your" zones, not "enemy" zones)
     public final int x;
@@ -41,9 +37,8 @@ public class ZoneTypeDefinitions
     
     public boolean noOwner;
     
-    public ZoneTypeDefinitions(byte index, int x, int y)
+    public ZoneTypeDefinitions(int x, int y)
     {
-        this.index = index;
         this.x = x;
         this.y = y;
         
@@ -130,11 +125,6 @@ public class ZoneTypeDefinitions
         return this;
     }
     
-    public byte getIndex()
-    {
-        return this.index;
-    }
-    
     public int getX()
     {
         return this.x;
@@ -168,11 +158,6 @@ public class ZoneTypeDefinitions
     public int getChildrenAmount()
     {
         return this.childrenAmt;
-    }
-    
-    public byte getIndexForChild(byte child)
-    {
-        return (byte)(this.index + child);
     }
     
     public int getXOffsetForChild(byte child)
