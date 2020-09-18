@@ -289,8 +289,10 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
             this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
             
             RenderSystem.pushMatrix();
-            RenderSystem.translatef(this.guiLeft, this.guiTop, 0F);
-            this.duelRenderer.render(mouseX - this.guiLeft, mouseY - this.guiTop, 1F);
+            int x = this.guiLeft + this.xSize / 2;
+            int y = this.guiTop + this.ySize / 2;
+            RenderSystem.translatef(x, y, 0F);
+            this.duelRenderer.render(mouseX - x, mouseY - y, 1F);
             RenderSystem.popMatrix();
         }
     }
