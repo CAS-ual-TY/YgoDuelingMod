@@ -1,12 +1,14 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.resources.IPackFinder;
+import net.minecraft.resources.IPackNameDecorator;
 import net.minecraft.resources.IResourcePack;
 import net.minecraft.resources.ResourcePackInfo;
+import net.minecraft.resources.ResourcePackInfo.IFactory;
 
 public class YdmResourcePackFinder implements IPackFinder
 {
@@ -15,11 +17,9 @@ public class YdmResourcePackFinder implements IPackFinder
     }
     
     @Override
-    public <T extends ResourcePackInfo> void addPackInfosToMap(Map<String, T> nameToPackMap, ResourcePackInfo.IFactory<T> packInfoFactory)
+    public void findPacks(Consumer<ResourcePackInfo> infoConsumer, IFactory infoFactory)
     {
-        String s = YDM.MOD_ID;
-        T t = ResourcePackInfo.createResourcePack(s, true, this.makePackSupplier(), packInfoFactory, ResourcePackInfo.Priority.TOP);
-        nameToPackMap.put(s, t);
+        infoConsumer.accept(ResourcePackInfo.createResourcePack(YDM.MOD_ID, true, this.makePackSupplier(), infoFactory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.PLAIN));
     }
     
     private Supplier<IResourcePack> makePackSupplier()

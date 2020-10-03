@@ -114,7 +114,7 @@ public class YdmResourcePack extends ResourcePack
     }
     
     @Override
-    public void close() throws IOException
+    public void close()
     {
     }
     

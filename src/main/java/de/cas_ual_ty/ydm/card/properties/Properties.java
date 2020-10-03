@@ -11,6 +11,7 @@ import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 
 public class Properties
@@ -153,51 +154,41 @@ public class Properties
     
     public void addInformation(List<ITextComponent> list)
     {
-        List<String> raw = this.getRawStringList();
-        
-        for(String s1 : raw)
-        {
-            for(String s2 : s1.split("\n"))
-            {
-                list.add(new StringTextComponent(s2));
-            }
-        }
+        list.addAll(this.getRawStringList());
     }
     
-    public List<String> getRawStringList()
+    public List<ITextComponent> getRawStringList()
     {
-        List<String> list = new LinkedList<>();
+        List<ITextComponent> list = new LinkedList<>();
         
         this.addHeader(list);
-        list.add("");
+        list.add(StringTextComponent.EMPTY);
         this.addText(list);
         
         return list;
     }
     
-    public void addHeader(List<String> list)
+    public void addHeader(List<ITextComponent> list)
     {
-        list.add(this.getName());
+        list.add(new StringTextComponent(this.getName()));
         
         if(this.isCustom)
         {
-            ITextComponent c = new StringTextComponent("Custom Card");
-            c.getStyle().setColor(TextFormatting.RED);
-            list.add(c.getFormattedText());
+            list.add(new StringTextComponent("Custom Card").setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED)));
         }
         
-        list.add("");
+        list.add(StringTextComponent.EMPTY);
         this.addCardType(list);
     }
     
-    public void addText(List<String> list)
+    public void addText(List<ITextComponent> list)
     {
-        list.add(this.getText());
+        list.add(new StringTextComponent(this.getText()));
     }
     
-    public void addCardType(List<String> list)
+    public void addCardType(List<ITextComponent> list)
     {
-        list.add(this.type.name);
+        list.add(new StringTextComponent(this.type.name));
     }
     
     // --- Getters ---

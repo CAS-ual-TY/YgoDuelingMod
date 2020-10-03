@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
@@ -18,7 +19,9 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -69,8 +72,8 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
         int centerX = this.width / 2;
         int centerY = this.height / 2;
         
-        this.prevButton = new Button(centerX + 40, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.prev").getFormattedText(), this::onButtonClicked);
-        this.nextButton = new Button(centerX + 80, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.next").getFormattedText(), this::onButtonClicked);
+        this.prevButton = new Button(centerX + 40, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.prev"), this::onButtonClicked);
+        this.nextButton = new Button(centerX + 80, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.next"), this::onButtonClicked);
         this.addButton(this.prevButton);
         this.addButton(this.nextButton);
     }
@@ -85,11 +88,11 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     }
     
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks)
+    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+        this.renderBackground(ms);
+        super.render(ms, mouseX, mouseY, partialTicks);
+        this.renderHoveredTooltip(ms, mouseX, mouseY);
         
         for(CardButton button : this.cardButtons)
         {
@@ -97,18 +100,19 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
             {
                 if(button.getCard() != null)
                 {
-                    ClientProxy.renderCardInfo(button.getCard(), this);
+                    ClientProxy.renderCardInfo(ms, button.getCard(), this);
                     
                     List<ITextComponent> list = new LinkedList<>();
                     button.getCard().addInformation(list);
                     
-                    List<String> tooltip = new ArrayList<>(list.size());
+                    List<ITextComponent> tooltip = new ArrayList<>(list.size());
                     for(ITextComponent t : list)
                     {
-                        tooltip.add(t.getFormattedText());
+                        tooltip.add(t);
                     }
                     
-                    this.renderTooltip(tooltip, mouseX, mouseY, this.font);
+                    //renderTooltip
+                    this.func_243308_b(ms, tooltip, mouseX, mouseY);
                 }
                 
                 break;
@@ -117,30 +121,30 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     }
     
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
     {
-        String title = this.title.getFormattedText();
+        IFormattableTextComponent title = new StringTextComponent(this.title.getString());
         
         if(!this.getContainer().loaded)
         {
-            title += " " + new TranslationTextComponent("container.ydm.card_binder.loading").getFormattedText();
+            title = title.appendString(" ").append(new TranslationTextComponent("container.ydm.card_binder.loading"));
         }
         else
         {
-            title += " " + this.container.page + "/" + this.container.clientMaxPage;
+            title = title.appendString(" ").append(new StringTextComponent(this.container.page + "/" + this.container.clientMaxPage));
         }
         
-        this.font.drawString(title, 8.0F, 6.0F, 0x404040);
+        this.font.func_243248_b(ms, title, 8.0F, 6.0F, 0x404040);
         
-        this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8.0F, (float)(this.ySize - 96 + 2), 0x404040);
+        this.font.func_243248_b(ms, this.playerInventory.getDisplayName(), 8.0F, (float)(this.ySize - 96 + 2), 0x404040);
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
+    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(CardBinderScreen.CARD_BINDER_GUI_TEXTURE);
-        this.blit(this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }
     
     protected void onButtonClicked(Button button)

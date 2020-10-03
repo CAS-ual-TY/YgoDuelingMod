@@ -12,8 +12,6 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Quaternion;
-import net.minecraft.client.renderer.TransformationMatrix;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
@@ -23,6 +21,8 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraftforge.client.model.ItemTextureQuadConverter;
 
 @SuppressWarnings("deprecation")
@@ -94,9 +94,9 @@ public class FinalCardBakedModel implements IBakedModel
     }
     
     @Override
-    public boolean func_230044_c_()
+    public boolean isSideLit()
     {
-        return this.mainModel.func_230044_c_();
+        return this.mainModel.isSideLit();
     }
     
     @Override

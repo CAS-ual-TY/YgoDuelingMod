@@ -5,6 +5,8 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class XyzMonsterProperties extends DefMonsterProperties
 {
@@ -55,9 +57,9 @@ public class XyzMonsterProperties extends DefMonsterProperties
     }
     
     @Override
-    public void addMonsterHeader1(List<String> list)
+    public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(this.getAttribute().name + " / Rank " + this.getRank());
+        list.add(new StringTextComponent(this.getAttribute().name + " / Rank " + this.getRank()));
     }
     
     // --- Getters ---

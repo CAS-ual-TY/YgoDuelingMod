@@ -2,6 +2,8 @@ package de.cas_ual_ty.ydm.duelmanager;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
@@ -118,7 +120,7 @@ public class DuelRenderer
     }
     
     // must be called every render tick
-    public void render(int mouseX, int mouseY, float partialTicks)
+    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         // TODO
         
@@ -127,7 +129,7 @@ public class DuelRenderer
         
         for(ZoneWrapper zone : this.zones)
         {
-            zone.render(this.provider, partialTicks);
+            zone.render(ms, this.provider, partialTicks);
             
             if(zone.isMouseOver(mouseX, mouseY))
             {
@@ -137,7 +139,7 @@ public class DuelRenderer
         
         if(this.mouseHoverZone != null)
         {
-            this.provider.renderHoverRect(this.mouseHoverZone.x, this.mouseHoverZone.y, this.mouseHoverZone.width, this.mouseHoverZone.height);
+            this.provider.renderHoverRect(ms, this.mouseHoverZone.x, this.mouseHoverZone.y, this.mouseHoverZone.width, this.mouseHoverZone.height);
             
             this.mouseHoverCard = this.mouseHoverZone.getHoverCard(mouseX, mouseY);
         }
@@ -184,7 +186,7 @@ public class DuelRenderer
             this.height = height;
         }
         
-        public void render(DuelRenderingProvider provider, float partial)
+        public void render(MatrixStack ms, DuelRenderingProvider provider, float partial)
         {
             if(this.zone.getType().getRenderCardsSpread() && this.zone.getCardsAmount() > 1)
             {
@@ -231,11 +233,11 @@ public class DuelRenderer
                     
                     if(!this.isOpponent)
                     {
-                        this.renderer.provider.renderCardCentered(this.x + x1, this.y, this.width, this.height, this.zone.getCard(i));
+                        this.renderer.provider.renderCardCentered(ms, this.x + x1, this.y, this.width, this.height, this.zone.getCard(i));
                     }
                     else
                     {
-                        this.renderer.provider.renderCardReversedCentered(this.x + x1, this.y, this.width, this.height, this.zone.getCard(i));
+                        this.renderer.provider.renderCardReversedCentered(ms, this.x + x1, this.y, this.width, this.height, this.zone.getCard(i));
                     }
                 }
             }
@@ -245,11 +247,11 @@ public class DuelRenderer
                 
                 if(!this.isOpponent)
                 {
-                    this.renderer.provider.renderCardCentered(this.x, this.y, this.width, this.height, card);
+                    this.renderer.provider.renderCardCentered(ms, this.x, this.y, this.width, this.height, card);
                 }
                 else
                 {
-                    this.renderer.provider.renderCardReversedCentered(this.x, this.y, this.width, this.height, card);
+                    this.renderer.provider.renderCardReversedCentered(ms, this.x, this.y, this.width, this.height, card);
                 }
             }
         }

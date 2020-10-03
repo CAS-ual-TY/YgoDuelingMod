@@ -5,6 +5,8 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class DefMonsterProperties extends MonsterProperties
 {
@@ -56,9 +58,9 @@ public class DefMonsterProperties extends MonsterProperties
     }
     
     @Override
-    public void addMonsterHeader2(List<String> list)
+    public void addMonsterHeader2(List<ITextComponent> list)
     {
-        list.add(this.getAtk() + " ATK / " + this.getDef() + " DEF");
+        list.add(new StringTextComponent(this.getAtk() + " ATK / " + this.getDef() + " DEF"));
     }
     
     // --- Getters ---

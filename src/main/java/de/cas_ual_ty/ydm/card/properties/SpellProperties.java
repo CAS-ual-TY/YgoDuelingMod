@@ -5,6 +5,8 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class SpellProperties extends Properties
 {
@@ -56,9 +58,9 @@ public class SpellProperties extends Properties
     }
     
     @Override
-    public void addCardType(List<String> list)
+    public void addCardType(List<ITextComponent> list)
     {
-        list.add(this.getSpellType().name + " " + this.getType().name);
+        list.add(new StringTextComponent(this.getSpellType().name + " " + this.getType().name));
     }
     
     // --- Getters ---

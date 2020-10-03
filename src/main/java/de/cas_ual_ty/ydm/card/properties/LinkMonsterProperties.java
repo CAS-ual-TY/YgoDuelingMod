@@ -5,6 +5,8 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 
 public class LinkMonsterProperties extends MonsterProperties
@@ -61,21 +63,21 @@ public class LinkMonsterProperties extends MonsterProperties
     }
     
     @Override
-    public void addMonsterHeader2(List<String> list)
+    public void addMonsterHeader2(List<ITextComponent> list)
     {
-        list.add(this.getAtk() + " ATK / LINK-" + this.getLinkRating());
+        list.add(new StringTextComponent(this.getAtk() + " ATK / LINK-" + this.getLinkRating()));
     }
     
     @Override
-    public void addText(List<String> list)
+    public void addText(List<ITextComponent> list)
     {
         // TODO Link Marker Formatting and Colors
         this.addLinkMarkers(list);
-        list.add("");
+        list.add(StringTextComponent.EMPTY);
         super.addText(list);
     }
     
-    public void addLinkMarkers(List<String> list)
+    public void addLinkMarkers(List<ITextComponent> list)
     {
         //        list.add(this.linkArrows.stream().map((arrow) -> arrow.name).collect(Collectors.joining(", ")));
         list.addAll(LinkArrow.buildSymbolsString(this.getLinkArrows(), TextFormatting.WHITE, TextFormatting.RED, "  "));

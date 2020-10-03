@@ -5,6 +5,9 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class LevelMonsterProperties extends DefMonsterProperties
 {
@@ -60,43 +63,43 @@ public class LevelMonsterProperties extends DefMonsterProperties
     }
     
     @Override
-    public void addMonsterHeader1(List<String> list)
+    public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(this.getAttribute().name + " / Level " + this.getLevel());
+        list.add(new StringTextComponent(this.getAttribute().name + " / Level " + this.getLevel()));
     }
     
     @Override
-    public void addMonsterTextHeader(List<String> list)
+    public void addMonsterTextHeader(List<ITextComponent> list)
     {
-        String s = this.getSpecies().name + " / ";
+        IFormattableTextComponent s = new StringTextComponent(this.getSpecies().name + " / ");
         
         if(this.getMonsterType() != null)
         {
-            s += this.getMonsterType().name + " / ";
+            s.appendString(this.getMonsterType().name + " / ");
         }
         
         if(this.getIsPendulum())
         {
-            s += "Pendulum" + " / ";
+            s.appendString("Pendulum" + " / ");
         }
         
         if(this.getAbility() != null)
         {
-            s += this.getAbility().name + " / ";
+            s.appendString(this.getAbility().name + " / ");
         }
         
         if(this.getIsTuner())
         {
-            s += "Tuner / ";
+            s.appendString("Tuner / ");
         }
         
         if(this.getHasEffect())
         {
-            s += "Effect";
+            s.appendString("Effect");
         }
         else
         {
-            s += "Normal";
+            s.appendString("Normal");
         }
         
         list.add(s);

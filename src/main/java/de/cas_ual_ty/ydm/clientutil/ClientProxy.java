@@ -4,11 +4,11 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -35,6 +35,7 @@ import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -312,7 +313,7 @@ public class ClientProxy implements ISidedProxy
             
             if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty() && containerScreen.getSlotUnderMouse().getStack().getItem() == YdmItems.CARD)
             {
-                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()), containerScreen);
+                ClientProxy.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()), containerScreen);
             }
         }
     }
@@ -330,26 +331,26 @@ public class ClientProxy implements ISidedProxy
             
             if(player.getHeldItemMainhand().getItem() == YdmItems.CARD)
             {
-                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()));
+                ClientProxy.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()));
             }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
             {
-                ClientProxy.renderCardInfo(YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
+                ClientProxy.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
             }
         }
     }
     
-    public static void renderCardInfo(CardHolder card, ContainerScreen<?> screen)
+    public static void renderCardInfo(MatrixStack ms, CardHolder card, ContainerScreen<?> screen)
     {
-        ClientProxy.renderCardInfo(card, screen.getGuiLeft());
+        ClientProxy.renderCardInfo(ms, card, screen.getGuiLeft());
     }
     
-    public static void renderCardInfo(CardHolder card)
+    public static void renderCardInfo(MatrixStack ms, CardHolder card)
     {
-        ClientProxy.renderCardInfo(card, 100);
+        ClientProxy.renderCardInfo(ms, card, 100);
     }
     
-    public static void renderCardInfo(CardHolder card, int width)
+    public static void renderCardInfo(MatrixStack ms, CardHolder card, int width)
     {
         if(card == null || card.getCard() == null)
         {
@@ -362,7 +363,7 @@ public class ClientProxy implements ISidedProxy
         
         int maxWidth = width - margin * 2;
         
-        RenderSystem.pushMatrix();
+        ms.push();
         RenderSystem.color4f(1F, 1F, 1F, 1F);
         
         {
@@ -378,13 +379,13 @@ public class ClientProxy implements ISidedProxy
             // card texture
             
             ClientProxy.bindInfoResourceLocation(card);
-            YdmBlitUtil.fullBlit(x, margin, imageSize, imageSize);
+            YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
         }
         
         // need to multiply x2 because we are scaling the text to x0.5
         maxWidth *= 2;
         margin *= 2;
-        RenderSystem.scalef(f, f, f);
+        ms.scale(f, f, f);
         
         {
             // card description text
@@ -395,11 +396,10 @@ public class ClientProxy implements ISidedProxy
             List<ITextComponent> list = new LinkedList<>();
             card.getProperties().addInformation(list);
             
-            String string = list.stream().map((t) -> t.getFormattedText()).collect(Collectors.joining("\n"));
-            fontRenderer.drawSplitString(string, margin, imageSize * 2 + margin * 2 /* extra margin of image */, maxWidth, 0xFFFFFF);
+            ClientProxy.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
         }
         
-        RenderSystem.popMatrix();
+        ms.pop();
     }
     
     public static void bindInfoResourceLocation(CardHolder c)
@@ -484,6 +484,25 @@ public class ClientProxy implements ISidedProxy
         GlStateManager.disableBlend(); // Turn blending uhh... back off?
     }
     
+    public static void drawSplitString(MatrixStack ms, FontRenderer fontRenderer, List<ITextComponent> list, float x, float y, int maxWidth, int color)
+    {
+        for(ITextComponent t : list)
+        {
+            if(t.getUnformattedComponentText().isEmpty() && t.getSiblings().isEmpty())
+            {
+                y += fontRenderer.FONT_HEIGHT;
+            }
+            else
+            {
+                for(IReorderingProcessor p : fontRenderer.trimStringToWidth(t, maxWidth))
+                {
+                    fontRenderer.func_238407_a_(ms, p, x, y, color);
+                    y += fontRenderer.FONT_HEIGHT;
+                }
+            }
+        }
+    }
+    
     public static Minecraft getMinecraft()
     {
         return Minecraft.getInstance();
@@ -494,4 +513,5 @@ public class ClientProxy implements ISidedProxy
     {
         return ClientProxy.getMinecraft().player;
     }
+    
 }

@@ -2,31 +2,31 @@ package de.cas_ual_ty.ydm.duelmanager;
 
 import java.util.List;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 public interface DuelRenderingProvider
 {
-    public void renderCard(int x, int y, int width, int height, DuelCard card);
+    public void renderCard(MatrixStack ms, int x, int y, int width, int height, DuelCard card);
     
-    public default void renderCardCentered(int x, int y, int width, int height, DuelCard card)
+    public default void renderCardCentered(MatrixStack ms, int x, int y, int width, int height, DuelCard card)
     {
         // is width and height are more of a rectangle, this centers the texture horizontally
         x -= (height - width) / 2;
         width = height;
         
-        this.renderCard(x, y, width, height, card);
+        this.renderCard(ms, x, y, width, height, card);
     }
     
-    public void renderCardReversed(int x, int y, int width, int height, DuelCard card);
+    public void renderCardReversed(MatrixStack ms, int x, int y, int width, int height, DuelCard card);
     
-    public default void renderCardReversedCentered(int x, int y, int width, int height, DuelCard card)
+    public default void renderCardReversedCentered(MatrixStack ms, int x, int y, int width, int height, DuelCard card)
     {
         // is width and height are more of a rectangle, this centers the texture horizontally
         x -= (height - width) / 2;
         width = height;
         
-        this.renderCardReversed(x, y, width, height, card);
+        this.renderCardReversed(ms, x, y, width, height, card);
     }
-    
-    public void renderCardProportionally(int x, int y, int width, int height, DuelCard card, float widthModifier, float heightModifier, float rotation);
     
     /*
      * row = index / 4
@@ -64,7 +64,7 @@ public interface DuelRenderingProvider
      * 28 = ?
      * 29 = ?
      */
-    public void renderAction(int x, int y, int width, int height, int index);
+    public void renderAction(MatrixStack ms, int x, int y, int width, int height, int index);
     
     /*
      * index
@@ -75,11 +75,11 @@ public interface DuelRenderingProvider
      * 4 = GY
      * 5 = Attack
      */
-    public void renderLargeAction(int x, int y, int width, int height, int index);
+    public void renderLargeAction(MatrixStack ms, int x, int y, int width, int height, int index);
     
-    public void renderHoverRect(int x, int y, int width, int height);
+    public void renderHoverRect(MatrixStack ms, int x, int y, int width, int height);
     
     public PlayerRole getPlayerRole();
     
-    public void renderLinesCentered(int x, int y, List<String> lines);
+    public void renderLinesCentered(MatrixStack ms, int x, int y, List<String> lines);
 }

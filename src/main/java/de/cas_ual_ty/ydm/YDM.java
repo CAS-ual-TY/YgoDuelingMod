@@ -35,13 +35,13 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -114,8 +114,8 @@ public class YDM
         YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
-        bus.addListener(this::attachItemStackCapabilities);
-        bus.addListener(this::serverStarting);
+        bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
+        bus.addListener(this::registerCommands);
         bus.addListener(this::findDecks);
         YDM.proxy.registerForgeEventListeners(bus);
         
@@ -249,9 +249,9 @@ public class YDM
         }
     }
     
-    private void serverStarting(FMLServerStartingEvent event)
+    private void registerCommands(RegisterCommandsEvent event)
     {
-        YdmCommand.registerCommand(event.getCommandDispatcher());
+        YdmCommand.registerCommand(event.getDispatcher());
     }
     
     private void modConfig(final ModConfig.ModConfigEvent event)

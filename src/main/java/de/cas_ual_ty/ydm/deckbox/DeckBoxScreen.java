@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.deckbox;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
@@ -36,15 +37,15 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
     }
     
     @Override
-    public void render(int mouseX, int mouseY, float partialTicks)
+    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground();
-        super.render(mouseX, mouseY, partialTicks);
-        this.renderHoveredToolTip(mouseX, mouseY);
+        this.renderBackground(ms);
+        super.render(ms, mouseX, mouseY, partialTicks);
+        this.renderHoveredTooltip(ms, mouseX, mouseY);
     }
     
     @Override
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
+    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
     {
         Slot s;
         int amount;
@@ -62,8 +63,8 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
             }
         }
         
-        String main = new TranslationTextComponent("container.ydm.deck_box.main").getFormattedText() + " " + amount + "/" + DeckHolder.MAIN_DECK_SIZE;
-        this.font.drawString(main, 8F, 6F, 0x404040);
+        //drawString
+        this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.main").appendString(" " + amount + "/" + DeckHolder.MAIN_DECK_SIZE), 8F, 6F, 0x404040);
         
         // extra deck
         
@@ -78,8 +79,8 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
             }
         }
         
-        String extra = new TranslationTextComponent("container.ydm.deck_box.extra").getFormattedText() + " " + amount + "/" + DeckHolder.EXTRA_DECK_SIZE;
-        this.font.drawString(extra, 8F, 92F, 0x404040);
+        //drawString
+        this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.extra").appendString(" " + amount + "/" + DeckHolder.EXTRA_DECK_SIZE), 8F, 92F, 0x404040);
         
         // side deck
         
@@ -94,17 +95,17 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
             }
         }
         
-        String side = new TranslationTextComponent("container.ydm.deck_box.side").getFormattedText() + " " + amount + "/" + DeckHolder.SIDE_DECK_SIZE;
-        this.font.drawString(side, 8F, 124F, 0x404040);
+        //drawString
+        this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.side").appendString(" " + amount + "/" + DeckHolder.SIDE_DECK_SIZE), 8F, 124F, 0x404040);
         
-        this.font.drawString(this.playerInventory.getDisplayName().getFormattedText(), 8F, (float)(this.ySize - 96 + 2), 0x404040);
+        this.font.func_243248_b(ms, this.playerInventory.getDisplayName(), 8F, (float)(this.ySize - 96 + 2), 0x404040);
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
+    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(DeckBoxScreen.DECK_BOX_GUI_TEXTURE);
-        YdmBlitUtil.blit(this.guiLeft, this.guiTop, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
+        YdmBlitUtil.blit(ms, this.guiLeft, this.guiTop, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
     }
 }

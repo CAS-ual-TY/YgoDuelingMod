@@ -5,8 +5,10 @@ import java.util.List;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 
 public class MonsterProperties extends Properties
@@ -154,94 +156,94 @@ public class MonsterProperties extends Properties
     }
     
     @Override
-    public void addHeader(List<String> list)
+    public void addHeader(List<ITextComponent> list)
     {
         super.addHeader(list);
         this.addMonsterHeader(list);
     }
     
     @Override
-    public void addText(List<String> list)
+    public void addText(List<ITextComponent> list)
     {
         if(this.getIsPendulum())
         {
             this.addPendulumTextHeader(list);
-            list.add(this.getPendulumText());
-            list.add("");
+            list.add(new StringTextComponent(this.getPendulumText()));
+            list.add(StringTextComponent.EMPTY);
         }
         this.addMonsterTextHeader(list);
         super.addText(list);
     }
     
-    public void addPendulumTextHeader(List<String> list)
+    public void addPendulumTextHeader(List<ITextComponent> list)
     {
         // TODO Pendulum Text Header Formatting and Color
-        ITextComponent leftArrow = new StringTextComponent("◀");
-        leftArrow.getStyle().setColor(TextFormatting.BLUE);
-        ITextComponent rightArrow = new StringTextComponent("▶");
-        rightArrow.getStyle().setColor(TextFormatting.RED);
-        list.add(this.getPendulumScaleLeftBlue() + " " + leftArrow.getFormattedText() + " / " + rightArrow.getFormattedText() + " " + this.getPendulumScaleRightRed());
+        IFormattableTextComponent leftScale = new StringTextComponent("" + this.getPendulumScaleLeftBlue());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
+        IFormattableTextComponent leftArrow = new StringTextComponent("◀").setStyle(Style.EMPTY.applyFormatting(TextFormatting.BLUE));
+        IFormattableTextComponent rightArrow = new StringTextComponent("▶").setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED));
+        IFormattableTextComponent rightScale = new StringTextComponent("" + this.getPendulumScaleRightRed());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
+        list.add(leftScale.appendString(" ").append(leftArrow).appendString(" / ").append(rightArrow).appendString(" ").append(rightScale));
     }
     
     @Override
-    public void addCardType(List<String> list)
+    public void addCardType(List<ITextComponent> list)
     {
         if(this.getMonsterType() != null)
         {
-            list.add(this.getMonsterType().name + " " + this.getType().name);
+            list.add(new StringTextComponent(this.getMonsterType().name + " " + this.getType().name));
         }
         else if(this.getHasEffect())
         {
-            list.add("Effect " + this.getType().name);
+            list.add(new StringTextComponent("Effect " + this.getType().name));
         }
         else
         {
-            list.add("Normal " + this.getType().name);
+            list.add(new StringTextComponent("Normal " + this.getType().name));
         }
     }
     
-    public void addMonsterHeader(List<String> list)
+    public void addMonsterHeader(List<ITextComponent> list)
     {
         this.addMonsterHeader1(list);
         this.addMonsterHeader2(list);
     }
     
-    public void addMonsterHeader1(List<String> list)
+    public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(this.getAttribute().name);
+        list.add(new StringTextComponent(this.getAttribute().name));
     }
     
-    public void addMonsterHeader2(List<String> list)
+    public void addMonsterHeader2(List<ITextComponent> list)
     {
-        list.add(this.getAtk() + " ATK");
+        list.add(new StringTextComponent(this.getAtk() + " ATK"));
     }
     
-    public void addMonsterTextHeader(List<String> list)
+    public void addMonsterTextHeader(List<ITextComponent> list)
     {
-        String s = this.getSpecies().name + " / ";
+        IFormattableTextComponent s = new StringTextComponent(this.getSpecies().name + " / ");
         
         if(this.getMonsterType() != null)
         {
-            s += this.getMonsterType().name + " / ";
+            s.appendString(this.getMonsterType().name + " / ");
         }
         
         if(this.getIsPendulum())
         {
-            s += "Pendulum" + " / ";
+            s.appendString("Pendulum" + " / ");
         }
         
         if(this.getAbility() != null)
         {
-            s += this.getAbility().name + " / ";
+            s.appendString(this.getAbility().name + " / ");
         }
         
         if(this.getHasEffect())
         {
-            s += "Effect";
+            s.appendString("Effect");
         }
         else
         {
-            s += "Normal";
+            s.appendString("Normal");
         }
         
         list.add(s);

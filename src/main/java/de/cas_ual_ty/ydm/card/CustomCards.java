@@ -15,6 +15,7 @@ import de.cas_ual_ty.ydm.card.properties.Species;
 import de.cas_ual_ty.ydm.card.properties.SpellProperties;
 import de.cas_ual_ty.ydm.card.properties.SpellType;
 import de.cas_ual_ty.ydm.card.properties.Type;
+import net.minecraft.util.text.ITextComponent;
 
 public class CustomCards
 {
@@ -59,7 +60,7 @@ public class CustomCards
             }
             
             @Override
-            public void addCardType(List<String> list)
+            public void addCardType(List<ITextComponent> list)
             {
                 
             }

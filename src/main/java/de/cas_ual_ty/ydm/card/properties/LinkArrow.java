@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import de.cas_ual_ty.ydm.util.YdmUtil;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextFormatting;
 
 public enum LinkArrow
@@ -85,16 +87,14 @@ public enum LinkArrow
         return sum;
     }
     
-    public static List<String> buildSymbolsString(List<LinkArrow> arrows, TextFormatting unactive, TextFormatting active, String joiner)
+    public static List<ITextComponent> buildSymbolsString(List<LinkArrow> arrows, TextFormatting unactive, TextFormatting active, String joiner)
     {
         LinkArrow arrow;
-        List<String> list = new ArrayList<>(3);
-        
-        ITextComponent c;
+        List<ITextComponent> list = new ArrayList<>(3);
         
         // Top row
         
-        String s = "";
+        IFormattableTextComponent s = new StringTextComponent("");
         
         for(int i = 0; i < 3; ++i)
         {
@@ -102,20 +102,16 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                c = new StringTextComponent(arrow.symbolActive);
-                c.getStyle().setColor(active);
-                s += c.getFormattedText();
+                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
             }
             else
             {
-                c = new StringTextComponent(arrow.symbolUnactive);
-                c.getStyle().setColor(unactive);
-                s += c.getFormattedText();
+                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
             }
             
             if(i < 2)
             {
-                s += joiner;
+                s.appendString(joiner);
             }
         }
         
@@ -123,41 +119,33 @@ public enum LinkArrow
         
         // Middle row
         
-        s = "";
+        s = new StringTextComponent("");
         
         if(arrows.contains(LEFT))
         {
-            c = new StringTextComponent(LEFT.symbolActive);
-            c.getStyle().setColor(active);
-            s += c.getFormattedText();
+            s.append(new StringTextComponent(LEFT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
         }
         else
         {
-            c = new StringTextComponent(LEFT.symbolUnactive);
-            c.getStyle().setColor(unactive);
-            s += c.getFormattedText();
+            s.append(new StringTextComponent(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
         }
         
-        s += joiner + " " + joiner;
+        s.appendString(joiner + " " + joiner);
         
         if(arrows.contains(RIGHT))
         {
-            c = new StringTextComponent(RIGHT.symbolActive);
-            c.getStyle().setColor(active);
-            s += c.getFormattedText();
+            s.append(new StringTextComponent(RIGHT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
         }
         else
         {
-            c = new StringTextComponent(RIGHT.symbolUnactive);
-            c.getStyle().setColor(unactive);
-            s += c.getFormattedText();
+            s.append(new StringTextComponent(RIGHT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
         }
         
         list.add(s);
         
         // Bottom row
         
-        s = "";
+        s = new StringTextComponent("");
         
         for(int i = 6; i > 3; --i)
         {
@@ -165,20 +153,16 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                c = new StringTextComponent(arrow.symbolActive);
-                c.getStyle().setColor(active);
-                s += c.getFormattedText();
+                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
             }
             else
             {
-                c = new StringTextComponent(arrow.symbolUnactive);
-                c.getStyle().setColor(unactive);
-                s += c.getFormattedText();
+                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
             }
             
             if(i > 4)
             {
-                s += joiner;
+                s.appendString(joiner);
             }
         }
         
