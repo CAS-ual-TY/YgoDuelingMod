@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmZoneTypes;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
@@ -21,7 +22,6 @@ import de.cas_ual_ty.ydm.duelmanager.playfield.PlayFieldType;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayFieldTypes;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
-import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneTypes;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraftforge.common.MinecraftForge;
@@ -87,17 +87,17 @@ public class DuelManager
     {
         List<ZoneType> list = new ArrayList<>(11);
         
-        list.add(ZoneTypes.HAND);
-        list.add(ZoneTypes.DECK);
-        list.add(ZoneTypes.SPELL_TRAP);
-        list.add(ZoneTypes.EXTRA_DECK);
-        list.add(ZoneTypes.GRAVEYARD);
-        list.add(ZoneTypes.MONSTER);
-        list.add(ZoneTypes.FIELD_SPELL);
-        list.add(ZoneTypes.BANISHED);
-        list.add(ZoneTypes.EXTRA);
-        list.add(ZoneTypes.EXTRA_MONSTER_RIGHT);
-        list.add(ZoneTypes.EXTRA_MONSTER_LEFT);
+        list.add(YdmZoneTypes.HAND);
+        list.add(YdmZoneTypes.DECK);
+        list.add(YdmZoneTypes.SPELL_TRAP);
+        list.add(YdmZoneTypes.EXTRA_DECK);
+        list.add(YdmZoneTypes.GRAVEYARD);
+        list.add(YdmZoneTypes.MONSTER);
+        list.add(YdmZoneTypes.FIELD_SPELL);
+        list.add(YdmZoneTypes.BANISHED);
+        list.add(YdmZoneTypes.EXTRA);
+        list.add(YdmZoneTypes.EXTRA_MONSTER_RIGHT);
+        list.add(YdmZoneTypes.EXTRA_MONSTER_LEFT);
         
         return list;
     }
