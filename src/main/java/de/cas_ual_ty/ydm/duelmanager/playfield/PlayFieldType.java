@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
+import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
 
 public class PlayFieldType
 {
@@ -141,7 +142,7 @@ public class PlayFieldType
         return this;
     }
     
-    public PlayFieldType registerInteration(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
+    public PlayFieldType registerInteration(ActionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
     {
         this.interactionEntries.add(new InteractionEntry(icon, interactor, interactee, interaction));
         return this;
@@ -190,12 +191,12 @@ public class PlayFieldType
     
     public static final class InteractionEntry
     {
-        public final ZoneInteractionIcon icon;
+        public final ActionIcon icon;
         public final ZoneType interactor;
         public final ZoneType interactee;
         public final SingleZoneInteraction interaction;
         
-        public InteractionEntry(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
+        public InteractionEntry(ActionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
         {
             this.icon = icon;
             this.interactor = interactor;

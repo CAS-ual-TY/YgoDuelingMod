@@ -17,6 +17,7 @@ import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
 import de.cas_ual_ty.ydm.duelmanager.FindDecksEvent;
+import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
@@ -36,6 +37,7 @@ import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.RegistryEvent.NewRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -48,6 +50,8 @@ import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.RegistryBuilder;
 
 @Mod(YDM.MOD_ID)
 public class YDM
@@ -87,6 +91,8 @@ public class YDM
     @CapabilityInject(CardBinderCardsManager.class)
     public static Capability<CardBinderCardsManager> BINDER_INVENTORY_CAPABILITY = null;
     
+    public static IForgeRegistry<ActionIcon> actionIconRegistry;
+    
     public YDM()
     {
         YDM.instance = this;
@@ -111,6 +117,7 @@ public class YDM
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         bus.addListener(this::init);
         bus.addListener(this::modConfig);
+        bus.addListener(this::newRegistry);
         YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
@@ -286,6 +293,11 @@ public class YDM
         
         // TODO debug
         event.addDeck(DeckSource.getOjamaDeck());
+    }
+    
+    public void newRegistry(NewRegistry event)
+    {
+        YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "nodes")).setType(ActionIcon.class).setMaxID(512).create();
     }
     
     public static void log(String s)
