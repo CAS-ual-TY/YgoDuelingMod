@@ -18,6 +18,7 @@ import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
 import de.cas_ual_ty.ydm.duelmanager.FindDecksEvent;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
+import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
@@ -94,6 +95,7 @@ public class YDM
     
     public static IForgeRegistry<ActionIcon> actionIconRegistry;
     public static IForgeRegistry<ZoneType> zoneTypeRegistry;
+    public static IForgeRegistry<ActionType> actionTypeRegistry;
     
     public YDM()
     {
@@ -301,6 +303,7 @@ public class YDM
     {
         YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setType(ActionIcon.class).setMaxID(512).create();
         YDM.zoneTypeRegistry = new RegistryBuilder<ZoneType>().setName(new ResourceLocation(YDM.MOD_ID, "zone_types")).setType(ZoneType.class).setMaxID(512).create();
+        YDM.actionTypeRegistry = new RegistryBuilder<ActionType>().setName(new ResourceLocation(YDM.MOD_ID, "action_types")).setType(ActionType.class).setMaxID(512).create();
     }
     
     public static void log(String s)

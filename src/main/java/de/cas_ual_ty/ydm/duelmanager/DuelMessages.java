@@ -78,8 +78,18 @@ public class DuelMessages
     
     public static Action decodeAction(PacketBuffer buf)
     {
-        ActionType actionType = ActionType.getFromIndex(buf.readByte());
+        ActionType actionType = decodeActionType(buf);
         return actionType.factory.create(actionType, buf);
+    }
+    
+    public static void encodeActionType(ActionType type, PacketBuffer buf)
+    {
+        buf.writeResourceLocation(type.getRegistryName());
+    }
+    
+    public static ActionType decodeActionType(PacketBuffer buf)
+    {
+        return YDM.actionTypeRegistry.getValue(buf.readResourceLocation());
     }
     
     public static void encodeDuelState(DuelState duelState, PacketBuffer buf)

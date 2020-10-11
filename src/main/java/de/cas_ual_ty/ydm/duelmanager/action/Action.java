@@ -19,7 +19,7 @@ public abstract class Action
     
     public void writeToBuf(PacketBuffer buf)
     {
-        buf.writeByte(this.actionType.getIndex());
+        // actionType is already encoded. See DuelMessages class
     }
     
     public void init(PlayField playField)

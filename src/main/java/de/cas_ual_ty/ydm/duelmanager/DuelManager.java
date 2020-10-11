@@ -12,10 +12,10 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmActionTypes;
 import de.cas_ual_ty.ydm.YdmZoneTypes;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
-import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
 import de.cas_ual_ty.ydm.duelmanager.action.Populate;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayFieldType;
@@ -301,15 +301,15 @@ public class DuelManager
     public void populatePlayField()
     {
         // send main decks
-        this.sendActionToAll(new Populate(ActionType.POPULATE, this.playField.player1Deck.index,
+        this.sendActionToAll(new Populate(YdmActionTypes.POPULATE, this.playField.player1Deck.index,
             this.player1Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
-        this.sendActionToAll(new Populate(ActionType.POPULATE, this.playField.player2Deck.index,
+        this.sendActionToAll(new Populate(YdmActionTypes.POPULATE, this.playField.player2Deck.index,
             this.player2Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
         
         // send extra decks
-        this.sendActionToAll(new Populate(ActionType.POPULATE, this.playField.player1ExtraDeck.index,
+        this.sendActionToAll(new Populate(YdmActionTypes.POPULATE, this.playField.player1ExtraDeck.index,
             this.player1Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
-        this.sendActionToAll(new Populate(ActionType.POPULATE, this.playField.player2ExtraDeck.index,
+        this.sendActionToAll(new Populate(YdmActionTypes.POPULATE, this.playField.player2ExtraDeck.index,
             this.player2Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
     }
     
