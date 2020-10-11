@@ -2,13 +2,16 @@ package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
+import de.cas_ual_ty.ydm.duelmanager.action.Action;
 
 public class PlayFieldType
 {
     public DuelManager duelManager;
     public List<ZoneEntry> zoneEntries;
+    public List<InteractionEntry> interactionEntries;
     
     public ZoneEntry player1Deck;
     public ZoneEntry player1ExtraDeck;
@@ -18,6 +21,7 @@ public class PlayFieldType
     public PlayFieldType()
     {
         this.zoneEntries = new ArrayList<>(0);
+        this.interactionEntries = new ArrayList<>(0);
     }
     
     public PlayFieldType addEntry(ZoneType type, ZoneOwner owner, int x, int y, int width, int height)
@@ -135,6 +139,27 @@ public class PlayFieldType
         return this;
     }
     
+    public PlayFieldType registerInteration(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, BiFunction<Zone, Zone, Action> interaction)
+    {
+        this.interactionEntries.add(new InteractionEntry(icon, interactor, interactee, interaction));
+        return this;
+    }
+    
+    public List<ZoneInteraction> getActionsFor(Zone interactor, Zone interactee)
+    {
+        List<ZoneInteraction> list = new ArrayList<>(4);
+        
+        for(InteractionEntry e : this.interactionEntries)
+        {
+            if(e.interactor == interactor.type && e.interactee == interactee.type)
+            {
+                list.add(new ZoneInteraction(interactor, interactee, e.interaction.apply(interactor, interactee), e.icon));
+            }
+        }
+        
+        return list;
+    }
+    
     public static final class ZoneEntry
     {
         public final ZoneType type;
@@ -152,6 +177,22 @@ public class PlayFieldType
             this.y = y;
             this.width = width;
             this.height = height;
+        }
+    }
+    
+    public static final class InteractionEntry
+    {
+        public final ZoneInteractionIcon icon;
+        public final ZoneType interactor;
+        public final ZoneType interactee;
+        public final BiFunction<Zone, Zone, Action> interaction;
+        
+        public InteractionEntry(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, BiFunction<Zone, Zone, Action> interaction)
+        {
+            this.icon = icon;
+            this.interactor = interactor;
+            this.interactee = interactee;
+            this.interaction = interaction;
         }
     }
 }

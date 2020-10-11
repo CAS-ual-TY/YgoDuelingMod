@@ -11,8 +11,9 @@ import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 
 public class PlayField
 {
-    public DuelManager duelManager;
-    public List<Zone> zones;
+    public final DuelManager duelManager;
+    public final PlayFieldType playFieldType;
+    public final List<Zone> zones;
     
     public byte player1Offset;
     public byte player2Offset;
@@ -30,6 +31,8 @@ public class PlayField
             throw new IllegalArgumentException();
         }
         
+        this.duelManager = duelManager;
+        this.playFieldType = type;
         this.zones = new ArrayList<>(type.zoneEntries.size());
         
         byte index = 0;
@@ -113,6 +116,11 @@ public class PlayField
             
             ++this.extraOffset;
         }
+    }
+    
+    public List<ZoneInteraction> getActionsFor(Zone interactor, Zone interactee)
+    {
+        return this.playFieldType.getActionsFor(interactor, interactee);
     }
     
     public Zone getReplacementZoneForCard(Zone zone, DuelCard card)
