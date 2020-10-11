@@ -297,7 +297,7 @@ public class YDM
     
     public void newRegistry(NewRegistry event)
     {
-        YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "nodes")).setType(ActionIcon.class).setMaxID(512).create();
+        YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setType(ActionIcon.class).setMaxID(512).create();
     }
     
     public static void log(String s)
