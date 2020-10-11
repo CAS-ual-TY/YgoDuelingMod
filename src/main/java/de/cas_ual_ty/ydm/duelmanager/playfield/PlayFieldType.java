@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 
+import javax.annotation.Nullable;
+
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
 
@@ -139,7 +141,7 @@ public class PlayFieldType
         return this;
     }
     
-    public PlayFieldType registerInteration(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, BiFunction<Zone, Zone, Action> interaction)
+    public PlayFieldType registerInteration(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
     {
         this.interactionEntries.add(new InteractionEntry(icon, interactor, interactee, interaction));
         return this;
@@ -149,11 +151,17 @@ public class PlayFieldType
     {
         List<ZoneInteraction> list = new ArrayList<>(4);
         
+        Action action;
         for(InteractionEntry e : this.interactionEntries)
         {
             if(e.interactor == interactor.type && e.interactee == interactee.type)
             {
-                list.add(new ZoneInteraction(interactor, interactee, e.interaction.apply(interactor, interactee), e.icon));
+                action = e.interaction.apply(interactor, interactee);
+                
+                if(action != null)
+                {
+                    list.add(new ZoneInteraction(interactor, interactee, action, e.icon));
+                }
             }
         }
         
@@ -185,14 +193,20 @@ public class PlayFieldType
         public final ZoneInteractionIcon icon;
         public final ZoneType interactor;
         public final ZoneType interactee;
-        public final BiFunction<Zone, Zone, Action> interaction;
+        public final SingleZoneInteraction interaction;
         
-        public InteractionEntry(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, BiFunction<Zone, Zone, Action> interaction)
+        public InteractionEntry(ZoneInteractionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
         {
             this.icon = icon;
             this.interactor = interactor;
             this.interactee = interactee;
             this.interaction = interaction;
         }
+    }
+    
+    public static interface SingleZoneInteraction extends BiFunction<Zone, Zone, Action>
+    {
+        @Override
+        public @Nullable Action apply(Zone interactor, Zone interactee);
     }
 }
