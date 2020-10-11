@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm;
 
-import de.cas_ual_ty.ydm.duelmanager.action.ListAction;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
 import de.cas_ual_ty.ydm.duelmanager.action.AttackAction;
+import de.cas_ual_ty.ydm.duelmanager.action.ListAction;
 import de.cas_ual_ty.ydm.duelmanager.action.MoveBottomAction;
 import de.cas_ual_ty.ydm.duelmanager.action.MoveTopAction;
 import de.cas_ual_ty.ydm.duelmanager.action.PopulateAction;

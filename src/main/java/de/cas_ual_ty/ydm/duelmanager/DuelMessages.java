@@ -73,12 +73,13 @@ public class DuelMessages
     
     public static void encodeAction(Action action, PacketBuffer buf)
     {
+        DuelMessages.encodeActionType(action.actionType, buf);
         action.writeToBuf(buf);
     }
     
     public static Action decodeAction(PacketBuffer buf)
     {
-        ActionType actionType = decodeActionType(buf);
+        ActionType actionType = DuelMessages.decodeActionType(buf);
         return actionType.factory.create(actionType, buf);
     }
     
