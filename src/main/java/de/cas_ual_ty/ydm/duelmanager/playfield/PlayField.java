@@ -25,6 +25,11 @@ public class PlayField
     
     public PlayField(DuelManager duelManager, PlayFieldType type)
     {
+        if(type.player1Deck == null || type.player1ExtraDeck == null || type.player2Deck == null || type.player2ExtraDeck == null)
+        {
+            throw new IllegalArgumentException();
+        }
+        
         this.zones = new ArrayList<>(type.zoneEntries.size());
         
         byte index = 0;
