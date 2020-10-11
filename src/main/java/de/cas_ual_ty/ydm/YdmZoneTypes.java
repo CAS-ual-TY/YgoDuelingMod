@@ -26,7 +26,7 @@ public class YdmZoneTypes
     public static final ZoneType EXTRA_MONSTER_LEFT = null;
     
     @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<ZoneType> event)
+    public static void registerZoneTypes(RegistryEvent.Register<ZoneType> event)
     {
         IForgeRegistry<ZoneType> registry = event.getRegistry();
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "hand"));
@@ -41,5 +41,4 @@ public class YdmZoneTypes
         registry.register(new ZoneType().noOwner().setRegistryName(YDM.MOD_ID, "extra_monster_right"));
         registry.register(new ZoneType().noOwner().setRegistryName(YDM.MOD_ID, "extra_monster_left"));
     }
-    
 }

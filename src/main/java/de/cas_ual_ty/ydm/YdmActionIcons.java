@@ -16,7 +16,7 @@ public class YdmActionIcons
     public static final ActionIcon ADD_TO_HAND = null;
     
     @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<ActionIcon> event)
+    public static void registerActionIcons(RegistryEvent.Register<ActionIcon> event)
     {
         IForgeRegistry<ActionIcon> registry = event.getRegistry();
         
