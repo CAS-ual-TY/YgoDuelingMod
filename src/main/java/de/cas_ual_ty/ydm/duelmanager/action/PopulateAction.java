@@ -6,17 +6,17 @@ import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
 import net.minecraft.network.PacketBuffer;
 
-public class Populate extends SingleZoneAction
+public class PopulateAction extends SingleZoneAction
 {
     public List<DuelCard> cards;
     
-    public Populate(ActionType actionType, byte sourceZoneId, List<DuelCard> cards)
+    public PopulateAction(ActionType actionType, byte sourceZoneId, List<DuelCard> cards)
     {
         super(actionType, sourceZoneId);
         this.cards = cards;
     }
     
-    public Populate(ActionType actionType, PacketBuffer buf)
+    public PopulateAction(ActionType actionType, PacketBuffer buf)
     {
         this(actionType, buf.readByte(), DuelMessages.decodeList(buf, DuelMessages::decodeDuelCard));
     }

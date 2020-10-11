@@ -5,17 +5,17 @@ import java.util.List;
 import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
 import net.minecraft.network.PacketBuffer;
 
-public class ActionList extends Action
+public class ListAction extends Action
 {
     public List<Action> actions;
     
-    public ActionList(ActionType actionType, List<Action> actions)
+    public ListAction(ActionType actionType, List<Action> actions)
     {
         super(actionType);
         this.actions = actions;
     }
     
-    public ActionList(ActionType actionType, PacketBuffer buf)
+    public ListAction(ActionType actionType, PacketBuffer buf)
     {
         this(actionType, DuelMessages.decodeList(buf, DuelMessages::decodeAction));
     }
