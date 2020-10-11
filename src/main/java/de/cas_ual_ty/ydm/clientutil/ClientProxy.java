@@ -37,6 +37,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -452,7 +453,7 @@ public class ClientProxy implements ISidedProxy
         return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + "token_overlay" + ".png");
     }
     
-    public static void drawRect(int x, int y, int w, int h, float r, float g, float b, float a)
+    public static void drawRect(MatrixStack ms, float x, float y, float w, float h, float r, float g, float b, float a)
     {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
@@ -467,14 +468,16 @@ public class ClientProxy implements ISidedProxy
         // Set the color!
         RenderSystem.color4f(r, g, b, a);
         
+        Matrix4f m = ms.getLast().getMatrix();
+        
         // Start drawing
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
         
         // Add vertices
-        bufferbuilder.pos(x, y + h, 0.0D).endVertex(); // BL
-        bufferbuilder.pos(x + w, y + h, 0.0D).endVertex(); // BR
-        bufferbuilder.pos(x + w, y, 0.0D).endVertex(); // TR
-        bufferbuilder.pos(x, y, 0.0D).endVertex(); // TL
+        bufferbuilder.pos(m, x, y + h, 0F).endVertex(); // BL
+        bufferbuilder.pos(m, x + w, y + h, 0F).endVertex(); // BR
+        bufferbuilder.pos(m, x + w, y, 0F).endVertex(); // TR
+        bufferbuilder.pos(m, x, y, 0F).endVertex(); // TL
         
         // End drawing
         tessellator.draw();

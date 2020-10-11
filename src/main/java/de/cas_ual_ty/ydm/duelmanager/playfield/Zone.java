@@ -15,7 +15,11 @@ public class Zone
     public final PlayField playField;
     public final ZoneType type;
     public final byte index;
-    public final byte childIndex;
+    
+    public final int x;
+    public final int y;
+    public final int width;
+    public final int height;
     
     public ZoneOwner owner;
     public final boolean isOwnerTemporary;
@@ -26,12 +30,15 @@ public class Zone
     @Nullable
     public CardPosition defaultCardPosition;
     
-    public Zone(PlayField playField, ZoneType type, byte index, byte childIndex, ZoneOwner owner)
+    public Zone(PlayField playField, ZoneType type, byte index, ZoneOwner owner, int x, int y, int width, int height)
     {
         this.playField = playField;
         this.type = type;
         this.index = index;
-        this.childIndex = childIndex;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
         this.owner = owner;
         this.isOwnerTemporary = this.hasOwner();
         this.cardsList = new ArrayList<>(0);

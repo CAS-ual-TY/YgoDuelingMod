@@ -7,7 +7,6 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
-import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
 import net.minecraft.util.math.MathHelper;
 
 public class DuelRenderer
@@ -33,22 +32,14 @@ public class DuelRenderer
         this.zones = new ZoneWrapper[manager.getPlayField().zones.size()];
         
         Zone zone;
-        ZoneType type;
         ZoneWrapper wrapper;
         for(byte i = 0; i < this.zones.length; ++i)
         {
             zone = manager.getPlayField().getZone(i);
-            type = zone.getType();
             wrapper = new ZoneWrapper(zone, this, this.getZoneAllegiance(zone));
             
-            wrapper.setCoords(type.getX() + type.getXOffsetForChild(zone.childIndex), type.getY());
-            
-            if(zone.getOwner() == ZoneOwner.PLAYER2)
-            {
-                wrapper.setCoords(-wrapper.x, -wrapper.y);
-            }
-            
-            wrapper.setSizes(type.getWidth(), type.getHeight());
+            wrapper.setCoords(zone.x, zone.y);
+            wrapper.setSizes(zone.width, zone.height);
             wrapper.setCoords(wrapper.x - wrapper.width / 2, wrapper.y - wrapper.height / 2); // moving to top left corner
             
             this.zones[i] = wrapper;
@@ -122,13 +113,14 @@ public class DuelRenderer
     // must be called every render tick
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        // TODO
-        
         this.mouseHoverZone = null;
         this.mouseHoverCard = null;
         
         for(ZoneWrapper zone : this.zones)
         {
+            // TODO
+            //            ClientProxy.drawRect(ms, zone.x, zone.y, zone.width, zone.height, 1F, 0F, 0F, 0.5F);
+            
             zone.render(ms, this.provider, partialTicks);
             
             if(zone.isMouseOver(mouseX, mouseY))

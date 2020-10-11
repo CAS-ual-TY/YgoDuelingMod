@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import com.google.common.collect.ImmutableList;
+import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
@@ -16,45 +16,97 @@ public class PlayField
     
     public byte player1Offset;
     public byte player2Offset;
-    public byte zonesPerPlayer;
     public byte extraOffset;
     
-    public PlayField(DuelManager duelManager, List<ZoneType> types)
+    public Zone player1Deck;
+    public Zone player1ExtraDeck;
+    public Zone player2Deck;
+    public Zone player2ExtraDeck;
+    
+    public PlayField(DuelManager duelManager, PlayFieldType type)
     {
-        this.zones = new ArrayList<>(types.stream().mapToInt((def) -> def.getChildrenAmount() * (def.getNoOwner() ? 1 : 2)).sum());
+        this.zones = new ArrayList<>(type.zoneEntries.size());
         
-        byte i;
         byte index = 0;
-        
-        for(ZoneOwner player : ZoneOwner.PLAYERS)
+        Zone z;
+        for(PlayFieldType.ZoneEntry e : type.zoneEntries)
         {
-            for(ZoneType type : types)
+            this.zones.add(z = new Zone(this, e.type, index++, e.owner, e.x, e.y, e.width, e.height));
+            
+            if(e == type.player1Deck)
             {
-                if(!type.getNoOwner())
-                {
-                    for(i = 0; i < type.getChildrenAmount(); ++i)
-                    {
-                        this.zones.add(new Zone(this, type, index++, i, player));
-                    }
-                }
+                this.player1Deck = z;
+            }
+            else if(e == type.player1ExtraDeck)
+            {
+                this.player1ExtraDeck = z;
+            }
+            else if(e == type.player2Deck)
+            {
+                this.player2Deck = z;
+            }
+            else if(e == type.player2ExtraDeck)
+            {
+                this.player2ExtraDeck = z;
             }
         }
         
-        this.extraOffset = (byte)(index + 1);
+        this.zones.sort((z1, z2) ->
+        {
+            int x1;
+            int x2;
+            
+            if(z1.owner == ZoneOwner.PLAYER1)
+            {
+                x1 = -1;
+            }
+            else if(z1.owner == ZoneOwner.PLAYER2)
+            {
+                x1 = 0;
+            }
+            else
+            {
+                x1 = 1;
+            }
+            
+            if(z2.owner == ZoneOwner.PLAYER1)
+            {
+                x2 = -1;
+            }
+            else if(z2.owner == ZoneOwner.PLAYER2)
+            {
+                x2 = 0;
+            }
+            else
+            {
+                x2 = 1;
+            }
+            
+            return x1 - x2;
+        });
         
         this.player1Offset = 0;
-        this.player2Offset = (byte)(this.extraOffset / 2);
-        this.zonesPerPlayer = this.extraOffset;
+        this.player2Offset = 0;
+        this.extraOffset = 0;
         
-        for(ZoneType type : types)
+        for(Zone zone : this.zones)
         {
-            if(type.getNoOwner())
+            if(zone.getOwner() == ZoneOwner.PLAYER2)
             {
-                for(i = 0; i < type.getChildrenAmount(); ++i)
-                {
-                    this.zones.add(new Zone(this, type, index++, i, ZoneOwner.NONE));
-                }
+                break;
             }
+            
+            ++this.player2Offset;
+        }
+        
+        for(Zone zone : this.zones)
+        {
+            if(zone.getOwner() == ZoneOwner.NONE)
+            {
+                break;
+            }
+            
+            ++this.extraOffset;
         }
     }
     
@@ -83,81 +135,18 @@ public class PlayField
         */ return null;
     }
     
-    // for zones without children
-    public Zone getSingleZone(ZoneType type, ZoneOwner owner)
+    @Nullable
+    public Zone getZoneByTypeAndPlayer(ZoneType type, ZoneOwner owner)
     {
-        if(type.getChildrenAmount() != 1)
+        for(Zone zone : this.zones)
         {
-            return null;
-        }
-        
-        byte i;
-        byte end;
-        
-        if(owner == ZoneOwner.PLAYER1)
-        {
-            i = this.player1Offset;
-            end = this.player2Offset;
-        }
-        else if(owner == ZoneOwner.PLAYER2)
-        {
-            i = this.player2Offset;
-            end = this.extraOffset;
-        }
-        else
-        {
-            i = this.extraOffset;
-            end = (byte)this.zones.size();
-        }
-        
-        Zone zone;
-        for(; i < end; ++i)
-        {
-            zone = this.getZone(i);
-            
-            if(zone.getType().getChildrenAmount() == 1 && zone.getType() == type)
+            if(zone.type == type && zone.getOwner() == owner && !zone.getIsOwnerTemporary())
             {
                 return zone;
             }
         }
         
         return null;
-    }
-    
-    // for zone types with or without children
-    public List<Zone> getGroupZone(ZoneType type, ZoneOwner owner)
-    {
-        byte i;
-        byte end;
-        
-        if(owner == ZoneOwner.PLAYER1)
-        {
-            i = this.player1Offset;
-            end = this.player2Offset;
-        }
-        else if(owner == ZoneOwner.PLAYER2)
-        {
-            i = this.player2Offset;
-            end = this.extraOffset;
-        }
-        else
-        {
-            i = this.extraOffset;
-            end = (byte)this.zones.size();
-        }
-        
-        Zone zone;
-        for(; i < end; ++i)
-        {
-            zone = this.getZone(i);
-            
-            if(zone.getType().getChildrenAmount() == 1 && zone.getType() == type)
-            {
-                return ImmutableList.copyOf(this.zones.subList(i, i + zone.getType().getChildrenAmount()));
-            }
-        }
-        
-        return ImmutableList.of();
     }
     
     public DuelManager getDuelManager()
