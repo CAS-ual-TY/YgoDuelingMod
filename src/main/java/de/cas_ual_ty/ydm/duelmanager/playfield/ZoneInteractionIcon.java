@@ -2,8 +2,7 @@ package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 public enum ZoneInteractionIcon
 {
-    TO_TOP_OF_DECK_FD(0), SWITCH_FROM_DEF_TO_ATK(1), NORMAL_SUMMON(2), BANISH_FU(3), TO_BOTTOM_OF_DECK_FD(4), SWITCH_FROM_ATK_TO_DEF(5), SET_SPELL_TRAP(6), BANISH_FD(7),
-    ;
+    TO_TOP_OF_DECK_FD(0), SWITCH_FROM_DEF_TO_ATK(1), NORMAL_SUMMON(2), BANISH_FU(3), TO_BOTTOM_OF_DECK_FD(4), SWITCH_FROM_ATK_TO_DEF(5), SET_SPELL_TRAP(6), BANISH_FD(7), ADD_TO_HAND(17);
     
     private ZoneInteractionIcon(int index)
     {

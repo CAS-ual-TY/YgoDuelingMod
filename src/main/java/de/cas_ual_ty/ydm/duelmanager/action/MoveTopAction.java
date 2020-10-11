@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.duelmanager.action;
 
 import de.cas_ual_ty.ydm.duelmanager.CardPosition;
+import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import net.minecraft.network.PacketBuffer;
 
 public class MoveTopAction extends MoveAction
@@ -8,6 +9,11 @@ public class MoveTopAction extends MoveAction
     public MoveTopAction(ActionType actionType, byte zoneId, short cardIndex, byte zoneDestinationId, CardPosition destinationCardPosition)
     {
         super(actionType, zoneId, cardIndex, zoneDestinationId, destinationCardPosition);
+    }
+    
+    public MoveTopAction(ActionType actionType, Zone sourceZone, short cardIndex, Zone destinationZone, CardPosition destinationCardPosition)
+    {
+        this(actionType, sourceZone.index, cardIndex, destinationZone.index, destinationCardPosition);
     }
     
     public MoveTopAction(ActionType actionType, PacketBuffer buf)
