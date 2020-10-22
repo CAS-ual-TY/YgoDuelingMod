@@ -118,9 +118,14 @@ public class PlayField
         }
     }
     
-    public List<ZoneInteraction> getActionsFor(Zone interactor, Zone interactee)
+    public List<Zone> getZones()
     {
-        return this.playFieldType.getActionsFor(interactor, interactee);
+        return this.zones;
+    }
+    
+    public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
+    {
+        return this.playFieldType.getActionsFor(player, interactor, interactorCard, interactee);
     }
     
     public Zone getReplacementZoneForCard(Zone zone, DuelCard card)

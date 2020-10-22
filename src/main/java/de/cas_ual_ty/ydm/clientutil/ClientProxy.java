@@ -453,6 +453,14 @@ public class ClientProxy implements ISidedProxy
         return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + "token_overlay" + ".png");
     }
     
+    public static void drawLineRect(MatrixStack ms, float x, float y, float w, float h, float lineWidth, float r, float g, float b, float a)
+    {
+        ClientProxy.drawRect(ms, x, y, w, lineWidth, r, g, b, a); //top
+        ClientProxy.drawRect(ms, x, y + h - lineWidth, w, lineWidth, r, g, b, a); //bot
+        ClientProxy.drawRect(ms, x, y, lineWidth, h, r, g, b, a); //left
+        ClientProxy.drawRect(ms, x + w - lineWidth, y, lineWidth, h, r, g, b, a); //right
+    }
+    
     public static void drawRect(MatrixStack ms, float x, float y, float w, float h, float r, float g, float b, float a)
     {
         Tessellator tessellator = Tessellator.getInstance();
@@ -516,5 +524,4 @@ public class ClientProxy implements ISidedProxy
     {
         return ClientProxy.getMinecraft().player;
     }
-    
 }

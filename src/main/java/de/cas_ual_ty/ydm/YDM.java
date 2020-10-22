@@ -15,10 +15,12 @@ import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
-import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
 import de.cas_ual_ty.ydm.duelmanager.FindDecksEvent;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessage;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
@@ -96,6 +98,7 @@ public class YDM
     public static IForgeRegistry<ActionIcon> actionIconRegistry;
     public static IForgeRegistry<ZoneType> zoneTypeRegistry;
     public static IForgeRegistry<ActionType> actionTypeRegistry;
+    public static IForgeRegistry<DuelMessageHeader> duelMessageHeaderRegistry;
     
     public YDM()
     {
@@ -150,18 +153,19 @@ public class YDM
         YDM.channel.registerMessage(index++, CardBinderMessages.UpdateList.class, CardBinderMessages.UpdateList::encode, CardBinderMessages.UpdateList::decode, CardBinderMessages.UpdateList::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexClicked.class, CardBinderMessages.IndexClicked::encode, CardBinderMessages.IndexClicked::decode, CardBinderMessages.IndexClicked::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexDropped.class, CardBinderMessages.IndexDropped::encode, CardBinderMessages.IndexDropped::decode, CardBinderMessages.IndexDropped::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.SelectRole.class, DuelMessages.SelectRole::encode, DuelMessages.SelectRole::decode, DuelMessages.SelectRole::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.UpdateRole.class, DuelMessages.UpdateRole::encode, DuelMessages.UpdateRole::decode, DuelMessages.UpdateRole::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.UpdateDuelState.class, DuelMessages.UpdateDuelState::encode, DuelMessages.UpdateDuelState::decode, DuelMessages.UpdateDuelState::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.RequestFullUpdate.class, DuelMessages.RequestFullUpdate::encode, DuelMessages.RequestFullUpdate::decode, DuelMessages.RequestFullUpdate::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.RequestReady.class, DuelMessages.RequestReady::encode, DuelMessages.RequestReady::decode, DuelMessages.RequestReady::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.UpdateReady.class, DuelMessages.UpdateReady::encode, DuelMessages.UpdateReady::decode, DuelMessages.UpdateReady::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.SendAvailableDecks.class, DuelMessages.SendAvailableDecks::encode, DuelMessages.SendAvailableDecks::decode, DuelMessages.SendAvailableDecks::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.RequestDeck.class, DuelMessages.RequestDeck::encode, DuelMessages.RequestDeck::decode, DuelMessages.RequestDeck::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.SendDeck.class, DuelMessages.SendDeck::encode, DuelMessages.SendDeck::decode, DuelMessages.SendDeck::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.ChooseDeck.class, DuelMessages.ChooseDeck::encode, DuelMessages.ChooseDeck::decode, DuelMessages.ChooseDeck::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.DeckAccepted.class, DuelMessages.DeckAccepted::encode, DuelMessages.DeckAccepted::decode, DuelMessages.DeckAccepted::handle);
-        YDM.channel.registerMessage(index++, DuelMessages.DuelAction.class, DuelMessages.DuelAction::encode, DuelMessages.DuelAction::decode, DuelMessages.DuelAction::handle);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.SelectRole.class, DuelMessages.SelectRole::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.UpdateRole.class, DuelMessages.UpdateRole::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.UpdateDuelState.class, DuelMessages.UpdateDuelState::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.RequestFullUpdate.class, DuelMessages.RequestFullUpdate::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.RequestReady.class, DuelMessages.RequestReady::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.UpdateReady.class, DuelMessages.UpdateReady::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.SendAvailableDecks.class, DuelMessages.SendAvailableDecks::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.RequestDeck.class, DuelMessages.RequestDeck::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.SendDeck.class, DuelMessages.SendDeck::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.ChooseDeck.class, DuelMessages.ChooseDeck::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.DeckAccepted.class, DuelMessages.DeckAccepted::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.DuelAction.class, DuelMessages.DuelAction::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.RequestDuelAction.class, DuelMessages.RequestDuelAction::new);
         
         YDM.proxy.init();
     }
@@ -301,9 +305,10 @@ public class YDM
     
     public void newRegistry(NewRegistry event)
     {
-        YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setType(ActionIcon.class).setMaxID(512).create();
-        YDM.zoneTypeRegistry = new RegistryBuilder<ZoneType>().setName(new ResourceLocation(YDM.MOD_ID, "zone_types")).setType(ZoneType.class).setMaxID(512).create();
-        YDM.actionTypeRegistry = new RegistryBuilder<ActionType>().setName(new ResourceLocation(YDM.MOD_ID, "action_types")).setType(ActionType.class).setMaxID(512).create();
+        YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setType(ActionIcon.class).setMaxID(511).create();
+        YDM.zoneTypeRegistry = new RegistryBuilder<ZoneType>().setName(new ResourceLocation(YDM.MOD_ID, "zone_types")).setType(ZoneType.class).setMaxID(511).create();
+        YDM.actionTypeRegistry = new RegistryBuilder<ActionType>().setName(new ResourceLocation(YDM.MOD_ID, "action_types")).setType(ActionType.class).setMaxID(511).create();
+        YDM.duelMessageHeaderRegistry = new RegistryBuilder<DuelMessageHeader>().setName(new ResourceLocation(YDM.MOD_ID, "duel_message_headers")).setType(DuelMessageHeader.class).setMaxID(63).create();
     }
     
     public static void log(String s)

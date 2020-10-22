@@ -1,13 +1,6 @@
-package de.cas_ual_ty.ydm;
+package de.cas_ual_ty.ydm.duelmanager.action;
 
-import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
-import de.cas_ual_ty.ydm.duelmanager.action.AttackAction;
-import de.cas_ual_ty.ydm.duelmanager.action.ListAction;
-import de.cas_ual_ty.ydm.duelmanager.action.MoveBottomAction;
-import de.cas_ual_ty.ydm.duelmanager.action.MoveTopAction;
-import de.cas_ual_ty.ydm.duelmanager.action.PopulateAction;
-import de.cas_ual_ty.ydm.duelmanager.action.ShowZoneAction;
-import de.cas_ual_ty.ydm.duelmanager.action.ShuffleAction;
+import de.cas_ual_ty.ydm.YDM;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -17,7 +10,7 @@ import net.minecraftforge.registries.ObjectHolder;
 
 @EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
 @ObjectHolder(YDM.MOD_ID)
-public class YdmActionTypes
+public class ActionTypes
 {
     public static final ActionType POPULATE = null;
     public static final ActionType MOVE_ON_TOP = null;

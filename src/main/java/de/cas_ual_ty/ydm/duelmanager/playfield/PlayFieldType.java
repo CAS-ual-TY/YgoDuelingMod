@@ -2,10 +2,11 @@ package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
@@ -144,24 +145,30 @@ public class PlayFieldType
     
     public PlayFieldType registerInteration(ActionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
     {
+        this.interactionEntries.add(new InteractionEntry(icon, (test) -> test == interactor, (test) -> test == interactee, interaction));
+        return this;
+    }
+    
+    public PlayFieldType registerInteration(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
+    {
         this.interactionEntries.add(new InteractionEntry(icon, interactor, interactee, interaction));
         return this;
     }
     
-    public List<ZoneInteraction> getActionsFor(Zone interactor, Zone interactee)
+    public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
     {
         List<ZoneInteraction> list = new ArrayList<>(4);
         
         Action action;
         for(InteractionEntry e : this.interactionEntries)
         {
-            if(e.interactor == interactor.type && e.interactee == interactee.type)
+            if(e.interactor.test(interactor.type) && e.interactee.test(interactee.type))
             {
-                action = e.interaction.apply(interactor, interactee);
+                action = e.interaction.createAction(player, interactor, interactee);
                 
                 if(action != null)
                 {
-                    list.add(new ZoneInteraction(interactor, interactee, action, e.icon));
+                    list.add(new ZoneInteraction(interactor, interactorCard, interactee, action, e.icon));
                 }
             }
         }
@@ -192,11 +199,11 @@ public class PlayFieldType
     public static final class InteractionEntry
     {
         public final ActionIcon icon;
-        public final ZoneType interactor;
-        public final ZoneType interactee;
+        public final Predicate<ZoneType> interactor;
+        public final Predicate<ZoneType> interactee;
         public final SingleZoneInteraction interaction;
         
-        public InteractionEntry(ActionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
+        public InteractionEntry(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
         {
             this.icon = icon;
             this.interactor = interactor;
@@ -205,9 +212,8 @@ public class PlayFieldType
         }
     }
     
-    public static interface SingleZoneInteraction extends BiFunction<Zone, Zone, Action>
+    public static interface SingleZoneInteraction
     {
-        @Override
-        public @Nullable Action apply(Zone interactor, Zone interactee);
+        public @Nullable Action createAction(ZoneOwner player, Zone interactor, Zone interactee);
     }
 }

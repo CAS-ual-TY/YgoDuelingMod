@@ -5,6 +5,7 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmTileEntityTypes;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.IDuelTicker;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeaders;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -48,6 +49,6 @@ public class DuelTileEntity extends TileEntity implements INamedContainerProvide
     
     public DuelManager createDuelManager()
     {
-        return new DuelManager(this.world.isRemote, this);
+        return new DuelManager(this.world.isRemote, DuelMessageHeaders.DUEL_CONTAINER, this);
     }
 }

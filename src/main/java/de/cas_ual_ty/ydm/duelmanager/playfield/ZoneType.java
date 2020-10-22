@@ -13,6 +13,7 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
     private boolean isStrict;
     private boolean isSecret;
     private boolean renderCardsSpread;
+    private boolean showFaceDownCardsToOwner;
     
     @Nullable
     public CardPosition defaultCardPosition;
@@ -25,6 +26,7 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
         this.isStrict = false;
         this.isSecret = false;
         this.renderCardsSpread = false;
+        this.showFaceDownCardsToOwner = false;
         
         this.defaultCardPosition = null;
         
@@ -66,6 +68,13 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
         return this;
     }
     
+    // cards which are face down are shown to the owner
+    public ZoneType showFaceDownCardsToOwner()
+    {
+        this.showFaceDownCardsToOwner = true;
+        return this;
+    }
+    
     // change the default card position when
     public ZoneType defaultCardPosition(CardPosition defaultCardPosition)
     {
@@ -98,6 +107,11 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
     public boolean getRenderCardsSpread()
     {
         return this.renderCardsSpread;
+    }
+    
+    public boolean getShowFaceDownCardsToOwner()
+    {
+        return this.showFaceDownCardsToOwner;
     }
     
     @Nullable

@@ -1,29 +1,32 @@
 package de.cas_ual_ty.ydm.duelmanager.playfield;
 
-import de.cas_ual_ty.ydm.YdmActionIcons;
-import de.cas_ual_ty.ydm.YdmActionTypes;
-import de.cas_ual_ty.ydm.YdmZoneTypes;
 import de.cas_ual_ty.ydm.duelmanager.CardPosition;
+import de.cas_ual_ty.ydm.duelmanager.action.ActionIcons;
+import de.cas_ual_ty.ydm.duelmanager.action.ActionTypes;
 import de.cas_ual_ty.ydm.duelmanager.action.MoveTopAction;
 
 public class PlayFieldTypes
 {
     public static final PlayFieldType DEFAULT = new PlayFieldType()
-        .addEntry(YdmZoneTypes.HAND, ZoneOwner.PLAYER1, 13, 102, 194, 32)
-        .addEntrySlim(YdmZoneTypes.DECK, ZoneOwner.PLAYER1, 98, 68)
+        .addEntry(ZoneTypes.HAND, ZoneOwner.PLAYER1, 13, 102, 194, 32)
+        .addEntrySlim(ZoneTypes.DECK, ZoneOwner.PLAYER1, 98, 68)
         .setLastToPlayer1Deck()
-        .addEntryFull(YdmZoneTypes.SPELL_TRAP, ZoneOwner.PLAYER1, 68, 68)
+        .addEntryFull(ZoneTypes.SPELL_TRAP, ZoneOwner.PLAYER1, 68, 68)
         .repeat(-2, 0, 4)
-        .addEntrySlim(YdmZoneTypes.EXTRA_DECK, ZoneOwner.PLAYER1, -98, 68)
+        .addEntrySlim(ZoneTypes.EXTRA_DECK, ZoneOwner.PLAYER1, -98, 68)
         .setLastToPlayer1ExtraDeck()
-        .addEntrySlim(YdmZoneTypes.GRAVEYARD, ZoneOwner.PLAYER1, 98, 34)
-        .addEntryFull(YdmZoneTypes.MONSTER, ZoneOwner.PLAYER1, 68, 34)
+        .addEntrySlim(ZoneTypes.GRAVEYARD, ZoneOwner.PLAYER1, 98, 34)
+        .addEntryFull(ZoneTypes.MONSTER, ZoneOwner.PLAYER1, 68, 34)
         .repeat(-2, 0, 4)
-        .addEntrySlim(YdmZoneTypes.FIELD_SPELL, ZoneOwner.PLAYER1, -98, 34)
-        .addEntrySlim(YdmZoneTypes.BANISHED, ZoneOwner.PLAYER1, 98, 0)
-        .addEntrySlim(YdmZoneTypes.EXTRA, ZoneOwner.PLAYER1, -98, 102)
+        .addEntrySlim(ZoneTypes.FIELD_SPELL, ZoneOwner.PLAYER1, -98, 34)
+        .addEntrySlim(ZoneTypes.BANISHED, ZoneOwner.PLAYER1, 98, 0)
+        .addEntrySlim(ZoneTypes.EXTRA, ZoneOwner.PLAYER1, -98, 102)
         .repeatPlayerZonesForOpponent()
-        .addEntryFull(YdmZoneTypes.EXTRA_MONSTER_RIGHT, ZoneOwner.NONE, 34, 0)
-        .addEntryFull(YdmZoneTypes.EXTRA_MONSTER_LEFT, ZoneOwner.NONE, -34, 0)
-        .registerInteration(YdmActionIcons.ADD_TO_HAND, YdmZoneTypes.DECK, YdmZoneTypes.HAND, (deck, hand) -> hand.getCardsAmount() == 0 ? null : new MoveTopAction(YdmActionTypes.MOVE_ON_TOP, deck, (short)0, hand, CardPosition.FACE_DOWN));
+        .addEntryFull(ZoneTypes.EXTRA_MONSTER_RIGHT, ZoneOwner.NONE, 34, 0)
+        .addEntryFull(ZoneTypes.EXTRA_MONSTER_LEFT, ZoneOwner.NONE, -34, 0)
+        .registerInteration(ActionIcons.ADD_TO_HAND, ZoneTypes.DECK, ZoneTypes.HAND, (player, deck, hand) -> (player == deck.getOwner() && deck.getCardsAmount() != 0 && deck.getOwner() == hand.getOwner()) ? new MoveTopAction(ActionTypes.MOVE_ON_TOP, deck, (short)0, hand, CardPosition.FACE_DOWN) : null)
+        .registerInteration(ActionIcons.TO_GRAVEYARD, (interactor) -> interactor != ZoneTypes.GRAVEYARD, (interactee) -> interactee == ZoneTypes.GRAVEYARD, (player, zone, gy) -> (player == zone.getOwner() && zone.getOwner() == gy.getOwner()) ? new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, (short)0, gy, CardPosition.ATK) : null)
+        .registerInteration(ActionIcons.BANISH_FA, (interactor) -> interactor != ZoneTypes.BANISHED, (interactee) -> interactee == ZoneTypes.BANISHED, (player, zone, banished) -> (player == zone.getOwner() && zone.getOwner() == banished.getOwner()) ? new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, (short)0, banished, CardPosition.ATK) : null)
+    //        .registerInteration(YdmActionIcons.BANISH_FD, (interactor) -> interactor != YdmZoneTypes.BANISHED, (interactee) -> interactee == YdmZoneTypes.BANISHED, (player, zone, banished) -> (player == zone.getOwner() && zone.getOwner() == banished.getOwner()) ? new MoveTopAction(YdmActionTypes.MOVE_ON_TOP, zone, (short)0, banished, CardPosition.FACE_DOWN) : null)
+    ;
 }

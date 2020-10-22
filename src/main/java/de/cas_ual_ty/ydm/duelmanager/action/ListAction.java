@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duelmanager.action;
 
 import java.util.List;
 
-import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageUtility;
 import net.minecraft.network.PacketBuffer;
 
 public class ListAction extends Action
@@ -17,14 +17,14 @@ public class ListAction extends Action
     
     public ListAction(ActionType actionType, PacketBuffer buf)
     {
-        this(actionType, DuelMessages.decodeList(buf, DuelMessages::decodeAction));
+        this(actionType, DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeAction));
     }
     
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        DuelMessages.encodeList(this.actions, buf, DuelMessages::encodeAction);
+        DuelMessageUtility.encodeList(this.actions, buf, DuelMessageUtility::encodeAction);
     }
     
     @Override

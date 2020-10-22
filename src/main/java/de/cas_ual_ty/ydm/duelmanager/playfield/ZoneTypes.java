@@ -1,7 +1,7 @@
-package de.cas_ual_ty.ydm;
+package de.cas_ual_ty.ydm.duelmanager.playfield;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.duelmanager.CardPosition;
-import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -11,7 +11,7 @@ import net.minecraftforge.registries.ObjectHolder;
 
 @EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
 @ObjectHolder(YDM.MOD_ID)
-public class YdmZoneTypes
+public class ZoneTypes
 {
     public static final ZoneType HAND = null;
     public static final ZoneType DECK = null;
@@ -29,7 +29,7 @@ public class YdmZoneTypes
     public static void registerZoneTypes(RegistryEvent.Register<ZoneType> event)
     {
         IForgeRegistry<ZoneType> registry = event.getRegistry();
-        registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "hand"));
+        registry.register(new ZoneType().showFaceDownCardsToOwner().renderCardsSpread().setRegistryName(YDM.MOD_ID, "hand"));
         registry.register(new ZoneType().secret().defaultCardPosition(CardPosition.FACE_DOWN).setRegistryName(YDM.MOD_ID, "deck"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "spell_trap"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "extra_deck"));

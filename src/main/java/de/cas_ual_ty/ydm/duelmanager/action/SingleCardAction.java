@@ -25,7 +25,6 @@ public abstract class SingleCardAction extends SingleZoneAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeByte(this.sourceZoneId);
         buf.writeShort(this.sourceCardIndex);
     }
     

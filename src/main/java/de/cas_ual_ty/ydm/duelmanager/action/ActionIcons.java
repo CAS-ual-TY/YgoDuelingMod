@@ -1,6 +1,6 @@
-package de.cas_ual_ty.ydm;
+package de.cas_ual_ty.ydm.duelmanager.action;
 
-import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
+import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -11,9 +11,35 @@ import net.minecraftforge.registries.ObjectHolder;
 
 @EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
 @ObjectHolder(YDM.MOD_ID)
-public class YdmActionIcons
+public class ActionIcons
 {
+    public static final ActionIcon TO_TOP_OF_DECK_FD = null;
+    public static final ActionIcon DEF_TO_ATK = null;
+    public static final ActionIcon NORMAL_SUMMON = null;
+    public static final ActionIcon BANISH_FA = null;
+    public static final ActionIcon TO_BOTTOM_OF_DECK_FD = null;
+    public static final ActionIcon ATK_TO_DEF = null;
+    public static final ActionIcon SET_SPELL_TRAP_FD = null;
+    public static final ActionIcon BANISH_FD = null;
+    public static final ActionIcon TO_TOP_OF_DECK_FA = null;
+    public static final ActionIcon ATK_DEF_TO_SET = null;
+    public static final ActionIcon SET_MONSTER = null;
+    public static final ActionIcon OVERLAY_TO_TOP = null;
+    public static final ActionIcon SPECIAL_SUMMON_ATK = null;
+    public static final ActionIcon SPECIAL_SUMMON_DEF = null;
+    public static final ActionIcon OVERLAY_TO_BOTTOM = null;
     public static final ActionIcon ADD_TO_HAND = null;
+    public static final ActionIcon SHUFFLE_DECK = null;
+    public static final ActionIcon SHUFFLE_HAND = null;
+    public static final ActionIcon VIEW_DECK = null;
+    public static final ActionIcon SPECIAL_SUMMON_SET = null;
+    
+    public static final ActionIcon SHOW_HAND = null;
+    public static final ActionIcon SHOW_DECK = null;
+    public static final ActionIcon SHOW_CARD = null;
+    public static final ActionIcon MOVE = null;
+    public static final ActionIcon TO_GRAVEYARD = null;
+    public static final ActionIcon ATTACK = null;
     
     @SubscribeEvent
     public static void registerActionIcons(RegistryEvent.Register<ActionIcon> event)

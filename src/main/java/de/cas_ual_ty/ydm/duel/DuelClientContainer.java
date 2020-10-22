@@ -7,10 +7,10 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
-import de.cas_ual_ty.ydm.duelmanager.DuelMessages;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -43,22 +43,18 @@ public class DuelClientContainer extends DuelContainer
     @Override
     public void receiveDeckSources(List<DeckSource> deckSources)
     {
-        super.receiveDeckSources(deckSources);
         this.doForScreen((screen) -> screen.populateDeckSources(deckSources));
     }
     
     @Override
     public void receiveDeck(int index, DeckHolder deck)
     {
-        super.receiveDeck(index, deck);
         this.doForScreen((screen) -> screen.receiveDeck(index, deck));
     }
     
     @Override
     public void deckAccepted(PlayerRole role)
     {
-        super.deckAccepted(role);
-        
         if(role == PlayerRole.PLAYER1)
         {
             this.getDuelManager().player1Deck = DeckHolder.DUMMY;
@@ -77,7 +73,7 @@ public class DuelClientContainer extends DuelContainer
         super.onContainerOpened(player);
         
         // request full update
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestFullUpdate());
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestFullUpdate(this.getMessageHeader()));
     }
     
     // only called on own client
@@ -91,13 +87,13 @@ public class DuelClientContainer extends DuelContainer
     }
     
     @SuppressWarnings("resource")
-    public void doForScreen(Consumer<DuelScreen> consumer)
+    public void doForScreen(Consumer<IDuelScreen> consumer)
     {
         Screen screen = ClientProxy.getMinecraft().currentScreen;
         
-        if(screen instanceof DuelScreen)
+        if(screen instanceof IDuelScreen)
         {
-            consumer.accept((DuelScreen)screen);
+            consumer.accept((IDuelScreen)screen);
         }
     }
 }

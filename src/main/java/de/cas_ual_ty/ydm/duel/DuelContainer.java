@@ -1,13 +1,6 @@
 package de.cas_ual_ty.ydm.duel;
 
-import java.util.List;
-
-import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
-import de.cas_ual_ty.ydm.duelmanager.DuelState;
-import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
-import de.cas_ual_ty.ydm.duelmanager.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -15,7 +8,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
 
-public class DuelContainer extends Container
+public class DuelContainer extends Container implements IDuelManagerProvider
 {
     public BlockPos pos;
     public DuelTileEntity te;
@@ -23,11 +16,6 @@ public class DuelContainer extends Container
     public DuelContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, PacketBuffer extraData)
     {
         this(type, id, playerInventory, extraData.readBlockPos());
-    }
-    
-    public void updateDuelState(DuelState duelState)
-    {
-        this.getDuelManager().setDuelStateAndUpdate(duelState);
     }
     
     public DuelContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, BlockPos blockPos)
@@ -51,41 +39,21 @@ public class DuelContainer extends Container
         //        }
     }
     
+    @Override
     public DuelManager getDuelManager()
     {
         return this.te.duelManager;
     }
     
-    public void handleAction(PlayerRole source, Action action)
-    {
-        action.init(this.getDuelManager().getPlayField());
-        action.doAction();
-    }
-    
-    public void receiveDeckSources(List<DeckSource> deckSources)
-    {
-        
-    }
-    
-    public void receiveDeck(int index, DeckHolder deck)
-    {
-        
-    }
-    
-    public void deckAccepted(PlayerRole role)
-    {
-        
-    }
-    
     public void onContainerOpened(PlayerEntity player)
     {
-        this.getDuelManager().onPlayerOpenContainer(player);
+        this.getDuelManager().playerOpenContainer(player);
     }
     
     @Override
     public void onContainerClosed(PlayerEntity player)
     {
-        this.getDuelManager().onPlayerCloseContainer(player);
+        this.getDuelManager().playerCloseContainer(player);
         super.onContainerClosed(player);
     }
 }

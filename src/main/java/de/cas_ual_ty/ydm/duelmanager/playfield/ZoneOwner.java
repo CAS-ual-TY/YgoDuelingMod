@@ -4,7 +4,7 @@ import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 
 public enum ZoneOwner
 {
-    PLAYER1(PlayerRole.PLAYER1), PLAYER2(PlayerRole.PLAYER1), NONE(null);
+    PLAYER1(PlayerRole.PLAYER1), PLAYER2(PlayerRole.PLAYER2), NONE(null);
     
     public static final ZoneOwner[] PLAYERS = { PLAYER1, PLAYER2 };
     public static final ZoneOwner[] VALUES = ZoneOwner.values();
