@@ -2,7 +2,6 @@ package de.cas_ual_ty.ydm.duelmanager.network;
 
 import java.util.function.Function;
 
-import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.IDuelManagerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -25,7 +24,7 @@ public abstract class DuelMessageHeader extends ForgeRegistryEntry<DuelMessageHe
         @Override
         public Function<PlayerEntity, IDuelManagerProvider> readFromBuf(PacketBuffer buf)
         {
-            return (player) -> (DuelContainer)player.openContainer;
+            return (player) -> (IDuelManagerProvider)player.openContainer;
         }
     }
 }

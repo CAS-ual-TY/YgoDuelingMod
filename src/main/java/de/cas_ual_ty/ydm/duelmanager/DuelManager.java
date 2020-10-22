@@ -103,7 +103,7 @@ public class DuelManager
         // apparently this is not called on client
         if(!this.isRemote)
         {
-            this.updateRoleToAll(role, player);
+            this.updateRoleToAllExceptRolePlayer(role, player);
         }
         
         /*// this is instead now done on request by client. At this point the client constructor has not been constructed yet, so packets dont work yet
@@ -658,6 +658,14 @@ public class DuelManager
         {
             this.updateRoleTo(player, role, rolePlayer);
         });
+    }
+    
+    protected void updateRoleToAllExceptRolePlayer(@Nullable PlayerRole role, PlayerEntity rolePlayer)
+    {
+        this.doForAllPlayersExcept((player) ->
+        {
+            this.updateRoleTo(player, role, rolePlayer);
+        }, rolePlayer);
     }
     
     protected void updateReadyToAll(PlayerRole role, boolean ready)
