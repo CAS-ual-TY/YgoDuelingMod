@@ -16,14 +16,9 @@ import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
-import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
-import de.cas_ual_ty.ydm.duelmanager.DuelRenderer;
-import de.cas_ual_ty.ydm.duelmanager.DuelRenderingProvider;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
-import de.cas_ual_ty.ydm.duelmanager.action.Action;
-import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
 import net.minecraft.client.Minecraft;
@@ -50,7 +45,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRenderingProvider, IDuelScreen
+public class PreparingDuelScreen extends ContainerScreen<DuelContainer> implements IDuelScreen
 {
     public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
     public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
@@ -75,11 +70,9 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     protected List<DeckWrapper> deckWrappers;
     protected int activeDeckWrapperIdx;
     
-    protected DuelRenderer duelRenderer;
-    
     private boolean isClosedByPlayer;
     
-    public DuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public PreparingDuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.activeDeckWrapperIdx = 0;
@@ -104,8 +97,6 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         }
         
         this.setActiveDeckWrapper(0);
-        
-        this.duelRenderer = new DuelRenderer(this, this.getDuelManager());
     }
     
     @Override
@@ -219,7 +210,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         else if(this.getState() == DuelState.DUELING)
         {
             this.isClosedByPlayer = false;
-            this.minecraft.displayGuiScreen(new DuelScreen2(this.getContainer(), this.playerInventory, this.getTitle()));
+            this.minecraft.displayGuiScreen(new DuelingDuelScreen(this.getContainer(), this.playerInventory, this.getTitle()));
         }
     }
     
@@ -237,17 +228,6 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         if(this.isClosedByPlayer)
         {
             super.onClose();
-        }
-    }
-    
-    @Override
-    public void tick()
-    {
-        super.tick();
-        
-        if(this.duelRenderer != null)
-        {
-            this.duelRenderer.tick();
         }
     }
     
@@ -298,7 +278,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         
-        this.minecraft.getTextureManager().bindTexture(DuelScreen.DUEL_BACKGROUND_GUI_TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(PreparingDuelScreen.DUEL_BACKGROUND_GUI_TEXTURE);
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         
         if(this.getState() == DuelState.PREPARING)
@@ -307,18 +287,6 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
             {
                 this.drawActiveDeckBackground(ms, partialTicks, mouseX, mouseY);
             }
-        }
-        else if(this.getState() == DuelState.DUELING && this.duelRenderer != null)
-        {
-            this.minecraft.getTextureManager().bindTexture(DuelScreen.DUEL_FOREGROUND_GUI_TEXTURE);
-            this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-            
-            ms.push();
-            int x = this.guiLeft + this.xSize / 2;
-            int y = this.guiTop + this.ySize / 2;
-            ms.translate(x, y, 0D);
-            this.duelRenderer.render(ms, mouseX - x, mouseY - y, 1F);
-            ms.pop();
         }
     }
     
@@ -475,7 +443,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
                 int guiLeft = (this.width - xSize) / 2;
                 int guiTop = this.guiTop + 6 + 5 + this.font.FONT_HEIGHT;
                 
-                this.minecraft.getTextureManager().bindTexture(DuelScreen.DECK_BACKGROUND_GUI_TEXTURE);
+                this.minecraft.getTextureManager().bindTexture(PreparingDuelScreen.DECK_BACKGROUND_GUI_TEXTURE);
                 YdmBlitUtil.blit(ms, guiLeft, guiTop, xSize, ySize, 0, 0, xSize, ySize, 512, 256);
                 YdmBlitUtil.blit(ms, guiLeft, guiTop + ySize, xSize, 7, 0, 243, xSize, 7, 512, 256);
             }
@@ -485,17 +453,7 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if(this.getState() == DuelState.DUELING && this.duelRenderer != null)
-        {
-            int x = this.guiLeft + this.xSize / 2;
-            int y = this.guiTop + this.ySize / 2;
-            this.duelRenderer.mouseClick(mouseX - x, mouseY - y);
-            return true;
-        }
-        else
-        {
-            return super.mouseClicked(mouseX, mouseY, button);
-        }
+        return super.mouseClicked(mouseX, mouseY, button);
     }
     
     public void renderCardInfoForeground(MatrixStack ms, CardHolder c)
@@ -513,7 +471,6 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         ms.pop();
     }
     
-    @Override
     public void renderHoverRect(MatrixStack ms, int x, int y, int w, int h)
     {
         // from ContainerScreen#render
@@ -526,12 +483,6 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         this.fillGradient(ms, j1, k1, j1 + w, k1 + h, slotColor, slotColor);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
-    }
-    
-    @Override
-    public void renderLineRect(MatrixStack ms, int x, int y, int width, int height, int lineWidth, float r, float g, float b, float a)
-    {
-        ClientProxy.drawLineRect(ms, x, y, width, height, lineWidth, r, g, b, a);
     }
     
     public DuelManager getDuelManager()
@@ -549,7 +500,6 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
         return this.getDuelManager().getDuelState();
     }
     
-    @Override
     public PlayerRole getPlayerRole()
     {
         return this.getDuelManager().getRoleFor(ClientProxy.getPlayer());
@@ -843,68 +793,5 @@ public class DuelScreen extends ContainerScreen<DuelContainer> implements DuelRe
             AbstractGui.blit(ms, this.x, this.y, 0.0F, this.isChecked.get() ? 20.0F : 0.0F, 20, this.height, 64, 64);
             AbstractGui.drawString(ms, fontrenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 14737632 | MathHelper.ceil(this.alpha * 255.0F) << 24);
         }
-    }
-    
-    public void renderCardWith(MatrixStack ms, int x, int y, int width, int height, DuelCard card, YdmBlitUtil.FullBlitMethod blitMethod, boolean forceFaceUp)
-    {
-        // bind the texture depending on faceup or facedown
-        if(card.getCardPosition().isFaceUp || forceFaceUp)
-        {
-            ClientProxy.bindMainResourceLocation(card.getCardHolder());
-        }
-        else
-        {
-            this.minecraft.getTextureManager().bindTexture(ClientProxy.getMainCardBack());
-        }
-        
-        blitMethod.fullBlit(ms, x, y, width, height);
-        
-        if(card.getIsToken())
-        {
-            this.minecraft.getTextureManager().bindTexture(ClientProxy.getMainCardBack());
-            blitMethod.fullBlit(ms, x, y, width, height);
-        }
-    }
-    
-    @Override
-    public void renderCard(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
-    {
-        this.renderCardWith(ms, x, y, width, height, card,
-            card.getCardPosition().isStraight
-                ? YdmBlitUtil::fullBlit
-                : YdmBlitUtil::fullBlit90Degree, forceFaceUp);
-    }
-    
-    @Override
-    public void renderCardReversed(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
-    {
-        this.renderCardWith(ms, x, y, width, height, card,
-            card.getCardPosition().isStraight
-                ? YdmBlitUtil::fullBlit180Degree
-                : YdmBlitUtil::fullBlit270Degree, forceFaceUp);
-    }
-    
-    @Override
-    public void renderAction(MatrixStack ms, int x, int y, int width, int height, ActionIcon icon)
-    {
-        this.minecraft.getTextureManager().bindTexture(icon.sourceFile);
-        YdmBlitUtil.blit(ms, x, y, width, height, icon.iconX, icon.iconY, icon.iconWidth, icon.iconHeight, icon.fileSize, icon.fileSize);
-    }
-    
-    @Override
-    public void renderLinesCentered(MatrixStack ms, int x, int y, List<String> lines)
-    {
-        y -= this.font.FONT_HEIGHT * lines.size() / 2;
-        int i = 0;
-        for(String text : lines)
-        {
-            this.font.drawString(ms, text, x - this.font.getStringWidth(text) / 2, y + this.font.FONT_HEIGHT * i, 0xFFFFFF);
-        }
-    }
-    
-    @Override
-    public void sendActionToServer(Action action)
-    {
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDuelAction(this.getHeader(), action));
     }
 }

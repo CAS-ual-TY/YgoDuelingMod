@@ -21,7 +21,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
-import de.cas_ual_ty.ydm.duel.DuelScreen;
+import de.cas_ual_ty.ydm.duel.PreparingDuelScreen;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -141,7 +141,7 @@ public class ClientProxy implements ISidedProxy
         }
         
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
-        ScreenManager.registerFactory(YdmContainerTypes.DUEL, DuelScreen::new);
+        ScreenManager.registerFactory(YdmContainerTypes.DUEL, PreparingDuelScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
         
         ClientProxy.infoTextureBinder = new LimitedTextureBinder(ClientProxy.getMinecraft(), ClientProxy.maxInfoImages);
