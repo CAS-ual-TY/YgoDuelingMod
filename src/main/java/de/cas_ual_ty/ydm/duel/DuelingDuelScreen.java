@@ -149,24 +149,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
         return super.mouseClicked(mouseX, mouseY, button);
     }
     
-    @Override
-    public Zone getClickedZone()
-    {
-        return this.clickedZoneWidget != null ? this.clickedZoneWidget.zone : null;
-    }
-    
-    @Override
-    public DuelCard getClickedDuelCard()
-    {
-        return this.clickedCard;
-    }
-    
-    @Override
-    public ZoneOwner getView()
-    {
-        return this.view;
-    }
-    
     public void flip()
     {
         if(this.view == ZoneOwner.PLAYER1)
@@ -198,8 +180,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             return;
         }
         
-        //        if(this.clickedZoneWidget == null)
-        //        {
         this.clickedZoneWidget = widget;
         this.clickedCard = widget.hoverCard;
         
@@ -215,7 +195,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
         
         this.buttons.addAll(this.interactionWidgets);
         this.children.addAll(this.interactionWidgets);
-        //        }
     }
     
     protected void interactionClicked(InteractionWidget widget)
@@ -264,7 +243,7 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
     protected void interactionTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
     {
         InteractionWidget w = (InteractionWidget)w0;
-        this.renderTooltip(ms, new StringTextComponent(w.interaction.action.actionType.getRegistryName().getPath()), mouseX, mouseY);
+        this.renderTooltip(ms, new StringTextComponent(w.interaction.icon.getRegistryName().getPath()), mouseX, mouseY);
     }
     
     public DuelManager getDuelManager()
@@ -282,6 +261,25 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
         return this.getDuelManager().getRoleFor(ClientProxy.getPlayer());
     }
     
+    @Override
+    public Zone getClickedZone()
+    {
+        return this.clickedZoneWidget != null ? this.clickedZoneWidget.zone : null;
+    }
+    
+    @Override
+    public DuelCard getClickedDuelCard()
+    {
+        return this.clickedCard;
+    }
+    
+    @Override
+    public ZoneOwner getView()
+    {
+        return this.view;
+    }
+    
+    @Override
     public ZoneOwner getZoneOwner()
     {
         PlayerRole role = this.getPlayerRole();
@@ -458,10 +456,15 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             Minecraft minecraft = Minecraft.getInstance();
             FontRenderer fontrenderer = minecraft.fontRenderer;
             
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableDepthTest();
+            
+            if(this.context.getClickedZone() == this.zone && this.context.getClickedDuelCard() == null)
+            {
+                ClientProxy.drawLineRect(ms, this.x, this.y, this.width, this.height, 1, 0F, 0F, 1F, 1F);
+                RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+            }
             
             this.hoverCard = this.renderCards(ms, mouseX, mouseY);
             //            ClientProxy.drawLineRect(ms, this.x, this.y, this.width, this.height, 1, 1, 0, 0, 1);
@@ -489,17 +492,19 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             int hoverWidth = this.width;
             int hoverHeight = this.height;
             
+            boolean faceUp = this.zone.getType().getShowFaceDownCardsToOwner() && this.zone.getOwner() == this.context.getZoneOwner();
+            
             if(this.zone.type.getRenderCardsSpread())
             {
                 DuelCard c = null;
                 hoverWidth = cardsWidth;
                 
-                int totalW = this.zone.getCardsAmount() * DuelingDuelScreen.CARDS_WIDTH;
+                int totalW = this.zone.getCardsAmount() * cardsWidth;
                 
                 if(totalW <= this.width)
                 {
                     int x = this.x + (this.width - totalW) / 2;
-                    int renderX = x - (cardsTextureSize - DuelingDuelScreen.CARDS_WIDTH) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
+                    int renderX = x - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
                     int y = this.y;
                     
                     if(!this.isOpponentView)
@@ -507,7 +512,13 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                         for(short i = 0; i < this.zone.getCardsAmount(); ++i)
                         {
                             c = this.zone.getCard(i);
-                            DuelingDuelScreen.renderCardCentered(ms, renderX, y, cardsTextureSize, cardsTextureSize, c, this.zone.getType().getShowFaceDownCardsToOwner());
+                            DuelingDuelScreen.renderCardCentered(ms, renderX, y, cardsTextureSize, cardsTextureSize, c, faceUp);
+                            
+                            if(c == this.context.getClickedDuelCard())
+                            {
+                                ClientProxy.drawLineRect(ms, x, y, cardsWidth, cardsHeight, 1, 0F, 0F, 1F, 1F);
+                                RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+                            }
                             
                             if(this.isHovered() && mouseX >= x && mouseX < x + cardsWidth && mouseY >= y && mouseY < y + cardsHeight)
                             {
@@ -516,8 +527,8 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                                 hoverY = y;
                             }
                             
-                            x += cardsTextureSize;
-                            renderX += cardsTextureSize;
+                            x += cardsWidth;
+                            renderX += cardsWidth;
                         }
                     }
                     else
@@ -525,7 +536,13 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                         for(short i = (short)(this.zone.getCardsAmount() - 1); i >= 0; --i)
                         {
                             c = this.zone.getCard(i);
-                            DuelingDuelScreen.renderCardReversedCentered(ms, x, this.y, this.height, this.height, c, this.zone.getType().getShowFaceDownCardsToOwner());
+                            DuelingDuelScreen.renderCardReversedCentered(ms, renderX, y, cardsTextureSize, cardsTextureSize, c, faceUp);
+                            
+                            if(c == this.context.getClickedDuelCard())
+                            {
+                                ClientProxy.drawLineRect(ms, x, y, cardsWidth, cardsHeight, 1, 0F, 0F, 1F, 1F);
+                                RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+                            }
                             
                             if(this.isHovered() && mouseX >= x && mouseX < x + cardsWidth && mouseY >= y && mouseY < y + cardsHeight)
                             {
@@ -534,28 +551,38 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                                 hoverY = y;
                             }
                             
-                            x += cardsTextureSize;
-                            renderX += cardsTextureSize;
+                            x += cardsWidth;
+                            renderX += cardsWidth;
                         }
                     }
                 }
                 else
                 {
                     int x = this.x;
-                    int renderX = x - (cardsTextureSize - DuelingDuelScreen.CARDS_WIDTH) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
+                    int renderX = x - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
                     int y = this.y;
                     
-                    float area = (float)this.width / this.zone.getCardsAmount();
+                    int x1;
+                    int renderX1;
                     
-                    int x1 = x;
-                    int renderX1 = renderX;
+                    float margin = (this.zone.getCardsAmount() * cardsWidth - this.width) / (float)(this.zone.getCardsAmount() - 1);
                     
                     if(!this.isOpponentView)
                     {
                         for(short i = 0; i < this.zone.getCardsAmount(); ++i)
                         {
                             c = this.zone.getCard(i);
-                            DuelingDuelScreen.renderCardCentered(ms, renderX, y, cardsTextureSize, cardsTextureSize, c, this.zone.getType().getShowFaceDownCardsToOwner());
+                            
+                            x1 = x + (int)(i * (cardsWidth - margin));
+                            renderX1 = renderX + (int)(i * (cardsWidth - margin));
+                            
+                            DuelingDuelScreen.renderCardCentered(ms, renderX1, y, cardsTextureSize, cardsTextureSize, c, faceUp);
+                            
+                            if(c == this.context.getClickedDuelCard())
+                            {
+                                ClientProxy.drawLineRect(ms, x1, y, cardsWidth, cardsHeight, 1, 0F, 0F, 1F, 1F);
+                                RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+                            }
                             
                             if(this.isHovered() && mouseX >= x1 && mouseX < x1 + cardsWidth && mouseY >= y && mouseY < y + cardsHeight)
                             {
@@ -563,9 +590,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                                 hoverX = x1;
                                 hoverY = y;
                             }
-                            
-                            x1 = x + (int)(i * area);
-                            renderX1 = renderX + (int)(i * area);
                         }
                     }
                     else
@@ -573,7 +597,17 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                         for(short i = (short)(this.zone.getCardsAmount() - 1); i >= 0; --i)
                         {
                             c = this.zone.getCard(i);
-                            DuelingDuelScreen.renderCardReversedCentered(ms, renderX1, y, cardsTextureSize, cardsTextureSize, c, this.zone.getType().getShowFaceDownCardsToOwner());
+                            
+                            x1 = x + (int)(i * (cardsWidth - margin));
+                            renderX1 = renderX + (int)(i * (cardsWidth - margin));
+                            
+                            DuelingDuelScreen.renderCardReversedCentered(ms, renderX1, y, cardsTextureSize, cardsTextureSize, c, faceUp);
+                            
+                            if(c == this.context.getClickedDuelCard())
+                            {
+                                ClientProxy.drawLineRect(ms, x1, y, cardsWidth, cardsHeight, 1, 0F, 0F, 1F, 1F);
+                                RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+                            }
                             
                             if(this.isHovered() && mouseX >= x1 && mouseX < x1 + cardsWidth && mouseY >= y && mouseY < y + cardsHeight)
                             {
@@ -581,9 +615,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                                 hoverX = x1;
                                 hoverY = y;
                             }
-                            
-                            x1 = x + (int)(i * area);
-                            renderX1 = renderX + (int)(i * area);
                         }
                     }
                 }
@@ -596,11 +627,17 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                 {
                     if(!this.isOpponentView)
                     {
-                        DuelingDuelScreen.renderCardCentered(ms, this.x, this.y, this.width, this.height, c, this.zone.getType().getShowFaceDownCardsToOwner());
+                        DuelingDuelScreen.renderCardCentered(ms, this.x, this.y, this.width, this.height, c, faceUp);
                     }
                     else
                     {
-                        DuelingDuelScreen.renderCardReversedCentered(ms, this.x, this.y, this.width, this.height, c, this.zone.getType().getShowFaceDownCardsToOwner());
+                        DuelingDuelScreen.renderCardReversedCentered(ms, this.x, this.y, this.width, this.height, c, faceUp);
+                    }
+                    
+                    if(c == this.context.getClickedDuelCard())
+                    {
+                        ClientProxy.drawLineRect(ms, this.x, this.y, this.width, this.height, 1, 0F, 0F, 1F, 1F);
+                        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
                     }
                     
                     if(this.isHovered() && this.active)
@@ -610,7 +647,7 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                 }
             }
             
-            if(hoveredCard != null)
+            if(hoveredCard != null && this.active)
             {
                 DuelingDuelScreen.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
             }
@@ -735,10 +772,12 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             Minecraft minecraft = Minecraft.getInstance();
             FontRenderer fontrenderer = minecraft.fontRenderer;
             
-            RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableDepthTest();
+            
+            ClientProxy.drawLineRect(ms, this.x, this.y, this.width, this.height, 1, 1F, 1F, 0F, 1F);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
             
             ClientProxy.getMinecraft().getTextureManager().bindTexture(icon.sourceFile);
             YdmBlitUtil.blit(ms, this.x + (this.width - iconWidth) / 2, this.y + (this.height - iconHeight) / 2, iconWidth, iconHeight, icon.iconX, icon.iconY, icon.iconWidth, icon.iconHeight, icon.fileSize, icon.fileSize);

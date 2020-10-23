@@ -15,4 +15,6 @@ public interface IDuelScreenContext
     public DuelCard getClickedDuelCard();
     
     public ZoneOwner getView();
+    
+    public ZoneOwner getZoneOwner();
 }
