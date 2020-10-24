@@ -149,57 +149,9 @@ public class PlayFieldType
         return new InteractionBuilder();
     }
     
-    public PlayFieldType registerInteraction(ActionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
-    {
-        this.registerInteraction(icon, (zoneType) -> zoneType == interactor, (zoneType) -> zoneType == interactee, interaction);
-        return this;
-    }
-    
-    public PlayFieldType registerInteraction(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
-    {
-        this.registerInteraction(icon, interactor, (card) -> card != null, interactee, interaction);
-        return this;
-    }
-    
     public PlayFieldType registerInteraction(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<DuelCard> interactorCard, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
     {
         this.interactionEntries.add(new InteractionEntry(icon, interactor, interactorCard, interactee, interaction));
-        return this;
-    }
-    
-    public PlayFieldType registerGenericZoneOwnedInteraction(ActionIcon icon, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
-    {
-        this.interactionEntries.add(new InteractionEntry(icon, (zone) -> true, (card) -> true, interactee,
-            (owner1, interactor1, interactorCard1, interactee1) -> interactor1 != interactee1 &&
-                owner1 == interactor1.getOwner()
-                    ? interaction.createAction(owner1, interactor1, interactorCard1, interactee1)
-                    : null));
-        
-        return this;
-    }
-    
-    public PlayFieldType registerGenericZoneOwnedCardInteraction(ActionIcon icon, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
-    {
-        this.interactionEntries.add(new InteractionEntry(icon, (zone) -> true, (card) -> true, interactee,
-            (owner1, interactor1, interactorCard1, interactee1) -> interactor1 != interactee1 &&
-                owner1 == interactor1.getOwner() &&
-                interactorCard1 != null
-                    ? interaction.createAction(owner1, interactor1, interactorCard1, interactee1)
-                    : null));
-        
-        return this;
-    }
-    
-    public PlayFieldType registerGenericZoneOwnedCardOwnedInteraction(ActionIcon icon, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
-    {
-        this.interactionEntries.add(new InteractionEntry(icon, (zone) -> true, (card) -> true, interactee,
-            (owner1, interactor1, interactorCard1, interactee1) -> interactor1 != interactee1 &&
-                owner1 == interactor1.getOwner() &&
-                interactorCard1 != null &&
-                interactee1.getOwner() == interactorCard1.getOwner()
-                    ? interaction.createAction(owner1, interactor1, interactorCard1, interactee1)
-                    : null));
-        
         return this;
     }
     
