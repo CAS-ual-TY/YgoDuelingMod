@@ -33,6 +33,7 @@ public class ActionIcons
     public static final ActionIcon SHUFFLE_HAND = null;
     public static final ActionIcon VIEW_DECK = null;
     public static final ActionIcon SPECIAL_SUMMON_SET = null;
+    public static final ActionIcon ACTIVATE_SPELL_TRAP = null; //TODO make icon for this, curr. uses normal summon icon
     
     public static final ActionIcon SHOW_HAND = null;
     public static final ActionIcon SHOW_DECK = null;
@@ -82,6 +83,7 @@ public class ActionIcons
         //        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)29).setRegistryName(YDM.MOD_ID, "questionmark9"));
         //        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)30).setRegistryName(YDM.MOD_ID, ""));
         //        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)31).setRegistryName(YDM.MOD_ID, ""));
+        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)2).setRegistryName(YDM.MOD_ID, "activate_spell_trap"));
         
         rl = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions_large.png");
         fileSize = 256;
