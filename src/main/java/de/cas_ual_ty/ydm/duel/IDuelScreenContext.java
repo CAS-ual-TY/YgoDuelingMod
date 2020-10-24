@@ -2,6 +2,8 @@ package de.cas_ual_ty.ydm.duel;
 
 import javax.annotation.Nullable;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
@@ -17,4 +19,6 @@ public interface IDuelScreenContext
     public ZoneOwner getView();
     
     public ZoneOwner getZoneOwner();
+    
+    public void renderCardInfo(MatrixStack ms, DuelCard card);
 }

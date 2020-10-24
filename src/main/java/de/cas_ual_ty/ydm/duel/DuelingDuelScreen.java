@@ -297,6 +297,12 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
         }
     }
     
+    @Override
+    public void renderCardInfo(MatrixStack ms, DuelCard card)
+    {
+        ClientProxy.renderCardInfo(ms, card.getCardHolder(), this);
+    }
+    
     public static void renderHoverRect(MatrixStack ms, int x, int y, int w, int h)
     {
         // from ContainerScreen#render
@@ -482,7 +488,8 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             int hoverWidth = this.width;
             int hoverHeight = this.height;
             
-            boolean faceUp = this.zone.getType().getShowFaceDownCardsToOwner() && this.zone.getOwner() == this.context.getZoneOwner();
+            boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
+            boolean faceUp = this.zone.getType().getShowFaceDownCardsToOwner() && isOwner;
             boolean isOpponentView = this.zone.getOwner() != this.context.getView();
             
             if(this.zone.type.getRenderCardsSpread())
@@ -638,9 +645,17 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                 }
             }
             
-            if(hoveredCard != null && this.active)
+            if(hoveredCard != null)
             {
-                DuelingDuelScreen.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
+                if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !this.zone.getType().getIsSecret()))
+                {
+                    this.context.renderCardInfo(ms, hoveredCard);
+                }
+                
+                if(this.active)
+                {
+                    DuelingDuelScreen.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
+                }
             }
             
             return hoveredCard;
