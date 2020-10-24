@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
@@ -143,6 +144,11 @@ public class PlayFieldType
         return this;
     }
     
+    public InteractionBuilder newInteraction()
+    {
+        return new InteractionBuilder();
+    }
+    
     public PlayFieldType registerInteraction(ActionIcon icon, ZoneType interactor, ZoneType interactee, SingleZoneInteraction interaction)
     {
         this.registerInteraction(icon, (zoneType) -> zoneType == interactor, (zoneType) -> zoneType == interactee, interaction);
@@ -216,6 +222,249 @@ public class PlayFieldType
         }
         
         return list;
+    }
+    
+    public class InteractionBuilder
+    {
+        private ActionIcon icon;
+        private Predicate<ZoneType> interactor;
+        private Predicate<DuelCard> interactorCard;
+        private Predicate<ZoneType> interactee;
+        private SingleZoneInteraction interaction;
+        
+        public InteractionBuilder()
+        {
+            this.interactor = null;
+            this.interactorCard = null;
+            this.interactee = null;
+            this.interaction = null;
+        }
+        
+        public InteractionBuilder icon(ActionIcon icon)
+        {
+            this.icon = icon;
+            return this;
+        }
+        
+        public InteractionBuilder interactorPredicate(Predicate<ZoneType> interactor)
+        {
+            this.interactor = interactor;
+            return this;
+        }
+        
+        public InteractionBuilder interactorEquals(ZoneType interactor)
+        {
+            this.interactor = (zoneType) -> zoneType == interactor;
+            return this;
+        }
+        
+        public InteractionBuilder interactorUnequals(ZoneType interactor)
+        {
+            this.interactor = (zoneType) -> zoneType != interactor;
+            return this;
+        }
+        
+        public InteractionBuilder interactorIncluded(List<ZoneType> interactor)
+        {
+            this.interactor = (zoneType) -> interactor.contains(zoneType);
+            return this;
+        }
+        
+        public InteractionBuilder interactorExcluded(List<ZoneType> interactor)
+        {
+            this.interactor = (zoneType) -> !interactor.contains(zoneType);
+            return this;
+        }
+        
+        public InteractionBuilder interactorAny()
+        {
+            this.interactor = (zoneType) -> true;
+            return this;
+        }
+        
+        public InteractionBuilder interactorCardPredicate(Predicate<DuelCard> interactorCard)
+        {
+            this.interactorCard = interactorCard;
+            return this;
+        }
+        
+        public InteractionBuilder interactorCardNotNull()
+        {
+            this.interactorCard = (interactorCard) -> interactorCard != null;
+            return this;
+        }
+        
+        public InteractionBuilder interactorCardNull()
+        {
+            this.interactorCard = (interactorCard) -> interactorCard != null;
+            return this;
+        }
+        
+        public InteractionBuilder interactorCardAny()
+        {
+            this.interactorCard = (interactorCard) -> true;
+            return this;
+        }
+        
+        public InteractionBuilder interacteePredicate(Predicate<ZoneType> interactee)
+        {
+            this.interactee = interactee;
+            return this;
+        }
+        
+        public InteractionBuilder interacteeEquals(ZoneType interactee)
+        {
+            this.interactee = (zoneType) -> zoneType == interactee;
+            return this;
+        }
+        
+        public InteractionBuilder interacteeUnequals(ZoneType interactee)
+        {
+            this.interactee = (zoneType) -> zoneType != interactee;
+            return this;
+        }
+        
+        public InteractionBuilder interacteeIncluded(List<ZoneType> interactee)
+        {
+            this.interactee = (zoneType) -> interactee.contains(zoneType);
+            return this;
+        }
+        
+        public InteractionBuilder interacteeExcluded(List<ZoneType> interactee)
+        {
+            this.interactee = (zoneType) -> interactee.contains(zoneType);
+            return this;
+        }
+        
+        public InteractionBuilder interaction(SingleZoneInteraction interaction)
+        {
+            this.interaction = interaction;
+            return this;
+        }
+        
+        public InteractionBuilder playerAndInteractorSameOwner()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> player == interactor.getOwner() ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder interactorAndInteracteeSameOwner()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactor.getOwner() == interactee.getOwner() ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder cardAndInteracteeSameOwner()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactorCard.getOwner() == interactee.getOwner() ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder interacteeEmpty()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactee.getCardsAmount() == 0 ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder interacteeNonEmpty()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactee.getCardsAmount() > 0 ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder interactorEqualsInteractee()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactor == interactee ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder interactorUnequalsInteractee()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactor != interactee ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder cardInPosition(CardPosition position)
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactorCard.getCardPosition() == position ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder cardNotInPosition(CardPosition position)
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactorCard.getCardPosition() != position ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public PlayFieldType addInteraction()
+        {
+            if(this.icon == null || this.interactor == null || this.interactorCard == null || this.interactee == null || this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            PlayFieldType.this.registerInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
+            return PlayFieldType.this;
+        }
+        
+        private void throwException()
+        {
+            throw new IllegalStateException("Missing params or wrong order params!");
+        }
     }
     
     public static final class ZoneEntry
