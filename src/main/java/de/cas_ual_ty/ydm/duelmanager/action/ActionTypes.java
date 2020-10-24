@@ -17,6 +17,7 @@ public class ActionTypes
     public static final ActionType MOVE_TO_BOTTOM = null;
     public static final ActionType SHUFFLE = null;
     public static final ActionType SHOW_ZONE = null;
+    public static final ActionType SHOW_CARD = null;
     public static final ActionType ATTACK = null;
     public static final ActionType LIST = null;
     
@@ -29,6 +30,7 @@ public class ActionTypes
         registry.register(new ActionType(MoveBottomAction::new).setRegistryName(YDM.MOD_ID, "move_to_bottom"));
         registry.register(new ActionType(ShuffleAction::new).setRegistryName(YDM.MOD_ID, "shuffle"));
         registry.register(new ActionType(ShowZoneAction::new).setRegistryName(YDM.MOD_ID, "show_zone"));
+        registry.register(new ActionType(ShowCardAction::new).setRegistryName(YDM.MOD_ID, "show_card"));
         registry.register(new ActionType(AttackAction::new).setRegistryName(YDM.MOD_ID, "attack"));
         registry.register(new ActionType(ListAction::new).setRegistryName(YDM.MOD_ID, "list"));
     }
