@@ -716,11 +716,12 @@ public class DuelManager
     
     protected void sendActionTo(PlayerEntity player, PlayerRole source, Action action)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.DuelAction(this.header, source, action));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.DuelAction(this.header, /* source,*/ action));
     }
     
     protected void sendActionsTo(PlayerEntity player)
     {
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.AllDuelActions(this.header, this.actions));
     }
     
     protected void sendDuelStateTo(PlayerEntity player)

@@ -468,14 +468,15 @@ public class DuelMessages
     
     public static class DuelAction extends DuelMessage.ClientBaseMessage
     {
-        public PlayerRole source;
+        //        public PlayerRole source;
         public Action action;
         
         // must be player role because Judges will also be able to do stuff
-        public DuelAction(DuelMessageHeader header, PlayerRole source, Action action)
+        // player role require?
+        public DuelAction(DuelMessageHeader header, /* PlayerRole source,*/ Action action)
         {
             super(header);
-            this.source = source;
+            //            this.source = source;
             this.action = action;
         }
         
@@ -494,13 +495,49 @@ public class DuelMessages
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
+            //decodePlayerRole
             this.action = DuelMessageUtility.decodeAction(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.handleAction(this.source, this.action);
+            provider.handleAction(this.action);
+        }
+    }
+    
+    public static class AllDuelActions extends DuelMessage.ClientBaseMessage
+    {
+        public List<Action> actions;
+        
+        public AllDuelActions(DuelMessageHeader header, List<Action> action)
+        {
+            super(header);
+            this.actions = this.actions;
+        }
+        
+        public AllDuelActions(PacketBuffer buf)
+        {
+            super(buf);
+        }
+        
+        @Override
+        public void encodeMessage(PacketBuffer buf)
+        {
+            //encodePlayerRole ?? if this is done in DuelAction class, might need to do it here too
+            DuelMessageUtility.encodeActions(this.actions, buf);
+        }
+        
+        @Override
+        public void decodeMessage(PacketBuffer buf)
+        {
+            this.actions = DuelMessageUtility.decodeActions(buf);
+        }
+        
+        @Override
+        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        {
+            provider.handleAllActions(this.actions);
         }
     }
 }

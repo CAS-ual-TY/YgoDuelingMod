@@ -33,11 +33,11 @@ public class DuelClientContainer extends DuelContainer
     }
     
     @Override
-    public void handleAction(PlayerRole source, Action action)
+    public void handleAction(Action action)
     {
         // TODO animation
         
-        super.handleAction(source, action);
+        super.handleAction(action);
     }
     
     @Override

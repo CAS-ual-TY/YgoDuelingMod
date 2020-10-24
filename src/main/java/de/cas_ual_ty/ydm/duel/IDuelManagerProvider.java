@@ -24,10 +24,21 @@ public interface IDuelManagerProvider
         this.getDuelManager().setDuelStateAndUpdate(duelState);
     }
     
-    public default void handleAction(PlayerRole source, Action action)
+    public default void handleAction(Action action)
     {
         action.init(this.getDuelManager().getPlayField());
         action.doAction();
+    }
+    
+    public default void handleAllActions(List<Action> actions)
+    {
+        // just do all actions without animation
+        
+        for(Action action : actions)
+        {
+            action.init(this.getDuelManager().getPlayField());
+            action.doAction();
+        }
     }
     
     public default void receiveDeckSources(List<DeckSource> deckSources)
