@@ -330,6 +330,30 @@ public class PlayFieldType
             return this;
         }
         
+        public InteractionBuilder interactorEmpty()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactor.getCardsAmount() == 0 ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder interactorNonEmpty()
+        {
+            if(this.interaction == null)
+            {
+                this.throwException();
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactor.getCardsAmount() > 0 ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
         public InteractionBuilder interacteeEmpty()
         {
             if(this.interaction == null)
