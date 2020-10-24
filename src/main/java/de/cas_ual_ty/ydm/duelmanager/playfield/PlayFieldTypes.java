@@ -1,10 +1,15 @@
 package de.cas_ual_ty.ydm.duelmanager.playfield;
 
+import com.google.common.collect.ImmutableList;
+
 import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionIcons;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionTypes;
 import de.cas_ual_ty.ydm.duelmanager.action.MoveBottomAction;
 import de.cas_ual_ty.ydm.duelmanager.action.MoveTopAction;
+import de.cas_ual_ty.ydm.duelmanager.action.ShowCardAction;
+import de.cas_ual_ty.ydm.duelmanager.action.ShowZoneAction;
+import de.cas_ual_ty.ydm.duelmanager.action.ShuffleAction;
 
 public class PlayFieldTypes
 {
@@ -25,22 +30,43 @@ public class PlayFieldTypes
         .repeatPlayerZonesForOpponent()
         .addEntryFull(ZoneTypes.EXTRA_MONSTER_RIGHT, ZoneOwner.NONE, 34, 0)
         .addEntryFull(ZoneTypes.EXTRA_MONSTER_LEFT, ZoneOwner.NONE, -34, 0)
-        //        .registerInteraction(ActionIcons.ADD_TO_HAND, ZoneTypes.DECK, ZoneTypes.HAND, (player, deck, card, hand) -> (player == deck.getOwner() && card != null && deck.getOwner() == hand.getOwner()) ? new MoveTopAction(ActionTypes.MOVE_ON_TOP, deck, deck.getCardIndexShort(card), hand, CardPosition.FACE_DOWN) : null)
-        //        .registerInteraction(ActionIcons.TO_GRAVEYARD, (interactor) -> interactor != ZoneTypes.GRAVEYARD, (interactee) -> interactee == ZoneTypes.GRAVEYARD, (player, zone, card, gy) -> (player == zone.getOwner() && card != null && zone.getOwner() == gy.getOwner()) ? new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), gy, CardPosition.ATK) : null)
-        //        .registerInteraction(ActionIcons.BANISH_FA, (interactor) -> interactor != ZoneTypes.BANISHED, (interactee) -> interactee == ZoneTypes.BANISHED, (player, zone, card, banished) -> (player == zone.getOwner() && card != null && zone.getOwner() == banished.getOwner()) ? new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.ATK) : null)
-        //        .registerInteraction(ActionIcons.BANISH_FD, (interactor) -> interactor != ZoneTypes.BANISHED, (interactee) -> interactee == ZoneTypes.BANISHED, (player, zone, card, banished) -> (player == zone.getOwner() && card != null && zone.getOwner() == banished.getOwner()) ? new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.FACE_DOWN) : null)
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.ADD_TO_HAND, (zoneType) -> zoneType == ZoneTypes.HAND, (player, deck, card, hand) -> new MoveBottomAction(ActionTypes.MOVE_TO_BOTTOM, deck, deck.getCardIndexShort(card), hand, CardPosition.FACE_DOWN))
-        .registerGenericZoneOwnedCardOwnedInteraction(ActionIcons.TO_GRAVEYARD, (zoneType) -> zoneType == ZoneTypes.GRAVEYARD, (player, zone, card, graveyard) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), graveyard, CardPosition.ATK))
-        .registerGenericZoneOwnedCardOwnedInteraction(ActionIcons.BANISH_FA, (zoneType) -> zoneType == ZoneTypes.BANISHED, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.ATK))
-        .registerGenericZoneOwnedCardOwnedInteraction(ActionIcons.BANISH_FD, (zoneType) -> zoneType == ZoneTypes.BANISHED, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.FACE_DOWN))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.NORMAL_SUMMON, (zoneType) -> zoneType == ZoneTypes.MONSTER, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.ATK))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.SPECIAL_SUMMON_ATK, (zoneType) -> zoneType == ZoneTypes.MONSTER, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.ATK))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.SET_MONSTER, (zoneType) -> zoneType == ZoneTypes.MONSTER, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.SET))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.SPECIAL_SUMMON_DEF, (zoneType) -> zoneType == ZoneTypes.MONSTER, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.DEF))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.SPECIAL_SUMMON_ATK, (zoneType) -> zoneType == ZoneTypes.EXTRA_MONSTER_LEFT, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.ATK))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.SPECIAL_SUMMON_DEF, (zoneType) -> zoneType == ZoneTypes.EXTRA_MONSTER_RIGHT, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.DEF))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.NORMAL_SUMMON, (zoneType) -> zoneType == ZoneTypes.SPELL_TRAP, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.ATK))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.SET_SPELL_TRAP_FD, (zoneType) -> zoneType == ZoneTypes.SPELL_TRAP, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.FACE_DOWN))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.NORMAL_SUMMON, (zoneType) -> zoneType == ZoneTypes.FIELD_SPELL, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.ATK))
-        .registerGenericZoneOwnedCardInteraction(ActionIcons.SET_SPELL_TRAP_FD, (zoneType) -> zoneType == ZoneTypes.FIELD_SPELL, (player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, zone.getCardIndexShort(card), banished, CardPosition.FACE_DOWN));
+        .newInteraction().icon(ActionIcons.ADD_TO_HAND).interactorUnequals(ZoneTypes.HAND).interactorCardNotNull().interacteeEquals(ZoneTypes.HAND).interaction((player, zone, card, hand) -> new MoveBottomAction(ActionTypes.MOVE_TO_BOTTOM, zone, card, hand, CardPosition.FACE_DOWN)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().addInteraction()
+        .newInteraction().icon(ActionIcons.TO_GRAVEYARD).interactorUnequals(ZoneTypes.GRAVEYARD).interactorCardNotNull().interacteeEquals(ZoneTypes.GRAVEYARD).interaction((player, zone, card, graveyard) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, graveyard, CardPosition.ATK)).playerAndInteractorSameOwner().cardAndInteracteeSameOwner().addInteraction()
+        .newInteraction().icon(ActionIcons.BANISH_FA).interactorUnequals(ZoneTypes.BANISHED).interactorCardNotNull().interacteeEquals(ZoneTypes.BANISHED).interaction((player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, banished, CardPosition.ATK)).playerAndInteractorSameOwner().cardAndInteracteeSameOwner().addInteraction()
+        .newInteraction().icon(ActionIcons.BANISH_FD).interactorUnequals(ZoneTypes.BANISHED).interactorCardNotNull().interacteeEquals(ZoneTypes.BANISHED).interaction((player, zone, card, banished) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, banished, CardPosition.FACE_DOWN)).playerAndInteractorSameOwner().cardAndInteracteeSameOwner().addInteraction()
+        .newInteraction().icon(ActionIcons.NORMAL_SUMMON).interactorEquals(ZoneTypes.HAND).interactorCardNotNull().interacteeEquals(ZoneTypes.MONSTER).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.ATK)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().interacteeEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.SET_MONSTER).interactorEquals(ZoneTypes.HAND).interactorCardNotNull().interacteeEquals(ZoneTypes.MONSTER).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.SET)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().interacteeEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.SPECIAL_SUMMON_ATK).interactorExcluded(PlayFieldTypes.getAllMonsterZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllMonsterZones()).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.ATK)).playerAndInteractorSameOwner().interacteeEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.SPECIAL_SUMMON_DEF).interactorExcluded(PlayFieldTypes.getAllMonsterZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllMonsterZones()).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.DEF)).playerAndInteractorSameOwner().interacteeEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.SPECIAL_SUMMON_SET).interactorIncluded(PlayFieldTypes.getAllStackZones()).interactorCardNotNull().interacteeEquals(ZoneTypes.MONSTER).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.SET)).playerAndInteractorSameOwner().interacteeEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.ACTIVATE_SPELL_TRAP).interactorExcluded(PlayFieldTypes.getAllSpellZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllSpellZones()).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.ATK)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().interacteeEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.SET_SPELL_TRAP_FD).interactorExcluded(PlayFieldTypes.getAllSpellZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllSpellZones()).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.FACE_DOWN)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().interacteeEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.ACTIVATE_SPELL_TRAP).interactorIncluded(PlayFieldTypes.getAllSpellZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllSpellZones()).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.ATK)).playerAndInteractorSameOwner().interactorEqualsInteractee().cardNotInPosition(CardPosition.ATK).addInteraction()
+        .newInteraction().icon(ActionIcons.SET_SPELL_TRAP_FD).interactorIncluded(PlayFieldTypes.getAllSpellZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllSpellZones()).interaction((player, zone, card, monster) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, zone, card, monster, CardPosition.FACE_DOWN)).playerAndInteractorSameOwner().interactorEqualsInteractee().cardNotInPosition(CardPosition.FACE_DOWN).addInteraction()
+        .newInteraction().icon(ActionIcons.MOVE).interactorIncluded(PlayFieldTypes.getAllMonsterZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllMonsterZones()).interaction((player, interactor, card, interactee) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, interactor, card, interactee, card.getCardPosition())).playerAndInteractorSameOwner().interactorUnequalsInteractee().interacteeEmpty().addInteraction()
+        //        .newInteraction().icon(ActionIcons.OVERLAY_TO_TOP).interactorIncluded(PlayFieldTypes.getAllMonsterZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllMonsterZones()).interaction((player, interactor, card, interactee) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, interactor, card, interactee, card.getCardPosition())).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().interactorUnequalsInteractee().interacteeNonEmpty().addInteraction() //TODO all cards below must be put into ATK
+        .newInteraction().icon(ActionIcons.OVERLAY_TO_BOTTOM).interactorIncluded(PlayFieldTypes.getAllMonsterZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllMonsterZones()).interaction((player, interactor, card, interactee) -> new MoveBottomAction(ActionTypes.MOVE_TO_BOTTOM, interactor, card, interactee, CardPosition.ATK)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().interactorUnequalsInteractee().interacteeNonEmpty().addInteraction()
+        .newInteraction().icon(ActionIcons.SHUFFLE_DECK).interactorIncluded(PlayFieldTypes.getAllDeckZones()).interactorCardAny().interacteeIncluded(PlayFieldTypes.getAllDeckZones()).interaction((player, interactor, card, interactee) -> new ShuffleAction(ActionTypes.SHUFFLE, interactee)).playerAndInteractorSameOwner().interactorEqualsInteractee().addInteraction()
+        .newInteraction().icon(ActionIcons.SHOW_HAND).interactorEquals(ZoneTypes.HAND).interactorCardAny().interacteeEquals(ZoneTypes.HAND).interaction((player, interactor, card, interactee) -> new ShowZoneAction(ActionTypes.SHOW_ZONE, interactor)).playerAndInteractorSameOwner().interactorUnequalsInteractee().addInteraction()
+        .newInteraction().icon(ActionIcons.SHOW_CARD).interactorEquals(ZoneTypes.HAND).interactorCardNotNull().interacteeEquals(ZoneTypes.HAND).interaction((player, interactor, card, interactee) -> new ShowCardAction(ActionTypes.SHOW_CARD, interactor, card)).playerAndInteractorSameOwner().interactorUnequalsInteractee().addInteraction();
+    
+    public static ImmutableList<ZoneType> getAllMonsterZones()
+    {
+        return ImmutableList.of(ZoneTypes.MONSTER, ZoneTypes.EXTRA_MONSTER_RIGHT, ZoneTypes.EXTRA_MONSTER_LEFT);
+    }
+    
+    public static ImmutableList<ZoneType> getAllStackZones()
+    {
+        return ImmutableList.of(ZoneTypes.DECK, ZoneTypes.EXTRA_DECK, ZoneTypes.GRAVEYARD, ZoneTypes.EXTRA);
+    }
+    
+    public static ImmutableList<ZoneType> getAllDeckZones()
+    {
+        return ImmutableList.of(ZoneTypes.DECK, ZoneTypes.EXTRA_DECK);
+    }
+    
+    public static ImmutableList<ZoneType> getAllSpellZones()
+    {
+        return ImmutableList.of(ZoneTypes.SPELL_TRAP, ZoneTypes.FIELD_SPELL);
+    }
 }
