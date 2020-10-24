@@ -1,8 +1,10 @@
 package de.cas_ual_ty.ydm.duelmanager.action;
 
 import de.cas_ual_ty.ydm.duelmanager.CardPosition;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageUtility;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import net.minecraft.network.PacketBuffer;
 
 public abstract class MoveAction extends SingleCardAction
@@ -15,16 +17,19 @@ public abstract class MoveAction extends SingleCardAction
     
     public short destinationCardIndex;
     
-    public MoveAction(ActionType actionType, byte zoneId, short cardIndex, byte destinationZoneId, CardPosition destinationCardPosition)
+    public ZoneOwner player;
+    
+    public MoveAction(ActionType actionType, byte zoneId, short cardIndex, byte destinationZoneId, CardPosition destinationCardPosition, ZoneOwner player)
     {
         super(actionType, zoneId, cardIndex);
         this.destinationZoneId = destinationZoneId;
         this.destinationCardPosition = destinationCardPosition;
+        this.player = player;
     }
     
     public MoveAction(ActionType actionType, PacketBuffer buf)
     {
-        this(actionType, buf.readByte(), buf.readShort(), buf.readByte(), CardPosition.getFromIndex(buf.readByte()));
+        this(actionType, buf.readByte(), buf.readShort(), buf.readByte(), CardPosition.getFromIndex(buf.readByte()), DuelMessageUtility.decodeZoneOwner(buf));
     }
     
     @Override
@@ -33,6 +38,7 @@ public abstract class MoveAction extends SingleCardAction
         super.writeToBuf(buf);
         buf.writeByte(this.destinationZoneId);
         buf.writeByte(this.destinationCardPosition.getIndex());
+        DuelMessageUtility.encodeZoneOwner(this.player, buf);
     }
     
     @Override
@@ -63,7 +69,7 @@ public abstract class MoveAction extends SingleCardAction
     {
         this.destinationZone.removeCard(this.destinationCardIndex);
         this.card.setPosition(this.sourceCardPosition);
-        this.sourceZone.addCard(this.card, this.sourceCardIndex);
+        this.sourceZone.addCard(this.player, this.card, this.sourceCardIndex);
     }
     
     @Override
@@ -71,6 +77,6 @@ public abstract class MoveAction extends SingleCardAction
     {
         this.sourceZone.removeCard(this.sourceCardIndex);
         this.card.setPosition(this.destinationCardPosition);
-        this.destinationZone.addCard(this.card, this.destinationCardIndex);
+        this.destinationZone.addCard(this.player, this.card, this.destinationCardIndex);
     }
 }

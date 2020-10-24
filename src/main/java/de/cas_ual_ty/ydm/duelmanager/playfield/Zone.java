@@ -41,7 +41,7 @@ public class Zone
         this.width = width;
         this.height = height;
         this.owner = owner;
-        this.isOwnerTemporary = this.hasOwner();
+        this.isOwnerTemporary = !this.hasOwner();
         this.cardsList = new ArrayList<>(0);
         this.defaultCardPosition = this.type.defaultCardPosition;
     }
@@ -95,24 +95,20 @@ public class Zone
         return this.getCardsList().contains(card);
     }
     
-    public void addCard(DuelCard card, int index)
+    public void addCard(ZoneOwner source, DuelCard card, int index)
     {
-        if(this.getCardsList().isEmpty())
-        {
-            this.trySetOwner(card.getOwner());
-        }
-        
+        this.trySetOwner(source);
         this.getCardsList().add(index, card);
     }
     
-    public void addTopCard(DuelCard card)
+    public void addTopCard(ZoneOwner source, DuelCard card)
     {
-        this.addCard(card, 0);
+        this.addCard(source, card, 0);
     }
     
-    public void addBottomCard(DuelCard card)
+    public void addBottomCard(ZoneOwner source, DuelCard card)
     {
-        this.addCard(card, this.getCardsAmount());
+        this.addCard(source, card, this.getCardsAmount());
     }
     
     public boolean removeCard(DuelCard card)
@@ -137,7 +133,7 @@ public class Zone
     
     public void trySetOwner(ZoneOwner owner)
     {
-        if(this.getIsOwnerTemporary() && this.owner == null)
+        if(this.getCardsList().isEmpty() && this.getIsOwnerTemporary())
         {
             this.owner = owner;
         }

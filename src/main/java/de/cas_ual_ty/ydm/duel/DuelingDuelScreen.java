@@ -84,7 +84,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
         for(Zone zone : this.getDuelManager().getPlayField().getZones())
         {
             this.addButton(w = new ZoneWidget(zone, this, zone.width, zone.height, StringTextComponent.EMPTY, this::zoneClicked, this::zoneTooltip));
-            w.setIsOpponentView(zone.getOwner() != this.view);
             
             if(this.getPlayerRole() == ZoneOwner.PLAYER2.player)
             {
@@ -372,7 +371,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
         public final IDuelScreenContext context;
         public boolean isFlipped;
         public DuelCard hoverCard;
-        public boolean isOpponentView;
         
         public ZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
         {
@@ -381,13 +379,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             this.context = context;
             this.shift();
             this.hoverCard = null;
-            this.isOpponentView = false;
-        }
-        
-        public ZoneWidget setIsOpponentView(boolean isOpponentView)
-        {
-            this.isOpponentView = isOpponentView;
-            return this;
         }
         
         protected void shift()
@@ -421,7 +412,6 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             this.shift();
             
             this.isFlipped = !this.isFlipped;
-            this.isOpponentView = !this.isOpponentView;
             
             return this;
         }
@@ -493,6 +483,7 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
             int hoverHeight = this.height;
             
             boolean faceUp = this.zone.getType().getShowFaceDownCardsToOwner() && this.zone.getOwner() == this.context.getZoneOwner();
+            boolean isOpponentView = this.zone.getOwner() != this.context.getView();
             
             if(this.zone.type.getRenderCardsSpread())
             {
@@ -507,7 +498,7 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                     int renderX = x - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
                     int y = this.y;
                     
-                    if(!this.isOpponentView)
+                    if(!isOpponentView)
                     {
                         for(short i = 0; i < this.zone.getCardsAmount(); ++i)
                         {
@@ -567,7 +558,7 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                     
                     float margin = (this.zone.getCardsAmount() * cardsWidth - this.width) / (float)(this.zone.getCardsAmount() - 1);
                     
-                    if(!this.isOpponentView)
+                    if(!isOpponentView)
                     {
                         for(short i = 0; i < this.zone.getCardsAmount(); ++i)
                         {
@@ -625,7 +616,7 @@ public class DuelingDuelScreen extends ContainerScreen<DuelContainer> implements
                 
                 if(c != null)
                 {
-                    if(!this.isOpponentView)
+                    if(!isOpponentView)
                     {
                         DuelingDuelScreen.renderCardCentered(ms, this.x, this.y, this.width, this.height, c, faceUp);
                     }
