@@ -510,10 +510,10 @@ public class DuelMessages
     {
         public List<Action> actions;
         
-        public AllDuelActions(DuelMessageHeader header, List<Action> action)
+        public AllDuelActions(DuelMessageHeader header, List<Action> actions)
         {
             super(header);
-            this.actions = this.actions;
+            this.actions = actions;
         }
         
         public AllDuelActions(PacketBuffer buf)
