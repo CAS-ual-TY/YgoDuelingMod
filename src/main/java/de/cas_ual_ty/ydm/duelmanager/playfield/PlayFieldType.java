@@ -204,7 +204,7 @@ public class PlayFieldType
         Action action;
         for(InteractionEntry e : this.interactionEntries)
         {
-            if(e.interactor.test(interactor.type) && e.interactee.test(interactee.type))
+            if(e.interactor.test(interactor.type) && e.interactorCard.test(interactorCard) && e.interactee.test(interactee.type))
             {
                 action = e.interaction.createAction(player, interactor, interactorCard, interactee);
                 
