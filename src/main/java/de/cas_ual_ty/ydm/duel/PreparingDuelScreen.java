@@ -13,18 +13,17 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.DuelManagerScreen;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
-import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.client.gui.widget.button.Button;
@@ -35,7 +34,6 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -45,7 +43,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class PreparingDuelScreen extends ContainerScreen<DuelContainer> implements IDuelScreen
+public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScreen
 {
     public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
     public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
@@ -70,13 +68,10 @@ public class PreparingDuelScreen extends ContainerScreen<DuelContainer> implemen
     protected List<DeckWrapper> deckWrappers;
     protected int activeDeckWrapperIdx;
     
-    private boolean isClosedByPlayer;
-    
-    public PreparingDuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public PreparingDuelScreen(DuelManager duelManager, ITextComponent titleIn)
     {
-        super(screenContainer, inv, titleIn);
+        super(duelManager, titleIn);
         this.activeDeckWrapperIdx = 0;
-        this.isClosedByPlayer = true;
     }
     
     @Override
@@ -209,8 +204,7 @@ public class PreparingDuelScreen extends ContainerScreen<DuelContainer> implemen
         }
         else if(this.getState() == DuelState.DUELING)
         {
-            this.isClosedByPlayer = false;
-            this.minecraft.displayGuiScreen(new DuelingDuelScreen(this.getContainer(), this.playerInventory, this.getTitle()));
+            this.minecraft.displayGuiScreen(new DuelingDuelScreen(this.getDuelManager(), this.getTitle()));
         }
     }
     
@@ -223,16 +217,7 @@ public class PreparingDuelScreen extends ContainerScreen<DuelContainer> implemen
     }
     
     @Override
-    public void onClose()
-    {
-        if(this.isClosedByPlayer)
-        {
-            super.onClose();
-        }
-    }
-    
-    @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
+    protected void drawGuiForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
     {
         if(this.getState() == DuelState.IDLE)
         {
@@ -274,7 +259,7 @@ public class PreparingDuelScreen extends ContainerScreen<DuelContainer> implemen
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
+    protected void drawGuiBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         
@@ -479,30 +464,10 @@ public class PreparingDuelScreen extends ContainerScreen<DuelContainer> implemen
         int j1 = x;
         int k1 = y;
         RenderSystem.colorMask(true, true, true, false);
-        int slotColor = this.slotColor;
+        int slotColor = -2130706433; // from ContainerScreen#slotColor
         this.fillGradient(ms, j1, k1, j1 + w, k1 + h, slotColor, slotColor);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
-    }
-    
-    public DuelManager getDuelManager()
-    {
-        return this.getContainer().getDuelManager();
-    }
-    
-    public DuelMessageHeader getHeader()
-    {
-        return this.getDuelManager().header;
-    }
-    
-    public DuelState getState()
-    {
-        return this.getDuelManager().getDuelState();
-    }
-    
-    public PlayerRole getPlayerRole()
-    {
-        return this.getDuelManager().getRoleFor(ClientProxy.getPlayer());
     }
     
     public ITextComponent getRoleDescription(PlayerRole role)

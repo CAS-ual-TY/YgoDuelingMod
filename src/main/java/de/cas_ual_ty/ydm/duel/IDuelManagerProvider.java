@@ -16,7 +16,7 @@ public interface IDuelManagerProvider
     
     public default DuelMessageHeader getMessageHeader()
     {
-        return this.getDuelManager().header;
+        return this.getDuelManager().headerFactory.get();
     }
     
     public default void updateDuelState(DuelState duelState)

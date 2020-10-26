@@ -1,23 +1,15 @@
 package de.cas_ual_ty.ydm.duel;
 
-import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.YdmContainerTypes;
-import de.cas_ual_ty.ydm.YdmTileEntityTypes;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.IDuelTicker;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeaders;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-public class DuelTileEntity extends TileEntity implements INamedContainerProvider, IDuelTicker
+public class DuelTileEntity extends TileEntity implements IDuelTicker
 {
     public DuelManager duelManager;
     
@@ -35,20 +27,13 @@ public class DuelTileEntity extends TileEntity implements INamedContainerProvide
         this.duelManager = this.createDuelManager();
     }
     
-    @Override
-    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
-    {
-        return new DuelContainer(YdmContainerTypes.DUEL, id, playerInventory, this.getPos());
-    }
-    
-    @Override
-    public ITextComponent getDisplayName()
-    {
-        return new TranslationTextComponent("container." + YDM.MOD_ID + "." + YdmTileEntityTypes.DUEL.getRegistryName().getPath());
-    }
-    
     public DuelManager createDuelManager()
     {
-        return new DuelManager(this.world.isRemote, DuelMessageHeaders.DUEL_CONTAINER, this);
+        return new DuelManager(this.world.isRemote, this::createHeader, this);
+    }
+    
+    public DuelMessageHeader createHeader()
+    {
+        return new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY, this.getPos());
     }
 }

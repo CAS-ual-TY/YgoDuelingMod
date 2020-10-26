@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.util;
 import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.eventbus.api.IEventBus;
 
@@ -27,6 +28,11 @@ public interface ISidedProxy
     }
     
     public default void initFiles()
+    {
+        
+    }
+    
+    public default void displayPreparingDuelScreenAndRequestUpdate(DuelManager duelManager)
     {
         
     }

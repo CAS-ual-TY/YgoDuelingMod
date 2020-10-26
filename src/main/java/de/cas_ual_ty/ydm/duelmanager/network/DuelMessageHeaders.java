@@ -12,12 +12,14 @@ import net.minecraftforge.registries.ObjectHolder;
 @ObjectHolder(YDM.MOD_ID)
 public class DuelMessageHeaders
 {
-    public static final DuelMessageHeader DUEL_CONTAINER = null;
+    public static final DuelMessageHeaderType CONTAINER = null;
+    public static final DuelMessageHeaderType TILE_ENTITY = null;
     
     @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<DuelMessageHeader> event)
+    public static void registerItems(RegistryEvent.Register<DuelMessageHeaderType> event)
     {
-        IForgeRegistry<DuelMessageHeader> registry = event.getRegistry();
-        registry.register(new DuelMessageHeader.ContainerHeader().setRegistryName(YDM.MOD_ID, "duel_container"));
+        IForgeRegistry<DuelMessageHeaderType> registry = event.getRegistry();
+        registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.ContainerHeader(DuelMessageHeaders.CONTAINER)).setRegistryName(YDM.MOD_ID, "container"));
+        registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY)).setRegistryName(YDM.MOD_ID, "tile_entity"));
     }
 }

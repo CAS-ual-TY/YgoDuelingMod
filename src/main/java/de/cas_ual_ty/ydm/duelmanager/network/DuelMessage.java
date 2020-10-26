@@ -54,7 +54,7 @@ public abstract class DuelMessage
     }
     
     private DuelMessageHeader header;
-    private Function<PlayerEntity, IDuelManagerProvider> decodedHeader;
+    private DuelMessageHeader decodedHeader;
     
     public DuelMessage(DuelMessageHeader header)
     {
@@ -88,7 +88,7 @@ public abstract class DuelMessage
         
         context.enqueueWork(() ->
         {
-            this.handleMessage(player, this.decodedHeader.apply(player));
+            this.handleMessage(player, this.decodedHeader.getDuelManager(player));
         });
         
         context.setPacketHandled(true);

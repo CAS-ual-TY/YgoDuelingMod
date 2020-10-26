@@ -1,30 +1,84 @@
 package de.cas_ual_ty.ydm.duelmanager.network;
 
-import java.util.function.Function;
-
+import de.cas_ual_ty.ydm.duel.DuelTileEntity;
 import de.cas_ual_ty.ydm.duel.IDuelManagerProvider;
+import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.DistExecutor;
 
-public abstract class DuelMessageHeader extends ForgeRegistryEntry<DuelMessageHeader>
+public abstract class DuelMessageHeader
 {
-    public abstract void writeToBuf(PacketBuffer buf);
+    // Use DuelMessageUtility encodeHeader / decodeHeader
     
-    public abstract Function<PlayerEntity, IDuelManagerProvider> readFromBuf(PacketBuffer buf);
+    public final DuelMessageHeaderType type;
+    
+    public DuelMessageHeader(DuelMessageHeaderType type)
+    {
+        this.type = type;
+    }
+    
+    public void writeToBuf(PacketBuffer buf)
+    {
+    }
+    
+    public void readFromBuf(PacketBuffer buf)
+    {
+    }
+    
+    public abstract IDuelManagerProvider getDuelManager(PlayerEntity player);
     
     public static class ContainerHeader extends DuelMessageHeader
     {
-        @Override
-        public void writeToBuf(PacketBuffer buf)
+        public ContainerHeader(DuelMessageHeaderType type)
         {
-            
+            super(type);
         }
         
         @Override
-        public Function<PlayerEntity, IDuelManagerProvider> readFromBuf(PacketBuffer buf)
+        public IDuelManagerProvider getDuelManager(PlayerEntity player)
         {
-            return (player) -> (IDuelManagerProvider)player.openContainer;
+            return (IDuelManagerProvider)player.openContainer;
+        }
+    }
+    
+    public static class TileEntityHeader extends DuelMessageHeader
+    {
+        public BlockPos pos;
+        
+        public TileEntityHeader(DuelMessageHeaderType type, BlockPos pos)
+        {
+            super(type);
+            this.pos = pos;
+        }
+        
+        public TileEntityHeader(DuelMessageHeaderType type)
+        {
+            super(type);
+        }
+        
+        @Override
+        public void writeToBuf(PacketBuffer buf)
+        {
+            buf.writeBlockPos(this.pos);
+        }
+        
+        @Override
+        public void readFromBuf(PacketBuffer buf)
+        {
+            this.pos = buf.readBlockPos();
+        }
+        
+        @Override
+        public IDuelManagerProvider getDuelManager(PlayerEntity player)
+        {
+            DuelTileEntity te0 = (DuelTileEntity)player.world.getTileEntity(this.pos);
+            DuelManager dm = te0.duelManager;
+            
+            return DistExecutor.<IDuelManagerProvider>unsafeRunForDist(
+                () -> () -> new de.cas_ual_ty.ydm.duel.ClientDuelManagerProvider(dm),
+                () -> () -> new de.cas_ual_ty.ydm.duel.ServerDuelManagerProvider(dm));
         }
     }
 }

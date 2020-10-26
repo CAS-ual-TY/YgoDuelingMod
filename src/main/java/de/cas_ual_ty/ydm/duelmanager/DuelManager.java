@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
@@ -31,7 +32,7 @@ import net.minecraftforge.fml.network.PacketDistributor;
 public class DuelManager
 {
     public final boolean isRemote;
-    public final DuelMessageHeader header;
+    public final Supplier<DuelMessageHeader> headerFactory;
     public final IDuelTicker ticker;
     
     public DuelState duelState;
@@ -57,10 +58,10 @@ public class DuelManager
     public DeckHolder player1Deck;
     public DeckHolder player2Deck;
     
-    public DuelManager(boolean isRemote, DuelMessageHeader header, @Nullable IDuelTicker ticker)
+    public DuelManager(boolean isRemote, Supplier<DuelMessageHeader> header, @Nullable IDuelTicker ticker)
     {
         this.isRemote = isRemote;
-        this.header = header;
+        this.headerFactory = header;
         this.ticker = ticker;
         this.spectators = new LinkedList<>();
         this.actions = new LinkedList<>();
@@ -716,42 +717,42 @@ public class DuelManager
     
     protected void sendActionTo(PlayerEntity player, PlayerRole source, Action action)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.DuelAction(this.header, /* source,*/ action));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.DuelAction(this.getHeader(), /* source,*/ action));
     }
     
     protected void sendActionsTo(PlayerEntity player)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.AllDuelActions(this.header, this.actions));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.AllDuelActions(this.getHeader(), this.actions));
     }
     
     protected void sendDuelStateTo(PlayerEntity player)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateDuelState(this.header, this.duelState));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateDuelState(this.getHeader(), this.duelState));
     }
     
     protected void updateRoleTo(PlayerEntity player, PlayerRole role, PlayerEntity rolePlayer)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateRole(this.header, role, rolePlayer));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateRole(this.getHeader(), role, rolePlayer));
     }
     
     protected void updateReadyTo(PlayerEntity player, PlayerRole role, boolean ready)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateReady(this.header, role, ready));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.UpdateReady(this.getHeader(), role, ready));
     }
     
     protected void sendDecksTo(PlayerEntity player, List<DeckSource> list)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendAvailableDecks(this.header, list));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendAvailableDecks(this.getHeader(), list));
     }
     
     protected void sendDeckTo(PlayerEntity player, int index, DeckHolder deck)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendDeck(this.header, index, deck));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendDeck(this.getHeader(), index, deck));
     }
     
     protected void sendDeckAcceptedTo(PlayerEntity player, PlayerRole acceptedOf)
     {
-        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.DeckAccepted(this.header, acceptedOf));
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.DeckAccepted(this.getHeader(), acceptedOf));
     }
     
     protected <MSG> void sendGeneralPacketTo(ServerPlayerEntity player, MSG msg)
@@ -760,6 +761,11 @@ public class DuelManager
     }
     
     // --- Getters ---
+    
+    public DuelMessageHeader getHeader()
+    {
+        return this.headerFactory.get();
+    }
     
     public IDuelTicker getTicker()
     {

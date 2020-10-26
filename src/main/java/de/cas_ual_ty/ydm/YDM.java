@@ -19,7 +19,7 @@ import de.cas_ual_ty.ydm.duelmanager.FindDecksEvent;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionType;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessage;
-import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
+import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeaderType;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
@@ -98,7 +98,7 @@ public class YDM
     public static IForgeRegistry<ActionIcon> actionIconRegistry;
     public static IForgeRegistry<ZoneType> zoneTypeRegistry;
     public static IForgeRegistry<ActionType> actionTypeRegistry;
-    public static IForgeRegistry<DuelMessageHeader> duelMessageHeaderRegistry;
+    public static IForgeRegistry<DuelMessageHeaderType> duelMessageHeaderRegistry;
     
     public YDM()
     {
@@ -309,7 +309,7 @@ public class YDM
         YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setType(ActionIcon.class).setMaxID(511).create();
         YDM.zoneTypeRegistry = new RegistryBuilder<ZoneType>().setName(new ResourceLocation(YDM.MOD_ID, "zone_types")).setType(ZoneType.class).setMaxID(511).create();
         YDM.actionTypeRegistry = new RegistryBuilder<ActionType>().setName(new ResourceLocation(YDM.MOD_ID, "action_types")).setType(ActionType.class).setMaxID(511).create();
-        YDM.duelMessageHeaderRegistry = new RegistryBuilder<DuelMessageHeader>().setName(new ResourceLocation(YDM.MOD_ID, "duel_message_headers")).setType(DuelMessageHeader.class).setMaxID(63).create();
+        YDM.duelMessageHeaderRegistry = new RegistryBuilder<DuelMessageHeaderType>().setName(new ResourceLocation(YDM.MOD_ID, "duel_message_headers")).setType(DuelMessageHeaderType.class).setMaxID(63).create();
     }
     
     public static void log(String s)

@@ -11,7 +11,6 @@ import javax.annotation.Nullable;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.duel.IDuelManagerProvider;
 import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
@@ -28,14 +27,15 @@ public class DuelMessageUtility
     
     public static void encodeHeader(DuelMessageHeader header, PacketBuffer buf)
     {
-        buf.writeResourceLocation(header.getRegistryName());
+        buf.writeResourceLocation(header.type.getRegistryName());
         header.writeToBuf(buf);
     }
     
-    public static Function<PlayerEntity, IDuelManagerProvider> decodeHeader(PacketBuffer buf)
+    public static DuelMessageHeader decodeHeader(PacketBuffer buf)
     {
-        DuelMessageHeader header = YDM.duelMessageHeaderRegistry.getValue(buf.readResourceLocation());
-        return header.readFromBuf(buf);
+        DuelMessageHeader header = YDM.duelMessageHeaderRegistry.getValue(buf.readResourceLocation()).createHeader();
+        header.readFromBuf(buf);
+        return header;
     }
     
     public static <U> void encodeList(List<U> list, PacketBuffer buf, BiConsumer<U, PacketBuffer> encoder)

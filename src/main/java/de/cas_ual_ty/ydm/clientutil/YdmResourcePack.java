@@ -86,13 +86,13 @@ public class YdmResourcePack extends ResourcePack
         }
         
         // We only look for assets with this path as prefix (so eg. no models)
-        if(!filename.startsWith(PATH_PREFIX))
+        if(!filename.startsWith(YdmResourcePack.PATH_PREFIX))
         {
             return null;
         }
         
         // We remove that prefix part
-        filename = filename.substring(PATH_PREFIX.length());
+        filename = filename.substring(YdmResourcePack.PATH_PREFIX.length());
         
         // Get the file
         File image = ImageHandler.getFile(filename);
