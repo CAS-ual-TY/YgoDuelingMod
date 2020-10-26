@@ -20,7 +20,7 @@ public class ShuffleAction extends SingleZoneAction
     
     public ShuffleAction(ActionType actionType, byte sourceZoneId)
     {
-        this(actionType, sourceZoneId, System.currentTimeMillis());
+        this(actionType, sourceZoneId, System.nanoTime());
     }
     
     public ShuffleAction(ActionType actionType, Zone sourceZone)
