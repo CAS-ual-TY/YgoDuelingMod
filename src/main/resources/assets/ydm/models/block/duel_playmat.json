@@ -1,7 +1,8 @@
 {
 	"credit": "Made with Blockbench",
 	"textures": {
-		"1": "ydm:block/duel_playmat"
+		"1": "ydm:block/duel_playmat",
+		"particle": "ydm:block/duel_playmat"
 	},
 	"elements": [
 		{
