@@ -172,6 +172,7 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void displayPreparingDuelScreenAndRequestUpdate(DuelManager duelManager)
     {
+        duelManager.reset();
         DuelManagerScreen s = new PreparingDuelScreen(duelManager, StringTextComponent.EMPTY);
         ClientProxy.getMinecraft().displayGuiScreen(s);
         s.requestFullUpdate();
