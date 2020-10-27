@@ -1,6 +1,11 @@
 package de.cas_ual_ty.ydm.clientutil;
 
+import org.lwjgl.opengl.GL11;
+
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
+import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.renderer.BufferBuilder;
@@ -81,6 +86,37 @@ public class YdmBlitUtil
         float x2 = (textureX + textureWidth) / (float)totalTextureFileWidth;
         float y2 = (textureY + textureHeight) / (float)totalTextureFileHeight;
         YdmBlitUtil.customInnerBlit(ms.getLast().getMatrix(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, x1, y2, x1, y1, x2, y1, x2, y2);
+    }
+    
+    // see https://github.com/CAS-ual-TY/UsefulCodeBitsForTheBlocksGame/blob/main/src/main/java/com/example/examplemod/client/screen/BlitUtil.java
+    // use full mask (64x64) for 16x16 texture
+    public static void advancedMaskedBlit(MatrixStack ms, int renderX, int renderY, int renderWidth, int renderHeight, Runnable maskBinderAndDrawer, Runnable textureBinderAndDrawer)
+    {
+        RenderSystem.pushMatrix();
+        RenderSystem.color4f(1F, 1F, 1F, 1F);
+        RenderSystem.enableBlend();
+        
+        // We want a blendfunc that doesn't change the color of any pixels,
+        // but rather replaces the framebuffer alpha values with values based
+        // on the whiteness of the mask. In other words, if a pixel is white in the mask,
+        // then the corresponding framebuffer pixel's alpha will be set to 1.
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ZERO);
+        
+        // Addendum to previous comment: Making sure that we write ALL pixels with ANY alpha.
+        RenderSystem.enableAlphaTest();
+        RenderSystem.alphaFunc(GL11.GL_ALWAYS, 0);
+        
+        // Now "draw" the mask (again, this doesn't produce a visible result, it just
+        // changes the alpha values in the framebuffer)
+        maskBinderAndDrawer.run();
+        
+        // Finally, we want a blendfunc that makes the foreground visible only in
+        // areas with high alpha.
+        RenderSystem.blendFunc(SourceFactor.DST_ALPHA, DestFactor.ONE_MINUS_DST_ALPHA);
+        textureBinderAndDrawer.run();
+        
+        RenderSystem.disableBlend();
+        RenderSystem.popMatrix();
     }
     
     protected static void customInnerBlit(Matrix4f matrix, int posX1, int posX2, int posY1, int posY2, int posZ, float texX1, float texX2, float texY1, float texY2)
