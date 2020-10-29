@@ -87,23 +87,23 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             }
             
             this.zoneWidgets.add(w);
-            
-            // in case we init again, buttons is cleared, thus all interaction widgets are removed
-            // just act like we click on the last widget again
-            if(this.clickedZoneWidget != null)
+        }
+        
+        // in case we init again, buttons is cleared, thus all interaction widgets are removed
+        // just act like we click on the last widget again
+        if(this.clickedZoneWidget != null)
+        {
+            for(ZoneWidget match : this.zoneWidgets)
             {
-                for(ZoneWidget match : this.zoneWidgets)
+                if(match.zone == this.clickedZoneWidget.zone)
                 {
-                    if(match.zone == this.clickedZoneWidget.zone)
-                    {
-                        this.clickedZoneWidget = match;
-                        break;
-                    }
+                    this.clickedZoneWidget = match;
+                    break;
                 }
-                
-                this.clickedZoneWidget.hoverCard = this.clickedCard;
-                this.zoneClicked(this.clickedZoneWidget);
             }
+            
+            this.clickedZoneWidget.hoverCard = this.clickedCard;
+            this.zoneClicked(this.clickedZoneWidget);
         }
     }
     
