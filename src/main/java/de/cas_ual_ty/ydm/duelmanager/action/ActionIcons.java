@@ -24,10 +24,10 @@ public class ActionIcons
     public static final ActionIcon TO_TOP_OF_DECK_FA = null;
     public static final ActionIcon ATK_DEF_TO_SET = null;
     public static final ActionIcon SET_MONSTER = null;
-    public static final ActionIcon OVERLAY_TO_TOP = null;
+    public static final ActionIcon OVERLAY = null;
     public static final ActionIcon SPECIAL_SUMMON_ATK = null;
     public static final ActionIcon SPECIAL_SUMMON_DEF = null;
-    public static final ActionIcon OVERLAY_TO_BOTTOM = null;
+    public static final ActionIcon UNDERLAY = null;
     public static final ActionIcon ADD_TO_HAND = null;
     public static final ActionIcon SHUFFLE_DECK = null;
     public static final ActionIcon SHUFFLE_HAND = null;
@@ -64,10 +64,10 @@ public class ActionIcons
         registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/to_top_of_deck_fa.png"), newFileSize).setRegistryName(YDM.MOD_ID, "to_top_of_deck_fa"));
         registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)9).setRegistryName(YDM.MOD_ID, "atk_def_to_set"));
         registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/set.png"), newFileSize).setRegistryName(YDM.MOD_ID, "set_monster"));
-        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)12).setRegistryName(YDM.MOD_ID, "overlay_to_top"));
+        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/overlay.png"), newFileSize).setRegistryName(YDM.MOD_ID, "overlay"));
         registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/special_summon_atk.png"), newFileSize).setRegistryName(YDM.MOD_ID, "special_summon_atk"));
         registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/special_summon_def.png"), newFileSize).setRegistryName(YDM.MOD_ID, "special_summon_def"));
-        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)16).setRegistryName(YDM.MOD_ID, "overlay_to_bottom"));
+        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/underlay.png"), newFileSize).setRegistryName(YDM.MOD_ID, "underlay"));
         registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/add_to_hand.png"), newFileSize).setRegistryName(YDM.MOD_ID, "add_to_hand"));
         registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/shuffle_deck.png"), newFileSize).setRegistryName(YDM.MOD_ID, "shuffle_deck"));
         registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/shuffle_hand.png"), newFileSize).setRegistryName(YDM.MOD_ID, "shuffle_hand"));
