@@ -595,6 +595,11 @@ public class DuelManager
     
     public void receiveActionFrom(PlayerRole role, Action action)
     {
+        YDM.debug("receiving action");
+        YDM.debug(role);
+        YDM.debug(this.player1);
+        YDM.debug(this.player2);
+        
         if(role != PlayerRole.PLAYER1 && role != PlayerRole.PLAYER2)
         {
             return;

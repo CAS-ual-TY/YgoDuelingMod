@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.duelmanager.network;
 
-import de.cas_ual_ty.ydm.duel.DuelTileEntity;
-import de.cas_ual_ty.ydm.duel.IDuelManagerProvider;
+import de.cas_ual_ty.ydm.duel.block.DuelTileEntity;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -77,8 +76,8 @@ public abstract class DuelMessageHeader
             DuelManager dm = te0.duelManager;
             
             return DistExecutor.<IDuelManagerProvider>unsafeRunForDist(
-                () -> () -> new de.cas_ual_ty.ydm.duel.ClientDuelManagerProvider(dm),
-                () -> () -> new de.cas_ual_ty.ydm.duel.ServerDuelManagerProvider(dm));
+                () -> () -> new de.cas_ual_ty.ydm.duelmanager.network.ClientDuelManagerProvider(dm),
+                () -> () -> new de.cas_ual_ty.ydm.duelmanager.network.ServerDuelManagerProvider(dm));
         }
     }
 }

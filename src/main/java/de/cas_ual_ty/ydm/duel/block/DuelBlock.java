@@ -1,12 +1,12 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.duel.block;
 
-import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmTileEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalBlock;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.BlockItemUseContext;
 import net.minecraft.state.StateContainer;
 import net.minecraft.tileentity.TileEntity;
@@ -18,6 +18,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 
 public class DuelBlock extends HorizontalBlock
 {
@@ -32,7 +33,11 @@ public class DuelBlock extends HorizontalBlock
     @Override
     public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        YDM.proxy.displayPreparingDuelScreenAndRequestUpdate(this.getTE(worldIn, pos).duelManager);
+        if(!worldIn.isRemote && player instanceof ServerPlayerEntity)
+        {
+            NetworkHooks.openGui((ServerPlayerEntity)player, this.getTE(worldIn, pos), pos);
+        }
+        
         return ActionResultType.SUCCESS;
     }
     

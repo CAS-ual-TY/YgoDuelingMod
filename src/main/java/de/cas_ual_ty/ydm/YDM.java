@@ -167,6 +167,7 @@ public class YDM
         DuelMessage.register(YDM.channel, index++, DuelMessages.DuelAction.class, DuelMessages.DuelAction::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.RequestDuelAction.class, DuelMessages.RequestDuelAction::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.AllDuelActions.class, DuelMessages.AllDuelActions::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.Leave.class, DuelMessages.Leave::new);
         
         YDM.proxy.init();
     }

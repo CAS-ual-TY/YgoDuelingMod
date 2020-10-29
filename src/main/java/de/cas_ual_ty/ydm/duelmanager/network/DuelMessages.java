@@ -6,7 +6,6 @@ import java.util.UUID;
 import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.duel.IDuelManagerProvider;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
@@ -471,7 +470,7 @@ public class DuelMessages
         //        public PlayerRole source;
         public Action action;
         
-        // must be player role because Judges will also be able to do stuff
+        // must be PlayerRole (not ZoneOwner) because Judges will also be able to do stuff
         // player role require?
         public DuelAction(DuelMessageHeader header, /* PlayerRole source,*/ Action action)
         {
@@ -538,6 +537,37 @@ public class DuelMessages
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
             provider.handleAllActions(this.actions);
+        }
+    }
+    
+    public static class Leave extends DuelMessage.ServerBaseMessage
+    {
+        public Leave(DuelMessageHeader header)
+        {
+            super(header);
+        }
+        
+        public Leave(PacketBuffer buf)
+        {
+            super(buf);
+        }
+        
+        @Override
+        public void encodeMessage(PacketBuffer buf)
+        {
+            
+        }
+        
+        @Override
+        public void decodeMessage(PacketBuffer buf)
+        {
+            
+        }
+        
+        @Override
+        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        {
+            provider.getDuelManager().playerCloseContainer(player);
         }
     }
 }

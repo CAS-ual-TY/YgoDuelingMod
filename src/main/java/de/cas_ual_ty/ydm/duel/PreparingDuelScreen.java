@@ -13,11 +13,9 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
-import de.cas_ual_ty.ydm.clientutil.DuelManagerScreen;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
-import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
@@ -34,6 +32,7 @@ import net.minecraft.client.renderer.model.IBakedModel;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
@@ -43,7 +42,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScreen
+public class PreparingDuelScreen extends DuelContainerScreen<DuelContainer>
 {
     public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
     public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
@@ -68,9 +67,9 @@ public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScree
     protected List<DeckWrapper> deckWrappers;
     protected int activeDeckWrapperIdx;
     
-    public PreparingDuelScreen(DuelManager duelManager, ITextComponent titleIn)
+    public PreparingDuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
-        super(duelManager, titleIn);
+        super(screenContainer, inv, titleIn);
         this.activeDeckWrapperIdx = 0;
     }
     
@@ -80,7 +79,6 @@ public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScree
         this.init(this.getMinecraft(), this.width, this.height);
     }
     
-    @Override
     public void populateDeckSources(List<DeckSource> deckSources)
     {
         this.deckWrappers = new ArrayList<>(deckSources.size());
@@ -94,7 +92,6 @@ public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScree
         this.setActiveDeckWrapper(0);
     }
     
-    @Override
     public void receiveDeck(int index, DeckHolder deck)
     {
         if(index >= 0 && index < this.deckWrappers.size())
@@ -204,7 +201,7 @@ public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScree
         }
         else if(this.getState() == DuelState.DUELING)
         {
-            this.minecraft.displayGuiScreen(new DuelingDuelScreen(this.getDuelManager(), this.getTitle()));
+            this.switchScreen(new DuelingDuelScreen(this.container, this.playerInventory, this.getTitle()));
         }
     }
     
@@ -217,7 +214,7 @@ public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScree
     }
     
     @Override
-    protected void drawGuiForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
+    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
     {
         if(this.getState() == DuelState.IDLE)
         {
@@ -259,7 +256,7 @@ public class PreparingDuelScreen extends DuelManagerScreen implements IDuelScree
     }
     
     @Override
-    protected void drawGuiBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
+    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         

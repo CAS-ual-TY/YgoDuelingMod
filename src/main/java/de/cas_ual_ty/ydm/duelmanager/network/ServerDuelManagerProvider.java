@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.duelmanager.network;
 
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 

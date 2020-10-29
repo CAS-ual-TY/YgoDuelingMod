@@ -1,10 +1,13 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.duelmanager.network;
 
 import java.util.List;
 import java.util.function.Consumer;
 
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.duel.DuelContainer;
+import de.cas_ual_ty.ydm.duel.DuelContainerScreen;
+import de.cas_ual_ty.ydm.duel.PreparingDuelScreen;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
@@ -38,20 +41,19 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
     public void handleAction(Action action)
     {
         // TODO animation
-        
         IDuelManagerProvider.super.handleAction(action);
     }
     
     @Override
     public void receiveDeckSources(List<DeckSource> deckSources)
     {
-        ClientDuelManagerProvider.doForScreen((screen) -> screen.populateDeckSources(deckSources));
+        ClientDuelManagerProvider.doForPreparingScreen((screen) -> screen.populateDeckSources(deckSources));
     }
     
     @Override
     public void receiveDeck(int index, DeckHolder deck)
     {
-        ClientDuelManagerProvider.doForScreen((screen) -> screen.receiveDeck(index, deck));
+        ClientDuelManagerProvider.doForPreparingScreen((screen) -> screen.receiveDeck(index, deck));
     }
     
     @Override
@@ -66,17 +68,28 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
             this.getDuelManager().player2Deck = DeckHolder.DUMMY;
         }
         
-        ClientDuelManagerProvider.doForScreen((screen) -> screen.reInit());
+        ClientDuelManagerProvider.doForPreparingScreen((screen) -> screen.reInit());
     }
     
-    @SuppressWarnings("resource")
-    public static void doForScreen(Consumer<IDuelScreen> consumer)
+    public static void doForScreen(Consumer<DuelContainerScreen<? extends DuelContainer>> consumer)
     {
+        @SuppressWarnings("resource")
         Screen screen = ClientProxy.getMinecraft().currentScreen;
         
-        if(screen instanceof IDuelScreen)
+        if(screen instanceof DuelContainerScreen)
         {
-            consumer.accept((IDuelScreen)screen);
+            consumer.accept((DuelContainerScreen<?>)screen);
+        }
+    }
+    
+    public static void doForPreparingScreen(Consumer<PreparingDuelScreen> consumer)
+    {
+        @SuppressWarnings("resource")
+        Screen screen = ClientProxy.getMinecraft().currentScreen;
+        
+        if(screen instanceof PreparingDuelScreen)
+        {
+            consumer.accept((PreparingDuelScreen)screen);
         }
     }
 }

@@ -4,7 +4,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.duel.IDuelManagerProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;

@@ -11,7 +11,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
-import de.cas_ual_ty.ydm.clientutil.DuelManagerScreen;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
@@ -26,13 +25,14 @@ import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
-public class DuelingDuelScreen extends DuelManagerScreen implements IDuelScreen, IDuelScreenContext
+public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implements IDuelScreenContext
 {
     public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
     public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
@@ -48,9 +48,9 @@ public class DuelingDuelScreen extends DuelManagerScreen implements IDuelScreen,
     
     protected ZoneOwner view;
     
-    public DuelingDuelScreen(DuelManager duelManager, ITextComponent titleIn)
+    public DuelingDuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
-        super(duelManager, titleIn);
+        super(screenContainer, inv, titleIn);
         this.interactionWidgets = new ArrayList<>(); // Need to temporarily initialize with placeholder this to make sure no clear() call gets NPEd
         this.xSize = 234;
         this.ySize = 250;
@@ -61,12 +61,6 @@ public class DuelingDuelScreen extends DuelManagerScreen implements IDuelScreen,
         {
             this.view = ZoneOwner.PLAYER1;
         }
-    }
-    
-    @Override
-    public void reInit()
-    {
-        this.init(this.minecraft, this.width, this.height);
     }
     
     @Override
@@ -114,7 +108,7 @@ public class DuelingDuelScreen extends DuelManagerScreen implements IDuelScreen,
     }
     
     @Override
-    protected void drawGuiBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
+    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(DuelingDuelScreen.DUEL_BACKGROUND_GUI_TEXTURE);
@@ -124,7 +118,7 @@ public class DuelingDuelScreen extends DuelManagerScreen implements IDuelScreen,
     }
     
     @Override
-    protected void drawGuiForegroundLayer(MatrixStack ms, int x, int y)
+    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int x, int y)
     {
         
     }

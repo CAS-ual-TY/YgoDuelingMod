@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.duelmanager.network;
 
 import java.util.List;
 
@@ -8,7 +8,6 @@ import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
-import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
 
 public interface IDuelManagerProvider
 {

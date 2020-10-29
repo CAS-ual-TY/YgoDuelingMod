@@ -22,7 +22,6 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.duel.PreparingDuelScreen;
-import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -40,7 +39,6 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -144,6 +142,7 @@ public class ClientProxy implements ISidedProxy
         
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
+        ScreenManager.registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, PreparingDuelScreen::new);
         
         ClientProxy.infoTextureBinder = new LimitedTextureBinder(ClientProxy.getMinecraft(), ClientProxy.maxInfoImages);
         ClientProxy.mainTextureBinder = new LimitedTextureBinder(ClientProxy.getMinecraft(), ClientProxy.maxMainImages);
@@ -167,15 +166,6 @@ public class ClientProxy implements ISidedProxy
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardMainImagesFolder);
-    }
-    
-    @Override
-    public void displayPreparingDuelScreenAndRequestUpdate(DuelManager duelManager)
-    {
-        duelManager.reset();
-        DuelManagerScreen s = new PreparingDuelScreen(duelManager, StringTextComponent.EMPTY);
-        ClientProxy.getMinecraft().displayGuiScreen(s);
-        s.requestFullUpdate();
     }
     
     @Override
