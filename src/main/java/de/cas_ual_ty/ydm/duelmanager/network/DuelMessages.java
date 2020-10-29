@@ -539,35 +539,4 @@ public class DuelMessages
             provider.handleAllActions(this.actions);
         }
     }
-    
-    public static class Leave extends DuelMessage.ServerBaseMessage
-    {
-        public Leave(DuelMessageHeader header)
-        {
-            super(header);
-        }
-        
-        public Leave(PacketBuffer buf)
-        {
-            super(buf);
-        }
-        
-        @Override
-        public void encodeMessage(PacketBuffer buf)
-        {
-            
-        }
-        
-        @Override
-        public void decodeMessage(PacketBuffer buf)
-        {
-            
-        }
-        
-        @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
-        {
-            provider.getDuelManager().playerCloseContainer(player);
-        }
-    }
 }
