@@ -19,11 +19,11 @@ public class ActionIcons
     public static final ActionIcon BANISH_FA = null;
     public static final ActionIcon TO_BOTTOM_OF_DECK_FD = null;
     public static final ActionIcon ATK_TO_DEF = null;
-    public static final ActionIcon SET_SPELL_TRAP_FD = null;
+    public static final ActionIcon SET_SPELL_TRAP = null;
     public static final ActionIcon BANISH_FD = null;
     public static final ActionIcon TO_TOP_OF_DECK_FA = null;
     public static final ActionIcon ATK_DEF_TO_SET = null;
-    public static final ActionIcon SET_MONSTER = null;
+    public static final ActionIcon SET = null;
     public static final ActionIcon OVERLAY = null;
     public static final ActionIcon SPECIAL_SUMMON_ATK = null;
     public static final ActionIcon SPECIAL_SUMMON_DEF = null;
@@ -53,37 +53,42 @@ public class ActionIcons
         int iconHeight = 32;
         int newFileSize = 64;
         
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/to_top_of_deck_fd.png"), newFileSize).setRegistryName(YDM.MOD_ID, "to_top_of_deck_fd"));
+        registry.register(ActionIcons.create("to_top_of_deck_fd", newFileSize));
         registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)1).setRegistryName(YDM.MOD_ID, "def_to_atk"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/normal_summon.png"), newFileSize).setRegistryName(YDM.MOD_ID, "normal_summon"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/banish_fa.png"), newFileSize).setRegistryName(YDM.MOD_ID, "banish_fa"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/to_bottom_of_deck_fd.png"), newFileSize).setRegistryName(YDM.MOD_ID, "to_bottom_of_deck_fd"));
+        registry.register(ActionIcons.create("normal_summon", newFileSize));
+        registry.register(ActionIcons.create("banish_fa", newFileSize));
+        registry.register(ActionIcons.create("to_bottom_of_deck_fd", newFileSize));
         registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)5).setRegistryName(YDM.MOD_ID, "atk_to_def"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/set_spell_trap.png"), newFileSize).setRegistryName(YDM.MOD_ID, "set_spell_trap_fd"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/banish_fd.png"), newFileSize).setRegistryName(YDM.MOD_ID, "banish_fd"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/to_top_of_deck_fa.png"), newFileSize).setRegistryName(YDM.MOD_ID, "to_top_of_deck_fa"));
+        registry.register(ActionIcons.create("set_spell_trap", newFileSize));
+        registry.register(ActionIcons.create("banish_fd", newFileSize));
+        registry.register(ActionIcons.create("to_top_of_deck_fa", newFileSize));
         registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)9).setRegistryName(YDM.MOD_ID, "atk_def_to_set"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/set.png"), newFileSize).setRegistryName(YDM.MOD_ID, "set_monster"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/overlay.png"), newFileSize).setRegistryName(YDM.MOD_ID, "overlay"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/special_summon_atk.png"), newFileSize).setRegistryName(YDM.MOD_ID, "special_summon_atk"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/special_summon_def.png"), newFileSize).setRegistryName(YDM.MOD_ID, "special_summon_def"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/underlay.png"), newFileSize).setRegistryName(YDM.MOD_ID, "underlay"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/add_to_hand.png"), newFileSize).setRegistryName(YDM.MOD_ID, "add_to_hand"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/shuffle_deck.png"), newFileSize).setRegistryName(YDM.MOD_ID, "shuffle_deck"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/shuffle_hand.png"), newFileSize).setRegistryName(YDM.MOD_ID, "shuffle_hand"));
+        registry.register(ActionIcons.create("set", newFileSize));
+        registry.register(ActionIcons.create("overlay", newFileSize));
+        registry.register(ActionIcons.create("special_summon_atk", newFileSize));
+        registry.register(ActionIcons.create("special_summon_def", newFileSize));
+        registry.register(ActionIcons.create("underlay", newFileSize));
+        registry.register(ActionIcons.create("add_to_hand", newFileSize));
+        registry.register(ActionIcons.create("shuffle_deck", newFileSize));
+        registry.register(ActionIcons.create("shuffle_hand", newFileSize));
         registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)22).setRegistryName(YDM.MOD_ID, "view_deck"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/special_summon_set.png"), newFileSize).setRegistryName(YDM.MOD_ID, "special_summon_set"));
-        registry.register(new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/activate_spell_trap.png"), newFileSize).setRegistryName(YDM.MOD_ID, "activate_spell_trap"));
+        registry.register(ActionIcons.create("special_summon_set", newFileSize));
+        registry.register(ActionIcons.create("activate_spell_trap", newFileSize));
         
         rl = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions_large.png");
         fileSize = 256;
         iconWidth = 64;
         iconHeight = 64;
-        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)0).setRegistryName(YDM.MOD_ID, "show_hand"));
-        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)1).setRegistryName(YDM.MOD_ID, "show_deck"));
-        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)2).setRegistryName(YDM.MOD_ID, "show_card"));
-        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)3).setRegistryName(YDM.MOD_ID, "move"));
+        registry.register(ActionIcons.create("show_hand", newFileSize));
+        registry.register(ActionIcons.create("show_deck", newFileSize));
+        registry.register(ActionIcons.create("show_card", newFileSize));
+        registry.register(ActionIcons.create("move", newFileSize));
         registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)4).setRegistryName(YDM.MOD_ID, "to_graveyard"));
         registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)5).setRegistryName(YDM.MOD_ID, "attack"));
+    }
+    
+    public static ActionIcon create(String name, int fileSize)
+    {
+        return new ActionIcon(new ResourceLocation(YDM.MOD_ID, "textures/gui/action_icons/" + name + ".png"), fileSize).setRegistryName(new ResourceLocation(YDM.MOD_ID, name));
     }
 }

@@ -430,7 +430,7 @@ public class PlayFieldType
         {
             if(this.icon == null || this.interactor == null || this.interactorCard == null || this.interactee == null || this.interaction == null)
             {
-                this.throwException();
+                return PlayFieldType.this;
             }
             
             PlayFieldType.this.registerInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
