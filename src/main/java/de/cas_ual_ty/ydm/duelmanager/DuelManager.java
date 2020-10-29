@@ -572,15 +572,15 @@ public class DuelManager
     {
         // send main decks
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player1Deck.index,
-            this.player1Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+            this.player1Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player2Deck.index,
-            this.player2Deck.getMainDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
+            this.player2Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
         
         // send extra decks
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player1ExtraDeck.index,
-            this.player1Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+            this.player1Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player2ExtraDeck.index,
-            this.player2Deck.getExtraDeck().stream().map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
+            this.player2Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
     }
     
     public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
@@ -595,11 +595,6 @@ public class DuelManager
     
     public void receiveActionFrom(PlayerRole role, Action action)
     {
-        YDM.debug("receiving action");
-        YDM.debug(role);
-        YDM.debug(this.player1);
-        YDM.debug(this.player2);
-        
         if(role != PlayerRole.PLAYER1 && role != PlayerRole.PLAYER2)
         {
             return;
@@ -690,8 +685,6 @@ public class DuelManager
     // synchronize everything
     public void sendAllTo(PlayerEntity player)
     {
-        this.sendDuelStateTo(player);
-        
         if(this.player1 != null)
         {
             this.updateRoleTo(player, PlayerRole.PLAYER1, this.player1);
@@ -711,13 +704,15 @@ public class DuelManager
         this.updateReadyTo(player, PlayerRole.PLAYER2, this.player2Ready);
         
         // playfield is updated via actions
-        
         if(this.duelState == DuelState.DUELING)
         {
             this.sendActionsTo(player);
         }
         
         // TODO synchronize messages (via actions?)
+        
+        //send duel state last as that will trigger a GUI re-init
+        this.sendDuelStateTo(player);
     }
     
     protected void sendActionTo(PlayerEntity player, PlayerRole source, Action action)

@@ -54,4 +54,10 @@ public class DuelCard
     {
         return this.owner;
     }
+    
+    @Override
+    public String toString()
+    {
+        return "[" + this.owner + ": " + this.cardHolder.toString() + "]";
+    }
 }

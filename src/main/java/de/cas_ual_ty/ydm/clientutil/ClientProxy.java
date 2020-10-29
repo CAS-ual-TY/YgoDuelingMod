@@ -466,33 +466,27 @@ public class ClientProxy implements ISidedProxy
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuffer();
         
-        // Prep time
-        GlStateManager.enableBlend(); // We do need blending
-        GlStateManager.disableTexture(); // We dont need textures
+        GlStateManager.enableBlend();
+        GlStateManager.disableTexture();
         
-        // Make sure alpha is working
+        // Use src_color * src_alpha
+        // and dest_color * (1 - src_alpha) for colors
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
         
-        // Set the color!
         RenderSystem.color4f(r, g, b, a);
         
         Matrix4f m = ms.getLast().getMatrix();
         
-        // Start drawing
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        
-        // Add vertices
         bufferbuilder.pos(m, x, y + h, 0F).endVertex(); // BL
         bufferbuilder.pos(m, x + w, y + h, 0F).endVertex(); // BR
         bufferbuilder.pos(m, x + w, y, 0F).endVertex(); // TR
         bufferbuilder.pos(m, x, y, 0F).endVertex(); // TL
-        
-        // End drawing
         tessellator.draw();
         
-        // Cleanup time
-        GlStateManager.enableTexture(); // Turn textures back on
-        GlStateManager.disableBlend(); // Turn blending uhh... back off?
+        GlStateManager.enableTexture();
+        GlStateManager.disableBlend();
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
     }
     
     public static void drawSplitString(MatrixStack ms, FontRenderer fontRenderer, List<ITextComponent> list, float x, float y, int maxWidth, int color)
