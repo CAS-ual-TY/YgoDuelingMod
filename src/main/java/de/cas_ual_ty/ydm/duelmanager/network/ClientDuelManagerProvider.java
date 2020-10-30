@@ -7,12 +7,16 @@ import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.DuelContainerScreen;
+import de.cas_ual_ty.ydm.duel.DuelingDuelScreen;
 import de.cas_ual_ty.ydm.duel.PreparingDuelScreen;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
+import de.cas_ual_ty.ydm.duelmanager.action.ShowCardAction;
+import de.cas_ual_ty.ydm.duelmanager.action.ShowZoneAction;
+import de.cas_ual_ty.ydm.duelmanager.action.ViewZoneAction;
 import net.minecraft.client.gui.screen.Screen;
 
 public class ClientDuelManagerProvider implements IDuelManagerProvider
@@ -41,7 +45,42 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
     public void handleAction(Action action)
     {
         // TODO animation
+        
         IDuelManagerProvider.super.handleAction(action);
+        
+        if(action instanceof ViewZoneAction)
+        {
+            ViewZoneAction a = (ViewZoneAction)action;
+            ClientDuelManagerProvider.doForDuelingScreen((screen) ->
+            {
+                if(screen.getZoneOwner() == a.sourceZone.getOwner())
+                {
+                    screen.viewZone(a.sourceZone);
+                }
+            });
+        }
+        else if(action instanceof ShowZoneAction)
+        {
+            ShowZoneAction a = (ShowZoneAction)action;
+            ClientDuelManagerProvider.doForDuelingScreen((screen) ->
+            {
+                if(screen.getZoneOwner() != a.sourceZone.getOwner())
+                {
+                    screen.viewZone(a.sourceZone);
+                }
+            });
+        }
+        else if(action instanceof ShowCardAction)
+        {
+            ShowCardAction a = (ShowCardAction)action;
+            ClientDuelManagerProvider.doForDuelingScreen((screen) ->
+            {
+                if(screen.getZoneOwner() != a.sourceZone.getOwner())
+                {
+                    
+                }
+            });
+        }
     }
     
     @Override
@@ -90,6 +129,17 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
         if(screen instanceof PreparingDuelScreen)
         {
             consumer.accept((PreparingDuelScreen)screen);
+        }
+    }
+    
+    public static void doForDuelingScreen(Consumer<DuelingDuelScreen> consumer)
+    {
+        @SuppressWarnings("resource")
+        Screen screen = ClientProxy.getMinecraft().currentScreen;
+        
+        if(screen instanceof DuelingDuelScreen)
+        {
+            consumer.accept((DuelingDuelScreen)screen);
         }
     }
 }

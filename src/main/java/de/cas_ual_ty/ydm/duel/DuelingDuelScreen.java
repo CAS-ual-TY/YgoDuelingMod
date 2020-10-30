@@ -40,6 +40,10 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     public static final int CARDS_WIDTH = 24;
     public static final int CARDS_HEIGHT = 32;
     
+    protected ViewCardStackWidget viewCardStackWidget;
+    protected Button scrollUpButton;
+    protected Button scrollDownButton;
+    
     protected ZoneWidget clickedZoneWidget;
     protected DuelCard clickedCard;
     
@@ -71,23 +75,40 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         this.zoneWidgets = new ArrayList<>(this.getDuelManager().getPlayField().getZones().size());
         this.interactionWidgets.clear();
         
-        ZoneWidget w;
+        ZoneWidget widget;
         
         for(Zone zone : this.getDuelManager().getPlayField().getZones())
         {
-            this.addButton(w = new ZoneWidget(zone, this, zone.width, zone.height, StringTextComponent.EMPTY, this::zoneClicked, this::zoneTooltip));
+            this.addButton(widget = new ZoneWidget(zone, this, zone.width, zone.height, StringTextComponent.EMPTY, this::zoneClicked, this::zoneTooltip));
             
             if(this.getPlayerRole() == ZoneOwner.PLAYER2.player)
             {
-                w.setPositionRelativeFlipped(zone.x, zone.y, width, height);
+                widget.setPositionRelativeFlipped(zone.x, zone.y, width, height);
             }
             else
             {
-                w.setPositionRelative(zone.x, zone.y, width, height);
+                widget.setPositionRelative(zone.x, zone.y, width, height);
             }
             
-            this.zoneWidgets.add(w);
+            this.zoneWidgets.add(widget);
         }
+        
+        int maxWidth = (this.width - this.xSize) / 2;
+        int maxHeight = this.height - 40;
+        int x = this.width - maxWidth / 2;
+        int y = this.height / 2;
+        int cardsSize = 32;
+        
+        int w = 3 * cardsSize;
+        int h = 3 * cardsSize;
+        
+        this.addButton(this.viewCardStackWidget = new ViewCardStackWidget(this, x - w / 2, y - h / 2, w, h, StringTextComponent.EMPTY, this::viewCardStackClicked, this::viewCardStackTooltip)
+            .setRowsAndColumns(cardsSize, 3, 3));
+        //TODO
+        
+        int verticalButtonsOff = 4;
+        this.addButton(this.scrollUpButton = new Button(x - w / 2, y - h / 2 - 20 + verticalButtonsOff, w, 20, new StringTextComponent("Up"), this::scrollButtonClicked));
+        this.addButton(this.scrollDownButton = new Button(x - w / 2, y + h / 2 + verticalButtonsOff, w, 20, new StringTextComponent("Down"), this::scrollButtonClicked));
         
         // in case we init again, buttons is cleared, thus all interaction widgets are removed
         // just act like we click on the last widget again
@@ -188,6 +209,34 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         
         this.buttons.addAll(this.interactionWidgets);
         this.children.addAll(this.interactionWidgets);
+        
+        if(!widget.zone.getType().getIsSecret())
+        {
+            this.viewZone(widget, owner == widget.zone.getOwner() && widget.zone.type.getShowFaceDownCardsToOwner());
+        }
+    }
+    
+    protected void viewZone(ZoneWidget widget, boolean forceFaceUp)
+    {
+        this.viewCardStackWidget.activate(widget.zone, forceFaceUp);
+    }
+    
+    // TODO need to actually populate the viewStackWidget
+    // in order to allow single cards to be shown
+    // for Reveal Card action
+    public void viewZone(Zone zone)
+    {
+        for(ZoneWidget w : this.zoneWidgets)
+        {
+            if(w.zone == zone)
+            {
+                w.active = true;
+                w.hoverCard = null;
+                this.zoneClicked(w);
+                this.viewZone(w, true);
+                return;
+            }
+        }
     }
     
     protected void interactionClicked(InteractionWidget widget)
@@ -197,6 +246,33 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         this.removeClickedZone();
         this.removeInteractionWidgets();
         this.activateZoneWidgets();
+    }
+    
+    protected void viewCardStackClicked(ViewCardStackWidget widget)
+    {
+        ZoneWidget w = this.clickedZoneWidget;
+        
+        if(w != null)
+        {
+            w.active = true;
+            w.hoverCard = widget.hoverCard;
+            this.zoneClicked(w);
+        }
+    }
+    
+    protected void scrollButtonClicked(Button button)
+    {
+        if(this.viewCardStackWidget.active)
+        {
+            if(button == this.scrollUpButton)
+            {
+                this.viewCardStackWidget.decreaseCurrentRow();
+            }
+            else if(button == this.scrollDownButton)
+            {
+                this.viewCardStackWidget.increaseCurrentRow();
+            }
+        }
     }
     
     protected void activateZoneWidgets()
@@ -225,6 +301,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     {
         this.clickedZoneWidget = null;
         this.clickedCard = null;
+        this.viewCardStackWidget.deactivate();
     }
     
     protected void zoneTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
@@ -237,6 +314,10 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     {
         InteractionWidget w = (InteractionWidget)w0;
         this.renderTooltip(ms, new StringTextComponent(w.interaction.icon.getRegistryName().getPath()), mouseX, mouseY);
+    }
+    
+    protected void viewCardStackTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
+    {
     }
     
     @Override
@@ -763,6 +844,178 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             {
                 DuelingDuelScreen.renderHoverRect(ms, this.x, this.y, this.width, this.height);
                 this.renderToolTip(ms, mouseX, mouseY);
+            }
+        }
+    }
+    
+    public static class ViewCardStackWidget extends Button
+    {
+        public final IDuelScreenContext context;
+        public DuelCard hoverCard;
+        protected int cardsTextureSize;
+        protected int rows;
+        protected int columns;
+        protected int currentRow;
+        protected boolean forceFaceUp;
+        
+        public ViewCardStackWidget(IDuelScreenContext context, int x, int y, int width, int height, ITextComponent title, Consumer<ViewCardStackWidget> onPress, ITooltip onTooltip)
+        {
+            super(x, y, width, height, title, (button) -> onPress.accept((ViewCardStackWidget)button), onTooltip);
+            this.context = context;
+            this.hoverCard = null;
+            this.rows = 0;
+            this.columns = 0;
+            this.currentRow = 0;
+            this.deactivate();
+        }
+        
+        public ViewCardStackWidget setRowsAndColumns(int cardsTextureSize, int rows, int columns)
+        {
+            this.cardsTextureSize = cardsTextureSize;
+            this.rows = Math.max(1, rows);
+            this.columns = Math.max(1, columns);
+            return this;
+        }
+        
+        public void activate(Zone zone, boolean forceFaceUp)
+        {
+            this.active = true;
+            this.visible = true;
+            this.currentRow = 0;
+            this.forceFaceUp = forceFaceUp;
+        }
+        
+        public void forceFaceUp()
+        {
+            this.forceFaceUp = true;
+        }
+        
+        public void deactivate()
+        {
+            this.visible = false;
+            this.active = false;
+        }
+        
+        public int getCurrentRow()
+        {
+            return this.currentRow;
+        }
+        
+        public int getMaxRows()
+        {
+            if(this.context.getClickedZone() != null && this.columns > 0)
+            {
+                return MathHelper.ceil(this.context.getClickedZone().getCardsAmount() / (float)this.columns);
+            }
+            else
+            {
+                return 0;
+            }
+        }
+        
+        public void decreaseCurrentRow()
+        {
+            this.currentRow = Math.max(0, this.currentRow - 1);
+        }
+        
+        public void increaseCurrentRow()
+        {
+            this.currentRow = Math.min(this.getMaxRows(), this.currentRow + 1);
+        }
+        
+        @Override
+        public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+        {
+            Minecraft minecraft = Minecraft.getInstance();
+            FontRenderer fontrenderer = minecraft.fontRenderer;
+            
+            RenderSystem.enableBlend();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.enableDepthTest();
+            
+            if(this.context.getClickedZone() != null)
+            {
+                this.hoverCard = this.renderCards(ms, mouseX, mouseY);
+            }
+            else
+            {
+                this.hoverCard = null;
+            }
+            
+            int j = this.getFGColor();
+            AbstractGui.drawCenteredString(ms, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        }
+        
+        @Nullable
+        public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
+        {
+            Zone zone = this.context.getClickedZone();
+            
+            DuelCard hoveredCard = null;
+            int hoverX = 0, hoverY = 0;
+            
+            boolean isOwner = zone.getOwner() == this.context.getZoneOwner();
+            boolean faceUp = zone.getType().getShowFaceDownCardsToOwner() && isOwner;
+            boolean isOpponentView = zone.getOwner() != this.context.getView();
+            
+            int index = this.currentRow * this.columns;
+            int x, y;
+            DuelCard c;
+            
+            for(int i = 0; i < this.rows; ++i)
+            {
+                for(int j = 0; j < this.columns && index < zone.getCardsAmount(); ++j)
+                {
+                    x = this.x + j * this.cardsTextureSize;
+                    y = this.y + i * this.cardsTextureSize;
+                    
+                    c = zone.getCard((short)index++);
+                    
+                    if(this.drawCard(ms, c, x, y, this.cardsTextureSize, this.cardsTextureSize, mouseX, mouseY))
+                    {
+                        hoverX = x;
+                        hoverY = y;
+                        hoveredCard = c;
+                    }
+                }
+            }
+            
+            if(hoveredCard != null)
+            {
+                if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !zone.getType().getIsSecret()) || this.forceFaceUp)
+                {
+                    this.context.renderCardInfo(ms, hoveredCard);
+                }
+                
+                DuelingDuelScreen.renderHoverRect(ms, hoverX, hoverY, this.cardsTextureSize, this.cardsTextureSize);
+            }
+            
+            if(!this.active)
+            {
+                return null;
+            }
+            else
+            {
+                return hoveredCard;
+            }
+        }
+        
+        protected boolean drawCard(MatrixStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY)
+        {
+            if(duelCard == this.context.getClickedDuelCard())
+            {
+                DuelingDuelScreen.renderSelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
+            }
+            
+            DuelingDuelScreen.renderCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, this.forceFaceUp);
+            
+            if(this.isHovered() && mouseX >= renderX && mouseX < renderX + renderWidth && mouseY >= renderY && mouseY < renderY + renderHeight)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
