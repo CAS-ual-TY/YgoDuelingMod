@@ -15,7 +15,7 @@ public class ActionIcons
 {
     public static final ActionIcon TO_TOP_OF_DECK_FD = null;
     public static final ActionIcon TO_BOTTOM_OF_DECK_FD = null;
-    public static final ActionIcon TO_TOP_OF_DECK_FA = null;
+    public static final ActionIcon TO_TOP_OF_DECK_FU = null;
     public static final ActionIcon NORMAL_SUMMON = null;
     public static final ActionIcon SET = null;
     public static final ActionIcon SPECIAL_SUMMON_ATK = null;
@@ -26,7 +26,7 @@ public class ActionIcons
     public static final ActionIcon DEF_SET_TO_ATK = null;
     public static final ActionIcon SET_TO_DEF = null;
     public static final ActionIcon DEF_TO_SET = null;
-    public static final ActionIcon BANISH_FA = null;
+    public static final ActionIcon BANISH_FU = null;
     public static final ActionIcon BANISH_FD = null;
     public static final ActionIcon ACTIVATE_SPELL_TRAP = null;
     public static final ActionIcon SET_SPELL_TRAP = null;
@@ -51,7 +51,7 @@ public class ActionIcons
         
         registry.register(ActionIcons.create("to_top_of_deck_fd"));
         registry.register(ActionIcons.create("to_bottom_of_deck_fd"));
-        registry.register(ActionIcons.create("to_top_of_deck_fa"));
+        registry.register(ActionIcons.create("to_top_of_deck_fu"));
         registry.register(ActionIcons.create("normal_summon"));
         registry.register(ActionIcons.create("set"));
         registry.register(ActionIcons.create("special_summon_atk"));
@@ -62,7 +62,7 @@ public class ActionIcons
         registry.register(ActionIcons.create("def_set_to_atk"));
         registry.register(ActionIcons.create("set_to_def"));
         registry.register(ActionIcons.create("def_to_set"));
-        registry.register(ActionIcons.create("banish_fa"));
+        registry.register(ActionIcons.create("banish_fu"));
         registry.register(ActionIcons.create("banish_fd"));
         registry.register(ActionIcons.create("activate_spell_trap"));
         registry.register(ActionIcons.create("set_spell_trap"));
