@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duelmanager.action;
 
-import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageUtility;
+import de.cas_ual_ty.ydm.duelmanager.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;

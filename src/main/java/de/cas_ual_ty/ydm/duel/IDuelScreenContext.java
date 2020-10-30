@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import de.cas_ual_ty.ydm.duelmanager.DuelCard;
+import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 

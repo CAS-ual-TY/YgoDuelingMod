@@ -2,8 +2,8 @@ package de.cas_ual_ty.ydm.duelmanager.action;
 
 import java.util.List;
 
-import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageUtility;
+import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import net.minecraft.network.PacketBuffer;
 
 public class PopulateAction extends SingleZoneAction

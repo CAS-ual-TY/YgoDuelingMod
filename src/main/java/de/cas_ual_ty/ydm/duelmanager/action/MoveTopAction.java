@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duelmanager.action;
 
-import de.cas_ual_ty.ydm.duelmanager.CardPosition;
-import de.cas_ual_ty.ydm.duelmanager.DuelCard;
+import de.cas_ual_ty.ydm.duelmanager.playfield.CardPosition;
+import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import net.minecraft.network.PacketBuffer;

@@ -2,7 +2,6 @@ package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import javax.annotation.Nullable;
 
-import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class ZoneType extends ForgeRegistryEntry<ZoneType>

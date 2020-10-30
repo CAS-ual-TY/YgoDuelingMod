@@ -1,6 +1,6 @@
 package de.cas_ual_ty.ydm.duelmanager.action;
 
-import de.cas_ual_ty.ydm.duelmanager.DuelCard;
+import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import net.minecraft.network.PacketBuffer;
 

@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.duelmanager.CardPosition;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
@@ -30,7 +29,7 @@ public class ZoneTypes
     {
         IForgeRegistry<ZoneType> registry = event.getRegistry();
         registry.register(new ZoneType().showFaceDownCardsToOwner().renderCardsSpread().setRegistryName(YDM.MOD_ID, "hand"));
-        registry.register(new ZoneType().secret().defaultCardPosition(CardPosition.FACE_DOWN).setRegistryName(YDM.MOD_ID, "deck"));
+        registry.register(new ZoneType().secret().defaultCardPosition(CardPosition.FD).setRegistryName(YDM.MOD_ID, "deck"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "spell_trap"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "extra_deck"));
         registry.register(new ZoneType().strict().setRegistryName(YDM.MOD_ID, "graveyard"));

@@ -1,7 +1,6 @@
-package de.cas_ual_ty.ydm.duelmanager;
+package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 
 public class DuelCard
 {
@@ -20,7 +19,7 @@ public class DuelCard
     
     public DuelCard(CardHolder cardHolder, ZoneOwner owner)
     {
-        this(cardHolder, false, CardPosition.FACE_DOWN, owner);
+        this(cardHolder, false, CardPosition.FD, owner);
     }
     
     public DuelCard setToken()

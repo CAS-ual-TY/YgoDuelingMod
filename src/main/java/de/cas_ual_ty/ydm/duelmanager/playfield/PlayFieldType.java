@@ -6,8 +6,6 @@ import java.util.function.Predicate;
 
 import javax.annotation.Nullable;
 
-import de.cas_ual_ty.ydm.duelmanager.CardPosition;
-import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;

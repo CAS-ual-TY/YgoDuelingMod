@@ -18,6 +18,8 @@ import de.cas_ual_ty.ydm.duelmanager.action.ActionTypes;
 import de.cas_ual_ty.ydm.duelmanager.action.PopulateAction;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
+import de.cas_ual_ty.ydm.duelmanager.playfield.CardPosition;
+import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayFieldType;
 import de.cas_ual_ty.ydm.duelmanager.playfield.PlayFieldTypes;
@@ -572,15 +574,15 @@ public class DuelManager
     {
         // send main decks
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player1Deck.index,
-            this.player1Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+            this.player1Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player2Deck.index,
-            this.player2Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
+            this.player2Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
         
         // send extra decks
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player1ExtraDeck.index,
-            this.player1Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+            this.player1Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player2ExtraDeck.index,
-            this.player2Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FACE_DOWN, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
+            this.player2Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
     }
     
     public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)

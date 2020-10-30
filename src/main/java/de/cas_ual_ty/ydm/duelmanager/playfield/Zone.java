@@ -7,8 +7,6 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import de.cas_ual_ty.ydm.duelmanager.CardPosition;
-import de.cas_ual_ty.ydm.duelmanager.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 
 public class Zone

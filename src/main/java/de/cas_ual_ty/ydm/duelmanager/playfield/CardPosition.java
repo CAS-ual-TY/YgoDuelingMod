@@ -1,8 +1,8 @@
-package de.cas_ual_ty.ydm.duelmanager;
+package de.cas_ual_ty.ydm.duelmanager.playfield;
 
 public enum CardPosition
 {
-    ATK(true, true), DEF(false, true), SET(false, false), FACE_DOWN(true, false);
+    ATK(true, true), DEF(false, true), SET(false, false), FD(true, false);
     
     public static final CardPosition[] VALUES = CardPosition.values();
     
@@ -40,7 +40,7 @@ public enum CardPosition
     {
         if(this == ATK)
         {
-            return FACE_DOWN;
+            return FD;
         }
         else if(this == DEF)
         {
