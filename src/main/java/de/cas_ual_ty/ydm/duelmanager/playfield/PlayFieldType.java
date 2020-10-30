@@ -298,7 +298,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -310,7 +310,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -318,11 +318,23 @@ public class PlayFieldType
             return this;
         }
         
+        public InteractionBuilder interactorAndInteracteeNotSameOwner()
+        {
+            if(this.interaction == null)
+            {
+                return this;
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactor.getOwner() != interactee.getOwner() ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
         public InteractionBuilder cardAndInteracteeSameOwner()
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -334,7 +346,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -346,7 +358,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -358,7 +370,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -370,7 +382,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -382,7 +394,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -394,7 +406,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -406,7 +418,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -418,7 +430,7 @@ public class PlayFieldType
         {
             if(this.interaction == null)
             {
-                this.throwException();
+                return this;
             }
             
             SingleZoneInteraction interaction = this.interaction;
@@ -430,16 +442,12 @@ public class PlayFieldType
         {
             if(this.icon == null || this.interactor == null || this.interactorCard == null || this.interactee == null || this.interaction == null)
             {
+                new IllegalStateException("InteractionBuilder: Missing params or wrong order params!").printStackTrace();
                 return PlayFieldType.this;
             }
             
             PlayFieldType.this.registerInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
             return PlayFieldType.this;
-        }
-        
-        private void throwException()
-        {
-            throw new IllegalStateException("Missing params or wrong order params!");
         }
     }
     

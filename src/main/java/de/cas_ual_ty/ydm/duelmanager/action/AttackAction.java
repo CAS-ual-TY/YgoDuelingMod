@@ -16,6 +16,11 @@ public class AttackAction extends SingleZoneAction
         this.attackedZoneId = attackedZoneId;
     }
     
+    public AttackAction(ActionType actionType, Zone sourceZone, Zone attackedZone)
+    {
+        this(actionType, sourceZone.index, attackedZone.index);
+    }
+    
     public AttackAction(ActionType actionType, PacketBuffer buf)
     {
         this(actionType, buf.readByte(), buf.readByte());
