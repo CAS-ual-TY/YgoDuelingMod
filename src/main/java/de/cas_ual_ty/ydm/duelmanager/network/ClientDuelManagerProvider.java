@@ -3,6 +3,8 @@ package de.cas_ual_ty.ydm.duelmanager.network;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.google.common.collect.ImmutableList;
+
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
@@ -77,7 +79,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
             {
                 if(screen.getZoneOwner() != a.sourceZone.getOwner())
                 {
-                    
+                    screen.viewCards(a.sourceZone, ImmutableList.of(a.card));
                 }
             });
         }

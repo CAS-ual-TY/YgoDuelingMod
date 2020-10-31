@@ -436,6 +436,18 @@ public class PlayFieldType
             return this;
         }
         
+        public InteractionBuilder cardIsOnTop()
+        {
+            if(this.interaction == null)
+            {
+                return this;
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            this.interaction = (player, interactor, interactorCard, interactee) -> interactor.getCardIndex(interactorCard) == 0 ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
         public PlayFieldType addInteraction()
         {
             if(this.icon == null || this.interactor == null || this.interactorCard == null || this.interactee == null || this.interaction == null)

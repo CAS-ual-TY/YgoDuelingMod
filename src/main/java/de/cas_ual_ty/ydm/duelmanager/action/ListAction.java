@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.duelmanager.action;
 import java.util.List;
 
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageUtility;
+import de.cas_ual_ty.ydm.duelmanager.playfield.PlayField;
 import net.minecraft.network.PacketBuffer;
 
 public class ListAction extends Action
@@ -25,6 +26,15 @@ public class ListAction extends Action
     {
         super.writeToBuf(buf);
         DuelMessageUtility.encodeList(this.actions, buf, DuelMessageUtility::encodeAction);
+    }
+    
+    @Override
+    public void init(PlayField playField)
+    {
+        for(Action action : this.actions)
+        {
+            action.init(playField);
+        }
     }
     
     @Override

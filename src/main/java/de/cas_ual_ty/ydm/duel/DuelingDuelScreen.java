@@ -58,6 +58,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         this.interactionWidgets = new ArrayList<>(); // Need to temporarily initialize with placeholder this to make sure no clear() call gets NPEd
         this.xSize = 234;
         this.ySize = 250;
+        this.viewCardStackWidget = null;
         this.clickedZoneWidget = null;
         this.clickedCard = null;
         this.view = this.getZoneOwner();
@@ -102,12 +103,13 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         int w = 3 * cardsSize;
         int h = 3 * cardsSize;
         
+        ViewCardStackWidget previousViewStack = this.viewCardStackWidget;
         this.addButton(this.viewCardStackWidget = new ViewCardStackWidget(this, x - w / 2, y - h / 2, w, h, StringTextComponent.EMPTY, this::viewCardStackClicked, this::viewCardStackTooltip)
             .setRowsAndColumns(cardsSize, 3, 3));
         //TODO
         
         int verticalButtonsOff = 4;
-        this.addButton(this.scrollUpButton = new Button(x - w / 2, y - h / 2 - 20 + verticalButtonsOff, w, 20, new StringTextComponent("Up"), this::scrollButtonClicked));
+        this.addButton(this.scrollUpButton = new Button(x - w / 2, y - h / 2 - 20 - verticalButtonsOff, w, 20, new StringTextComponent("Up"), this::scrollButtonClicked));
         this.addButton(this.scrollDownButton = new Button(x - w / 2, y + h / 2 + verticalButtonsOff, w, 20, new StringTextComponent("Down"), this::scrollButtonClicked));
         
         // in case we init again, buttons is cleared, thus all interaction widgets are removed
@@ -125,6 +127,11 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             
             this.clickedZoneWidget.hoverCard = this.clickedCard;
             this.zoneClicked(this.clickedZoneWidget);
+        }
+        
+        if(previousViewStack != null && previousViewStack.cards != null)
+        {
+            this.viewCards(previousViewStack.cards, previousViewStack.forceFaceUp);
         }
     }
     
@@ -218,22 +225,47 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     
     protected void viewZone(ZoneWidget widget, boolean forceFaceUp)
     {
-        this.viewCardStackWidget.activate(widget.zone, forceFaceUp);
+        this.viewCards(widget.zone.getCardsList(), forceFaceUp);
     }
     
-    // TODO need to actually populate the viewStackWidget
-    // in order to allow single cards to be shown
-    // for Reveal Card action
+    protected void viewCards(List<DuelCard> cards, boolean forceFaceUp)
+    {
+        this.viewCardStackWidget.activate(cards, forceFaceUp);
+    }
+    
     public void viewZone(Zone zone)
     {
         for(ZoneWidget w : this.zoneWidgets)
         {
             if(w.zone == zone)
             {
-                w.active = true;
+                this.removeClickedZone();
+                this.removeInteractionWidgets();
+                this.activateZoneWidgets();
+                
                 w.hoverCard = null;
+                
                 this.zoneClicked(w);
                 this.viewZone(w, true);
+                return;
+            }
+        }
+    }
+    
+    public void viewCards(Zone zone, List<DuelCard> cards)
+    {
+        for(ZoneWidget w : this.zoneWidgets)
+        {
+            if(w.zone == zone)
+            {
+                this.removeClickedZone();
+                this.removeInteractionWidgets();
+                this.activateZoneWidgets();
+                
+                w.hoverCard = null;
+                
+                this.zoneClicked(w);
+                this.viewCardStackWidget.activate(cards, true);
                 return;
             }
         }
@@ -251,12 +283,18 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     protected void viewCardStackClicked(ViewCardStackWidget widget)
     {
         ZoneWidget w = this.clickedZoneWidget;
+        boolean forceFaceUp = widget.forceFaceUp;
         
         if(w != null)
         {
             w.active = true;
             w.hoverCard = widget.hoverCard;
             this.zoneClicked(w);
+            
+            if(forceFaceUp)
+            {
+                widget.forceFaceUp();
+            }
         }
     }
     
@@ -454,6 +492,8 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         DuelingDuelScreen.renderCardReversed(ms, x, y, width, height, card, forceFaceUp);
     }
     
+    // TODO make more specialized zone widgets
+    // maybe with client registration via zone type
     public static class ZoneWidget extends Button
     {
         public final Zone zone;
@@ -541,7 +581,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             
             if(this.context.getClickedZone() == this.zone && this.context.getClickedDuelCard() == null)
             {
-                ClientProxy.drawLineRect(ms, this.x, this.y, this.width, this.height, 1, 0F, 0F, 1F, 1F);
+                DuelingDuelScreen.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
             }
             
             this.hoverCard = this.renderCards(ms, mouseX, mouseY);
@@ -554,7 +594,11 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             {
                 if(this.isHovered())
                 {
-                    DuelingDuelScreen.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    if(this.zone.getCardsAmount() == 0)
+                    {
+                        DuelingDuelScreen.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    }
+                    
                     this.renderToolTip(ms, mouseX, mouseY);
                 }
             }
@@ -618,17 +662,27 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
                 else
                 {
                     int x = this.x;
-                    int renderX = x - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
                     int y = this.y;
                     
                     int x1;
                     int renderX1;
                     
-                    float margin = (this.zone.getCardsAmount() * cardsWidth - this.width) / (float)(this.zone.getCardsAmount() - 1);
+                    float margin = cardsWidth - (this.zone.getCardsAmount() * cardsWidth - this.width) / (float)(this.zone.getCardsAmount() - 1);
+                    
+                    boolean renderLeftToRight = !this.zone.type.getRenderCardsReversed() && isOpponentView; // wenn true
+                    boolean renderFrontToBack = this.zone.type.getRenderCardsReversed() && isOpponentView; // flip
+                    
+                    if(!renderLeftToRight)
+                    {
+                        margin *= -1F;
+                        x += this.width - cardsWidth;
+                    }
+                    
+                    int renderX = x - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
                     
                     for(short i = 0; i < this.zone.getCardsAmount(); ++i)
                     {
-                        if(!isOpponentView)
+                        if(renderFrontToBack)
                         {
                             c = this.zone.getCard(i);
                         }
@@ -637,10 +691,34 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
                             c = this.zone.getCard((short)(this.zone.getCardsAmount() - i - 1));
                         }
                         
-                        x1 = x + (int)(i * (cardsWidth - margin));
-                        renderX1 = renderX + (int)(i * (cardsWidth - margin));
+                        x1 = x + (int)(i * margin);
+                        renderX1 = renderX + (int)(i * margin);
                         
-                        if(this.drawCard(ms, c, renderX1, y, cardsTextureSize, cardsTextureSize, mouseX, mouseY, x1, y, cardsWidth, cardsHeight))
+                        // if this is the top rendered card
+                        // and the card is sideways
+                        // adjust the hover rect
+                        // and also render it centered again
+                        if(c == this.zone.getTopCardSafely() && !c.getCardPosition().isStraight)
+                        {
+                            int renX = this.x + (this.width - cardsTextureSize) / 2;
+                            int renY = this.y + (this.height - cardsTextureSize) / 2;
+                            
+                            int offset = (cardsHeight - cardsWidth);
+                            int hovX = renX;
+                            int hovY = renY + offset / 2;
+                            int hovW = cardsHeight;
+                            int hovH = cardsWidth;
+                            
+                            if(this.drawCard(ms, c, renX, renY, cardsTextureSize, cardsTextureSize, mouseX, mouseY, hovX, hovY, hovW, hovH))
+                            {
+                                hoveredCard = c;
+                                hoverX = hovX;
+                                hoverY = hovY;
+                                hoverWidth = hovW;
+                                hoverHeight = hovH;
+                            }
+                        }
+                        else if(this.drawCard(ms, c, renderX1, y, cardsTextureSize, cardsTextureSize, mouseX, mouseY, x1, y, cardsWidth, cardsHeight))
                         {
                             hoveredCard = c;
                             hoverX = x1;
@@ -656,6 +734,14 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
                 if(c != null && this.drawCard(ms, c, this.x, this.y, this.width, this.height, mouseX, mouseY, this.x, this.y, this.width, this.height))
                 {
                     hoveredCard = c;
+                }
+                
+                // #drawCard only draws the top card here
+                // so only if the top card is selected, this zone is marked
+                // so we gotta mark the zone in case this zone is selected
+                if(this.context.getClickedDuelCard() != c && this.context.getClickedZone() == this.zone)
+                {
+                    DuelingDuelScreen.renderSelectedRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
                 }
             }
             
@@ -856,6 +942,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         protected int rows;
         protected int columns;
         protected int currentRow;
+        protected List<DuelCard> cards;
         protected boolean forceFaceUp;
         
         public ViewCardStackWidget(IDuelScreenContext context, int x, int y, int width, int height, ITextComponent title, Consumer<ViewCardStackWidget> onPress, ITooltip onTooltip)
@@ -877,11 +964,12 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             return this;
         }
         
-        public void activate(Zone zone, boolean forceFaceUp)
+        public void activate(List<DuelCard> cards, boolean forceFaceUp)
         {
             this.active = true;
             this.visible = true;
             this.currentRow = 0;
+            this.cards = cards;
             this.forceFaceUp = forceFaceUp;
         }
         
@@ -892,6 +980,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         
         public void deactivate()
         {
+            this.cards = null;
             this.visible = false;
             this.active = false;
         }
@@ -903,9 +992,9 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         
         public int getMaxRows()
         {
-            if(this.context.getClickedZone() != null && this.columns > 0)
+            if(this.cards != null && this.columns > 0)
             {
-                return MathHelper.ceil(this.context.getClickedZone().getCardsAmount() / (float)this.columns);
+                return MathHelper.ceil(this.cards.size() / (float)this.columns);
             }
             else
             {
@@ -933,7 +1022,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableDepthTest();
             
-            if(this.context.getClickedZone() != null)
+            if(!this.cards.isEmpty())
             {
                 this.hoverCard = this.renderCards(ms, mouseX, mouseY);
             }
@@ -949,14 +1038,8 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         @Nullable
         public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
         {
-            Zone zone = this.context.getClickedZone();
-            
             DuelCard hoveredCard = null;
             int hoverX = 0, hoverY = 0;
-            
-            boolean isOwner = zone.getOwner() == this.context.getZoneOwner();
-            boolean faceUp = zone.getType().getShowFaceDownCardsToOwner() && isOwner;
-            boolean isOpponentView = zone.getOwner() != this.context.getView();
             
             int index = this.currentRow * this.columns;
             int x, y;
@@ -964,12 +1047,12 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             
             for(int i = 0; i < this.rows; ++i)
             {
-                for(int j = 0; j < this.columns && index < zone.getCardsAmount(); ++j)
+                for(int j = 0; j < this.columns && index < this.cards.size(); ++j)
                 {
                     x = this.x + j * this.cardsTextureSize;
                     y = this.y + i * this.cardsTextureSize;
                     
-                    c = zone.getCard((short)index++);
+                    c = this.cards.get(index++);
                     
                     if(this.drawCard(ms, c, x, y, this.cardsTextureSize, this.cardsTextureSize, mouseX, mouseY))
                     {
@@ -982,7 +1065,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
             
             if(hoveredCard != null)
             {
-                if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !zone.getType().getIsSecret()) || this.forceFaceUp)
+                if(hoveredCard.getCardPosition().isFaceUp || this.forceFaceUp)
                 {
                     this.context.renderCardInfo(ms, hoveredCard);
                 }
