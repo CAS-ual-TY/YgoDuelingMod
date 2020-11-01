@@ -43,8 +43,8 @@ public class ActionIcons
     public static final ActionIcon SHOW_CARD = null;
     public static final ActionIcon MOVE = null;
     public static final ActionIcon TO_GRAVEYARD = null;
-    
     public static final ActionIcon ATTACK = null;
+    public static final ActionIcon ATTACK_DIRECTLY = null;
     
     @SubscribeEvent
     public static void registerActionIcons(RegistryEvent.Register<ActionIcon> event)
@@ -81,12 +81,8 @@ public class ActionIcons
         registry.register(ActionIcons.create("show_card"));
         registry.register(ActionIcons.create("move"));
         registry.register(ActionIcons.create("to_graveyard"));
-        
-        ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions_large.png");
-        int fileSize = 256;
-        int iconWidth = 64;
-        int iconHeight = 64;
-        registry.register(new ActionIcon(rl, fileSize, iconWidth, iconHeight, (byte)5).setRegistryName(YDM.MOD_ID, "attack"));
+        registry.register(ActionIcons.create("attack"));
+        registry.register(ActionIcons.create("attack_directly"));
     }
     
     public static ActionIcon create(String name)
