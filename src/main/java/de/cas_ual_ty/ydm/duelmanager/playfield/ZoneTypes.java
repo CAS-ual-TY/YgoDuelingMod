@@ -28,12 +28,12 @@ public class ZoneTypes
     public static void registerZoneTypes(RegistryEvent.Register<ZoneType> event)
     {
         IForgeRegistry<ZoneType> registry = event.getRegistry();
-        registry.register(new ZoneType().showFaceDownCardsToOwner().renderCardsSpread().renderCardsReversed().setRegistryName(YDM.MOD_ID, "hand"));
+        registry.register(new ZoneType().showFaceDownCardsToOwner().setRegistryName(YDM.MOD_ID, "hand"));
         registry.register(new ZoneType().secret().defaultCardPosition(CardPosition.FD).setRegistryName(YDM.MOD_ID, "deck"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "spell_trap"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "extra_deck"));
         registry.register(new ZoneType().strict().setRegistryName(YDM.MOD_ID, "graveyard"));
-        registry.register(new ZoneType().renderCardsSpread().allowSideways().setRegistryName(YDM.MOD_ID, "monster"));
+        registry.register(new ZoneType().allowSideways().setRegistryName(YDM.MOD_ID, "monster"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "field_spell"));
         registry.register(new ZoneType().strict().setRegistryName(YDM.MOD_ID, "banished"));
         registry.register(new ZoneType().setRegistryName(YDM.MOD_ID, "extra"));

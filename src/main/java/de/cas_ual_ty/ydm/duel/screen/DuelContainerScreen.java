@@ -1,7 +1,8 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.duel.screen;
 
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.SwitchableContainerScreen;
+import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;

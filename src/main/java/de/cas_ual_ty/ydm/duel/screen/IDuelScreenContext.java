@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.duel.screen;
 
 import javax.annotation.Nullable;
 

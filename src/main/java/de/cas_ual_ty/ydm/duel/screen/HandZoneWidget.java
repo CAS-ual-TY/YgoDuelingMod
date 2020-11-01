@@ -1,0 +1,144 @@
+package de.cas_ual_ty.ydm.duel.screen;
+
+import java.util.function.Consumer;
+
+import javax.annotation.Nullable;
+
+import com.mojang.blaze3d.matrix.MatrixStack;
+
+import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
+import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
+import net.minecraft.util.text.ITextComponent;
+
+public class HandZoneWidget extends ZoneWidget
+{
+    public HandZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
+    {
+        super(zone, context, width, height, title, onPress, onTooltip);
+        // TODO Auto-generated constructor stub
+    }
+    
+    @Override
+    @Nullable
+    public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
+    {
+        if(this.zone.getCardsAmount() <= 0)
+        {
+            return super.renderCards(ms, mouseX, mouseY);
+        }
+        
+        final int cardsWidth = DuelingDuelScreen.CARDS_WIDTH * this.height / DuelingDuelScreen.CARDS_HEIGHT;
+        final int cardsHeight = this.height;
+        final int offset = (cardsHeight - cardsWidth);
+        final int cardsTextureSize = cardsHeight;
+        
+        DuelCard hoveredCard = null;
+        int hoverX = this.x;
+        int hoverY = this.y;
+        int hoverWidth = cardsWidth;
+        int hoverHeight = cardsHeight;
+        
+        boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
+        boolean isOpponentView = this.zone.getOwner() != this.context.getView();
+        
+        final int renderX = this.x;
+        final int renderY = this.y;
+        final int renderWidth = cardsTextureSize;
+        final int renderHeight = cardsTextureSize;
+        
+        DuelCard c = null;
+        hoverWidth = cardsWidth;
+        
+        int totalW = this.zone.getCardsAmount() * cardsWidth;
+        
+        if(totalW <= this.width || this.zone.getCardsAmount() == 1)
+        {
+            int newHoverX = this.x + (this.width - totalW) / 2;
+            int newRenderX = newHoverX - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
+            
+            for(int i = 0; i < this.zone.getCardsAmount(); ++i)
+            {
+                if(!isOpponentView)
+                {
+                    c = this.zone.getCardUnsafe(i);
+                }
+                else
+                {
+                    c = this.zone.getCardUnsafe(this.zone.getCardsAmount() - i - 1);
+                }
+                
+                if(this.drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
+                {
+                    hoveredCard = c;
+                    hoverX = newHoverX;
+                }
+                
+                newRenderX += cardsWidth;
+                newHoverX += cardsWidth;
+            }
+        }
+        else
+        {
+            int hoverXBase = this.x;
+            
+            int newRenderX;
+            int newHoverX;
+            
+            float margin = cardsWidth - (this.zone.getCardsAmount() * cardsWidth - this.width) / (float)(this.zone.getCardsAmount() - 1);
+            
+            //            boolean renderLeftToRight = !this.zone.type.getRenderCardsReversed() && isOpponentView;
+            //            boolean renderFrontToBack = this.zone.type.getRenderCardsReversed() && isOpponentView;
+            boolean renderLeftToRight = false;
+            boolean renderFrontToBack = isOpponentView;
+            
+            if(!renderLeftToRight)
+            {
+                margin *= -1F;
+                hoverXBase += this.width - cardsWidth;
+            }
+            
+            for(int i = 0; i < this.zone.getCardsAmount(); ++i)
+            {
+                if(renderFrontToBack)
+                {
+                    c = this.zone.getCardUnsafe(i);
+                }
+                else
+                {
+                    c = this.zone.getCardUnsafe(this.zone.getCardsAmount() - i - 1);
+                }
+                
+                newHoverX = hoverXBase + (int)(i * margin);
+                newRenderX = newHoverX - offset / 2;
+                
+                if(this.drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
+                {
+                    hoveredCard = c;
+                    hoverX = newHoverX;
+                }
+            }
+        }
+        
+        if(hoveredCard != null)
+        {
+            if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !this.zone.getType().getIsSecret()))
+            {
+                this.context.renderCardInfo(ms, hoveredCard);
+            }
+            
+            if(this.active)
+            {
+                DuelingDuelScreen.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
+            }
+        }
+        
+        if(!this.active)
+        {
+            return null;
+        }
+        else
+        {
+            return hoveredCard;
+        }
+    }
+}

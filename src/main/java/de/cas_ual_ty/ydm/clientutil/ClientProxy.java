@@ -21,7 +21,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
-import de.cas_ual_ty.ydm.duel.PreparingDuelScreen;
+import de.cas_ual_ty.ydm.duel.screen.PreparingDuelScreen;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;

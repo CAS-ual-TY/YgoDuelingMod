@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel;
+package de.cas_ual_ty.ydm.duel.screen;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +15,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;

@@ -73,6 +73,11 @@ public class Zone
         }
     }
     
+    public DuelCard getCardUnsafe(int index)
+    {
+        return this.getCardsList().get(index);
+    }
+    
     public DuelCard getCard(short index)
     {
         return this.getCardsList().get(index);
