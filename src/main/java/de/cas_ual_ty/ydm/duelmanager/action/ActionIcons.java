@@ -32,6 +32,8 @@ public class ActionIcons
     public static final ActionIcon SET_SPELL_TRAP = null;
     public static final ActionIcon OVERLAY = null;
     public static final ActionIcon UNDERLAY = null;
+    public static final ActionIcon SPECIAL_SUMMON_OVERLAY_ATK = null;
+    public static final ActionIcon SPECIAL_SUMMON_OVERLAY_DEF = null;
     public static final ActionIcon ADD_TO_HAND = null;
     public static final ActionIcon SHUFFLE_DECK = null;
     public static final ActionIcon SHUFFLE_HAND = null;
@@ -68,6 +70,8 @@ public class ActionIcons
         registry.register(ActionIcons.create("set_spell_trap"));
         registry.register(ActionIcons.create("overlay"));
         registry.register(ActionIcons.create("underlay"));
+        registry.register(ActionIcons.create("special_summon_overlay_atk"));
+        registry.register(ActionIcons.create("special_summon_overlay_def"));
         registry.register(ActionIcons.create("add_to_hand"));
         registry.register(ActionIcons.create("shuffle_deck"));
         registry.register(ActionIcons.create("shuffle_hand"));
