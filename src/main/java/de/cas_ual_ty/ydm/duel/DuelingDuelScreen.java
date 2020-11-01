@@ -133,6 +133,8 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         {
             this.viewCards(previousViewStack.cards, previousViewStack.forceFaceUp);
         }
+        
+        this.updateButtonStatus();
     }
     
     @Override
@@ -231,6 +233,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     protected void viewCards(List<DuelCard> cards, boolean forceFaceUp)
     {
         this.viewCardStackWidget.activate(cards, forceFaceUp);
+        this.updateButtonStatus();
     }
     
     public void viewZone(Zone zone)
@@ -311,6 +314,32 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
                 this.viewCardStackWidget.increaseCurrentRow();
             }
         }
+        
+        this.updateButtonStatus();
+    }
+    
+    protected void updateButtonStatus()
+    {
+        this.scrollUpButton.active = false;
+        this.scrollUpButton.visible = false;
+        this.scrollDownButton.active = false;
+        this.scrollDownButton.visible = false;
+        
+        if(this.viewCardStackWidget.active)
+        {
+            this.scrollUpButton.visible = true;
+            this.scrollDownButton.visible = true;
+            
+            if(this.viewCardStackWidget.currentRow > 0)
+            {
+                this.scrollUpButton.active = true;
+            }
+            
+            if(this.viewCardStackWidget.currentRow < this.viewCardStackWidget.getMaxRows())
+            {
+                this.scrollDownButton.active = true;
+            }
+        }
     }
     
     protected void activateZoneWidgets()
@@ -340,6 +369,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         this.clickedZoneWidget = null;
         this.clickedCard = null;
         this.viewCardStackWidget.deactivate();
+        this.updateButtonStatus();
     }
     
     protected void zoneTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
@@ -994,7 +1024,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         {
             if(this.cards != null && this.columns > 0)
             {
-                return MathHelper.ceil(this.cards.size() / (float)this.columns);
+                return Math.max(0, MathHelper.ceil(this.cards.size() / (float)this.columns) - 3);
             }
             else
             {
