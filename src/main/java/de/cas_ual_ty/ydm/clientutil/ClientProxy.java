@@ -1,8 +1,10 @@
 package de.cas_ual_ty.ydm.clientutil;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.tuple.Pair;
@@ -39,6 +41,8 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
@@ -91,6 +95,7 @@ public class ClientProxy implements ISidedProxy
     {
         bus.addListener(this::guiScreenDrawScreenPost);
         bus.addListener(this::renderGameOverlayPost);
+        bus.addListener(this::clientChatReceived);
     }
     
     @Override
@@ -338,6 +343,31 @@ public class ClientProxy implements ISidedProxy
             {
                 ClientProxy.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
             }
+        }
+    }
+    
+    public static int maxMessages = 50; //TODO make configurable
+    public static List<ITextComponent> chatMessages = new ArrayList<>(50);
+    
+    private void clientChatReceived(ClientChatReceivedEvent event)
+    {
+        if(!event.isCanceled() && event.getMessage() != null && !event.getMessage().getString().isEmpty() && !ClientProxy.getMinecraft().cannotSendChatMessages(event.getSenderUUID()))
+        {
+            UUID playerUUID = event.getSenderUUID();
+            
+            ITextComponent message = event.getMessage();
+            
+            if(playerUUID == ClientProxy.getPlayer().getUniqueID())
+            {
+                message = new StringTextComponent("<").append(ClientProxy.getPlayer().getName()).appendString("> ").append(event.getMessage());
+            }
+            
+            if(ClientProxy.chatMessages.size() >= ClientProxy.maxMessages)
+            {
+                ClientProxy.chatMessages.remove(0);
+            }
+            
+            ClientProxy.chatMessages.add(event.getMessage());
         }
     }
     

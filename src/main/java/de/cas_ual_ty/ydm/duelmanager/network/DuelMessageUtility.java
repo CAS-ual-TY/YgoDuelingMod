@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.duelmanager.DuelChatMessage;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
@@ -21,6 +22,7 @@ import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.IFormattableTextComponent;
 
 public class DuelMessageUtility
 {
@@ -197,4 +199,15 @@ public class DuelMessageUtility
         return new DuelCard(DuelMessageUtility.decodeCardHolder(buf), buf.readBoolean(), DuelMessageUtility.decodeCardPosition(buf), DuelMessageUtility.decodeZoneOwner(buf));
     }
     
+    public static void encodeDuelChatMessage(DuelChatMessage message, PacketBuffer buf)
+    {
+        buf.writeTextComponent(message.message);
+        buf.writeTextComponent(message.playerName);
+        DuelMessageUtility.encodePlayerRole(message.playerRole, buf);
+    }
+    
+    public static DuelChatMessage decodeDuelChatMessage(PacketBuffer buf)
+    {
+        return new DuelChatMessage(buf.readTextComponent(), (IFormattableTextComponent)buf.readTextComponent(), DuelMessageUtility.decodePlayerRole(buf));
+    }
 }

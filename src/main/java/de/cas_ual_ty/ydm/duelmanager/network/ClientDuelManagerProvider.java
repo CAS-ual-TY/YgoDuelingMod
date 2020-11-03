@@ -12,6 +12,7 @@ import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
 import de.cas_ual_ty.ydm.duel.screen.DuelingDuelScreen;
 import de.cas_ual_ty.ydm.duel.screen.PreparingDuelScreen;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
+import de.cas_ual_ty.ydm.duelmanager.DuelChatMessage;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
@@ -20,6 +21,7 @@ import de.cas_ual_ty.ydm.duelmanager.action.ShowCardAction;
 import de.cas_ual_ty.ydm.duelmanager.action.ShowZoneAction;
 import de.cas_ual_ty.ydm.duelmanager.action.ViewZoneAction;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.entity.player.PlayerEntity;
 
 public class ClientDuelManagerProvider implements IDuelManagerProvider
 {
@@ -110,6 +112,12 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
         }
         
         ClientDuelManagerProvider.doForPreparingScreen((screen) -> screen.reInit());
+    }
+    
+    @Override
+    public void receiveMessage(PlayerEntity player, DuelChatMessage message)
+    {
+        this.getDuelManager().messages.add(message);
     }
     
     public static void doForScreen(Consumer<DuelContainerScreen<? extends DuelContainer>> consumer)

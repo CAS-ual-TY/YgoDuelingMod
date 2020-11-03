@@ -28,6 +28,8 @@ import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneInteraction;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.util.text.IFormattableTextComponent;
+import net.minecraft.util.text.ITextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -52,7 +54,7 @@ public class DuelManager
     public PlayField playField;
     
     public List<Action> actions;
-    public List<String> messages;
+    public List<DuelChatMessage> messages;
     
     public List<DeckSource> player1Decks;
     public List<DeckSource> player2Decks;
@@ -144,6 +146,15 @@ public class DuelManager
             this.updateRoleToAll(null, player);
         }
         
+        if(this.player1 == null && this.player2 == null && this.spectators.isEmpty())
+        {
+            this.onEveryoneLeft();
+        }
+    }
+    
+    protected void onEveryoneLeft()
+    {
+        this.reset();
     }
     
     // either closed container or deselected role
@@ -391,6 +402,33 @@ public class DuelManager
         {
             this.updateDuelStateToAll();
         }
+    }
+    
+    public void receiveMessageFromClient(PlayerEntity player, ITextComponent message)
+    {
+        /*//FIXME
+        if(message.getString().trim().isEmpty())
+        {
+            return;
+        }
+        */
+        IFormattableTextComponent name = (IFormattableTextComponent)player.getName();
+        
+        PlayerRole role;
+        
+        //        if(this.getDuelState() == DuelState.IDLE)
+        //        {
+        //            role = PlayerRole.SPECTATOR;
+        //        }
+        //        else
+        //        {
+        role = this.getRoleFor(player);
+        //        }
+        
+        DuelChatMessage chatMessage = new DuelChatMessage(message, name, role);
+        
+        this.messages.add(chatMessage);
+        this.sendMessageToAll(chatMessage);
     }
     
     public void requestReady(PlayerEntity player, boolean ready)
@@ -645,6 +683,11 @@ public class DuelManager
         });
     }
     
+    protected void sendMessageToAll(DuelChatMessage message)
+    {
+        this.doForAllPlayers((player) -> this.sendMessageTo(player, message));
+    }
+    
     protected void sendActionToAll(Action action)
     {
         this.doForAllPlayers((player) -> this.sendActionTo(player, null, action));
@@ -711,10 +754,20 @@ public class DuelManager
             this.sendActionsTo(player);
         }
         
-        // TODO synchronize messages (via actions?)
+        this.sendMessagesTo(player);
         
         //send duel state last as that will trigger a GUI re-init
         this.sendDuelStateTo(player);
+    }
+    
+    protected void sendMessageTo(PlayerEntity player, DuelChatMessage message)
+    {
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendMessageToClient(this.getHeader(), message));
+    }
+    
+    protected void sendMessagesTo(PlayerEntity player)
+    {
+        this.sendGeneralPacketTo((ServerPlayerEntity)player, new DuelMessages.SendAllMessagesToClient(this.getHeader(), this.messages));
     }
     
     protected void sendActionTo(PlayerEntity player, PlayerRole source, Action action)
@@ -789,7 +842,7 @@ public class DuelManager
         return this.actions;
     }
     
-    public List<String> getMessages()
+    public List<DuelChatMessage> getMessages()
     {
         return this.messages;
     }

@@ -56,9 +56,9 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     public DuelingDuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.interactionWidgets = new ArrayList<>(); // Need to temporarily initialize with placeholder this to make sure no clear() call gets NPEd
         this.xSize = 234;
         this.ySize = 250;
+        this.interactionWidgets = new ArrayList<>(); // Need to temporarily initialize with placeholder this to make sure no clear() call gets NPEd
         this.viewCardStackWidget = null;
         this.clickedZoneWidget = null;
         this.clickedCard = null;
@@ -101,13 +101,25 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         int y = this.height / 2;
         int cardsSize = 32;
         
-        int w = 3 * cardsSize;
-        int h = 3 * cardsSize;
+        int centerY = height / 2 - 12;
+        int chatHeight = Math.max(32, ((height - 5 * (20 + 4)) / cardsSize) * cardsSize);
+        int chatWidth = Math.max(32, maxWidth - 8);
+        
+        int columns = chatWidth / cardsSize;
+        int rows = chatHeight / cardsSize;
+        
+        y = centerY;
+        int w = columns * 32;
+        int h = rows * 32;
+        
+        this.initChat(width, height, centerY, chatWidth, chatHeight);
         
         ViewCardStackWidget previousViewStack = this.viewCardStackWidget;
         this.addButton(this.viewCardStackWidget = new ViewCardStackWidget(this, x - w / 2, y - h / 2, w, h, StringTextComponent.EMPTY, this::viewCardStackClicked, this::viewCardStackTooltip)
-            .setRowsAndColumns(cardsSize, 3, 3));
+            .setRowsAndColumns(cardsSize, rows, columns));
         //TODO
+        
+        w = chatWidth;
         
         int verticalButtonsOff = 4;
         this.addButton(this.scrollUpButton = new Button(x - w / 2, y - h / 2 - 20 - verticalButtonsOff, w, 20, new StringTextComponent("Up"), this::scrollButtonClicked));
@@ -154,9 +166,9 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
+    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
-        DuelingDuelScreen.renderDisabledRect(ms, 0, 0, this.width, this.height);
+        super.drawGuiContainerBackgroundLayer(ms, partialTicks, mouseX, mouseY);
         
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(DuelingDuelScreen.DUEL_BACKGROUND_GUI_TEXTURE);
@@ -176,13 +188,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     {
         if(button == 1)
         {
-            this.removeClickedZone();
-            this.removeInteractionWidgets();
-            
-            for(ZoneWidget w : this.zoneWidgets)
-            {
-                w.active = true;
-            }
+            this.resetToNormalZoneWidgets();
         }
         
         return super.mouseClicked(mouseX, mouseY, button);
@@ -250,6 +256,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     {
         this.viewCardStackWidget.activate(cards, forceFaceUp);
         this.updateButtonStatus();
+        this.makeChatInvisible();
     }
     
     public void viewZone(Zone zone)
@@ -258,9 +265,7 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         {
             if(w.zone == zone)
             {
-                this.removeClickedZone();
-                this.removeInteractionWidgets();
-                this.activateZoneWidgets();
+                this.resetToNormalZoneWidgets();
                 
                 w.hoverCard = null;
                 
@@ -277,14 +282,12 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
         {
             if(w.zone == zone)
             {
-                this.removeClickedZone();
-                this.removeInteractionWidgets();
-                this.activateZoneWidgets();
+                this.resetToNormalZoneWidgets();
                 
                 w.hoverCard = null;
                 
                 this.zoneClicked(w);
-                this.viewCardStackWidget.activate(cards, true);
+                this.viewCards(cards, true);
                 return;
             }
         }
@@ -293,10 +296,15 @@ public class DuelingDuelScreen extends DuelContainerScreen<DuelContainer> implem
     protected void interactionClicked(InteractionWidget widget)
     {
         YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDuelAction(this.getDuelManager().headerFactory.get(), widget.interaction.action));
-        
+        this.resetToNormalZoneWidgets();
+    }
+    
+    protected void resetToNormalZoneWidgets()
+    {
         this.removeClickedZone();
         this.removeInteractionWidgets();
         this.activateZoneWidgets();
+        this.makeChatVisible();
     }
     
     protected void viewCardStackClicked(ViewCardStackWidget widget)

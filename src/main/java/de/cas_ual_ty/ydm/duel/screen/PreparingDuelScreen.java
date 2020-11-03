@@ -71,6 +71,8 @@ public class PreparingDuelScreen extends DuelContainerScreen<DuelContainer>
     public PreparingDuelScreen(DuelContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
+        this.xSize = 234;
+        this.ySize = 250;
         this.activeDeckWrapperIdx = 0;
     }
     
@@ -167,8 +169,13 @@ public class PreparingDuelScreen extends DuelContainerScreen<DuelContainer>
     {
         super.init(mc, width, height);
         
+        int margin = (this.width - this.xSize) / 2;
+        
         int x = width / 2;
         int y = height / 2;
+        
+        //        this.initChat(width, height, y, margin - 4*2, 3 * 32);
+        this.initDefaultChat(width, height);
         
         if(this.getState() == DuelState.IDLE)
         {
@@ -204,14 +211,6 @@ public class PreparingDuelScreen extends DuelContainerScreen<DuelContainer>
         {
             this.switchScreen(new DuelingDuelScreen(this.container, this.playerInventory, this.getTitle()));
         }
-    }
-    
-    @Override
-    protected void init()
-    {
-        this.xSize = 234;
-        this.ySize = 250;
-        super.init();
     }
     
     @Override
@@ -259,6 +258,8 @@ public class PreparingDuelScreen extends DuelContainerScreen<DuelContainer>
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
+        super.drawGuiContainerBackgroundLayer(ms, partialTicks, mouseX, mouseY);
+        
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         
         this.minecraft.getTextureManager().bindTexture(PreparingDuelScreen.DUEL_BACKGROUND_GUI_TEXTURE);

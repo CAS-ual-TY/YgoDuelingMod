@@ -4,10 +4,12 @@ import java.util.List;
 
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
+import de.cas_ual_ty.ydm.duelmanager.DuelChatMessage;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
+import net.minecraft.entity.player.PlayerEntity;
 
 public interface IDuelManagerProvider
 {
@@ -49,6 +51,10 @@ public interface IDuelManagerProvider
     }
     
     public default void deckAccepted(PlayerRole role)
+    {
+    }
+    
+    public default void receiveMessage(PlayerEntity player, DuelChatMessage message)
     {
     }
 }

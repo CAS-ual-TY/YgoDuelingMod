@@ -7,11 +7,13 @@ import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
+import de.cas_ual_ty.ydm.duelmanager.DuelChatMessage;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.text.ITextComponent;
 
 public class DuelMessages
 {
@@ -537,6 +539,111 @@ public class DuelMessages
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
             provider.handleAllActions(this.actions);
+        }
+    }
+    
+    public static class SendMessageToServer extends DuelMessage.ServerBaseMessage
+    {
+        public ITextComponent message;
+        
+        public SendMessageToServer(DuelMessageHeader header, ITextComponent message)
+        {
+            super(header);
+            this.message = message;
+        }
+        
+        public SendMessageToServer(PacketBuffer buf)
+        {
+            super(buf);
+        }
+        
+        @Override
+        public void encodeMessage(PacketBuffer buf)
+        {
+            buf.writeTextComponent(this.message);
+        }
+        
+        @Override
+        public void decodeMessage(PacketBuffer buf)
+        {
+            this.message = buf.readTextComponent();
+        }
+        
+        @Override
+        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        {
+            provider.getDuelManager().receiveMessageFromClient(player, this.message);
+        }
+    }
+    
+    public static class SendMessageToClient extends DuelMessage.ClientBaseMessage
+    {
+        public DuelChatMessage message;
+        
+        public SendMessageToClient(DuelMessageHeader header, DuelChatMessage message)
+        {
+            super(header);
+            this.message = message;
+        }
+        
+        public SendMessageToClient(PacketBuffer buf)
+        {
+            super(buf);
+        }
+        
+        @Override
+        public void encodeMessage(PacketBuffer buf)
+        {
+            DuelMessageUtility.encodeDuelChatMessage(this.message, buf);
+        }
+        
+        @Override
+        public void decodeMessage(PacketBuffer buf)
+        {
+            this.message = DuelMessageUtility.decodeDuelChatMessage(buf);
+        }
+        
+        @Override
+        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        {
+            provider.receiveMessage(player, this.message);
+        }
+    }
+    
+    public static class SendAllMessagesToClient extends DuelMessage.ClientBaseMessage
+    {
+        public List<DuelChatMessage> messages;
+        
+        public SendAllMessagesToClient(DuelMessageHeader header, List<DuelChatMessage> message)
+        {
+            super(header);
+            this.messages = message;
+        }
+        
+        public SendAllMessagesToClient(PacketBuffer buf)
+        {
+            super(buf);
+        }
+        
+        @Override
+        public void encodeMessage(PacketBuffer buf0)
+        {
+            DuelMessageUtility.encodeList(this.messages, buf0, DuelMessageUtility::encodeDuelChatMessage);
+        }
+        
+        @Override
+        public void decodeMessage(PacketBuffer buf0)
+        {
+            this.messages = DuelMessageUtility.decodeList(buf0, DuelMessageUtility::decodeDuelChatMessage);
+        }
+        
+        @Override
+        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        {
+            for(DuelChatMessage message : this.messages)
+            {
+                provider.receiveMessage(player, message);
+            }
         }
     }
 }
