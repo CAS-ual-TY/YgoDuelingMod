@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel.screen;
+package de.cas_ual_ty.ydm.duel.screen.widget;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -8,7 +8,8 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import de.cas_ual_ty.ydm.duel.screen.DuelingDuelScreen.InteractionWidget;
+import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
+import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
@@ -109,7 +110,7 @@ public class ZoneWidget extends Button
         
         if(this.context.getClickedZone() == this.zone && this.context.getClickedDuelCard() == null)
         {
-            DuelingDuelScreen.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
+            DuelScreenDueling.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
         }
         
         this.hoverCard = this.renderCards(ms, mouseX, mouseY);
@@ -124,7 +125,7 @@ public class ZoneWidget extends Button
             {
                 if(this.zone.getCardsAmount() == 0)
                 {
-                    DuelingDuelScreen.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    DuelScreenDueling.renderHoverRect(ms, this.x, this.y, this.width, this.height);
                 }
                 
                 this.renderToolTip(ms, mouseX, mouseY);
@@ -132,7 +133,7 @@ public class ZoneWidget extends Button
         }
         else
         {
-            DuelingDuelScreen.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
+            DuelScreenDueling.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
         }
     }
     
@@ -158,7 +159,7 @@ public class ZoneWidget extends Button
                 
                 if(this.active)
                 {
-                    DuelingDuelScreen.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    DuelScreenDueling.renderHoverRect(ms, this.x, this.y, this.width, this.height);
                     return c;
                 }
             }
@@ -166,7 +167,7 @@ public class ZoneWidget extends Button
         
         if(this.context.getClickedZone() == this.zone)
         {
-            DuelingDuelScreen.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
+            DuelScreenDueling.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
         }
         
         return null;
@@ -363,16 +364,16 @@ public class ZoneWidget extends Button
         
         if(duelCard == this.context.getClickedDuelCard())
         {
-            DuelingDuelScreen.renderSelectedRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
+            DuelScreenDueling.renderSelectedRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
         }
         
         if(!isOpponentView)
         {
-            DuelingDuelScreen.renderCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            DuelScreenDueling.renderCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         else
         {
-            DuelingDuelScreen.renderCardReversedCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            DuelScreenDueling.renderCardReversedCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         
         if(this.isHovered() && mouseX >= hoverX && mouseX < hoverX + hoverWidth && mouseY >= hoverY && mouseY < hoverY + hoverHeight)

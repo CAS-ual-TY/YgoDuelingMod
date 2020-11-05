@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel.screen;
+package de.cas_ual_ty.ydm.duel.screen.widget;
 
 import java.util.function.Consumer;
 
@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
+import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import net.minecraft.util.text.ITextComponent;
@@ -30,7 +32,7 @@ public class MonsterZoneWidget extends ZoneWidget
             return super.renderCards(ms, mouseX, mouseY);
         }
         
-        final int cardsWidth = DuelingDuelScreen.CARDS_WIDTH * this.height / DuelingDuelScreen.CARDS_HEIGHT;
+        final int cardsWidth = DuelScreenDueling.CARDS_WIDTH * this.height / DuelScreenDueling.CARDS_HEIGHT;
         final int cardsHeight = this.height;
         final int offset = (cardsHeight - cardsWidth);
         final int cardsTextureSize = cardsHeight;
@@ -142,7 +144,7 @@ public class MonsterZoneWidget extends ZoneWidget
             
             if(this.active)
             {
-                DuelingDuelScreen.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
+                DuelScreenDueling.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
             }
         }
         

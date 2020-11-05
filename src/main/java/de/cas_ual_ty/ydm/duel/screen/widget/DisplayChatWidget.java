@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel.screen;
+package de.cas_ual_ty.ydm.duel.screen.widget;
 
 import java.util.List;
 import java.util.function.Supplier;

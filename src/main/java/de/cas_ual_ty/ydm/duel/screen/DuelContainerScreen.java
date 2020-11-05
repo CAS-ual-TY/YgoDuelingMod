@@ -7,21 +7,29 @@ import java.util.function.Supplier;
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.SwitchableContainerScreen;
+import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
+import de.cas_ual_ty.ydm.duel.screen.widget.DisplayChatWidget;
+import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelChatMessage;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
 import de.cas_ual_ty.ydm.duelmanager.DuelState;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
+import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
+import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
+import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
@@ -29,6 +37,16 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public abstract class DuelContainerScreen<E extends DuelContainer> extends SwitchableContainerScreen<E>
 {
+    public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
+    public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
+    
+    public static final ResourceLocation DECK_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
+    
+    public static final ResourceLocation DUEL_ACTIONS_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions.png");
+    public static final ResourceLocation DUEL_ACTIONS_LARGE_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions_large.png");
+    
+    protected DuelScreenConstructor<E>[] screensForEachState;
+    
     protected Button chatUpButton;
     protected Button chatDownButton;
     protected DisplayChatWidget chatWidget;
@@ -41,17 +59,93 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     protected List<ITextComponent> worldChatMessages;
     
+    @SuppressWarnings("unchecked")
     public DuelContainerScreen(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
         this.worldChatMessages = new ArrayList<>(32);
         this.textFieldWidget = null;
         this.duelChat = true;
+        
+        //default
+        this.screensForEachState = new DuelScreenConstructor[DuelState.VALUES.length];
+        this.screensForEachState[DuelState.IDLE.getIndex()] = DuelScreenIdle::new;
+        this.screensForEachState[DuelState.PREPARING.getIndex()] = DuelScreenPreparing::new;
+        this.screensForEachState[DuelState.END.getIndex()] = DuelScreenPreparing::new;
+        this.screensForEachState[DuelState.DUELING.getIndex()] = DuelScreenDueling::new;
+        this.screensForEachState[DuelState.SIDING.getIndex()] = DuelScreenDueling::new;
     }
     
-    public void reInit()
+    public DuelContainerScreen<E> setScreenForState(DuelState state, DuelScreenConstructor<E> screen)
+    {
+        this.screensForEachState[state.getIndex()] = screen;
+        return this;
+    }
+    
+    protected DuelContainerScreen<E> createNewScreenForState(DuelState state)
+    {
+        return this.screensForEachState[state.getIndex()].construct(this.container, this.playerInventory, this.title);
+    }
+    
+    public final void duelStateChanged()
+    {
+        this.switchScreen(this.createNewScreenForState(this.getState()));
+    }
+    
+    public final void reInit()
     {
         this.init(this.minecraft, this.width, this.height);
+    }
+    
+    @Override
+    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
+    {
+        DuelScreenDueling.renderDisabledRect(ms, 0, 0, this.width, this.height);
+        
+        RenderSystem.color4f(1F, 1F, 1F, 1F);
+        this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
+        this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+    }
+    
+    @Override
+    public void switchScreen(ContainerScreen<E> s)
+    {
+        super.switchScreen(s);
+        
+        if(s instanceof DuelContainerScreen)
+        {
+            DuelContainerScreen<E> screen = (DuelContainerScreen<E>)s;
+            screen.screensForEachState = this.screensForEachState;
+            screen.worldChatMessages = this.worldChatMessages;
+        }
+    }
+    
+    @Override
+    protected void onGuiClose()
+    {
+        super.onGuiClose();
+        this.getDuelManager().reset();
+    }
+    
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    {
+        if(this.textFieldWidget != null && this.textFieldWidget.isFocused())
+        {
+            if(keyCode == GLFW.GLFW_KEY_ENTER)
+            {
+                this.sendChat();
+                return true;
+            }
+            else
+            {
+                return this.textFieldWidget.keyPressed(keyCode, scanCode, modifiers);
+            }
+        }
+        else
+        {
+            return super.keyPressed(keyCode, scanCode, modifiers);
+        }
     }
     
     protected void initDefaultChat(int width, int height)
@@ -96,12 +190,6 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         this.switchChat();
         
         this.makeChatVisible();
-    }
-    
-    @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
-    {
-        DuelingDuelScreen.renderDisabledRect(ms, 0, 0, this.width, this.height);
     }
     
     protected void changeChatFlags(boolean flag)
@@ -195,43 +283,24 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         //TODO
     }
     
-    @Override
-    public void switchScreen(ContainerScreen<E> screen)
+    public void populateDeckSources(List<DeckSource> deckSources)
     {
-        super.switchScreen(screen);
-        
-        if(screen instanceof DuelContainerScreen)
-        {
-            ((DuelContainerScreen<? extends DuelContainer>)screen).worldChatMessages = this.worldChatMessages;
-        }
     }
     
-    @Override
-    protected void onGuiClose()
+    public void receiveDeck(int index, DeckHolder deck)
     {
-        super.onGuiClose();
-        this.getDuelManager().reset();
     }
     
-    @Override
-    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    public void deckAccepted(PlayerRole role)
     {
-        if(this.textFieldWidget != null && this.textFieldWidget.isFocused())
-        {
-            if(keyCode == GLFW.GLFW_KEY_ENTER)
-            {
-                this.sendChat();
-                return true;
-            }
-            else
-            {
-                return this.textFieldWidget.keyPressed(keyCode, scanCode, modifiers);
-            }
-        }
-        else
-        {
-            return super.keyPressed(keyCode, scanCode, modifiers);
-        }
+    }
+    
+    public void viewZone(Zone zone)
+    {
+    }
+    
+    public void viewCards(Zone zone, List<DuelCard> cards)
+    {
     }
     
     public DuelManager getDuelManager()
@@ -252,5 +321,28 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     public PlayerRole getPlayerRole()
     {
         return this.getDuelManager().getRoleFor(ClientProxy.getPlayer());
+    }
+    
+    public ZoneOwner getZoneOwner()
+    {
+        PlayerRole role = this.getPlayerRole();
+        
+        if(ZoneOwner.PLAYER1.player == role)
+        {
+            return ZoneOwner.PLAYER1;
+        }
+        else if(ZoneOwner.PLAYER2.player == role)
+        {
+            return ZoneOwner.PLAYER2;
+        }
+        else
+        {
+            return ZoneOwner.NONE;
+        }
+    }
+    
+    public static interface DuelScreenConstructor<E extends DuelContainer>
+    {
+        public DuelContainerScreen<E> construct(E container, PlayerInventory inv, ITextComponent title);
     }
 }

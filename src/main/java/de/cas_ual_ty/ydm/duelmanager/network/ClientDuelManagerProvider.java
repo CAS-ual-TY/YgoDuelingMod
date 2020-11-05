@@ -9,8 +9,6 @@ import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
-import de.cas_ual_ty.ydm.duel.screen.DuelingDuelScreen;
-import de.cas_ual_ty.ydm.duel.screen.PreparingDuelScreen;
 import de.cas_ual_ty.ydm.duelmanager.DeckSource;
 import de.cas_ual_ty.ydm.duelmanager.DuelChatMessage;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
@@ -42,7 +40,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
     public void updateDuelState(DuelState duelState)
     {
         IDuelManagerProvider.super.updateDuelState(duelState);
-        ClientDuelManagerProvider.doForScreen((screen) -> screen.reInit());
+        ClientDuelManagerProvider.doForScreen((screen) -> screen.duelStateChanged());
     }
     
     @Override
@@ -55,7 +53,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
         if(action instanceof ViewZoneAction)
         {
             ViewZoneAction a = (ViewZoneAction)action;
-            ClientDuelManagerProvider.doForDuelingScreen((screen) ->
+            ClientDuelManagerProvider.doForScreen((screen) ->
             {
                 if(screen.getZoneOwner() == a.sourceZone.getOwner())
                 {
@@ -66,7 +64,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
         else if(action instanceof ShowZoneAction)
         {
             ShowZoneAction a = (ShowZoneAction)action;
-            ClientDuelManagerProvider.doForDuelingScreen((screen) ->
+            ClientDuelManagerProvider.doForScreen((screen) ->
             {
                 if(screen.getZoneOwner() != a.sourceZone.getOwner())
                 {
@@ -77,7 +75,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
         else if(action instanceof ShowCardAction)
         {
             ShowCardAction a = (ShowCardAction)action;
-            ClientDuelManagerProvider.doForDuelingScreen((screen) ->
+            ClientDuelManagerProvider.doForScreen((screen) ->
             {
                 if(screen.getZoneOwner() != a.sourceZone.getOwner())
                 {
@@ -90,13 +88,13 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
     @Override
     public void receiveDeckSources(List<DeckSource> deckSources)
     {
-        ClientDuelManagerProvider.doForPreparingScreen((screen) -> screen.populateDeckSources(deckSources));
+        ClientDuelManagerProvider.doForScreen((screen) -> screen.populateDeckSources(deckSources));
     }
     
     @Override
     public void receiveDeck(int index, DeckHolder deck)
     {
-        ClientDuelManagerProvider.doForPreparingScreen((screen) -> screen.receiveDeck(index, deck));
+        ClientDuelManagerProvider.doForScreen((screen) -> screen.receiveDeck(index, deck));
     }
     
     @Override
@@ -111,7 +109,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
             this.getDuelManager().player2Deck = DeckHolder.DUMMY;
         }
         
-        ClientDuelManagerProvider.doForPreparingScreen((screen) -> screen.reInit());
+        ClientDuelManagerProvider.doForScreen((screen) -> screen.deckAccepted(role));
     }
     
     @Override
@@ -128,28 +126,6 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
         if(screen instanceof DuelContainerScreen)
         {
             consumer.accept((DuelContainerScreen<?>)screen);
-        }
-    }
-    
-    public static void doForPreparingScreen(Consumer<PreparingDuelScreen> consumer)
-    {
-        @SuppressWarnings("resource")
-        Screen screen = ClientProxy.getMinecraft().currentScreen;
-        
-        if(screen instanceof PreparingDuelScreen)
-        {
-            consumer.accept((PreparingDuelScreen)screen);
-        }
-    }
-    
-    public static void doForDuelingScreen(Consumer<DuelingDuelScreen> consumer)
-    {
-        @SuppressWarnings("resource")
-        Screen screen = ClientProxy.getMinecraft().currentScreen;
-        
-        if(screen instanceof DuelingDuelScreen)
-        {
-            consumer.accept((DuelingDuelScreen)screen);
         }
     }
 }
