@@ -7,7 +7,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
+import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.util.text.StringTextComponent;
@@ -32,7 +32,7 @@ public class CardButton extends AbstractButton
         CardHolder card = this.getCard();
         if(card != null)
         {
-            ScreenUtil.bindMainResourceLocation(card);
+            CardRenderUtil.bindMainResourceLocation(card);
             YdmBlitUtil.fullBlit(ms, this.x + 1, this.y + 1, 16, 16);
             
             if(this.isHovered())

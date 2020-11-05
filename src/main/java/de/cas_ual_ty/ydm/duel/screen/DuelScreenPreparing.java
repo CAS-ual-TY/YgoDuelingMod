@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
@@ -49,99 +49,6 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
     }
     
     @Override
-    public void populateDeckSources(List<DeckSource> deckSources)
-    {
-        this.deckWrappers = new ArrayList<>(deckSources.size());
-        this.activeDeckWrapperIdx = 0;
-        
-        for(int index = 0; index < deckSources.size(); ++index)
-        {
-            this.deckWrappers.add(new DeckWrapper(deckSources.get(index), index));
-        }
-        
-        this.setActiveDeckWrapper(0);
-    }
-    
-    @Override
-    public void receiveDeck(int index, DeckHolder deck)
-    {
-        if(index >= 0 && index < this.deckWrappers.size())
-        {
-            this.deckWrappers.get(index).deck = deck;
-            this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
-        }
-    }
-    
-    @Override
-    public void deckAccepted(PlayerRole role)
-    {
-        if(role == this.getPlayerRole())
-        {
-            this.reInit();
-        }
-    }
-    
-    public void setActiveDeckWrapper(int index)
-    {
-        if(this.deckWrappers == null)
-        {
-            return;
-        }
-        
-        if(index >= this.deckWrappers.size())
-        {
-            index = 0;
-        }
-        else if(index < 0)
-        {
-            index = this.deckWrappers.size() - 1;
-        }
-        
-        int prev = index - 1;
-        
-        if(prev < 0)
-        {
-            prev = this.deckWrappers.size() - 1;
-        }
-        
-        int next = index + 1;
-        
-        if(next >= this.deckWrappers.size())
-        {
-            next = 0;
-        }
-        
-        this.activeDeckWrapperIdx = index;
-        
-        DeckWrapper dPrev = this.deckWrappers.get(prev);
-        dPrev.index = prev;
-        this.prevDeckWidget.setItemStack(dPrev.source);
-        
-        DeckWrapper dActive = this.deckWrappers.get(index);
-        dActive.index = index;
-        this.activeDeckWidget.setItemStack(dActive.source);
-        
-        DeckWrapper dNext = this.deckWrappers.get(next);
-        dNext.index = next;
-        this.nextDeckWidget.setItemStack(dNext.source);
-        
-        this.prevDeckWidget.visible = true;
-        this.activeDeckWidget.visible = true;
-        this.nextDeckWidget.visible = true;
-        
-        if(!dActive.hasDeck())
-        {
-            this.requestDeck(dActive.index);
-        }
-    }
-    
-    // when true, deck choosing must be rendered, otherwise dont render it
-    public boolean renderDeckChoosing()
-    {
-        return this.getPlayerRole() == PlayerRole.PLAYER1 ? this.getDuelManager().player1Deck == null : (this.getPlayerRole() == PlayerRole.PLAYER2 ? this.getDuelManager().player2Deck == null : false);
-    }
-    
-    @Override
     public void init(Minecraft mc, int width, int height)
     {
         super.init(mc, width, height);
@@ -158,9 +65,9 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new StringTextComponent(">"), (button) -> this.nextDeckClicked()));
         this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, new StringTextComponent("Choose Deck"), (button) -> this.chooseDeckClicked()));
         
-        this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ScreenUtil.getInfoCardBack()));
-        this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, ScreenUtil.getInfoCardBack()));
-        this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ScreenUtil.getInfoCardBack()));
+        this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
+        this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
+        this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
         this.prevDeckWidget.visible = false;
         this.activeDeckWidget.visible = false;
         this.nextDeckWidget.visible = false;
@@ -268,12 +175,12 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                         
                         if(c != null && c.getCard() != null)
                         {
-                            ScreenUtil.bindMainResourceLocation(c);
+                            CardRenderUtil.bindMainResourceLocation(c);
                             YdmBlitUtil.fullBlit(ms, guiLeft + offX, guiTop + offY, 16, 16);
                             
                             if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                             {
-                                this.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
+                                ScreenUtil.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
                                 this.renderCardInfoForeground(ms, c, actualGuiLeft);
                             }
                         }
@@ -304,12 +211,12 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                     
                     if(c != null && c.getCard() != null)
                     {
-                        ScreenUtil.bindMainResourceLocation(c);
+                        CardRenderUtil.bindMainResourceLocation(c);
                         YdmBlitUtil.fullBlit(ms, guiLeft + offX, guiTop + offY, 16, 16);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
-                            this.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
+                            ScreenUtil.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
                             this.renderCardInfoForeground(ms, c, actualGuiLeft);
                         }
                     }
@@ -331,12 +238,12 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                     
                     if(c != null && c.getCard() != null)
                     {
-                        ScreenUtil.bindMainResourceLocation(c);
+                        CardRenderUtil.bindMainResourceLocation(c);
                         YdmBlitUtil.fullBlit(ms, guiLeft + offX, guiTop + offY, 16, 16);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
-                            this.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
+                            ScreenUtil.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
                             this.renderCardInfoForeground(ms, c, actualGuiLeft);
                         }
                     }
@@ -369,6 +276,99 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         }
     }
     
+    @Override
+    public void populateDeckSources(List<DeckSource> deckSources)
+    {
+        this.deckWrappers = new ArrayList<>(deckSources.size());
+        this.activeDeckWrapperIdx = 0;
+        
+        for(int index = 0; index < deckSources.size(); ++index)
+        {
+            this.deckWrappers.add(new DeckWrapper(deckSources.get(index), index));
+        }
+        
+        this.setActiveDeckWrapper(0);
+    }
+    
+    @Override
+    public void receiveDeck(int index, DeckHolder deck)
+    {
+        if(index >= 0 && index < this.deckWrappers.size())
+        {
+            this.deckWrappers.get(index).deck = deck;
+            this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
+        }
+    }
+    
+    @Override
+    public void deckAccepted(PlayerRole role)
+    {
+        if(role == this.getPlayerRole())
+        {
+            this.reInit();
+        }
+    }
+    
+    public void setActiveDeckWrapper(int index)
+    {
+        if(this.deckWrappers == null)
+        {
+            return;
+        }
+        
+        if(index >= this.deckWrappers.size())
+        {
+            index = 0;
+        }
+        else if(index < 0)
+        {
+            index = this.deckWrappers.size() - 1;
+        }
+        
+        int prev = index - 1;
+        
+        if(prev < 0)
+        {
+            prev = this.deckWrappers.size() - 1;
+        }
+        
+        int next = index + 1;
+        
+        if(next >= this.deckWrappers.size())
+        {
+            next = 0;
+        }
+        
+        this.activeDeckWrapperIdx = index;
+        
+        DeckWrapper dPrev = this.deckWrappers.get(prev);
+        dPrev.index = prev;
+        this.prevDeckWidget.setItemStack(dPrev.source);
+        
+        DeckWrapper dActive = this.deckWrappers.get(index);
+        dActive.index = index;
+        this.activeDeckWidget.setItemStack(dActive.source);
+        
+        DeckWrapper dNext = this.deckWrappers.get(next);
+        dNext.index = next;
+        this.nextDeckWidget.setItemStack(dNext.source);
+        
+        this.prevDeckWidget.visible = true;
+        this.activeDeckWidget.visible = true;
+        this.nextDeckWidget.visible = true;
+        
+        if(!dActive.hasDeck())
+        {
+            this.requestDeck(dActive.index);
+        }
+    }
+    
+    // when true, deck choosing must be rendered, otherwise dont render it
+    public boolean renderDeckChoosing()
+    {
+        return this.getPlayerRole() == PlayerRole.PLAYER1 ? this.getDuelManager().player1Deck == null : (this.getPlayerRole() == PlayerRole.PLAYER2 ? this.getDuelManager().player2Deck == null : false);
+    }
+    
     public void renderCardInfoForeground(MatrixStack ms, CardHolder c)
     {
         this.renderCardInfoForeground(ms, c, this.guiLeft);
@@ -379,31 +379,17 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         ms.push();
         
         ms.translate(-this.guiLeft, -this.guiTop, 0D);
-        ScreenUtil.renderCardInfo(ms, c, width);
+        CardRenderUtil.renderCardInfo(ms, c, width);
         
         ms.pop();
     }
     
-    public void renderHoverRect(MatrixStack ms, int x, int y, int w, int h)
-    {
-        // from ContainerScreen#render
-        
-        RenderSystem.disableDepthTest();
-        int j1 = x;
-        int k1 = y;
-        RenderSystem.colorMask(true, true, true, false);
-        int slotColor = -2130706433; // from ContainerScreen#slotColor
-        this.fillGradient(ms, j1, k1, j1 + w, k1 + h, slotColor, slotColor);
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableDepthTest();
-    }
-    
-    public void prevDeckClicked()
+    protected void prevDeckClicked()
     {
         this.setActiveDeckWrapper(this.activeDeckWrapperIdx - 1);
     }
     
-    public void nextDeckClicked()
+    protected void nextDeckClicked()
     {
         this.setActiveDeckWrapper(this.activeDeckWrapperIdx + 1);
     }
@@ -420,7 +406,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         }
     }
     
-    public void chooseDeckClicked()
+    protected void chooseDeckClicked()
     {
         YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(this.getHeader(), this.getActiveDeckWrapper().index));
     }

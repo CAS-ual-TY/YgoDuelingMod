@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import de.cas_ual_ty.ydm.duelmanager.DuelManager;
@@ -125,7 +127,7 @@ public class ZoneWidget extends Button
             {
                 if(this.zone.getCardsAmount() == 0)
                 {
-                    DuelScreenDueling.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    ScreenUtil.renderHoverRect(ms, this.x, this.y, this.width, this.height);
                 }
                 
                 this.renderToolTip(ms, mouseX, mouseY);
@@ -133,7 +135,7 @@ public class ZoneWidget extends Button
         }
         else
         {
-            DuelScreenDueling.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
+            ScreenUtil.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
         }
     }
     
@@ -159,7 +161,7 @@ public class ZoneWidget extends Button
                 
                 if(this.active)
                 {
-                    DuelScreenDueling.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    ScreenUtil.renderHoverRect(ms, this.x, this.y, this.width, this.height);
                     return c;
                 }
             }
@@ -369,11 +371,11 @@ public class ZoneWidget extends Button
         
         if(!isOpponentView)
         {
-            DuelScreenDueling.renderCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            CardRenderUtil.renderDuelCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         else
         {
-            DuelScreenDueling.renderCardReversedCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            CardRenderUtil.renderDuelCardReversedCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         
         if(this.isHovered() && mouseX >= hoverX && mouseX < hoverX + hoverWidth && mouseY >= hoverY && mouseY < hoverY + hoverHeight)

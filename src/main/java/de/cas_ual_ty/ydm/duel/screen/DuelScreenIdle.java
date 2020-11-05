@@ -78,12 +78,6 @@ public class DuelScreenIdle<E extends DuelContainer> extends DuelContainerScreen
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }
     
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
-    {
-        return super.mouseClicked(mouseX, mouseY, button);
-    }
-    
     public ITextComponent getRoleDescription(PlayerRole role)
     {
         if(role == PlayerRole.PLAYER1)
@@ -118,12 +112,12 @@ public class DuelScreenIdle<E extends DuelContainer> extends DuelContainerScreen
         return StringTextComponent.EMPTY;
     }
     
-    public void roleButtonClicked(Button button)
+    protected void roleButtonClicked(Button button)
     {
         YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.SelectRole(this.getHeader(), ((RoleButton)button).role));
     }
     
-    public void ready1ButtonClicked()
+    protected void ready1ButtonClicked()
     {
         if(this.player1Button != null && this.player2Button != null && this.getPlayerRole() == PlayerRole.PLAYER1)
         {
@@ -131,7 +125,7 @@ public class DuelScreenIdle<E extends DuelContainer> extends DuelContainerScreen
         }
     }
     
-    public void ready2ButtonClicked()
+    protected void ready2ButtonClicked()
     {
         if(this.player1Button != null && this.player2Button != null && this.getPlayerRole() == PlayerRole.PLAYER2)
         {

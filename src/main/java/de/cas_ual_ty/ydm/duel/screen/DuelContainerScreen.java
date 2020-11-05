@@ -100,7 +100,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
     {
-        DuelScreenDueling.renderDisabledRect(ms, 0, 0, this.width, this.height);
+        ScreenUtil.renderDisabledRect(ms, 0, 0, this.width, this.height);
         
         ScreenUtil.white();
         this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);

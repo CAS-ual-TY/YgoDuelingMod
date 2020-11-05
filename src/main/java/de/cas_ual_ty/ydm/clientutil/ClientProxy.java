@@ -131,8 +131,7 @@ public class ClientProxy implements ISidedProxy
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
         
-        ScreenUtil.infoTextureBinder = new LimitedTextureBinder(ClientProxy.getMinecraft(), ClientProxy.maxInfoImages);
-        ScreenUtil.mainTextureBinder = new LimitedTextureBinder(ClientProxy.getMinecraft(), ClientProxy.maxMainImages);
+        CardRenderUtil.init(ClientProxy.maxInfoImages, ClientProxy.maxMainImages);
     }
     
     @Override
@@ -301,7 +300,7 @@ public class ClientProxy implements ISidedProxy
             
             if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty() && containerScreen.getSlotUnderMouse().getStack().getItem() == YdmItems.CARD)
             {
-                ScreenUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()), containerScreen);
+                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()), containerScreen);
             }
         }
     }
@@ -319,11 +318,11 @@ public class ClientProxy implements ISidedProxy
             
             if(player.getHeldItemMainhand().getItem() == YdmItems.CARD)
             {
-                ScreenUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()));
+                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()));
             }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
             {
-                ScreenUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
+                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
             }
         }
     }

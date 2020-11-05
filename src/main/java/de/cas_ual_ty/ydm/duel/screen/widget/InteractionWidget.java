@@ -8,7 +8,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
-import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import de.cas_ual_ty.ydm.duelmanager.action.ActionIcon;
 import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneInteraction;
@@ -67,7 +66,7 @@ public class InteractionWidget extends Button
         
         if(this.isHovered() && this.active)
         {
-            DuelScreenDueling.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+            ScreenUtil.renderHoverRect(ms, this.x, this.y, this.width, this.height);
             this.renderToolTip(ms, mouseX, mouseY);
         }
     }

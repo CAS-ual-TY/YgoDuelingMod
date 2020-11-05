@@ -8,6 +8,8 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
@@ -164,7 +166,7 @@ public class ViewCardStackWidget extends Button
                 this.context.renderCardInfo(ms, hoveredCard);
             }
             
-            DuelScreenDueling.renderHoverRect(ms, hoverX, hoverY, this.cardsTextureSize, this.cardsTextureSize);
+            ScreenUtil.renderHoverRect(ms, hoverX, hoverY, this.cardsTextureSize, this.cardsTextureSize);
         }
         
         if(!this.active)
@@ -184,7 +186,7 @@ public class ViewCardStackWidget extends Button
             DuelScreenDueling.renderSelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
         }
         
-        DuelScreenDueling.renderCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, this.forceFaceUp);
+        CardRenderUtil.renderDuelCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, this.forceFaceUp);
         
         if(this.isHovered() && mouseX >= renderX && mouseX < renderX + renderWidth && mouseY >= renderY && mouseY < renderY + renderHeight)
         {

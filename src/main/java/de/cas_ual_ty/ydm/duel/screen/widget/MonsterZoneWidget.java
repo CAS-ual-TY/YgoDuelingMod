@@ -6,6 +6,7 @@ import javax.annotation.Nullable;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
@@ -144,7 +145,7 @@ public class MonsterZoneWidget extends ZoneWidget
             
             if(this.active)
             {
-                DuelScreenDueling.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
+                ScreenUtil.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
             }
         }
         

@@ -7,16 +7,14 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
-import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.widget.HandZoneWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.InteractionWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.MonsterZoneWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.ViewCardStackWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.ZoneWidget;
-import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
 import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
@@ -209,40 +207,17 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
     }
     
-    protected void zoneClicked(ZoneWidget widget)
+    public void resetToNormalZoneWidgets()
     {
-        if(!widget.active)
-        {
-            return;
-        }
-        
-        ZoneOwner owner = this.getZoneOwner();
-        
-        if(owner == ZoneOwner.NONE)
-        {
-            return;
-        }
-        
-        this.clickedZoneWidget = widget;
-        this.clickedCard = widget.hoverCard;
-        
+        this.removeClickedZone();
         this.removeInteractionWidgets();
-        
-        this.interactionWidgets = new ArrayList<>();
         
         for(ZoneWidget w : this.zoneWidgets)
         {
-            w.addInteractionWidgets(owner, this.clickedZoneWidget.zone, this.clickedCard, this.getDuelManager(), this.interactionWidgets, this::interactionClicked, this::interactionTooltip);
-            w.active = false;
+            w.active = true;
         }
         
-        this.buttons.addAll(this.interactionWidgets);
-        this.children.addAll(this.interactionWidgets);
-        
-        if(!widget.zone.getType().getIsSecret())
-        {
-            this.viewZone(widget, owner == widget.zone.getOwner() && widget.zone.type.getShowFaceDownCardsToOwner());
-        }
+        this.makeChatVisible();
     }
     
     protected void viewZone(ZoneWidget widget, boolean forceFaceUp)
@@ -255,6 +230,30 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.viewCardStackWidget.activate(cards, forceFaceUp);
         this.updateButtonStatus();
         this.makeChatInvisible();
+    }
+    
+    protected void updateButtonStatus()
+    {
+        this.scrollUpButton.active = false;
+        this.scrollUpButton.visible = false;
+        this.scrollDownButton.active = false;
+        this.scrollDownButton.visible = false;
+        
+        if(this.viewCardStackWidget.active)
+        {
+            this.scrollUpButton.visible = true;
+            this.scrollDownButton.visible = true;
+            
+            if(this.viewCardStackWidget.getCurrentRow() > 0)
+            {
+                this.scrollUpButton.active = true;
+            }
+            
+            if(this.viewCardStackWidget.getCurrentRow() < this.viewCardStackWidget.getMaxRows())
+            {
+                this.scrollDownButton.active = true;
+            }
+        }
     }
     
     @Override
@@ -293,18 +292,46 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
     }
     
+    protected void zoneClicked(ZoneWidget widget)
+    {
+        if(!widget.active)
+        {
+            return;
+        }
+        
+        ZoneOwner owner = this.getZoneOwner();
+        
+        if(owner == ZoneOwner.NONE)
+        {
+            return;
+        }
+        
+        this.clickedZoneWidget = widget;
+        this.clickedCard = widget.hoverCard;
+        
+        this.removeInteractionWidgets();
+        
+        this.interactionWidgets = new ArrayList<>();
+        
+        for(ZoneWidget w : this.zoneWidgets)
+        {
+            w.addInteractionWidgets(owner, this.clickedZoneWidget.zone, this.clickedCard, this.getDuelManager(), this.interactionWidgets, this::interactionClicked, this::interactionTooltip);
+            w.active = false;
+        }
+        
+        this.buttons.addAll(this.interactionWidgets);
+        this.children.addAll(this.interactionWidgets);
+        
+        if(!widget.zone.getType().getIsSecret())
+        {
+            this.viewZone(widget, owner == widget.zone.getOwner() && widget.zone.type.getShowFaceDownCardsToOwner());
+        }
+    }
+    
     protected void interactionClicked(InteractionWidget widget)
     {
         YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDuelAction(this.getDuelManager().headerFactory.get(), widget.interaction.action));
         this.resetToNormalZoneWidgets();
-    }
-    
-    protected void resetToNormalZoneWidgets()
-    {
-        this.removeClickedZone();
-        this.removeInteractionWidgets();
-        this.activateZoneWidgets();
-        this.makeChatVisible();
     }
     
     protected void viewCardStackClicked(ViewCardStackWidget widget)
@@ -342,60 +369,6 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.updateButtonStatus();
     }
     
-    protected void updateButtonStatus()
-    {
-        this.scrollUpButton.active = false;
-        this.scrollUpButton.visible = false;
-        this.scrollDownButton.active = false;
-        this.scrollDownButton.visible = false;
-        
-        if(this.viewCardStackWidget.active)
-        {
-            this.scrollUpButton.visible = true;
-            this.scrollDownButton.visible = true;
-            
-            if(this.viewCardStackWidget.getCurrentRow() > 0)
-            {
-                this.scrollUpButton.active = true;
-            }
-            
-            if(this.viewCardStackWidget.getCurrentRow() < this.viewCardStackWidget.getMaxRows())
-            {
-                this.scrollDownButton.active = true;
-            }
-        }
-    }
-    
-    protected void activateZoneWidgets()
-    {
-        for(ZoneWidget w : this.zoneWidgets)
-        {
-            w.active = true;
-        }
-    }
-    
-    protected void deactivateZoneWidgets()
-    {
-        for(ZoneWidget w : this.zoneWidgets)
-        {
-            w.active = false;
-        }
-    }
-    
-    protected void removeInteractionWidgets()
-    {
-        this.buttons.removeIf((w) -> w instanceof InteractionWidget);
-        this.children.removeIf((w) -> w instanceof InteractionWidget);
-    }
-    
-    protected void removeClickedZone()
-    {
-        this.clickedZoneWidget = null;
-        this.clickedCard = null;
-        this.viewCardStackWidget.deactivate();
-        this.updateButtonStatus();
-    }
-    
     protected void zoneTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
     {
         ZoneWidget w = (ZoneWidget)w0;
@@ -410,6 +383,20 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void viewCardStackTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
     {
+    }
+    
+    protected void removeInteractionWidgets()
+    {
+        this.buttons.removeIf((w) -> w instanceof InteractionWidget);
+        this.children.removeIf((w) -> w instanceof InteractionWidget);
+    }
+    
+    protected void removeClickedZone()
+    {
+        this.clickedZoneWidget = null;
+        this.clickedCard = null;
+        this.viewCardStackWidget.deactivate();
+        this.updateButtonStatus();
     }
     
     @Override
@@ -431,48 +418,9 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     }
     
     @Override
-    public ZoneOwner getZoneOwner()
-    {
-        PlayerRole role = this.getPlayerRole();
-        
-        if(ZoneOwner.PLAYER1.player == role)
-        {
-            return ZoneOwner.PLAYER1;
-        }
-        else if(ZoneOwner.PLAYER2.player == role)
-        {
-            return ZoneOwner.PLAYER2;
-        }
-        else
-        {
-            return ZoneOwner.NONE;
-        }
-    }
-    
-    @Override
     public void renderCardInfo(MatrixStack ms, DuelCard card)
     {
-        ScreenUtil.renderCardInfo(ms, card.getCardHolder(), (this.width - this.xSize) / 2);
-    }
-    
-    public static void renderHoverRect(MatrixStack ms, int x, int y, int w, int h)
-    {
-        // from ContainerScreen#render
-        
-        RenderSystem.disableDepthTest();
-        RenderSystem.colorMask(true, true, true, false);
-        ScreenUtil.drawRect(ms, x, y, w, h, 1F, 1F, 1F, 0.5F);
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableDepthTest();
-    }
-    
-    public static void renderDisabledRect(MatrixStack ms, int x, int y, int w, int h)
-    {
-        RenderSystem.disableDepthTest();
-        RenderSystem.colorMask(true, true, true, false);
-        ScreenUtil.drawRect(ms, x, y, w, h, 0F, 0F, 0F, 0.5F);
-        RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableDepthTest();
+        CardRenderUtil.renderCardInfo(ms, card.getCardHolder(), (this.width - this.xSize) / 2);
     }
     
     public static void renderSelectedRect(MatrixStack ms, int x, int y, int w, int h)
@@ -487,62 +435,5 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         RenderSystem.disableDepthTest();
         ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 1F, 0, 0, 1F);
         RenderSystem.enableDepthTest();
-    }
-    
-    public static void renderCardWith(MatrixStack ms, int x, int y, int width, int height, DuelCard card, YdmBlitUtil.FullBlitMethod blitMethod, boolean forceFaceUp)
-    {
-        Minecraft mc = ClientProxy.getMinecraft();
-        
-        // bind the texture depending on faceup or facedown
-        if(card.getCardPosition().isFaceUp || forceFaceUp)
-        {
-            ScreenUtil.bindMainResourceLocation(card.getCardHolder());
-        }
-        else
-        {
-            mc.getTextureManager().bindTexture(ScreenUtil.getMainCardBack());
-        }
-        
-        blitMethod.fullBlit(ms, x, y, width, height);
-        
-        if(card.getIsToken())
-        {
-            mc.getTextureManager().bindTexture(ScreenUtil.getMainCardBack());
-            blitMethod.fullBlit(ms, x, y, width, height);
-        }
-    }
-    
-    public static void renderCard(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
-    {
-        DuelScreenDueling.renderCardWith(ms, x, y, width, height, card,
-            card.getCardPosition().isStraight
-                ? YdmBlitUtil::fullBlit
-                : YdmBlitUtil::fullBlit90Degree, forceFaceUp);
-    }
-    
-    public static void renderCardReversed(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
-    {
-        DuelScreenDueling.renderCardWith(ms, x, y, width, height, card,
-            card.getCardPosition().isStraight
-                ? YdmBlitUtil::fullBlit180Degree
-                : YdmBlitUtil::fullBlit270Degree, forceFaceUp);
-    }
-    
-    public static void renderCardCentered(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
-    {
-        // if width and height are more of a rectangle, this centers the texture horizontally
-        x -= (height - width) / 2;
-        width = height;
-        
-        DuelScreenDueling.renderCard(ms, x, y, width, height, card, forceFaceUp);
-    }
-    
-    public static void renderCardReversedCentered(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
-    {
-        // if width and height are more of a rectangle, this centers the texture horizontally
-        x -= (height - width) / 2;
-        width = height;
-        
-        DuelScreenDueling.renderCardReversed(ms, x, y, width, height, card, forceFaceUp);
     }
 }
