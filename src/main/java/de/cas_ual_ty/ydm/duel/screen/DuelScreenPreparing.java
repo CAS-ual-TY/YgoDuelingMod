@@ -9,7 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
@@ -158,9 +158,9 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new StringTextComponent(">"), (button) -> this.nextDeckClicked()));
         this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, new StringTextComponent("Choose Deck"), (button) -> this.chooseDeckClicked()));
         
-        this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ClientProxy.getInfoCardBack()));
-        this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, ClientProxy.getInfoCardBack()));
-        this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ClientProxy.getInfoCardBack()));
+        this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ScreenUtil.getInfoCardBack()));
+        this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, ScreenUtil.getInfoCardBack()));
+        this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, ScreenUtil.getInfoCardBack()));
         this.prevDeckWidget.visible = false;
         this.activeDeckWidget.visible = false;
         this.nextDeckWidget.visible = false;
@@ -268,7 +268,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                         
                         if(c != null && c.getCard() != null)
                         {
-                            ClientProxy.bindMainResourceLocation(c);
+                            ScreenUtil.bindMainResourceLocation(c);
                             YdmBlitUtil.fullBlit(ms, guiLeft + offX, guiTop + offY, 16, 16);
                             
                             if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
@@ -304,7 +304,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                     
                     if(c != null && c.getCard() != null)
                     {
-                        ClientProxy.bindMainResourceLocation(c);
+                        ScreenUtil.bindMainResourceLocation(c);
                         YdmBlitUtil.fullBlit(ms, guiLeft + offX, guiTop + offY, 16, 16);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
@@ -331,7 +331,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                     
                     if(c != null && c.getCard() != null)
                     {
-                        ClientProxy.bindMainResourceLocation(c);
+                        ScreenUtil.bindMainResourceLocation(c);
                         YdmBlitUtil.fullBlit(ms, guiLeft + offX, guiTop + offY, 16, 16);
                         
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
@@ -379,7 +379,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         ms.push();
         
         ms.translate(-this.guiLeft, -this.guiTop, 0D);
-        ClientProxy.renderCardInfo(ms, c, width);
+        ScreenUtil.renderCardInfo(ms, c, width);
         
         ms.pop();
     }

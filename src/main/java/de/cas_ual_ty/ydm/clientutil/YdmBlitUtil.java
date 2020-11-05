@@ -92,8 +92,8 @@ public class YdmBlitUtil
     // use full mask (64x64) for 16x16 texture
     public static void advancedMaskedBlit(MatrixStack ms, int renderX, int renderY, int renderWidth, int renderHeight, Runnable maskBinderAndDrawer, Runnable textureBinderAndDrawer)
     {
-        RenderSystem.pushMatrix();
-        RenderSystem.color4f(1F, 1F, 1F, 1F);
+        //        RenderSystem.pushMatrix();
+        ScreenUtil.white();
         RenderSystem.enableBlend();
         
         // We want a blendfunc that doesn't change the color of any pixels,
@@ -116,7 +116,7 @@ public class YdmBlitUtil
         textureBinderAndDrawer.run();
         
         RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
+        //        RenderSystem.popMatrix();
     }
     
     protected static void customInnerBlit(Matrix4f matrix, int posX1, int posX2, int posY1, int posY2, int posZ, float texX1, float texX2, float texY1, float texY2)

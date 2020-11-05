@@ -1,9 +1,9 @@
 package de.cas_ual_ty.ydm.deckbox;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -104,7 +104,7 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        ScreenUtil.white();
         this.minecraft.getTextureManager().bindTexture(DeckBoxScreen.DECK_BOX_GUI_TEXTURE);
         YdmBlitUtil.blit(ms, this.guiLeft, this.guiTop, this.xSize, this.ySize, 0, 0, this.xSize, this.ySize, 512, 256);
     }

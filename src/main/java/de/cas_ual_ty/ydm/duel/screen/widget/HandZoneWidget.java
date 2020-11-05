@@ -17,7 +17,6 @@ public class HandZoneWidget extends ZoneWidget
     public HandZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
     {
         super(zone, context, width, height, title, onPress, onTooltip);
-        // TODO Auto-generated constructor stub
     }
     
     @Override

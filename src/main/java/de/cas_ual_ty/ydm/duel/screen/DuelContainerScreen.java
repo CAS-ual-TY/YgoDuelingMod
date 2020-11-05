@@ -7,10 +7,10 @@ import java.util.function.Supplier;
 import org.lwjgl.glfw.GLFW;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.SwitchableContainerScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
@@ -102,7 +102,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     {
         DuelScreenDueling.renderDisabledRect(ms, 0, 0, this.width, this.height);
         
-        RenderSystem.color4f(1F, 1F, 1F, 1F);
+        ScreenUtil.white();
         this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }

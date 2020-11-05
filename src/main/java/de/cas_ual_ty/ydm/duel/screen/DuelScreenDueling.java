@@ -8,6 +8,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.widget.HandZoneWidget;
@@ -167,7 +168,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     {
         super.drawGuiContainerBackgroundLayer(ms, partialTicks, mouseX, mouseY);
         
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        ScreenUtil.white();
         this.minecraft.getTextureManager().bindTexture(DuelScreenDueling.DUEL_BACKGROUND_GUI_TEXTURE);
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
         this.minecraft.getTextureManager().bindTexture(DuelScreenDueling.DUEL_FOREGROUND_GUI_TEXTURE);
@@ -451,7 +452,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     @Override
     public void renderCardInfo(MatrixStack ms, DuelCard card)
     {
-        ClientProxy.renderCardInfo(ms, card.getCardHolder(), (this.width - this.xSize) / 2);
+        ScreenUtil.renderCardInfo(ms, card.getCardHolder(), (this.width - this.xSize) / 2);
     }
     
     public static void renderHoverRect(MatrixStack ms, int x, int y, int w, int h)
@@ -460,7 +461,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);
-        ClientProxy.drawRect(ms, x, y, w, h, 1F, 1F, 1F, 0.5F);
+        ScreenUtil.drawRect(ms, x, y, w, h, 1F, 1F, 1F, 0.5F);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
     }
@@ -469,7 +470,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     {
         RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);
-        ClientProxy.drawRect(ms, x, y, w, h, 0F, 0F, 0F, 0.5F);
+        ScreenUtil.drawRect(ms, x, y, w, h, 0F, 0F, 0F, 0.5F);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
     }
@@ -477,14 +478,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     public static void renderSelectedRect(MatrixStack ms, int x, int y, int w, int h)
     {
         RenderSystem.disableDepthTest();
-        ClientProxy.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 0, 0, 1F, 1F);
+        ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 0, 0, 1F, 1F);
         RenderSystem.enableDepthTest();
     }
     
     public static void renderEnemySelectedRect(MatrixStack ms, int x, int y, int w, int h)
     {
         RenderSystem.disableDepthTest();
-        ClientProxy.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 1F, 0, 0, 1F);
+        ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 1F, 0, 0, 1F);
         RenderSystem.enableDepthTest();
     }
     
@@ -495,18 +496,18 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         // bind the texture depending on faceup or facedown
         if(card.getCardPosition().isFaceUp || forceFaceUp)
         {
-            ClientProxy.bindMainResourceLocation(card.getCardHolder());
+            ScreenUtil.bindMainResourceLocation(card.getCardHolder());
         }
         else
         {
-            mc.getTextureManager().bindTexture(ClientProxy.getMainCardBack());
+            mc.getTextureManager().bindTexture(ScreenUtil.getMainCardBack());
         }
         
         blitMethod.fullBlit(ms, x, y, width, height);
         
         if(card.getIsToken())
         {
-            mc.getTextureManager().bindTexture(ClientProxy.getMainCardBack());
+            mc.getTextureManager().bindTexture(ScreenUtil.getMainCardBack());
             blitMethod.fullBlit(ms, x, y, width, height);
         }
     }

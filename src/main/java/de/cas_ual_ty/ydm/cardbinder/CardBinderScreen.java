@@ -11,7 +11,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
-import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -100,7 +100,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
             {
                 if(button.getCard() != null)
                 {
-                    ClientProxy.renderCardInfo(ms, button.getCard(), this);
+                    ScreenUtil.renderCardInfo(ms, button.getCard(), this);
                     
                     List<ITextComponent> list = new LinkedList<>();
                     button.getCard().addInformation(list);

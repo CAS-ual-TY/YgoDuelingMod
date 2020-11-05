@@ -161,7 +161,7 @@ public class PlayFieldType
     
     public PlayFieldType copyInteractions(PlayFieldType playFieldType)
     {
-        return registerInteractions(playFieldType.interactionEntries);
+        return this.registerInteractions(playFieldType.interactionEntries);
     }
     
     public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)

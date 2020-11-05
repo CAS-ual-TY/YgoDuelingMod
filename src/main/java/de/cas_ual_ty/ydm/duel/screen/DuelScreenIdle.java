@@ -9,6 +9,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
 import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
@@ -72,8 +73,7 @@ public class DuelScreenIdle<E extends DuelContainer> extends DuelContainerScreen
     {
         super.drawGuiContainerBackgroundLayer(ms, partialTicks, mouseX, mouseY);
         
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-        
+        ScreenUtil.white();
         this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }
