@@ -153,6 +153,17 @@ public class PlayFieldType
         return this;
     }
     
+    public PlayFieldType registerInteractions(List<InteractionEntry> list)
+    {
+        this.interactionEntries.addAll(list);
+        return this;
+    }
+    
+    public PlayFieldType copyInteractions(PlayFieldType playFieldType)
+    {
+        return registerInteractions(playFieldType.interactionEntries);
+    }
+    
     public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
     {
         List<ZoneInteraction> list = new ArrayList<>(4);
