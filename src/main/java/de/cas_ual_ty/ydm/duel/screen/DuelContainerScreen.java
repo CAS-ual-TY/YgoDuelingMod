@@ -12,6 +12,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.SwitchableContainerScreen;
+import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.widget.DisplayChatWidget;
@@ -33,6 +34,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public abstract class DuelContainerScreen<E extends DuelContainer> extends SwitchableContainerScreen<E>
@@ -40,10 +42,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
     public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
     
-    public static final ResourceLocation DECK_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
-    
-    public static final ResourceLocation DUEL_ACTIONS_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions.png");
-    public static final ResourceLocation DUEL_ACTIONS_LARGE_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_actions_large.png");
+    public static final ResourceLocation DECK_BACKGROUND_GUI_TEXTURE = DeckBoxScreen.DECK_BOX_GUI_TEXTURE;
     
     protected DuelScreenConstructor<E>[] screensForEachState;
     
@@ -63,6 +62,9 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     public DuelContainerScreen(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
+        this.xSize = 234;
+        this.ySize = 250;
+        
         this.worldChatMessages = new ArrayList<>(32);
         this.textFieldWidget = null;
         this.duelChat = true;
@@ -150,46 +152,65 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     protected void initDefaultChat(int width, int height)
     {
-        int centerY = height / 2 - 12;
-        int chatHeight = Math.max(32, ((height - 5 * (20 + 4)) / 32) * 32);
-        this.initDefaultChat(width, height, centerY, chatHeight);
+        final int cardsSize = 32;
+        final int margin = 4;
+        final int buttonHeight = 20;
+        
+        int x = this.guiLeft + this.xSize + margin;
+        int y = this.guiTop + margin;
+        
+        int maxWidth = Math.min(160, (this.width - this.xSize) / 2 - 2 * margin);
+        int maxHeight = this.ySize;// - 2 * (20 + margin);
+        
+        int maxChatHeight = (maxHeight - 5 * (20 + margin) - 2 * margin);
+        
+        int chatWidth = Math.max(32, (maxWidth / cardsSize) * cardsSize);
+        //        int chatHeight = Math.max(32, (maxChatHeight / cardsSize) * cardsSize);
+        int chatHeight = maxChatHeight;
+        
+        this.initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);
     }
     
-    protected void initDefaultChat(int width, int height, int centerY, int chatHeight)
+    protected void initChat(int width, int height, int x, int y, int w, int h, int chatWidth, int chatHeight, int margin, int buttonHeight)
     {
-        int chatWidth = (width - this.xSize) / 2 - 2 * 4;
-        this.initChat(width, height, centerY, chatWidth, chatHeight);
-    }
-    
-    protected void initChat(int width, int height, int centerY, int chatWidth, int chatHeight)
-    {
-        // actual height will be different, as you need to add the buttons and margin as well
-        // in total you need to consider another 20 + 4 on each side, so +48 height more in total
-        
-        int rightMargin = (width - this.xSize) / 2;
-        int x = (width) - (rightMargin + chatWidth) / 2;
-        int y = centerY - chatHeight / 2;
-        int w = chatWidth;
-        int h = chatHeight;
-        
-        int verticalButtonsOff = 4;
-        this.addButton(this.chatUpButton = new Button(x, y - 20 - verticalButtonsOff, w, 20, new StringTextComponent("Up"), this::chatScrollButtonClicked));
-        this.chatUpButton.active = false;
-        this.addButton(this.chatDownButton = new Button(x, y + chatHeight + verticalButtonsOff, w, 20, new StringTextComponent("Down"), this::chatScrollButtonClicked));
-        this.chatDownButton.active = false;
-        this.addButton(this.chatWidget = new DisplayChatWidget(x, y - (chatHeight % this.font.FONT_HEIGHT) / 2, chatWidth, chatHeight, StringTextComponent.EMPTY));
-        this.addButton(this.textFieldWidget = new TextFieldWidget(this.font, x, y + chatHeight + 20 + 2 * verticalButtonsOff, w, 20, StringTextComponent.EMPTY));
-        this.addButton(this.sendChatButton = new Button(x, y + chatHeight + 2 * 20 + 3 * verticalButtonsOff, w, 20, new StringTextComponent(">"), (b) -> this.sendChat()));
-        //        this.addButton(this.sendChatButton = new Button(4, 4, 20, 20, new StringTextComponent(">"), (b) -> this.sendChat()));
+        final int offset = buttonHeight + margin;
         
         int halfW = w / 2;
-        this.addButton(this.duelChatButton = new Button(x, y - 2 * 20 - 2 * verticalButtonsOff, halfW, 20, new StringTextComponent("Duel"), (b) -> this.switchChat()));
-        this.addButton(this.worldChatButton = new Button(x + chatWidth - halfW, y - 2 * 20 - 2 * verticalButtonsOff, halfW, 20, new StringTextComponent("World"), (b) -> this.switchChat()));
+        int extraOff = halfW % 2;
+        
+        this.addButton(this.duelChatButton = new Button(x, y, halfW, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.duel_chat"), (b) -> this.switchChat()));
+        this.addButton(this.worldChatButton = new Button(x + halfW - extraOff, y, halfW + extraOff, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.world_chat"), (b) -> this.switchChat()));
+        y += offset;
+        
+        this.addButton(this.chatUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::chatScrollButtonClicked));
+        y += offset;
+        
+        this.addButton(this.chatWidget = new DisplayChatWidget(x, y - (chatHeight % this.font.FONT_HEIGHT) / 2, chatWidth, chatHeight, StringTextComponent.EMPTY));
+        y += chatHeight + margin;
+        
+        this.addButton(this.chatDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::chatScrollButtonClicked));
+        y += offset;
+        
+        this.addButton(this.textFieldWidget = new TextFieldWidget(this.font, x + 1, y + 1, w - 2, buttonHeight - 2, StringTextComponent.EMPTY));
+        y += offset;
+        
+        this.addButton(this.sendChatButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.send_chat"), (b) -> this.sendChat()));
+        y += offset;
+        
+        this.appendToInitChat(width, height, extraOff, y, w, halfW, chatWidth, chatHeight, margin);
         
         this.duelChat = !this.duelChat;
         this.switchChat();
         
+        this.chatUpButton.active = false;
+        this.chatDownButton.active = false; //TODO remove these
+        
         this.makeChatVisible();
+    }
+    
+    protected void appendToInitChat(int width, int height, int x, int y, int w, int h, int chatWidth, int chatHeight, int margin)
+    {
+        
     }
     
     protected void changeChatFlags(boolean flag)

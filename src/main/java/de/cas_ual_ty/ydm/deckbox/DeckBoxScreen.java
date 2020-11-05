@@ -15,7 +15,7 @@ import net.minecraft.util.text.TranslationTextComponent;
 
 public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
 {
-    private static final ResourceLocation DECK_BOX_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
+    public static final ResourceLocation DECK_BOX_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/deck_box.png");
     
     public DeckBoxScreen(DeckBoxContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {

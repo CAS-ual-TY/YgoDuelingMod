@@ -27,6 +27,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
 public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScreen<E> implements IDuelScreenContext
@@ -47,13 +48,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     protected List<ZoneWidget> zoneWidgets;
     protected List<InteractionWidget> interactionWidgets;
     
+    protected Button admitDefeatButton;
+    protected Button offerDrawButton;
+    
     protected ZoneOwner view;
     
     public DuelScreenDueling(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.xSize = 234;
-        this.ySize = 250;
         this.interactionWidgets = new ArrayList<>(); // Need to temporarily initialize with placeholder this to make sure no clear() call gets NPEd
         this.viewCardStackWidget = null;
         this.clickedZoneWidget = null;
@@ -91,35 +93,53 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             this.zoneWidgets.add(widget);
         }
         
-        int maxWidth = (this.width - this.xSize) / 2;
-        int maxHeight = this.height - 40;
-        int x = this.width - maxWidth / 2;
-        int y = this.height / 2;
-        int cardsSize = 32;
+        final int cardsSize = 32;
+        final int margin = 4;
+        final int buttonHeight = 20;
+        final int offset = buttonHeight + margin;
         
-        int centerY = height / 2 - 12;
-        int chatHeight = Math.max(32, ((height - 5 * (20 + 4)) / cardsSize) * cardsSize);
-        int chatWidth = Math.max(32, maxWidth - 8);
+        int x = this.guiLeft + this.xSize + margin;
+        int y = this.guiTop + margin;
+        
+        int maxWidth = Math.min(160, (this.width - this.xSize) / 2 - 2 * margin);
+        int maxHeight = this.ySize - 2 * buttonHeight;
+        
+        int maxChatHeight = (maxHeight - 5 * (buttonHeight + margin));
+        
+        int chatWidth = Math.max(32, (maxWidth / cardsSize) * cardsSize);
+        int chatHeight = Math.max(32, (maxChatHeight / cardsSize) * cardsSize);
+        
+        this.initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);
+        
+        //buttons from top
+        
+        // addButton
+        y += offset;
+        
+        this.addButton(this.scrollUpButton = new Button(x, y, maxWidth, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::scrollButtonClicked));
+        y += offset;
         
         int columns = chatWidth / cardsSize;
         int rows = chatHeight / cardsSize;
-        
-        y = centerY;
-        int w = columns * 32;
-        int h = rows * 32;
-        
-        this.initChat(width, height, centerY, chatWidth, chatHeight);
-        
         ViewCardStackWidget previousViewStack = this.viewCardStackWidget;
-        this.addButton(this.viewCardStackWidget = new ViewCardStackWidget(this, x - w / 2, y - h / 2, w, h, StringTextComponent.EMPTY, this::viewCardStackClicked, this::viewCardStackTooltip)
+        this.addButton(this.viewCardStackWidget = new ViewCardStackWidget(this, x, y, chatWidth, chatHeight, StringTextComponent.EMPTY, this::viewCardStackClicked, this::viewCardStackTooltip)
             .setRowsAndColumns(cardsSize, rows, columns));
-        //TODO
+        y += chatHeight + margin;
         
-        w = chatWidth;
+        this.addButton(this.scrollDownButton = new Button(x, y, maxWidth, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::scrollButtonClicked));
+        y += offset;
         
-        int verticalButtonsOff = 4;
-        this.addButton(this.scrollUpButton = new Button(x - w / 2, y - h / 2 - 20 - verticalButtonsOff, w, 20, new StringTextComponent("Up"), this::scrollButtonClicked));
-        this.addButton(this.scrollDownButton = new Button(x - w / 2, y + h / 2 + verticalButtonsOff, w, 20, new StringTextComponent("Down"), this::scrollButtonClicked));
+        // butttons from bottom
+        y = this.guiTop + this.ySize - margin - buttonHeight;
+        
+        this.addButton(this.admitDefeatButton = new Button(x, y, maxWidth, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.admit_defeat"), (b) -> this.admitDefeatClicked()));
+        y -= offset;
+        
+        this.addButton(this.offerDrawButton = new Button(x, y, maxWidth, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.offer_draw"), (b) -> this.admitDefeatClicked()));
+        y -= offset;
+        
+        this.admitDefeatButton.active = false;
+        this.offerDrawButton.active = false; //TODO remove these
         
         // in case we init again, buttons is cleared, thus all interaction widgets are removed
         // just act like we click on the last widget again
@@ -367,6 +387,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
         
         this.updateButtonStatus();
+    }
+    
+    protected void admitDefeatClicked()
+    {
+    }
+    
+    protected void offerDrawClicked()
+    {
     }
     
     protected void zoneTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)

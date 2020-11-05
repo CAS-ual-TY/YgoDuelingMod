@@ -23,7 +23,6 @@ import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -39,13 +38,13 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
     
     protected List<DeckWrapper> deckWrappers;
     protected int activeDeckWrapperIdx;
+    protected boolean deckChosen;
     
     public DuelScreenPreparing(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.xSize = 234;
-        this.ySize = 250;
         this.activeDeckWrapperIdx = 0;
+        this.deckChosen = false;
     }
     
     @Override
@@ -53,26 +52,37 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
     {
         super.init(mc, width, height);
         
-        int margin = (this.width - this.xSize) / 2;
-        
         int x = width / 2;
-        int y = height / 2;
         
-        this.initDefaultChat(width, height);
-        
-        //without x+1 its technically not centered, i dont get why :(
-        this.addButton(this.prevDeckButton = new Button(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new StringTextComponent("<"), (button) -> this.prevDeckClicked()));
-        this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new StringTextComponent(">"), (button) -> this.nextDeckClicked()));
-        this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, new StringTextComponent("Choose Deck"), (button) -> this.chooseDeckClicked()));
-        
-        this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
-        this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
-        this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
-        this.prevDeckWidget.visible = false;
-        this.activeDeckWidget.visible = false;
-        this.nextDeckWidget.visible = false;
-        
-        this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
+        if(!this.deckChosen)
+        {
+            // Faking this to make the chat smaller on the right side
+            int prevXSize = this.xSize;
+            int prevGuiLeft = this.guiLeft;
+            this.xSize = 284;
+            this.guiLeft = (width - this.xSize) / 2;
+            this.initDefaultChat(width, height);
+            this.xSize = prevXSize;
+            this.guiLeft = prevGuiLeft;
+            
+            //without x+1 its technically not centered, i dont get why :(
+            this.addButton(this.prevDeckButton = new Button(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"), (button) -> this.prevDeckClicked()));
+            this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow"), (button) -> this.nextDeckClicked()));
+            this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.choose_deck"), (button) -> this.chooseDeckClicked()));
+            
+            this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
+            this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
+            this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
+            this.prevDeckWidget.visible = false;
+            this.activeDeckWidget.visible = false;
+            this.nextDeckWidget.visible = false;
+            
+            this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
+        }
+        else
+        {
+            this.initDefaultChat(width, height);
+        }
     }
     
     @Override
@@ -305,6 +315,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
     {
         if(role == this.getPlayerRole())
         {
+            this.deckChosen = true;
             this.reInit();
         }
     }

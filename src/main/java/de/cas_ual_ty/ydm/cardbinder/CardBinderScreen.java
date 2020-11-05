@@ -5,13 +5,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
+import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -142,7 +142,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     @Override
     protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        ScreenUtil.white();
         this.minecraft.getTextureManager().bindTexture(CardBinderScreen.CARD_BINDER_GUI_TEXTURE);
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }

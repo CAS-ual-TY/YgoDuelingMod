@@ -305,6 +305,11 @@ public class YDM
         
         // TODO debug
         event.addDeck(DeckSource.getOjamaDeck());
+        
+        for(DeckSource deck : DeckSource.getAllPatreonDecks())
+        {
+            event.addDeck(deck);
+        }
     }
     
     public void newRegistry(NewRegistry event)
