@@ -104,7 +104,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         int maxWidth = Math.min(160, (this.width - this.xSize) / 2 - 2 * margin);
         int maxHeight = this.ySize - 2 * buttonHeight;
         
-        int maxChatHeight = (maxHeight - 5 * (buttonHeight + margin));
+        int maxChatHeight = (maxHeight - 4 * (buttonHeight + margin));
         
         int chatWidth = Math.max(32, (maxWidth / cardsSize) * cardsSize);
         int chatHeight = Math.max(32, (maxChatHeight / cardsSize) * cardsSize);
@@ -122,7 +122,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         int columns = chatWidth / cardsSize;
         int rows = chatHeight / cardsSize;
         ViewCardStackWidget previousViewStack = this.viewCardStackWidget;
-        this.addButton(this.viewCardStackWidget = new ViewCardStackWidget(this, x, y, chatWidth, chatHeight, StringTextComponent.EMPTY, this::viewCardStackClicked, this::viewCardStackTooltip)
+        this.addButton(this.viewCardStackWidget = new ViewCardStackWidget(this, x + (maxWidth - chatWidth) / 2, y, chatWidth, chatHeight, StringTextComponent.EMPTY, this::viewCardStackClicked, this::viewCardStackTooltip)
             .setRowsAndColumns(cardsSize, rows, columns));
         y += chatHeight + margin;
         

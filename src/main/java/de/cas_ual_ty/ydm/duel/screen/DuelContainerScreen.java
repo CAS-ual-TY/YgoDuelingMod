@@ -50,7 +50,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     protected Button chatDownButton;
     protected DisplayChatWidget chatWidget;
     protected TextFieldWidget textFieldWidget;
-    protected Button sendChatButton;
+    //    protected Button sendChatButton;
     
     protected Button duelChatButton;
     protected Button worldChatButton;
@@ -162,10 +162,9 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         int maxWidth = Math.min(160, (this.width - this.xSize) / 2 - 2 * margin);
         int maxHeight = this.ySize;// - 2 * (20 + margin);
         
-        int maxChatHeight = (maxHeight - 5 * (20 + margin) - 2 * margin);
+        int maxChatHeight = (maxHeight - 4 * (20 + margin) - 2 * margin);
         
-        int chatWidth = Math.max(32, (maxWidth / cardsSize) * cardsSize);
-        //        int chatHeight = Math.max(32, (maxChatHeight / cardsSize) * cardsSize);
+        int chatWidth = maxWidth;//Math.max(32, (maxWidth / cardsSize) * cardsSize);
         int chatHeight = maxChatHeight;
         
         this.initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);
@@ -194,8 +193,8 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         this.addButton(this.textFieldWidget = new TextFieldWidget(this.font, x + 1, y + 1, w - 2, buttonHeight - 2, StringTextComponent.EMPTY));
         y += offset;
         
-        this.addButton(this.sendChatButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.send_chat"), (b) -> this.sendChat()));
-        y += offset;
+        //        this.addButton(this.sendChatButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.send_chat"), (b) -> this.sendChat()));
+        //        y += offset;
         
         this.appendToInitChat(width, height, extraOff, y, w, halfW, chatWidth, chatHeight, margin);
         
@@ -219,7 +218,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         this.chatDownButton.visible = flag;
         this.chatWidget.visible = flag;
         this.textFieldWidget.visible = flag;
-        this.sendChatButton.visible = flag;
+        //        this.sendChatButton.visible = flag;
         this.duelChatButton.visible = flag;
         this.worldChatButton.visible = flag;
     }

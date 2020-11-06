@@ -239,7 +239,7 @@ public class DeckSource
     {
         List<DeckSource> list = new LinkedList<>();
         
-        list.add(DeckSource.makeDeckSource(DeckSource.KING_SCRUBBY_DECK_1, (c) -> true));
+        list.add(DeckSource.makeDeckSource(DeckSource.KING_SCRUBBY_DECK_1, (c) -> c.getProperties().getName().equals("Dark Magical Circle")));
         list.add(DeckSource.makeDeckSource(DeckSource.BLESS_DECK_1, (c) -> c.getProperties().getName().equals("Duza the Meteor Cubic Vessel")));
         
         return list;
