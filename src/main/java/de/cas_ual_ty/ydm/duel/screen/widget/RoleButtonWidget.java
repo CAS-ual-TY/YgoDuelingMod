@@ -4,7 +4,7 @@ import java.util.function.Supplier;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-import de.cas_ual_ty.ydm.duelmanager.PlayerRole;
+import de.cas_ual_ty.ydm.duel.PlayerRole;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 

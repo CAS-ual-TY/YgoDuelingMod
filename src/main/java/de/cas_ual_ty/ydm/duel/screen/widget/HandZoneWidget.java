@@ -7,10 +7,10 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
+import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
+import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
-import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
-import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
 import net.minecraft.util.text.ITextComponent;
 
 public class HandZoneWidget extends ZoneWidget
@@ -55,7 +55,7 @@ public class HandZoneWidget extends ZoneWidget
         
         if(totalW <= this.width || this.zone.getCardsAmount() == 1)
         {
-            int newHoverX = this.x + (this.width - totalW) / 2;
+            int newHoverX = renderX + (this.width - totalW) / 2;
             int newRenderX = newHoverX - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
             
             for(int i = 0; i < this.zone.getCardsAmount(); ++i)

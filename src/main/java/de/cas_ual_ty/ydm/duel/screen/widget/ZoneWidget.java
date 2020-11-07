@@ -10,13 +10,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
+import de.cas_ual_ty.ydm.duel.DuelManager;
+import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
+import de.cas_ual_ty.ydm.duel.playfield.Zone;
+import de.cas_ual_ty.ydm.duel.playfield.ZoneInteraction;
+import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
-import de.cas_ual_ty.ydm.duelmanager.DuelManager;
-import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
-import de.cas_ual_ty.ydm.duelmanager.playfield.Zone;
-import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneInteraction;
-import de.cas_ual_ty.ydm.duelmanager.playfield.ZoneOwner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;

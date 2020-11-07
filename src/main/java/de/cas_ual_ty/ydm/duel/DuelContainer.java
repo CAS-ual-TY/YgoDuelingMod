@@ -1,8 +1,7 @@
 package de.cas_ual_ty.ydm.duel;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.duelmanager.DuelManager;
-import de.cas_ual_ty.ydm.duelmanager.network.DuelMessages;
+import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;

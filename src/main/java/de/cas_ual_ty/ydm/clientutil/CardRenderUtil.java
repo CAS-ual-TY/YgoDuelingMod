@@ -9,7 +9,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
+import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;

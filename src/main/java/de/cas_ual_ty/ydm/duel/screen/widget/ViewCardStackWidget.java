@@ -10,9 +10,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
+import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
-import de.cas_ual_ty.ydm.duelmanager.playfield.DuelCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;

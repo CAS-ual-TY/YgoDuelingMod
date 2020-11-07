@@ -4,7 +4,7 @@ import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.card.CosmeticItem;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderItem;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
-import de.cas_ual_ty.ydm.dueldisk.DuelDiskItem;
+import de.cas_ual_ty.ydm.duel.dueldisk.DuelDiskItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;

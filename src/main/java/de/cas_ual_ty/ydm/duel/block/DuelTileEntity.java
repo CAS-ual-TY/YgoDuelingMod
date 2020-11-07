@@ -1,10 +1,9 @@
 package de.cas_ual_ty.ydm.duel.block;
 
 import de.cas_ual_ty.ydm.YdmContainerTypes;
-import de.cas_ual_ty.ydm.duelmanager.DuelManager;
-import de.cas_ual_ty.ydm.duelmanager.IDuelTicker;
-import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeader;
-import de.cas_ual_ty.ydm.duelmanager.network.DuelMessageHeaders;
+import de.cas_ual_ty.ydm.duel.DuelManager;
+import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
+import de.cas_ual_ty.ydm.duel.network.DuelMessageHeaders;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -16,7 +15,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
 
-public class DuelTileEntity extends TileEntity implements INamedContainerProvider, IDuelTicker
+public class DuelTileEntity extends TileEntity implements INamedContainerProvider
 {
     public DuelManager duelManager;
     
@@ -37,7 +36,7 @@ public class DuelTileEntity extends TileEntity implements INamedContainerProvide
     
     public DuelManager createDuelManager()
     {
-        return new DuelManager(this.world.isRemote, this::createHeader, this);
+        return new DuelManager(this.world.isRemote, this::createHeader);
     }
     
     public DuelMessageHeader createHeader()
