@@ -67,6 +67,8 @@ public class YDM
      * - Shutdown Hook
      *   - Properly wait and finish image downloading
      *   - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
+     * - Randoms and Shuffling in duels!
+     * 
      */
     
     public static final String MOD_ID = "ydm";

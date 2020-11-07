@@ -3,6 +3,9 @@ package de.cas_ual_ty.ydm.duel.screen;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -10,11 +13,23 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
+import de.cas_ual_ty.ydm.duel.action.Action;
+import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
+import de.cas_ual_ty.ydm.duel.action.ListAction;
+import de.cas_ual_ty.ydm.duel.action.MoveAction;
+import de.cas_ual_ty.ydm.duel.action.ShowCardAction;
+import de.cas_ual_ty.ydm.duel.action.ShowZoneAction;
+import de.cas_ual_ty.ydm.duel.action.ViewZoneAction;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
+import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneTypes;
+import de.cas_ual_ty.ydm.duel.screen.animation.Animation;
+import de.cas_ual_ty.ydm.duel.screen.animation.ListAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.MoveAnimation;
+import de.cas_ual_ty.ydm.duel.screen.widget.AnimationsWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.HandZoneWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.InteractionWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.MonsterZoneWidget;
@@ -53,6 +68,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected ZoneOwner view;
     
+    protected AnimationsWidget animationsWidget;
+    
     public DuelScreenDueling(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
@@ -65,33 +82,13 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             this.view = ZoneOwner.PLAYER1;
         }
+        this.animationsWidget = null;
     }
     
     @Override
     public void init(Minecraft minecraft, int width, int height)
     {
         super.init(minecraft, width, height);
-        
-        this.zoneWidgets = new ArrayList<>(this.getDuelManager().getPlayField().getZones().size());
-        this.interactionWidgets.clear();
-        
-        ZoneWidget widget;
-        
-        for(Zone zone : this.getDuelManager().getPlayField().getZones())
-        {
-            this.addButton(widget = this.createZoneWidgetForZone(zone));
-            
-            if(this.getPlayerRole() == ZoneOwner.PLAYER2.player)
-            {
-                widget.setPositionRelativeFlipped(zone.x, zone.y, width, height);
-            }
-            else
-            {
-                widget.setPositionRelative(zone.x, zone.y, width, height);
-            }
-            
-            this.zoneWidgets.add(widget);
-        }
         
         final int cardsSize = 32;
         final int margin = 4;
@@ -141,6 +138,35 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.admitDefeatButton.active = false;
         this.offerDrawButton.active = false; //TODO remove these
         
+        this.zoneWidgets = new ArrayList<>(this.getDuelManager().getPlayField().getZones().size());
+        this.interactionWidgets.clear();
+        
+        ZoneWidget widget;
+        
+        for(Zone zone : this.getDuelManager().getPlayField().getZones())
+        {
+            this.addButton(widget = this.createZoneWidgetForZone(zone));
+            
+            if(this.getPlayerRole() == ZoneOwner.PLAYER2.player)
+            {
+                widget.setPositionRelativeFlipped(zone.x, zone.y, width, height);
+            }
+            else
+            {
+                widget.setPositionRelative(zone.x, zone.y, width, height);
+            }
+            
+            this.zoneWidgets.add(widget);
+        }
+        
+        this.zoneWidgets.sort((z1, z2) -> Byte.compare(z1.zone.index, z2.zone.index));
+        
+        if(this.animationsWidget != null)
+        {
+            this.animationsWidget.onInit();
+        }
+        this.addButton(this.animationsWidget = new AnimationsWidget(0, 0, 0, 0));
+        
         // in case we init again, buttons is cleared, thus all interaction widgets are removed
         // just act like we click on the last widget again
         if(this.clickedZoneWidget != null)
@@ -164,6 +190,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
         
         this.updateButtonStatus();
+        
+    }
+    
+    @Override
+    public void tick()
+    {
+        this.animationsWidget.tick();
+        super.tick();
     }
     
     protected ZoneWidget createZoneWidgetForZone(Zone zone)
@@ -194,9 +228,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     }
     
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int x, int y)
+    protected void drawGuiContainerForegroundLayer(MatrixStack matrixStack, int x, int y)
     {
-        
     }
     
     @Override
@@ -208,6 +241,48 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
         
         return super.mouseClicked(mouseX, mouseY, button);
+    }
+    
+    @Override
+    public void handleAction(Action action)
+    {
+        action.init(this.getDuelManager().getPlayField());
+        
+        if(action instanceof ViewZoneAction)
+        {
+            ViewZoneAction a = (ViewZoneAction)action;
+            if(this.getZoneOwner() == a.sourceZone.getOwner())
+            {
+                this.viewZone(a.sourceZone);
+            }
+        }
+        else if(action instanceof ShowZoneAction)
+        {
+            ShowZoneAction a = (ShowZoneAction)action;
+            if(this.getZoneOwner() != a.sourceZone.getOwner())
+            {
+                this.viewZone(a.sourceZone);
+            }
+        }
+        else if(action instanceof ShowCardAction)
+        {
+            ShowCardAction a = (ShowCardAction)action;
+            if(this.getZoneOwner() != a.sourceZone.getOwner())
+            {
+                this.viewCards(a.sourceZone, ImmutableList.of(a.card));
+            }
+        }
+        
+        Animation animation = this.getAnimationForAction(action);
+        
+        if(animation != null)
+        {
+            this.playAnimation(animation);
+        }
+        else
+        {
+            action.doAction();
+        }
     }
     
     public void flip()
@@ -276,8 +351,107 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
     }
     
-    @Override
-    public void viewZone(Zone zone)
+    protected ZoneWidget getZoneWidget(Zone zone)
+    {
+        return this.zoneWidgets.get(zone.index);
+    }
+    
+    protected void playAnimation(Animation a)
+    {
+        if(a != null)
+        {
+            this.animationsWidget.addAnimation(a);
+        }
+    }
+    
+    @Nullable
+    public Animation getAnimationForAction(Action action0)
+    {
+        if(action0 instanceof MoveAction)
+        {
+            MoveAction action = (MoveAction)action0;
+            
+            CardPosition sourcePosition = action.sourceCardPosition;
+            
+            if(!sourcePosition.isFaceUp && action.sourceZone.getOwner() == this.getZoneOwner() && action.sourceZone.type.getShowFaceDownCardsToOwner())
+            {
+                sourcePosition = sourcePosition.flip();
+            }
+            
+            CardPosition destinationPosition = action.destinationCardPosition;
+            
+            if(!destinationPosition.isFaceUp && action.destinationZone.getOwner() == this.getZoneOwner() && action.destinationZone.type.getShowFaceDownCardsToOwner())
+            {
+                destinationPosition = destinationPosition.flip();
+            }
+            
+            return new MoveAnimation(
+                this.getView(),
+                action.card,
+                this.getZoneWidget(action.sourceZone),
+                this.getZoneWidget(action.destinationZone),
+                sourcePosition,
+                destinationPosition)
+                    .setOnStart(action::removeCardFromZone)
+                    .setOnEnd(() ->
+                    {
+                        action.addCard();
+                        action.finish();
+                    });
+        }
+        else if(action0 instanceof ChangePositionAction)
+        {
+            ChangePositionAction action = (ChangePositionAction)action0;
+            
+            if(action.card == action.sourceZone.getTopCardSafely())
+            {
+                ZoneOwner owner = action.sourceZone.getOwner();
+                
+                return new MoveAnimation(
+                    this.getView(),
+                    action.card,
+                    this.getZoneWidget(action.sourceZone),
+                    this.getZoneWidget(action.sourceZone),
+                    action.sourceCardPosition,
+                    action.destinationCardPosition)
+                        .setOnStart(() ->
+                        {
+                            action.removeCardFromZone();
+                        })
+                        .setOnEnd(() ->
+                        {
+                            action.sourceZone.addCard(owner, action.card, action.sourceCardIndex);
+                            action.sourceZone.getCard(action.sourceCardIndex).setPosition(action.destinationCardPosition);
+                        });
+            }
+        }
+        else if(action0 instanceof ListAction)
+        {
+            ListAction action = (ListAction)action0;
+            
+            if(!action.actions.isEmpty())
+            {
+                List<Animation> animations = new ArrayList<>(action.actions.size());
+                
+                Animation animation;
+                for(Action a : action.actions)
+                {
+                    animation = this.getAnimationForAction(a);
+                    
+                    if(animation != null)
+                    {
+                        animations.add(animation);
+                    }
+                }
+                
+                return new ListAnimation(animations);
+            }
+        }
+        
+        return null;
+    }
+    
+    protected void viewZone(Zone zone)
     {
         for(ZoneWidget w : this.zoneWidgets)
         {
@@ -294,8 +468,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
     }
     
-    @Override
-    public void viewCards(Zone zone, List<DuelCard> cards)
+    protected void viewCards(Zone zone, List<DuelCard> cards)
     {
         for(ZoneWidget w : this.zoneWidgets)
         {
@@ -451,14 +624,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         CardRenderUtil.renderCardInfo(ms, card.getCardHolder(), (this.width - this.xSize) / 2);
     }
     
-    public static void renderSelectedRect(MatrixStack ms, int x, int y, int w, int h)
+    public static void renderSelectedRect(MatrixStack ms, float x, float y, float w, float h)
     {
         RenderSystem.disableDepthTest();
         ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 0, 0, 1F, 1F);
         RenderSystem.enableDepthTest();
     }
     
-    public static void renderEnemySelectedRect(MatrixStack ms, int x, int y, int w, int h)
+    public static void renderEnemySelectedRect(MatrixStack ms, float x, float y, float w, float h)
     {
         RenderSystem.disableDepthTest();
         ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 1F, 0, 0, 1F);

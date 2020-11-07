@@ -73,7 +73,7 @@ public class ScreenUtil
         }
     }
     
-    public static void renderHoverRect(MatrixStack ms, int x, int y, int w, int h)
+    public static void renderHoverRect(MatrixStack ms, float x, float y, float w, float h)
     {
         // from ContainerScreen#render
         
@@ -84,7 +84,7 @@ public class ScreenUtil
         RenderSystem.enableDepthTest();
     }
     
-    public static void renderDisabledRect(MatrixStack ms, int x, int y, int w, int h)
+    public static void renderDisabledRect(MatrixStack ms, float x, float y, float w, float h)
     {
         RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);

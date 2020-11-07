@@ -9,6 +9,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -140,12 +141,25 @@ public class CardRenderUtil
         return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + "token_overlay" + ".png");
     }
     
-    public static void renderDuelCardAdvanced(MatrixStack ms, int x, int y, int width, int height, DuelCard card, YdmBlitUtil.FullBlitMethod blitMethod, boolean forceFaceUp)
+    public static void renderDuelCardAdvanced(MatrixStack ms, float x, float y, float width, float height, DuelCard card, YdmBlitUtil.FullBlitMethod blitMethod, boolean forceFaceUp)
+    {
+        CardPosition position = card.getCardPosition();
+        
+        // bind the texture depending on faceup or facedown
+        if(!card.getCardPosition().isFaceUp && forceFaceUp)
+        {
+            position = position.flip();
+        }
+        
+        CardRenderUtil.renderDuelCardAdvanced(ms, x, y, width, height, card, position, blitMethod);
+    }
+    
+    public static void renderDuelCardAdvanced(MatrixStack ms, float x, float y, float width, float height, DuelCard card, CardPosition position, YdmBlitUtil.FullBlitMethod blitMethod)
     {
         Minecraft mc = ClientProxy.getMinecraft();
         
         // bind the texture depending on faceup or facedown
-        if(card.getCardPosition().isFaceUp || forceFaceUp)
+        if(position.isFaceUp)
         {
             CardRenderUtil.bindMainResourceLocation(card.getCardHolder());
         }
@@ -163,7 +177,7 @@ public class CardRenderUtil
         }
     }
     
-    public static void renderDuelCard(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
+    public static void renderDuelCard(MatrixStack ms, float x, float y, float width, float height, DuelCard card, boolean forceFaceUp)
     {
         CardRenderUtil.renderDuelCardAdvanced(ms, x, y, width, height, card,
             card.getCardPosition().isStraight
@@ -171,7 +185,7 @@ public class CardRenderUtil
                 : YdmBlitUtil::fullBlit90Degree, forceFaceUp);
     }
     
-    public static void renderDuelCardReversed(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
+    public static void renderDuelCardReversed(MatrixStack ms, float x, float y, float width, float height, DuelCard card, boolean forceFaceUp)
     {
         CardRenderUtil.renderDuelCardAdvanced(ms, x, y, width, height, card,
             card.getCardPosition().isStraight
@@ -179,7 +193,7 @@ public class CardRenderUtil
                 : YdmBlitUtil::fullBlit270Degree, forceFaceUp);
     }
     
-    public static void renderDuelCardCentered(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
+    public static void renderDuelCardCentered(MatrixStack ms, float x, float y, float width, float height, DuelCard card, boolean forceFaceUp)
     {
         // if width and height are more of a rectangle, this centers the texture horizontally
         x -= (height - width) / 2;
@@ -188,7 +202,7 @@ public class CardRenderUtil
         CardRenderUtil.renderDuelCard(ms, x, y, width, height, card, forceFaceUp);
     }
     
-    public static void renderDuelCardReversedCentered(MatrixStack ms, int x, int y, int width, int height, DuelCard card, boolean forceFaceUp)
+    public static void renderDuelCardReversedCentered(MatrixStack ms, float x, float y, float width, float height, DuelCard card, boolean forceFaceUp)
     {
         // if width and height are more of a rectangle, this centers the texture horizontally
         x -= (height - width) / 2;

@@ -39,10 +39,10 @@ public class MonsterZoneWidget extends ZoneWidget
         final int cardsTextureSize = cardsHeight;
         
         DuelCard hoveredCard = null;
-        int hoverX = this.x;
-        int hoverY = this.y;
-        int hoverWidth = cardsWidth;
-        int hoverHeight = cardsHeight;
+        float hoverX = this.x;
+        float hoverY = this.y;
+        float hoverWidth = cardsWidth;
+        float hoverHeight = cardsHeight;
         
         boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
         boolean isOpponentView = this.zone.getOwner() != this.context.getView();
@@ -76,10 +76,9 @@ public class MonsterZoneWidget extends ZoneWidget
         {
             float margin = cardsWidth - (cardsAmount * cardsWidth - this.width) / (float)(cardsAmount - 1);
             
-            int hoverXBase = this.x;
+            float hoverXBase = this.x;
             
             boolean renderLeftToRight = !isOpponentView;
-            //            boolean renderFrontToBack = false;
             
             if(!renderLeftToRight)
             {
@@ -88,21 +87,14 @@ public class MonsterZoneWidget extends ZoneWidget
             }
             
             DuelCard c = null;
-            int newHoverX;
-            int newRenderX;
+            float newHoverX;
+            float newRenderX;
             
             for(int i = this.zone.getCardsAmount() - 1; i >= topCardIndex; --i)
             {
-                //                if(renderFrontToBack)
-                //                {
-                //                    c = this.zone.getCardUnsafe(i);
-                //                }
-                //                else
-                //                {
                 c = this.zone.getCardUnsafe(i);
-                //                }
                 
-                newHoverX = hoverXBase + Math.round((i - topCardIndex) * margin);
+                newHoverX = hoverXBase + (i - topCardIndex) * margin;
                 newRenderX = newHoverX - offset / 2;
                 
                 // if this is the top rendered card
@@ -121,10 +113,10 @@ public class MonsterZoneWidget extends ZoneWidget
         if(topCardInDef)
         {
             DuelCard c = this.zone.getTopCard();
-            int newHoverX = renderX;
-            int newHoverY = renderY + offset / 2;
-            int newHoverWidth = cardsHeight;
-            int newHoverHeight = cardsWidth;
+            float newHoverX = renderX;
+            float newHoverY = renderY + offset / 2;
+            float newHoverWidth = cardsHeight;
+            float newHoverHeight = cardsWidth;
             
             if(this.drawCard(ms, c, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, newHoverY, newHoverWidth, newHoverHeight))
             {

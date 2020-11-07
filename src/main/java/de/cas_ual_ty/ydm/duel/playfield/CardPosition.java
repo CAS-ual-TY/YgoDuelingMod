@@ -55,4 +55,24 @@ public enum CardPosition
             return ATK;
         }
     }
+    
+    public CardPosition rotate()
+    {
+        if(this == ATK)
+        {
+            return DEF;
+        }
+        else if(this == DEF)
+        {
+            return ATK;
+        }
+        else if(this == SET)
+        {
+            return FD;
+        }
+        else //if(this == FACE_DOWN)
+        {
+            return SET;
+        }
+    }
 }

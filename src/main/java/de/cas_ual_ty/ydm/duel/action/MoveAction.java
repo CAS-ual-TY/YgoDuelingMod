@@ -57,12 +57,19 @@ public abstract class MoveAction extends SingleCardAction
          * toIndex is the new index in the to-zone
          */
         
-        this.doMoveAction();
+        // split this into single parts, for animations
+        this.removeCardFromZone();
+        this.addCard();
+        this.finish();
+    }
+    
+    public abstract void addCard();
+    
+    public void finish()
+    {
         this.card.setPosition(this.destinationCardPosition);
         this.destinationCardIndex = this.destinationZone.getCardIndexShort(this.card);
     }
-    
-    protected abstract void doMoveAction();
     
     @Override
     public void undoAction()

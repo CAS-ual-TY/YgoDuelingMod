@@ -116,7 +116,6 @@ public class ZoneWidget extends Button
         }
         
         this.hoverCard = this.renderCards(ms, mouseX, mouseY);
-        //            ClientProxy.drawLineRect(ms, this.x, this.y, this.width, this.height, 1, 1, 0, 0, 1);
         
         int j = this.getFGColor();
         AbstractGui.drawCenteredString(ms, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
@@ -173,164 +172,6 @@ public class ZoneWidget extends Button
         }
         
         return null;
-        
-        /*
-        int cardsWidth = DuelingDuelScreen.CARDS_WIDTH * this.height / DuelingDuelScreen.CARDS_HEIGHT;
-        int cardsHeight = this.height;
-        int cardsTextureSize = cardsHeight;
-        
-        DuelCard hoveredCard = null;
-        int hoverX = this.x;
-        int hoverY = this.y;
-        int hoverWidth = this.width;
-        int hoverHeight = this.height;
-        
-        boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
-        boolean isOpponentView = this.zone.getOwner() != this.context.getView();
-        
-        if(this.zone.type.getRenderCardsSpread())
-        {
-            DuelCard c = null;
-            hoverWidth = cardsWidth;
-            
-            int totalW = this.zone.getCardsAmount() * cardsWidth;
-            
-            if(totalW <= this.width)
-            {
-                int x = this.x + (this.width - totalW) / 2;
-                int renderX = x - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
-                int y = this.y;
-                
-                for(short i = 0; i < this.zone.getCardsAmount(); ++i)
-                {
-                    if(!isOpponentView)
-                    {
-                        c = this.zone.getCard(i);
-                    }
-                    else
-                    {
-                        c = this.zone.getCard((short)(this.zone.getCardsAmount() - i - 1));
-                    }
-                    
-                    if(this.drawCard(ms, c, renderX, y, cardsTextureSize, cardsTextureSize, mouseX, mouseY, x, y, cardsWidth, cardsHeight))
-                    {
-                        hoveredCard = c;
-                        hoverX = x;
-                        hoverY = y;
-                    }
-                    
-                    x += cardsWidth;
-                    renderX += cardsWidth;
-                }
-            }
-            else
-            {
-                int x = this.x;
-                int y = this.y;
-                
-                int x1;
-                int renderX1;
-                
-                float margin = cardsWidth - (this.zone.getCardsAmount() * cardsWidth - this.width) / (float)(this.zone.getCardsAmount() - 1);
-                
-                boolean renderLeftToRight = !this.zone.type.getRenderCardsReversed() && isOpponentView; // wenn true
-                boolean renderFrontToBack = this.zone.type.getRenderCardsReversed() && isOpponentView; // flip
-                
-                if(!renderLeftToRight)
-                {
-                    margin *= -1F;
-                    x += this.width - cardsWidth;
-                }
-                
-                int renderX = x - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
-                
-                for(short i = 0; i < this.zone.getCardsAmount(); ++i)
-                {
-                    if(renderFrontToBack)
-                    {
-                        c = this.zone.getCard(i);
-                    }
-                    else
-                    {
-                        c = this.zone.getCard((short)(this.zone.getCardsAmount() - i - 1));
-                    }
-                    
-                    x1 = x + (int)(i * margin);
-                    renderX1 = renderX + (int)(i * margin);
-                    
-                    // if this is the top rendered card
-                    // and the card is sideways
-                    // adjust the hover rect
-                    // and also render it centered again
-                    if(c == this.zone.getTopCardSafely() && !c.getCardPosition().isStraight)
-                    {
-                        int renX = this.x + (this.width - cardsTextureSize) / 2;
-                        int renY = this.y + (this.height - cardsTextureSize) / 2;
-                        
-                        int offset = (cardsHeight - cardsWidth);
-                        int hovX = renX;
-                        int hovY = renY + offset / 2;
-                        int hovW = cardsHeight;
-                        int hovH = cardsWidth;
-                        
-                        if(this.drawCard(ms, c, renX, renY, cardsTextureSize, cardsTextureSize, mouseX, mouseY, hovX, hovY, hovW, hovH))
-                        {
-                            hoveredCard = c;
-                            hoverX = hovX;
-                            hoverY = hovY;
-                            hoverWidth = hovW;
-                            hoverHeight = hovH;
-                        }
-                    }
-                    else if(this.drawCard(ms, c, renderX1, y, cardsTextureSize, cardsTextureSize, mouseX, mouseY, x1, y, cardsWidth, cardsHeight))
-                    {
-                        hoveredCard = c;
-                        hoverX = x1;
-                        hoverY = y;
-                    }
-                }
-            }
-        }
-        else
-        {
-            DuelCard c = this.zone.getTopCardSafely();
-            
-            if(c != null && this.drawCard(ms, c, this.x, this.y, this.width, this.height, mouseX, mouseY, this.x, this.y, this.width, this.height))
-            {
-                hoveredCard = c;
-            }
-            
-            // #drawCard only draws the top card here
-            // so only if the top card is selected, this zone is marked
-            // so we gotta mark the zone in case this zone is selected
-            if(this.context.getClickedDuelCard() != c && this.context.getClickedZone() == this.zone)
-            {
-                DuelingDuelScreen.renderSelectedRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
-            }
-        }
-        
-        if(hoveredCard != null)
-        {
-            if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !this.zone.getType().getIsSecret()))
-            {
-                this.context.renderCardInfo(ms, hoveredCard);
-            }
-            
-            if(this.active)
-            {
-                DuelingDuelScreen.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
-            }
-        }
-        
-        if(!this.active)
-        {
-            return null;
-        }
-        else
-        {
-            return hoveredCard;
-        }
-        */
     }
     
     protected boolean drawCard(MatrixStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY, int cardsWidth, int cardsHeight)
@@ -358,7 +199,7 @@ public class ZoneWidget extends Button
         return this.drawCard(ms, duelCard, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, hoverX, hoverY, hoverWidth, hoverHeight);
     }
     
-    protected boolean drawCard(MatrixStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY, int hoverX, int hoverY, int hoverWidth, int hoverHeight)
+    protected boolean drawCard(MatrixStack ms, DuelCard duelCard, float renderX, float renderY, float renderWidth, float renderHeight, int mouseX, int mouseY, float hoverX, float hoverY, float hoverWidth, float hoverHeight)
     {
         boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
         boolean faceUp = this.zone.getType().getShowFaceDownCardsToOwner() && isOwner;
@@ -467,5 +308,25 @@ public class ZoneWidget extends Button
                 }
             }
         }
+    }
+    
+    public int getAnimationSourceX()
+    {
+        return this.x + this.width / 2;
+    }
+    
+    public int getAnimationSourceY()
+    {
+        return this.y + this.height / 2;
+    }
+    
+    public int getAnimationDestX()
+    {
+        return this.x + this.width / 2;
+    }
+    
+    public int getAnimationDestY()
+    {
+        return this.y + this.height / 2;
     }
 }

@@ -10,12 +10,12 @@ import net.minecraft.network.PacketBuffer;
 public class ChangePositionAction extends SingleCardAction
 {
     public CardPosition sourceCardPosition;
-    public CardPosition targetCardPosition;
+    public CardPosition destinationCardPosition;
     
-    public ChangePositionAction(ActionType actionType, byte sourceZoneId, short sourceCardId, CardPosition targetCardPosition)
+    public ChangePositionAction(ActionType actionType, byte sourceZoneId, short sourceCardId, CardPosition destinationCardPosition)
     {
         super(actionType, sourceZoneId, sourceCardId);
-        this.targetCardPosition = targetCardPosition;
+        this.destinationCardPosition = destinationCardPosition;
     }
     
     public ChangePositionAction(ActionType actionType, Zone zone, DuelCard sourceCard, CardPosition targetCardPosition)
@@ -32,7 +32,7 @@ public class ChangePositionAction extends SingleCardAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        DuelMessageUtility.encodeCardPosition(this.targetCardPosition, buf);
+        DuelMessageUtility.encodeCardPosition(this.destinationCardPosition, buf);
     }
     
     @Override
@@ -45,7 +45,7 @@ public class ChangePositionAction extends SingleCardAction
     @Override
     public void doAction()
     {
-        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.targetCardPosition);
+        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.destinationCardPosition);
     }
     
     @Override

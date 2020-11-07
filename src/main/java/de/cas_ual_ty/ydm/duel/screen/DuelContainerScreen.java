@@ -20,10 +20,9 @@ import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
+import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
-import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
-import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.widget.DisplayChatWidget;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -100,7 +99,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
+    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
         ScreenUtil.renderDisabledRect(ms, 0, 0, this.width, this.height);
         
@@ -314,12 +313,10 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     {
     }
     
-    public void viewZone(Zone zone)
+    public void handleAction(Action action)
     {
-    }
-    
-    public void viewCards(Zone zone, List<DuelCard> cards)
-    {
+        action.init(this.getDuelManager().getPlayField());
+        action.doAction();
     }
     
     public DuelManager getDuelManager()

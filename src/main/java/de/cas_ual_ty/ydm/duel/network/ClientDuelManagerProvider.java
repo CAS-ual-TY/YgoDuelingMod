@@ -3,8 +3,6 @@ package de.cas_ual_ty.ydm.duel.network;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.google.common.collect.ImmutableList;
-
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
@@ -14,9 +12,6 @@ import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.action.Action;
-import de.cas_ual_ty.ydm.duel.action.ShowCardAction;
-import de.cas_ual_ty.ydm.duel.action.ShowZoneAction;
-import de.cas_ual_ty.ydm.duel.action.ViewZoneAction;
 import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,43 +41,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
     @Override
     public void handleAction(Action action)
     {
-        // TODO animation
-        
-        IDuelManagerProvider.super.handleAction(action);
-        
-        if(action instanceof ViewZoneAction)
-        {
-            ViewZoneAction a = (ViewZoneAction)action;
-            ClientDuelManagerProvider.doForScreen((screen) ->
-            {
-                if(screen.getZoneOwner() == a.sourceZone.getOwner())
-                {
-                    screen.viewZone(a.sourceZone);
-                }
-            });
-        }
-        else if(action instanceof ShowZoneAction)
-        {
-            ShowZoneAction a = (ShowZoneAction)action;
-            ClientDuelManagerProvider.doForScreen((screen) ->
-            {
-                if(screen.getZoneOwner() != a.sourceZone.getOwner())
-                {
-                    screen.viewZone(a.sourceZone);
-                }
-            });
-        }
-        else if(action instanceof ShowCardAction)
-        {
-            ShowCardAction a = (ShowCardAction)action;
-            ClientDuelManagerProvider.doForScreen((screen) ->
-            {
-                if(screen.getZoneOwner() != a.sourceZone.getOwner())
-                {
-                    screen.viewCards(a.sourceZone, ImmutableList.of(a.card));
-                }
-            });
-        }
+        ClientDuelManagerProvider.doForScreen((screen) -> screen.handleAction(action));
     }
     
     @Override
