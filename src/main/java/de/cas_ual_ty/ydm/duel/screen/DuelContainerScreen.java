@@ -152,7 +152,6 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     protected void initDefaultChat(int width, int height)
     {
-        final int cardsSize = 32;
         final int margin = 4;
         final int buttonHeight = 20;
         
@@ -164,7 +163,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         
         int maxChatHeight = (maxHeight - 4 * (20 + margin) - 2 * margin);
         
-        int chatWidth = maxWidth;//Math.max(32, (maxWidth / cardsSize) * cardsSize);
+        int chatWidth = maxWidth;
         int chatHeight = maxChatHeight;
         
         this.initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);

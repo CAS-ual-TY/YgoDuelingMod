@@ -106,8 +106,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         int maxChatHeight = (maxHeight - 4 * (buttonHeight + margin));
         
-        int chatWidth = Math.max(32, (maxWidth / cardsSize) * cardsSize);
-        int chatHeight = Math.max(32, (maxChatHeight / cardsSize) * cardsSize);
+        int chatWidth = Math.max(cardsSize, (maxWidth / cardsSize) * cardsSize);
+        int chatHeight = Math.max(cardsSize, (maxChatHeight / cardsSize) * cardsSize);
         
         this.initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);
         
