@@ -48,8 +48,8 @@ public class DuelScreenIdle<E extends DuelContainer> extends DuelContainerScreen
         this.addButton(new RoleOccupantsWidget(x, y - 40, 80, 20, this::getRoleDescription, PlayerRole.PLAYER1));
         this.addButton(new RoleOccupantsWidget(x, y - 10, 80, 20, this::getRoleDescription, PlayerRole.PLAYER2));
         this.addButton(new RoleOccupantsWidget(x, y + 20, 100, 20, this::getRoleDescription, PlayerRole.SPECTATOR));
-        this.addButton(new ReadyCheckboxWidget(x + 80, y - 40, 20, 20, "Ready 1", (button) -> this.ready1ButtonClicked(), () -> this.getDuelManager().player1Ready, this::getPlayerRole, PlayerRole.PLAYER1));
-        this.addButton(new ReadyCheckboxWidget(x + 80, y - 10, 20, 20, "Ready 2", (button) -> this.ready2ButtonClicked(), () -> this.getDuelManager().player2Ready, this::getPlayerRole, PlayerRole.PLAYER2));
+        this.addButton(new ReadyCheckboxWidget(x + 80, y - 40, 20, 20, "Ready 1", (button) -> this.ready1ButtonClicked(), () -> this.getDuelManager().player1Ready, () -> this.getPlayerRole() == PlayerRole.PLAYER1 && this.getDuelManager().player2 != null));
+        this.addButton(new ReadyCheckboxWidget(x + 80, y - 10, 20, 20, "Ready 2", (button) -> this.ready2ButtonClicked(), () -> this.getDuelManager().player2Ready, () -> this.getPlayerRole() == PlayerRole.PLAYER2 && this.getDuelManager().player1 != null));
     }
     
     @Override
