@@ -53,5 +53,9 @@
     "item.ydm.diamond_deck_box": "Diamond Deck Box",
     "item.ydm.emerald_deck_box": "Emerald Deck Box",
     "item.ydm.duel_disk": "Duel Disk",
-    "item.ydm.chaos_disk": "Chaos Disk"
+    "item.ydm.chaos_disk": "Chaos Disk",
+    "item.ydm.academia_disk": "Academia Disk",
+    "item.ydm.academia_disk_red": "Slifer Red Academia Disk",
+    "item.ydm.academia_disk_blue": "Obelisk Blue Academia Disk",
+    "item.ydm.academia_disk_yellow": "Ra Yellow Academia Disk"
 }
