@@ -14,6 +14,7 @@ import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.action.Action;
+import de.cas_ual_ty.ydm.duel.action.AttackAction;
 import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
 import de.cas_ual_ty.ydm.duel.action.ListAction;
 import de.cas_ual_ty.ydm.duel.action.MoveAction;
@@ -27,6 +28,7 @@ import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneTypes;
 import de.cas_ual_ty.ydm.duel.screen.animation.Animation;
+import de.cas_ual_ty.ydm.duel.screen.animation.AttackAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.ListAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.MoveAnimation;
 import de.cas_ual_ty.ydm.duel.screen.widget.AnimationsWidget;
@@ -446,6 +448,12 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                 
                 return new ListAnimation(animations);
             }
+        }
+        else if(action0 instanceof AttackAction)
+        {
+            AttackAction action = (AttackAction)action0;
+            
+            return new AttackAnimation(this.getView(), this.getZoneWidget(action.sourceZone), this.getZoneWidget(action.attackedZone));
         }
         
         return null;
