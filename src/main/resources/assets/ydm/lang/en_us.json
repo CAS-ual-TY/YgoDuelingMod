@@ -57,5 +57,16 @@
     "item.ydm.academia_disk": "Academia Disk",
     "item.ydm.academia_disk_red": "Slifer Red Academia Disk",
     "item.ydm.academia_disk_blue": "Obelisk Blue Academia Disk",
-    "item.ydm.academia_disk_yellow": "Ra Yellow Academia Disk"
+    "item.ydm.academia_disk_yellow": "Ra Yellow Academia Disk",
+    "ydm.zone.hand": "Hand Zone",
+    "ydm.zone.extra": "Extra Zone",
+    "ydm.zone.deck": "Deck Zone",
+    "ydm.zone.spell_trap": "Spell/Trap Zone",
+    "ydm.zone.extra_deck": "Extra Deck Zone",
+    "ydm.zone.graveyard": "Graveyard Zone",
+    "ydm.zone.monster": "Monster Zone",
+    "ydm.zone.field_spell": "Field Spell Zone",
+    "ydm.zone.banished": "Banished Zone",
+    "ydm.zone.extra_monster_right": "Extra Monster Zone",
+    "ydm.zone.extra_monster_left": "Extra Monster Zone"
 }
