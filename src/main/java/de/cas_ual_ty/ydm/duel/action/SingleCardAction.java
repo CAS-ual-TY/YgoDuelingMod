@@ -37,7 +37,7 @@ public abstract class SingleCardAction extends SingleZoneAction
     
     public void removeCardFromZone()
     {
-        this.sourceZone.removeCard(this.sourceCardIndex);
+        this.sourceZone.removeCard(this.card);
     }
     
     @Override

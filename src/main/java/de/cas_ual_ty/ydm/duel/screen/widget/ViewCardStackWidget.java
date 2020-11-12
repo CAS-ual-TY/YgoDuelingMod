@@ -161,7 +161,7 @@ public class ViewCardStackWidget extends Button
         
         if(hoveredCard != null)
         {
-            if(hoveredCard.getCardPosition().isFaceUp || this.forceFaceUp)
+            if(hoveredCard.getCardPosition().isFaceUp || this.forceFaceUp || (this.context.getClickedZone() != null && this.context.getZoneOwner() == this.context.getClickedZone().getOwner() && !this.context.getClickedZone().getType().getIsSecret()))
             {
                 this.context.renderCardInfo(ms, hoveredCard);
             }

@@ -9,8 +9,8 @@ import net.minecraft.network.PacketBuffer;
 
 public class ChangePositionAction extends SingleCardAction
 {
-    public CardPosition sourceCardPosition;
     public CardPosition destinationCardPosition;
+    public CardPosition sourceCardPosition;
     
     public ChangePositionAction(ActionType actionType, byte sourceZoneId, short sourceCardId, CardPosition destinationCardPosition)
     {
@@ -39,18 +39,21 @@ public class ChangePositionAction extends SingleCardAction
     public void init(PlayField playField)
     {
         super.init(playField);
+        //        this.card.setPosition(this.destinationCardPosition);
         this.sourceCardPosition = this.sourceZone.getCard(this.sourceCardIndex).getCardPosition();
     }
     
     @Override
     public void doAction()
     {
-        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.destinationCardPosition);
+        this.card.setPosition(this.destinationCardPosition);
+        //        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.destinationCardPosition);
     }
     
     @Override
     public void undoAction()
     {
-        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.sourceCardPosition);
+        this.card.setPosition(this.sourceCardPosition);
+        //        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.sourceCardPosition);
     }
 }

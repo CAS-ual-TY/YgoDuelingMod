@@ -57,4 +57,13 @@ public abstract class Animation implements IRenderable
     
     @Override
     public abstract void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks);
+    
+    /**
+     * @return true if this animation works in parallel to other animations
+     * @see ParallelListAnimation
+     */
+    public boolean worksInParallel()
+    {
+        return true;
+    }
 }

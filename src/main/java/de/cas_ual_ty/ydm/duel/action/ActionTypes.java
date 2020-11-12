@@ -14,6 +14,8 @@ public class ActionTypes
 {
     public static final ActionType POPULATE = null;
     public static final ActionType MOVE_ON_TOP = null;
+    public static final ActionType SPECIAL_SUMMON = null;
+    public static final ActionType SPECIAL_SUMMON_OVERLAY = null;
     public static final ActionType MOVE_TO_BOTTOM = null;
     public static final ActionType CHANGE_POSITION = null;
     public static final ActionType SHUFFLE = null;
@@ -29,6 +31,8 @@ public class ActionTypes
         IForgeRegistry<ActionType> registry = event.getRegistry();
         registry.register(new ActionType(PopulateAction::new).setRegistryName(YDM.MOD_ID, "populate"));
         registry.register(new ActionType(MoveTopAction::new).setRegistryName(YDM.MOD_ID, "move_on_top"));
+        registry.register(new ActionType(MoveTopAction::new).setRegistryName(YDM.MOD_ID, "special_summon"));
+        registry.register(new ActionType(ListAction::new).setRegistryName(YDM.MOD_ID, "special_summon_overlay"));
         registry.register(new ActionType(MoveBottomAction::new).setRegistryName(YDM.MOD_ID, "move_to_bottom"));
         registry.register(new ActionType(ChangePositionAction::new).setRegistryName(YDM.MOD_ID, "change_position"));
         registry.register(new ActionType(ShuffleAction::new).setRegistryName(YDM.MOD_ID, "shuffle"));

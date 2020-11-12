@@ -1,7 +1,9 @@
 package de.cas_ual_ty.ydm.duel.screen;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import javax.annotation.Nullable;
 
@@ -14,10 +16,12 @@ import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.action.Action;
+import de.cas_ual_ty.ydm.duel.action.ActionTypes;
 import de.cas_ual_ty.ydm.duel.action.AttackAction;
 import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
 import de.cas_ual_ty.ydm.duel.action.ListAction;
 import de.cas_ual_ty.ydm.duel.action.MoveAction;
+import de.cas_ual_ty.ydm.duel.action.MoveTopAction;
 import de.cas_ual_ty.ydm.duel.action.ShowCardAction;
 import de.cas_ual_ty.ydm.duel.action.ShowZoneAction;
 import de.cas_ual_ty.ydm.duel.action.ViewZoneAction;
@@ -29,8 +33,11 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneTypes;
 import de.cas_ual_ty.ydm.duel.screen.animation.Animation;
 import de.cas_ual_ty.ydm.duel.screen.animation.AttackAnimation;
-import de.cas_ual_ty.ydm.duel.screen.animation.ListAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.MoveAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.ParallelListAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.QueueAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.SpecialSummonAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.SpecialSummonOverlayAnimation;
 import de.cas_ual_ty.ydm.duel.screen.widget.AnimationsWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.HandZoneWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.InteractionWidget;
@@ -41,7 +48,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -49,9 +55,6 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScreen<E> implements IDuelScreenContext
 {
-    public static final ResourceLocation DUEL_FOREGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_foreground.png");
-    public static final ResourceLocation DUEL_BACKGROUND_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_background.png");
-    
     public static final int CARDS_WIDTH = 24;
     public static final int CARDS_HEIGHT = 32;
     
@@ -223,9 +226,9 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         super.drawGuiContainerBackgroundLayer(ms, partialTicks, mouseX, mouseY);
         
         ScreenUtil.white();
-        this.minecraft.getTextureManager().bindTexture(DuelScreenDueling.DUEL_BACKGROUND_GUI_TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
-        this.minecraft.getTextureManager().bindTexture(DuelScreenDueling.DUEL_FOREGROUND_GUI_TEXTURE);
+        this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DUEL_FOREGROUND_GUI_TEXTURE);
         this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
     }
     
@@ -387,7 +390,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                 destinationPosition = destinationPosition.flip();
             }
             
-            return new MoveAnimation(
+            Animation moveAnimation = new MoveAnimation(
                 this.getView(),
                 action.card,
                 this.getZoneWidget(action.sourceZone),
@@ -400,6 +403,24 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                         action.addCard();
                         action.finish();
                     });
+            
+            if(action.actionType == ActionTypes.SPECIAL_SUMMON)
+            {
+                ZoneWidget w = this.getZoneWidget(action.destinationZone);
+                
+                int size = Math.max(w.getWidth(), w.getHeightRealms());
+                Animation ringAnimation = new SpecialSummonAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2);
+                
+                Queue<Animation> queue = new LinkedList<>();
+                queue.add(moveAnimation);
+                queue.add(ringAnimation);
+                
+                return new QueueAnimation(queue);
+            }
+            else
+            {
+                return moveAnimation;
+            }
         }
         else if(action0 instanceof ChangePositionAction)
         {
@@ -446,7 +467,25 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                     }
                 }
                 
-                return new ListAnimation(animations);
+                ParallelListAnimation listAnimation = new ParallelListAnimation(animations);
+                
+                if(action.actionType == ActionTypes.SPECIAL_SUMMON_OVERLAY)
+                {
+                    Queue<Animation> queue = new LinkedList<>();
+                    queue.add(listAnimation);
+                    
+                    MoveTopAction moveAction = (MoveTopAction)action.actions.get(action.actions.size() - 1);
+                    ZoneWidget w = this.getZoneWidget(moveAction.destinationZone);
+                    int size = Math.max(w.getWidth(), w.getHeightRealms());
+                    queue.add(new SpecialSummonOverlayAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2));
+                    
+                    return new QueueAnimation(queue);
+                }
+                else
+                {
+                    return listAnimation;
+                }
+                
             }
         }
         else if(action0 instanceof AttackAction)

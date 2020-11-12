@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
-public class ListAnimation extends Animation
+public class ParallelListAnimation extends Animation
 {
     public final List<Animation> animations;
     public final List<Runnable> runnablesOnStart;
     public final List<Runnable> runnablesOnEnd;
     
-    public ListAnimation(List<Animation> animations)
+    public ParallelListAnimation(List<Animation> animations)
     {
         this.animations = animations;
         
@@ -22,11 +22,24 @@ public class ListAnimation extends Animation
         
         for(Animation a : this.animations)
         {
+            if(!a.worksInParallel())
+            {
+                throw new IllegalArgumentException("ParallelListAnimation cannot accept the following animation: " + a.getClass() + " " + a.toString());
+            }
+            
             this.maxTickTime = Math.max(this.maxTickTime, a.maxTickTime);
-            this.runnablesOnStart.add(a.onStart);
-            this.runnablesOnEnd.add(a.onEnd);
-            a.onStart = null;
-            a.onEnd = null;
+            
+            if(a.onStart != null)
+            {
+                this.runnablesOnStart.add(a.onStart);
+                a.onStart = null;
+            }
+            
+            if(a.onEnd != null)
+            {
+                this.runnablesOnEnd.add(a.onEnd);
+                a.onEnd = null;
+            }
         }
         
         this.onStart = () ->
@@ -50,14 +63,14 @@ public class ListAnimation extends Animation
     public Animation setOnStart(Runnable onStart)
     {
         this.runnablesOnStart.add(onStart);
-        return super.setOnStart(onStart);
+        return this;
     }
     
     @Override
     public Animation setOnEnd(Runnable onEnd)
     {
         this.runnablesOnEnd.add(onEnd);
-        return super.setOnEnd(onEnd);
+        return this;
     }
     
     @Override
