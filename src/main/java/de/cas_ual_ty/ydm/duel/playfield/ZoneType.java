@@ -2,6 +2,8 @@ package de.cas_ual_ty.ydm.duel.playfield;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class ZoneType extends ForgeRegistryEntry<ZoneType>
@@ -30,6 +32,16 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
         this.defaultCardPosition = null;
         
         this.noOwner = false;
+    }
+    
+    public String getLocalKey()
+    {
+        return "zone." + this.getRegistryName().getNamespace() + "." + this.getRegistryName().getPath();
+    }
+    
+    public ITextComponent getLocal()
+    {
+        return new TranslationTextComponent(this.getLocalKey());
     }
     
     // allow SET and DEF position

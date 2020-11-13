@@ -1,6 +1,8 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistryEntry;
 
 public class ActionIcon extends ForgeRegistryEntry<ActionIcon>
@@ -20,6 +22,16 @@ public class ActionIcon extends ForgeRegistryEntry<ActionIcon>
         this.iconY = iconY;
         this.iconWidth = iconWidth;
         this.iconHeight = iconHeight;
+    }
+    
+    public String getLocalKey()
+    {
+        return "actionIcon." + this.getRegistryName().getNamespace() + "." + this.getRegistryName().getPath();
+    }
+    
+    public ITextComponent getLocal()
+    {
+        return new TranslationTextComponent(this.getLocalKey());
     }
     
     public ActionIcon(ResourceLocation sourceFile, int size)

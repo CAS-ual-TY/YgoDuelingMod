@@ -21,7 +21,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class ZoneWidget extends Button
@@ -239,21 +238,21 @@ public class ZoneWidget extends Button
         
         if(interactions.size() == 1)
         {
-            list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height, StringTextComponent.EMPTY, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height, onPress, onTooltip));
         }
         else if(interactions.size() == 2)
         {
             if(this.width <= this.height)
             {
                 // Split them horizontally (1 action on top, 1 on bottom)
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 2, this.width, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 2, this.width, this.height / 2, onPress, onTooltip));
             }
             else
             {
                 // Split them vertically (1 left, 1 right)
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 2, this.height, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 2, this.y, this.width / 2, this.height, StringTextComponent.EMPTY, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 2, this.height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 2, this.y, this.width / 2, this.height, onPress, onTooltip));
             }
         }
         else if(interactions.size() == 3)
@@ -261,32 +260,32 @@ public class ZoneWidget extends Button
             if(this.width == this.height)
             {
                 // 1 on top half, 1 bottom left, 1 bottom right
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 2, this.width / 2, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(2), this.context, this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(2), this.context, this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
             }
             else if(this.width < this.height)
             {
                 // Horizontally split
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 3, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 3, this.width, this.height / 3, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(2), this.context, this.x, this.y + this.height * 2 / 3, this.width, this.height / 3, StringTextComponent.EMPTY, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 3, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 3, this.width, this.height / 3, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(2), this.context, this.x, this.y + this.height * 2 / 3, this.width, this.height / 3, onPress, onTooltip));
             }
             else //if(this.width > this.height)
             {
                 // Vertically split
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 3, this.height, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 3, this.y, this.width / 3, this.height, StringTextComponent.EMPTY, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(2), this.context, this.x + this.width * 2 / 3, this.y, this.width / 3, this.height, StringTextComponent.EMPTY, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 3, this.height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 3, this.y, this.width / 3, this.height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(2), this.context, this.x + this.width * 2 / 3, this.y, this.width / 3, this.height, onPress, onTooltip));
             }
         }
         else if(interactions.size() == 4 && this.width == this.height)
         {
             // 1 on top left, 1 top right, 1 bottom left, 1 bottom right
-            list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 2, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
-            list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 2, this.y, this.width / 2, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
-            list.add(new InteractionWidget(interactions.get(2), this.context, this.x, this.y + this.height / 2, this.width / 2, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
-            list.add(new InteractionWidget(interactions.get(3), this.context, this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 2, StringTextComponent.EMPTY, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 2, this.height / 2, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 2, this.y, this.width / 2, this.height / 2, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(2), this.context, this.x, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(3), this.context, this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
         }
         else
         {
@@ -295,7 +294,7 @@ public class ZoneWidget extends Button
                 // Horizontally split
                 for(int i = 0; i < interactions.size(); ++i)
                 {
-                    list.add(new InteractionWidget(interactions.get(i), this.context, this.x, this.y + this.height * i / interactions.size(), this.width, this.height / interactions.size(), StringTextComponent.EMPTY, onPress, onTooltip));
+                    list.add(new InteractionWidget(interactions.get(i), this.context, this.x, this.y + this.height * i / interactions.size(), this.width, this.height / interactions.size(), onPress, onTooltip));
                 }
             }
             else //if(this.width > this.height)
@@ -303,7 +302,7 @@ public class ZoneWidget extends Button
                 // Vertically split
                 for(int i = 0; i < interactions.size(); ++i)
                 {
-                    list.add(new InteractionWidget(interactions.get(i), this.context, this.x + this.width * i / interactions.size(), this.y, this.width / interactions.size(), this.height, StringTextComponent.EMPTY, onPress, onTooltip));
+                    list.add(new InteractionWidget(interactions.get(i), this.context, this.x + this.width * i / interactions.size(), this.y, this.width / interactions.size(), this.height, onPress, onTooltip));
                 }
             }
         }
