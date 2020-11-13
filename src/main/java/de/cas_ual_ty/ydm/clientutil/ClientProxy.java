@@ -54,6 +54,7 @@ public class ClientProxy implements ISidedProxy
     public static boolean showBinderId;
     public static int maxInfoImages;
     public static int maxMainImages;
+    public static double duelChatSize;
     
     public static volatile boolean itemsUseCardImagesActive;
     public static volatile boolean itemsUseCardImagesFailed;
@@ -291,6 +292,7 @@ public class ClientProxy implements ISidedProxy
             ClientProxy.showBinderId = ClientProxy.clientConfig.showBinderId.get();
             ClientProxy.maxInfoImages = ClientProxy.clientConfig.maxInfoImages.get();
             ClientProxy.maxMainImages = ClientProxy.clientConfig.maxMainImages.get();
+            ClientProxy.duelChatSize = ClientProxy.clientConfig.duelChatSize.get();
         }
     }
     

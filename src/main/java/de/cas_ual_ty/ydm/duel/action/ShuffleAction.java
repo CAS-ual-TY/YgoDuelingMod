@@ -7,7 +7,7 @@ import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import net.minecraft.network.PacketBuffer;
 
-public class ShuffleAction extends SingleZoneAction
+public class ShuffleAction extends SingleZoneAction implements IAnnouncedAction
 {
     protected List<DuelCard> before;
     protected List<DuelCard> after;
@@ -55,8 +55,14 @@ public class ShuffleAction extends SingleZoneAction
     }
     
     @Override
-    public void redoAction()
+    public String getAnnouncementLocalKey()
     {
-        this.sourceZone.setCardsList(this.after);
+        return this.actionType.getLocalKey();
+    }
+    
+    @Override
+    public Zone getFieldAnnouncementZone()
+    {
+        return this.sourceZone;
     }
 }

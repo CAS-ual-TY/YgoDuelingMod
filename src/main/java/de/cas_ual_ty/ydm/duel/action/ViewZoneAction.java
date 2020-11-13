@@ -3,7 +3,7 @@ package de.cas_ual_ty.ydm.duel.action;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import net.minecraft.network.PacketBuffer;
 
-public class ViewZoneAction extends SingleZoneAction
+public class ViewZoneAction extends SingleZoneAction implements IAnnouncedAction
 {
     public ViewZoneAction(ActionType actionType, byte sourceZoneId)
     {
@@ -23,7 +23,17 @@ public class ViewZoneAction extends SingleZoneAction
     @Override
     public void doAction()
     {
-        // TODO view zone action
-        // log it
+    }
+    
+    @Override
+    public String getAnnouncementLocalKey()
+    {
+        return this.actionType.getLocalKey();
+    }
+    
+    @Override
+    public Zone getFieldAnnouncementZone()
+    {
+        return this.sourceZone;
     }
 }

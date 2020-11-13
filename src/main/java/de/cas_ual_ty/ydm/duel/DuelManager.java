@@ -15,6 +15,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionTypes;
+import de.cas_ual_ty.ydm.duel.action.IAnnouncedAction;
 import de.cas_ual_ty.ydm.duel.action.PopulateAction;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
@@ -424,7 +425,11 @@ public class DuelManager
         //        }
         
         DuelChatMessage chatMessage = new DuelChatMessage(message, name, role);
-        
+        this.logAndSendMessage(chatMessage);
+    }
+    
+    protected void logAndSendMessage(DuelChatMessage chatMessage)
+    {
         this.messages.add(chatMessage);
         this.sendMessageToAll(chatMessage);
     }
@@ -628,10 +633,10 @@ public class DuelManager
     
     public void receiveActionFrom(PlayerEntity player, Action action)
     {
-        this.receiveActionFrom(this.getRoleFor(player), action);
+        this.receiveActionFrom(player, this.getRoleFor(player), action);
     }
     
-    public void receiveActionFrom(PlayerRole role, Action action)
+    public void receiveActionFrom(PlayerEntity player, PlayerRole role, Action action)
     {
         if(role != PlayerRole.PLAYER1 && role != PlayerRole.PLAYER2)
         {
@@ -639,6 +644,13 @@ public class DuelManager
         }
         
         this.doAction(action);
+        
+        if(action instanceof IAnnouncedAction)
+        {
+            IAnnouncedAction a1 = (IAnnouncedAction)action;
+            ITextComponent playerName = player.getName();
+            this.logAndSendMessage(new DuelChatMessage(a1.getAnnouncement(playerName), playerName, role, true));
+        }
     }
     
     protected void doAction(Action action)

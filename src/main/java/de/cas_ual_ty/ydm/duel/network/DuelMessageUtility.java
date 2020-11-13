@@ -26,7 +26,6 @@ import net.minecraft.util.text.IFormattableTextComponent;
 
 public class DuelMessageUtility
 {
-    
     public static void encodeHeader(DuelMessageHeader header, PacketBuffer buf)
     {
         buf.writeResourceLocation(header.type.getRegistryName());
@@ -204,10 +203,11 @@ public class DuelMessageUtility
         buf.writeTextComponent(message.message);
         buf.writeTextComponent(message.playerName);
         DuelMessageUtility.encodePlayerRole(message.playerRole, buf);
+        buf.writeBoolean(message.isAnnouncement);
     }
     
     public static DuelChatMessage decodeDuelChatMessage(PacketBuffer buf)
     {
-        return new DuelChatMessage(buf.readTextComponent(), (IFormattableTextComponent)buf.readTextComponent(), DuelMessageUtility.decodePlayerRole(buf));
+        return new DuelChatMessage(buf.readTextComponent(), (IFormattableTextComponent)buf.readTextComponent(), DuelMessageUtility.decodePlayerRole(buf), buf.readBoolean());
     }
 }

@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -42,7 +43,7 @@ public class DisplayChatWidget extends Widget
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         int color = this.getFGColor();
-        DisplayChatWidget.drawLines(ms, fontrenderer, this.textSupplier.get(), this.x, this.y, this.width, this.height, color);
+        DisplayChatWidget.drawLines(ms, fontrenderer, this.textSupplier.get(), this.x, this.y, this.width, this.height, color, (float)ClientProxy.duelChatSize);
     }
     
     public DisplayChatWidget setTextSupplier(Supplier<List<ITextComponent>> textSupplier)
@@ -51,15 +52,26 @@ public class DisplayChatWidget extends Widget
         return this;
     }
     
-    public static void drawLines(MatrixStack ms, FontRenderer fontRenderer, List<ITextComponent> list, int x, int y, int maxWidth, int maxHeight, int color)
+    public static void drawLines(MatrixStack ms, FontRenderer fontRenderer, List<ITextComponent> list, float x, float y, int maxWidth, float maxHeight, int color, final float downScale)
     {
+        final float upScale = 1F / downScale;
+        
+        ms.push();
+        
+        ms.scale(1F * downScale, 1F * downScale, 1F);
+        
+        x *= upScale;
+        y *= upScale;
+        maxWidth = Math.round(maxWidth * upScale);
+        maxHeight *= upScale;
+        
         ITextComponent t;
         List<IReorderingProcessor> ps;
         IReorderingProcessor p;
         int i, j;
         
-        int minY = y;
-        int maxY = y + maxHeight;
+        float minY = y;
+        float maxY = y + maxHeight;
         
         y = maxY - fontRenderer.FONT_HEIGHT; // were in position of the last line
         
@@ -83,5 +95,7 @@ public class DisplayChatWidget extends Widget
                 }
             }
         }
+        
+        ms.pop();
     }
 }

@@ -4,7 +4,7 @@ import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import net.minecraft.network.PacketBuffer;
 
-public class ShowCardAction extends SingleCardAction
+public class ShowCardAction extends SingleCardAction implements IAnnouncedAction
 {
     public ShowCardAction(ActionType actionType, byte sourceZoneId, short sourceCardIndex)
     {
@@ -24,6 +24,17 @@ public class ShowCardAction extends SingleCardAction
     @Override
     public void doAction()
     {
-        // TODO show card action
+    }
+    
+    @Override
+    public String getAnnouncementLocalKey()
+    {
+        return this.actionType.getLocalKey();
+    }
+    
+    @Override
+    public Zone getFieldAnnouncementZone()
+    {
+        return this.sourceZone;
     }
 }

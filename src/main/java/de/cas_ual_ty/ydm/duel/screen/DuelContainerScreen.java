@@ -189,6 +189,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         y += offset;
         
         this.addButton(this.textFieldWidget = new TextFieldWidget(this.font, x + 1, y + 1, w - 2, buttonHeight - 2, StringTextComponent.EMPTY));
+        this.textFieldWidget.setMaxStringLength(64);
         y += offset;
         
         //        this.addButton(this.sendChatButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.send_chat"), (b) -> this.sendChat()));

@@ -19,13 +19,13 @@ import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionTypes;
 import de.cas_ual_ty.ydm.duel.action.AttackAction;
 import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
+import de.cas_ual_ty.ydm.duel.action.IAnnouncedAction;
 import de.cas_ual_ty.ydm.duel.action.ListAction;
 import de.cas_ual_ty.ydm.duel.action.MoveAction;
 import de.cas_ual_ty.ydm.duel.action.MoveTopAction;
 import de.cas_ual_ty.ydm.duel.action.ShowCardAction;
 import de.cas_ual_ty.ydm.duel.action.ShowZoneAction;
 import de.cas_ual_ty.ydm.duel.action.ShuffleAction;
-import de.cas_ual_ty.ydm.duel.action.SingleZoneAction;
 import de.cas_ual_ty.ydm.duel.action.ViewZoneAction;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
@@ -491,22 +491,23 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             
             return new AttackAnimation(this.getView(), this.getZoneWidget(action.sourceZone), this.getZoneWidget(action.attackedZone));
         }
-        else if(action0 instanceof ShuffleAction ||
-            action0 instanceof ViewZoneAction ||
-            action0 instanceof ShowZoneAction ||
-            action0 instanceof ShowCardAction)
+        else if(action0 instanceof IAnnouncedAction)
         {
-            SingleZoneAction action = (SingleZoneAction)action0;
-            ZoneWidget w = this.getZoneWidget(action.sourceZone);
+            IAnnouncedAction action = (IAnnouncedAction)action0;
             
-            return new TextAnimation(action.getActionType().getLocal(), w.getAnimationDestX(), w.getAnimationDestY())
-                .setOnStart(() -> this.handleViewStackAction(action));
+            if(action.announceOnField())
+            {
+                ZoneWidget w = this.getZoneWidget(action.getFieldAnnouncementZone());
+                
+                return new TextAnimation(action0.getActionType().getLocal(), w.getAnimationDestX(), w.getAnimationDestY())
+                    .setOnStart(() -> this.handleAnnouncedAction(action0));
+            }
         }
         
         return null;
     }
     
-    protected void handleViewStackAction(SingleZoneAction action)
+    protected void handleAnnouncedAction(Action action)
     {
         if(action instanceof ViewZoneAction)
         {
@@ -534,17 +535,19 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
         else if(action instanceof ShuffleAction)
         {
+            ShuffleAction a = (ShuffleAction)action;
+            
             // if we view a zone while shuffling, we gotta stop viewing it
             // STRIKE THIS: unless we view an enemy zone, and they shuffle
             if(this.viewCardStackWidget.active &&
                 this.clickedZoneWidget != null &&
-                this.clickedZoneWidget.zone == action.sourceZone)// &&
+                this.clickedZoneWidget.zone == a.sourceZone)// &&
             //                action.sourceZone.getOwner() == this.getZoneOwner())
             {
                 this.resetToNormalZoneWidgets();
             }
             
-            action.doAction();
+            a.doAction();
         }
     }
     

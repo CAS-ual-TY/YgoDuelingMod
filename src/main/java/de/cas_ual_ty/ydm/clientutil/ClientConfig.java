@@ -2,7 +2,8 @@ package de.cas_ual_ty.ydm.clientutil;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.ForgeConfigSpec.BooleanValue;
-import net.minecraftforge.common.ForgeConfigSpec.IntValue;
+import net.minecraftforge.common.ForgeConfigSpec.DoubleValue;
+import net.minecraftforge.common.ForgeConfigSpec.IntValue;;
 
 public class ClientConfig
 {
@@ -14,6 +15,7 @@ public class ClientConfig
     public final BooleanValue showBinderId;
     public final IntValue maxInfoImages;
     public final IntValue maxMainImages;
+    public final DoubleValue duelChatSize;
     
     public ClientConfig(ForgeConfigSpec.Builder builder)
     {
@@ -43,6 +45,9 @@ public class ClientConfig
         this.maxMainImages = builder
             .comment("The amount of \"main\" images that may be loaded at once (oldest ones get unloaded not to overstep this limit).")
             .defineInRange("maxMainImages", 256, 64, 1024);
+        this.duelChatSize = builder
+            .comment("The chat size multiplier when in the dueling GUI.")
+            .defineInRange("duelChatSize", 1D, 0.5D, 1D);
         
         builder.pop();
     }
