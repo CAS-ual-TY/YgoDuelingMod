@@ -635,8 +635,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         ZoneType interactorType = widget.interaction.interactor.getType();
         
-        if(interactorType.getKeepFocusedAfterInteraction()
-            && (interactorType.getIsSecret() ? this.viewCardStackWidget.active : false))
+        if(interactorType.getKeepFocusedAfterInteraction())
+        //            && (interactorType.getIsSecret() ? this.viewCardStackWidget.active : false))
         {
             this.clickedCard = null;
             this.findAndPopulateInteractions(this.getZoneWidget(widget.interaction.interactor));
