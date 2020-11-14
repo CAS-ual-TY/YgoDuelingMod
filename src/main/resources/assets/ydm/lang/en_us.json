@@ -81,6 +81,7 @@
     "action.ydm.show_card": "Show Card",
     "action.ydm.attack": "Attack",
     "action.ydm.list": "List",
+    "action.ydm.change_lp": "Change LP",
     "actionIcon.ydm.to_top_of_deck_fd": "To Top of Deck",
     "actionIcon.ydm.to_bottom_of_deck_fd": "To Bottom of Deck",
     "actionIcon.ydm.to_top_of_deck_atk": "To Top of Deck Face Up",

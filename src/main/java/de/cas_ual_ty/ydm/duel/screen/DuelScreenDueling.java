@@ -7,6 +7,8 @@ import java.util.Queue;
 
 import javax.annotation.Nullable;
 
+import org.lwjgl.glfw.GLFW;
+
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -18,6 +20,7 @@ import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionTypes;
 import de.cas_ual_ty.ydm.duel.action.AttackAction;
+import de.cas_ual_ty.ydm.duel.action.ChangeLPAction;
 import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
 import de.cas_ual_ty.ydm.duel.action.IAnnouncedAction;
 import de.cas_ual_ty.ydm.duel.action.ListAction;
@@ -44,13 +47,17 @@ import de.cas_ual_ty.ydm.duel.screen.animation.SpecialSummonOverlayAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.TextAnimation;
 import de.cas_ual_ty.ydm.duel.screen.widget.AnimationsWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.HandZoneWidget;
+import de.cas_ual_ty.ydm.duel.screen.widget.ImprovedButton;
 import de.cas_ual_ty.ydm.duel.screen.widget.InteractionWidget;
+import de.cas_ual_ty.ydm.duel.screen.widget.LPTextFieldWidget;
+import de.cas_ual_ty.ydm.duel.screen.widget.LifePointsWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.MonsterZoneWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.NonSecretStackZoneWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.TextWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.ViewCardStackWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.ZoneWidget;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
@@ -82,6 +89,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     protected ZoneOwner view;
     
     protected AnimationsWidget animationsWidget;
+    
+    protected TextFieldWidget lifePointsWidget;
     
     public DuelScreenDueling(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -148,6 +157,38 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         this.addButton(this.offerDrawButton = new Button(x, y, maxWidth, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.offer_draw"), (b) -> this.admitDefeatClicked()));
         y -= offset;
+        
+        final int zoneSize = 32;
+        final int halfSize = zoneSize / 2;
+        final int quarterSize = zoneSize / 4;
+        final int zonesMargin = 2;
+        
+        x = (width - zoneSize) / 2;
+        y = (height - zoneSize) / 2;
+        // show match points in between top LP and lp-textfield (y+lpHeight)
+        this.addButton(new LifePointsWidget(x, y + quarterSize, zoneSize, quarterSize,
+            () -> this.getPlayField().getLifePoints(this.getView().opponent()), this.getPlayField().playFieldType.startingLifePoints));
+        this.addButton(new LifePointsWidget(x, y + 2 * quarterSize, zoneSize, quarterSize,
+            () -> this.getPlayField().getLifePoints(this.getView()), this.getPlayField().playFieldType.startingLifePoints));
+        this.addButton(this.lifePointsWidget = new LPTextFieldWidget(this.font, x + 1, y + 3 * quarterSize + 1, zoneSize - 2, quarterSize - 2));
+        
+        // TODO do all of these properly
+        x += (zoneSize + zonesMargin) * 2;
+        Widget w;
+        //        this.addButton(w = new SmallButton(x, y, quarterSize, halfSize, new TranslationTextComponent("container.ydm.duel.left_arrow"), this::phaseButtonClicked));
+        //        w.active = false;
+        //        this.addButton(w = new SmallButton(x + halfSize + quarterSize, y, quarterSize, halfSize, new TranslationTextComponent("container.ydm.duel.right_arrow"), this::phaseButtonClicked));
+        //        w.active = false;
+        //        this.addButton(w = new TextWidget(x + quarterSize, y, halfSize, halfSize, () -> new StringTextComponent("BP")));
+        //        w.active = false;
+        //        this.addButton(w = new SmallButton(x, y + halfSize, zoneSize, halfSize, new StringTextComponent("End Turn"), this::phaseButtonClicked));
+        //        w.active = false;
+        this.addButton(w = new ImprovedButton(x, y, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.left_arrow"), this::phaseButtonClicked));
+        w.active = false;
+        this.addButton(w = new ImprovedButton(x + halfSize, y, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.right_arrow"), this::phaseButtonClicked));
+        w.active = false;
+        this.addButton(w = new TextWidget(x, y + halfSize, zoneSize, halfSize, () -> new StringTextComponent("BP")));
+        w.active = false;
         
         this.admitDefeatButton.active = false;
         this.offerDrawButton.active = false; //TODO remove these
@@ -258,6 +299,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
+        if(this.lifePointsWidget.isFocused() && !this.lifePointsWidget.isMouseOver(mouseX, mouseY))
+        {
+            this.lifePointsWidget.setFocused2(false);
+        }
+        
         if(button == 1)
         {
             this.resetToNormalZoneWidgets();
@@ -280,6 +326,27 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         else
         {
             action.doAction();
+        }
+    }
+    
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    {
+        if(this.lifePointsWidget != null && this.lifePointsWidget.isFocused())
+        {
+            if(keyCode == GLFW.GLFW_KEY_ENTER)
+            {
+                this.parseAndSendLPChange();
+                return true;
+            }
+            else
+            {
+                return this.lifePointsWidget.keyPressed(keyCode, scanCode, modifiers);
+            }
+        }
+        else
+        {
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
     }
     
@@ -631,12 +698,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void interactionClicked(InteractionWidget widget)
     {
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDuelAction(this.getDuelManager().headerFactory.get(), widget.interaction.action));
+        this.requestDuelAction(widget.interaction.action);
         
         ZoneType interactorType = widget.interaction.interactor.getType();
         
         if(interactorType.getKeepFocusedAfterInteraction())
-        //            && (interactorType.getIsSecret() ? this.viewCardStackWidget.active : false))
         {
             this.clickedCard = null;
             this.findAndPopulateInteractions(this.getZoneWidget(widget.interaction.interactor));
@@ -645,6 +711,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             this.resetToNormalZoneWidgets();
         }
+    }
+    
+    protected void requestDuelAction(Action action)
+    {
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDuelAction(this.getDuelManager().headerFactory.get(), action));
     }
     
     protected ITextComponent getShownZoneName()
@@ -692,6 +763,30 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     }
     
     protected void offerDrawClicked()
+    {
+    }
+    
+    protected void parseAndSendLPChange()
+    {
+        if(this.getZoneOwner().isPlayer())
+        {
+            String text = this.lifePointsWidget.getText();
+            this.lifePointsWidget.setText("");
+            
+            if(text.length() > 1)
+            {
+                if(text.startsWith("+"))
+                {
+                    text = text.substring(1);
+                }
+                
+                int lp = Integer.valueOf(text);
+                this.requestDuelAction(new ChangeLPAction(ActionTypes.CHANGE_LP, lp, this.getZoneOwner()));
+            }
+        }
+    }
+    
+    protected void phaseButtonClicked(Button button)
     {
     }
     

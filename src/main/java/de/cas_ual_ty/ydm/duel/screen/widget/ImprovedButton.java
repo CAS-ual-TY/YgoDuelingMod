@@ -1,7 +1,5 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.function.Supplier;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
@@ -9,19 +7,20 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 
-public class TextWidget extends Widget
+public class ImprovedButton extends Button
 {
-    public Supplier<ITextComponent> msgGetter;
-    
-    public TextWidget(int xIn, int yIn, int widthIn, int heightIn, Supplier<ITextComponent> msgGetter)
+    public ImprovedButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction)
     {
-        super(xIn, yIn, widthIn, heightIn, StringTextComponent.EMPTY);
-        this.msgGetter = msgGetter;
-        this.active = false;
+        super(x, y, width, height, title, pressedAction);
+    }
+    
+    public ImprovedButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ITooltip onTooltip)
+    {
+        super(x, y, width, height, title, pressedAction, onTooltip);
     }
     
     @Override
@@ -47,17 +46,5 @@ public class TextWidget extends Widget
         {
             this.renderToolTip(matrixStack, mouseX, mouseY);
         }
-    }
-    
-    @Override
-    public int getFGColor()
-    {
-        return 16777215; //From super
-    }
-    
-    @Override
-    public ITextComponent getMessage()
-    {
-        return this.msgGetter.get();
     }
 }

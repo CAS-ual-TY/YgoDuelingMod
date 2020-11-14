@@ -21,7 +21,7 @@ import de.cas_ual_ty.ydm.duel.action.ViewZoneAction;
 
 public class PlayFieldTypes
 {
-    public static final PlayFieldType DEFAULT = new PlayFieldType()
+    public static final PlayFieldType DEFAULT = new PlayFieldType(8000)
         .addEntry(ZoneTypes.HAND, ZoneOwner.PLAYER1, 13, 102, 194, 32)
         .addEntrySlim(ZoneTypes.DECK, ZoneOwner.PLAYER1, 98, 68)
         .setLastToPlayer1Deck()

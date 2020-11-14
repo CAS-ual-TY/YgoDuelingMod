@@ -37,6 +37,11 @@ public enum ZoneOwner
         return this.player;
     }
     
+    public boolean isPlayer()
+    {
+        return this == PLAYER1 || this == PLAYER2;
+    }
+    
     public boolean hasAccess(PlayerRole player)
     {
         return this.getPlayer() == null || player == this.getPlayer();
@@ -45,6 +50,19 @@ public enum ZoneOwner
     public byte getIndex()
     {
         return this.index;
+    }
+    
+    public ZoneOwner opponent()
+    {
+        switch(this)
+        {
+            case PLAYER1:
+                return PLAYER2;
+            case PLAYER2:
+                return PLAYER1;
+            default:
+                return NONE;
+        }
     }
     
     public static ZoneOwner fromPlayerRole(PlayerRole player)

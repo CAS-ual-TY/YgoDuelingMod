@@ -24,6 +24,7 @@ public class ActionTypes
     public static final ActionType SHOW_CARD = null;
     public static final ActionType ATTACK = null;
     public static final ActionType LIST = null;
+    public static final ActionType CHANGE_LP = null;
     
     @SubscribeEvent
     public static void registerActionTypes(RegistryEvent.Register<ActionType> event)
@@ -41,5 +42,6 @@ public class ActionTypes
         registry.register(new ActionType(ShowCardAction::new).setRegistryName(YDM.MOD_ID, "show_card"));
         registry.register(new ActionType(AttackAction::new).setRegistryName(YDM.MOD_ID, "attack"));
         registry.register(new ActionType(ListAction::new).setRegistryName(YDM.MOD_ID, "list"));
+        registry.register(new ActionType(ChangeLPAction::new).setRegistryName(YDM.MOD_ID, "change_lp"));
     }
 }

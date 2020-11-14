@@ -23,6 +23,7 @@ import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
+import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.widget.DisplayChatWidget;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -126,6 +127,17 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     {
         super.onGuiClose();
         this.getDuelManager().reset();
+    }
+    
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button)
+    {
+        if(this.textFieldWidget.isFocused() && !this.textFieldWidget.isMouseOver(mouseX, mouseY))
+        {
+            this.textFieldWidget.setFocused2(false);
+        }
+        
+        return super.mouseClicked(mouseX, mouseY, button);
     }
     
     @Override
@@ -246,9 +258,9 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
             {
                 this.sendMessage(text, true);
             }
-            
-            this.textFieldWidget.setText("");
         }
+        
+        this.textFieldWidget.setText("");
     }
     
     protected void switchChat()
@@ -323,6 +335,11 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     public DuelManager getDuelManager()
     {
         return this.container.getDuelManager();
+    }
+    
+    public PlayField getPlayField()
+    {
+        return this.getDuelManager().getPlayField();
     }
     
     public DuelMessageHeader getHeader()

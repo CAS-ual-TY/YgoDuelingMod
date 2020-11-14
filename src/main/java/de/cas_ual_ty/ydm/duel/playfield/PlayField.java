@@ -22,6 +22,9 @@ public class PlayField
     public Zone player2Deck;
     public Zone player2ExtraDeck;
     
+    public int player1LP;
+    public int player2LP;
+    
     public PlayField(DuelManager duelManager, PlayFieldType type)
     {
         if(type.player1Deck == null || type.player1ExtraDeck == null || type.player2Deck == null || type.player2ExtraDeck == null)
@@ -114,6 +117,9 @@ public class PlayField
             
             ++this.extraOffset;
         }
+        
+        this.player1LP = type.startingLifePoints;
+        this.player2LP = type.startingLifePoints;
     }
     
     public List<Zone> getZones()
@@ -173,5 +179,49 @@ public class PlayField
     public Zone getZone(byte zoneId)
     {
         return this.zones.get(zoneId);
+    }
+    
+    public int changeLifePoints(int amount, ZoneOwner owner)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            return (this.player1LP = Math.max(0, this.player1LP + amount));
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            return (this.player2LP = Math.max(0, this.player2LP + amount));
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    
+    public int getLifePoints(ZoneOwner owner)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            return this.player1LP;
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            return this.player2LP;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    
+    public void setLifePoints(int amount, ZoneOwner owner)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            this.player1LP = amount;
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            this.player2LP = amount;
+        }
     }
 }

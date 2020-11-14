@@ -21,10 +21,13 @@ public class PlayFieldType
     public ZoneEntry player2Deck;
     public ZoneEntry player2ExtraDeck;
     
-    public PlayFieldType()
+    public final int startingLifePoints;
+    
+    public PlayFieldType(int startingLifePoints)
     {
         this.zoneEntries = new ArrayList<>(0);
         this.interactionEntries = new ArrayList<>(0);
+        this.startingLifePoints = startingLifePoints;
     }
     
     public PlayFieldType addEntry(ZoneType type, ZoneOwner owner, int x, int y, int width, int height)
