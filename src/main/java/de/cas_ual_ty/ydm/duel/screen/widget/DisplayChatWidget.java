@@ -58,7 +58,7 @@ public class DisplayChatWidget extends Widget
         
         ms.push();
         
-        ms.scale(1F * downScale, 1F * downScale, 1F);
+        ms.scale(downScale, downScale, 1F);
         
         x *= upScale;
         y *= upScale;
