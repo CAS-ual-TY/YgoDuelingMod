@@ -4,15 +4,21 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class LPTextFieldWidget extends TextFieldWidget
 {
-    public LPTextFieldWidget(FontRenderer fontrenderer, int x, int y, int width, int height)
+    public ITooltip tooltip;
+    
+    public LPTextFieldWidget(FontRenderer fontrenderer, int x, int y, int width, int height, ITooltip tooltip)
     {
         super(fontrenderer, x, y, width, height, StringTextComponent.EMPTY);
+        this.tooltip = tooltip;
         
-        this.setMaxStringLength(16);
+        //        this.setMaxStringLength(16);
         
         this.setValidator((text) ->
         {
@@ -44,7 +50,6 @@ public class LPTextFieldWidget extends TextFieldWidget
     @Override
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        /*
         this.x *= 2;
         this.y *= 2;
         this.width *= 2;
@@ -57,11 +62,9 @@ public class LPTextFieldWidget extends TextFieldWidget
         
         ms.push();
         ms.scale(0.5F, 0.5F, 1);
-        */
         
         super.renderButton(ms, mouseX * 2, mouseY * 2, partialTicks);
         
-        /*
         ms.pop();
         
         this.x -= 1;
@@ -73,6 +76,16 @@ public class LPTextFieldWidget extends TextFieldWidget
         this.y /= 2;
         this.width /= 2;
         this.height /= 2;
-        */
+        
+        if(this.isMouseOver(mouseX, mouseY))
+        {
+            this.tooltip.onTooltip(this, ms, mouseX, mouseY);
+        }
+    }
+    
+    @OnlyIn(Dist.CLIENT)
+    public interface ITooltip
+    {
+        void onTooltip(Widget widget, MatrixStack ms, int mouseX, int mouseY);
     }
 }

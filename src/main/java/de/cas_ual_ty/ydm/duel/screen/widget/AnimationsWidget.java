@@ -24,6 +24,20 @@ public class AnimationsWidget extends Widget
         this.animations.add(animation);
     }
     
+    public void forceFinish()
+    {
+        Animation a;
+        while(!this.animations.isEmpty())
+        {
+            a = this.animations.poll();
+            
+            while(!a.ended())
+            {
+                a.tick();
+            }
+        }
+    }
+    
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {

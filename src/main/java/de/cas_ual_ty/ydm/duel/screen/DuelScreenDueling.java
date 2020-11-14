@@ -170,19 +170,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             () -> this.getPlayField().getLifePoints(this.getView().opponent()), this.getPlayField().playFieldType.startingLifePoints));
         this.addButton(new LifePointsWidget(x, y + 2 * quarterSize, zoneSize, quarterSize,
             () -> this.getPlayField().getLifePoints(this.getView()), this.getPlayField().playFieldType.startingLifePoints));
-        this.addButton(this.lifePointsWidget = new LPTextFieldWidget(this.font, x + 1, y + 3 * quarterSize + 1, zoneSize - 2, quarterSize - 2));
+        this.addButton(this.lifePointsWidget = new LPTextFieldWidget(this.font, x, y + 3 * quarterSize, zoneSize, quarterSize, this::lpTextFieldWidget));
         
         // TODO do all of these properly
         x += (zoneSize + zonesMargin) * 2;
         Widget w;
-        //        this.addButton(w = new SmallButton(x, y, quarterSize, halfSize, new TranslationTextComponent("container.ydm.duel.left_arrow"), this::phaseButtonClicked));
-        //        w.active = false;
-        //        this.addButton(w = new SmallButton(x + halfSize + quarterSize, y, quarterSize, halfSize, new TranslationTextComponent("container.ydm.duel.right_arrow"), this::phaseButtonClicked));
-        //        w.active = false;
-        //        this.addButton(w = new TextWidget(x + quarterSize, y, halfSize, halfSize, () -> new StringTextComponent("BP")));
-        //        w.active = false;
-        //        this.addButton(w = new SmallButton(x, y + halfSize, zoneSize, halfSize, new StringTextComponent("End Turn"), this::phaseButtonClicked));
-        //        w.active = false;
         this.addButton(w = new ImprovedButton(x, y, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.left_arrow"), this::phaseButtonClicked));
         w.active = false;
         this.addButton(w = new ImprovedButton(x + halfSize, y, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.right_arrow"), this::phaseButtonClicked));
@@ -299,6 +291,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
+        this.animationsWidget.forceFinish();
+        
         if(this.lifePointsWidget.isFocused() && !this.lifePointsWidget.isMouseOver(mouseX, mouseY))
         {
             this.lifePointsWidget.setFocused2(false);
@@ -604,12 +598,9 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             ShuffleAction a = (ShuffleAction)action;
             
-            // if we view a zone while shuffling, we gotta stop viewing it
-            // STRIKE THIS: unless we view an enemy zone, and they shuffle
-            if(this.viewCardStackWidget.active &&
-                this.clickedZoneWidget != null &&
-                this.clickedZoneWidget.zone == a.sourceZone)// &&
-            //                action.sourceZone.getOwner() == this.getZoneOwner())
+            // if we have a zone selected/viewed and it is shuffled, we gotta deselect it / stop viewing it
+            if(this.clickedZoneWidget != null &&
+                this.clickedZoneWidget.zone == a.sourceZone)
             {
                 this.resetToNormalZoneWidgets();
             }
@@ -702,7 +693,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         ZoneType interactorType = widget.interaction.interactor.getType();
         
-        if(interactorType.getKeepFocusedAfterInteraction())
+        if(interactorType.getKeepFocusedAfterInteraction() &&
+            interactorType.getIsSecret() ? this.viewCardStackWidget.active : true)
         {
             this.clickedCard = null;
             this.findAndPopulateInteractions(this.getZoneWidget(widget.interaction.interactor));
@@ -800,8 +792,13 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.renderTooltip(ms, w.getMessage(), mouseX, mouseY);
     }
     
-    protected void viewCardStackTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
+    protected void viewCardStackTooltip(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
+    }
+    
+    protected void lpTextFieldWidget(Widget w, MatrixStack ms, int mouseX, int mouseY)
+    {
+        //        this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.lp_tooltip"), mouseX, mouseY);
     }
     
     protected void removeInteractionWidgets()

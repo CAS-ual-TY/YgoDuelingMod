@@ -75,4 +75,10 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
             return ItemStack.EMPTY;
         }
     }
+    
+    @Override
+    public boolean shouldSyncTag()
+    {
+        return false;
+    }
 }
