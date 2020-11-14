@@ -3,8 +3,6 @@ package de.cas_ual_ty.ydm;
 import java.io.File;
 import java.io.IOException;
 
-import javax.annotation.Nonnull;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
-import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.FindDecksEvent;
@@ -25,21 +22,15 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
-import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
-import net.minecraftforge.common.capabilities.ICapabilitySerializable;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent.NewRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -51,9 +42,6 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 
@@ -130,7 +118,9 @@ public class YDM
         YDM.proxy.registerModEventListeners(bus);
         
         bus = MinecraftForge.EVENT_BUS;
-        bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
+        // see: https://github.com/MinecraftForge/MinecraftForge/pull/6954
+        // need to write directly to nbt for now
+        // bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
         bus.addListener(this::registerCommands);
         bus.addListener(this::findDecks);
         YDM.proxy.registerForgeEventListeners(bus);
@@ -207,6 +197,7 @@ public class YDM
         YdmDatabase.readFiles();
     }
     
+    /*
     private void attachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event)
     {
         if(event.getObject() instanceof ItemStack && event.getObject().getItem() == YdmItems.CARD_BINDER)
@@ -269,6 +260,7 @@ public class YDM
             event.addListener(instance::invalidate);
         }
     }
+    */
     
     private void registerCommands(RegisterCommandsEvent event)
     {

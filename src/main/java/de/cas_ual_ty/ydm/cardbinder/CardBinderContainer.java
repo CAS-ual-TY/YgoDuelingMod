@@ -7,7 +7,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
-import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
+import de.cas_ual_ty.ydm.cardinventory.UUIDCardsManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -21,8 +21,9 @@ import net.minecraftforge.fml.network.PacketDistributor;
 
 public class CardBinderContainer extends Container
 {
-    protected final JsonCardsManager manager;
+    protected final UUIDCardsManager manager;
     protected PlayerEntity player;
+    protected ItemStack itemStack;
     
     protected List<CardHolder> clientList;
     protected int clientMaxPage;
@@ -44,11 +45,12 @@ public class CardBinderContainer extends Container
         this.clientMaxPage = 0;
     }
     
-    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, JsonCardsManager manager, ItemStack itemStack)
+    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, UUIDCardsManager manager, ItemStack itemStack)
     {
         super(type, id);
         this.manager = manager;
         this.player = playerInventory.player;
+        this.itemStack = itemStack;
         this.serverList = null;
         
         this.loaded = false;
@@ -98,7 +100,7 @@ public class CardBinderContainer extends Container
         {
             s = new Slot(playerInventory, x, 8 + x * 18, 198);
             
-            if(s.getStack() == itemStack)
+            if(s.getStack() == this.itemStack)
             {
                 s = new Slot(playerInventory, s.getSlotIndex(), s.xPos, s.yPos)
                 {

@@ -2,23 +2,27 @@ package de.cas_ual_ty.ydm.deckbox;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
-import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
 public class DeckBoxItem extends Item implements INamedContainerProvider
 {
+    public static final String ITEM_HANDLER_KEY = "cards";
+    
     public DeckBoxItem(Properties properties)
     {
         super(properties);
@@ -26,7 +30,18 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     
     public IItemHandler getItemHandler(ItemStack itemStack)
     {
-        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(YdmUtil.throwNullCapabilityException());
+        IItemHandler itemHandler = new ItemStackHandler(DeckHolder.TOTAL_DECK_SIZE);
+        ListNBT nbt = itemStack.getOrCreateTag().getList(DeckBoxItem.ITEM_HANDLER_KEY, Constants.NBT.TAG_COMPOUND);
+        CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, nbt);
+        return itemHandler;
+        
+        //        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(YdmUtil.throwNullCapabilityException());
+    }
+    
+    public void saveItemHandlerToNBT(ItemStack itemStack, IItemHandler itemHandler)
+    {
+        itemStack.getOrCreateTag().put(DeckBoxItem.ITEM_HANDLER_KEY,
+            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
     }
     
     @Override
@@ -74,11 +89,5 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         {
             return ItemStack.EMPTY;
         }
-    }
-    
-    @Override
-    public boolean shouldSyncTag()
-    {
-        return false;
     }
 }

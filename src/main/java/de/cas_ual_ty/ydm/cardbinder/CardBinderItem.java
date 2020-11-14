@@ -1,11 +1,11 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
-import de.cas_ual_ty.ydm.clientutil.ClientProxy;
-import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,10 +19,12 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.common.util.LazyOptional;
 
 public class CardBinderItem extends Item implements INamedContainerProvider
 {
+    private static final HashMap<UUID, CardBinderCardsManager> MANAGER_MAP = new HashMap<>();
+    public static final String MANAGER_UUID_KEY = "binder_uuid";
+    
     public CardBinderItem(Properties properties)
     {
         super(properties);
@@ -30,7 +32,32 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     
     public CardBinderCardsManager getInventoryManager(ItemStack itemStack)
     {
-        return itemStack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY).orElseThrow(YdmUtil.throwNullCapabilityException());
+        CardBinderCardsManager manager;
+        UUID uuid;
+        
+        if(itemStack.getOrCreateTag().hasUniqueId(CardBinderItem.MANAGER_UUID_KEY))
+        {
+            uuid = itemStack.getTag().getUniqueId(CardBinderItem.MANAGER_UUID_KEY);
+        }
+        else
+        {
+            uuid = null;
+        }
+        
+        if(uuid == null || !CardBinderItem.MANAGER_MAP.containsKey(uuid))
+        {
+            manager = new CardBinderCardsManager();
+            manager.generateUUIDIfNull();
+            uuid = manager.getUUID();
+            itemStack.getTag().putUniqueId(CardBinderItem.MANAGER_UUID_KEY, uuid);
+            CardBinderItem.MANAGER_MAP.put(uuid, manager);
+        }
+        else
+        {
+            manager = CardBinderItem.MANAGER_MAP.get(uuid);
+        }
+        
+        return manager;
     }
     
     @Override
@@ -38,6 +65,18 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     {
         super.addInformation(stack, worldIn, tooltip, flagIn);
         
+        tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".uuid"));
+        
+        if(stack.getOrCreateTag().hasUniqueId(CardBinderItem.MANAGER_UUID_KEY))
+        {
+            tooltip.add(new StringTextComponent(stack.getTag().getUniqueId(CardBinderItem.MANAGER_UUID_KEY).toString()));
+        }
+        else
+        {
+            tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".uuid.empty"));
+        }
+        
+        /*// used this when capability was still used
         LazyOptional<CardBinderCardsManager> l = stack.getCapability(YDM.BINDER_INVENTORY_CAPABILITY);
         
         if(l.isPresent())
@@ -62,6 +101,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
         {
             tooltip.add(new StringTextComponent("Error! No capability present! Pls report to mod author!"));
         }
+        */
     }
     
     @Override

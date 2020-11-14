@@ -12,6 +12,9 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class DeckBoxContainer extends Container
 {
+    public ItemStack itemStack;
+    public IItemHandler itemHandler;
+    
     public DeckBoxContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
         this(type, id, playerInventory, DeckBoxItem.getActiveDeckBox(playerInventory.player));
@@ -21,7 +24,9 @@ public class DeckBoxContainer extends Container
     {
         super(type, id);
         
-        IItemHandler itemHandler = YdmItems.BLACK_DECK_BOX.getItemHandler(itemStack);
+        this.itemStack = itemStack;
+        
+        this.itemHandler = YdmItems.BLACK_DECK_BOX.getItemHandler(this.itemStack);
         
         final int itemsPerRow = 15;
         
@@ -30,20 +35,20 @@ public class DeckBoxContainer extends Container
         {
             for(int x = 0; x < itemsPerRow && x + y * itemsPerRow < DeckHolder.MAIN_DECK_SIZE; ++x)
             {
-                this.addSlot(new SlotItemHandler(itemHandler, x + y * itemsPerRow + DeckHolder.MAIN_DECK_INDEX_START, 8 + x * 18, 18 + y * 18));
+                this.addSlot(new SlotItemHandler(this.itemHandler, x + y * itemsPerRow + DeckHolder.MAIN_DECK_INDEX_START, 8 + x * 18, 18 + y * 18));
             }
         }
         
         // extra deck
         for(int x = 0; x < DeckHolder.EXTRA_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + DeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 18, 104));
+            this.addSlot(new SlotItemHandler(this.itemHandler, x + DeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 18, 104));
         }
         
         // side deck
         for(int x = 0; x < DeckHolder.SIDE_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
+            this.addSlot(new SlotItemHandler(this.itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
         
         // player inventory
@@ -61,7 +66,7 @@ public class DeckBoxContainer extends Container
         {
             s = new Slot(playerInventory, x, 62 + x * 18, 226);
             
-            if(s.getStack() == itemStack)
+            if(s.getStack() == this.itemStack)
             {
                 s = new Slot(playerInventory, s.getSlotIndex(), s.xPos, s.yPos)
                 {
@@ -92,5 +97,13 @@ public class DeckBoxContainer extends Container
     public boolean canInteractWith(PlayerEntity playerIn)
     {
         return true;
+    }
+    
+    @Override
+    public void onContainerClosed(PlayerEntity playerIn)
+    {
+        // TODO can be removed when capabilities work again
+        ((DeckBoxItem)this.itemStack.getItem()).saveItemHandlerToNBT(this.itemStack, this.itemHandler);
+        super.onContainerClosed(playerIn);
     }
 }
