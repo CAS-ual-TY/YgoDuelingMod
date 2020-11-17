@@ -31,7 +31,7 @@ public class DNCList<K, V> implements Iterable<V>
         this.sortingComparator = (v1, v2) -> this.keyComparator.compare(this.keyExtractor.getKeyFrom(v1), this.keyExtractor.getKeyFrom(v2));
         this.dncComparator = (k, v) -> this.keyComparator.compare(k, this.keyExtractor.getKeyFrom(v));
         
-        this.isSorted = false;
+        this.isSorted = true;
         this.clear();
     }
     
@@ -191,6 +191,11 @@ public class DNCList<K, V> implements Iterable<V>
         {
             this.list.add(index + 1, value);
         }
+    }
+    
+    public V remove(K key)
+    {
+        return this.removeIndex(this.getIndex(key));
     }
     
     public V removeIndex(int index)

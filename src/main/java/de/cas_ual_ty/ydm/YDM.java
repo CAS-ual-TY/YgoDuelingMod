@@ -55,6 +55,8 @@ public class YDM
      * - Shutdown Hook
      *   - Properly wait and finish image downloading
      *   - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
+     *   - Shutdown Hook to delete cached images
+     *   - FMLServerShutdownEvent or smth to save card binders
      * - Randoms and Shuffling in duels!
      * 
      */

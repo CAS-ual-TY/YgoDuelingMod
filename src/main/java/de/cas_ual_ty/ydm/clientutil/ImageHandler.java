@@ -13,15 +13,17 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.task.Task;
+import de.cas_ual_ty.ydm.task.TaskPriority;
+import de.cas_ual_ty.ydm.task.TaskQueue;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -31,27 +33,14 @@ public class ImageHandler
     private static final String IN_PROGRESS_IMAGE = "card_back";
     private static final String FAILED_IMAGE = "blanc_card";
     
-    private static ImageHandler INFO_IMAGE_HANDLER = null;
-    private static ImageHandler MAIN_IMAGE_HANDLER = null;
-    
-    private DNCList<String, String> FINAL_IMAGE_READY_LIST = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
-    private List<String> IN_PROGRESS = new LinkedList<>();
-    private List<String> FAILED = new LinkedList<>();
-    
-    private int imageSize;
-    private BiFunction<Properties, Byte, String> nameGetter;
-    
-    public static void init()
-    {
-        ImageHandler.INFO_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeInfoImageSize, (p, i) -> p.getInfoImageName(i));
-        ImageHandler.MAIN_IMAGE_HANDLER = new ImageHandler(ClientProxy.activeMainImageSize, (p, i) -> p.getMainImageName(i));
-    }
+    public static ImageList RAW_IMAGE_LIST = new ImageList();
+    public static ImageList ADJUSTED_IMAGE_LIST = new ImageList();
     
     // only for dev workspace! requires raw image to be manually put in the raw images folder
     @Deprecated // so I get a warning
-    public static void createCustomCardImages(Card card)
+    public static void createCustomCardImages(Card card) throws IOException
     {
-        YDM.debug("creating custom card images!");
+        YDM.log("creating custom card images!");
         
         File parent = new File(ClientProxy.cardImagesFolder, "custom");
         YdmIOUtil.createDirIfNonExistant(parent);
@@ -62,20 +51,16 @@ public class ImageHandler
         {
             size = YdmUtil.getPow2(i);
             YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
-            ImageHandler.imagePipeline(card.getImageName(), null, new File(parent, size + "/" + card.getImageName() + ".png"), size, (failed) ->
-            {});
+            ImageHandler.adjustRawImage(
+                ImageHandler.getAdjustedImageFile(card.getImageName(), size),
+                ImageHandler.getRawImageFile(card.getImageName()),
+                size);
         }
     }
     
-    private ImageHandler(int imageSize, BiFunction<Properties, Byte, String> nameGetter)
+    public static String getReplacementImage(Properties properties, byte imageIndex, int imageSize)
     {
-        this.imageSize = imageSize;
-        this.nameGetter = nameGetter;
-    }
-    
-    private String getReplacementImage(Properties properties, byte imageIndex)
-    {
-        String imageName = this.nameGetter.apply(properties, imageIndex);
+        String imageName = ImageHandler.tagImage(properties.getImageName(imageIndex), imageSize);
         
         // if its hardcoded, image should already exist
         if(properties.getIsHardcoded())
@@ -83,36 +68,34 @@ public class ImageHandler
             return imageName;
         }
         
-        int index = this.FINAL_IMAGE_READY_LIST.getIndex(imageName);
-        
-        if(index == -1)
+        if(!ImageHandler.ADJUSTED_IMAGE_LIST.isFinished(imageName))
         {
-            if(!this.isImageInProgress(imageName))
+            if(!ImageHandler.ADJUSTED_IMAGE_LIST.isInProgress(imageName))
             {
                 // not finished, not in progress
                 
-                if(ImageHandler.getTaggedFile(imageName).exists())
+                if(ImageHandler.getImageFile(imageName).exists())
                 {
                     // image exists, so set ready and return
-                    this.setImageFinished(imageName, false);
+                    ImageHandler.ADJUSTED_IMAGE_LIST.setImmediateFinished(imageName);
                     return imageName;
                 }
-                else if(this.isImageFailed(imageName))
+                else if(ImageHandler.ADJUSTED_IMAGE_LIST.isFailed(imageName))
                 {
                     // image does not exist, check if failed already and return replacement
-                    return ImageHandler.tagWithSize(ImageHandler.FAILED_IMAGE, this.imageSize);
+                    return ImageHandler.tagImage(ImageHandler.FAILED_IMAGE, imageSize);
                 }
                 else
                 {
                     // image does not exist and has not been tried, so make it ready and return replacement
-                    this.makeImageReady(imageName, properties, imageIndex);
-                    return ImageHandler.tagWithSize(ImageHandler.IN_PROGRESS_IMAGE, this.imageSize);
+                    ImageHandler.makeImageReady(properties, imageIndex, imageSize);
+                    return ImageHandler.tagImage(ImageHandler.IN_PROGRESS_IMAGE, imageSize);
                 }
             }
             else
             {
                 // in progress
-                return ImageHandler.tagWithSize(ImageHandler.IN_PROGRESS_IMAGE, this.imageSize);
+                return ImageHandler.tagImage(ImageHandler.IN_PROGRESS_IMAGE, imageSize);
             }
         }
         else
@@ -122,134 +105,186 @@ public class ImageHandler
         }
     }
     
-    private boolean isImageInProgress(String imageName)
-    {
-        return this.IN_PROGRESS.contains(imageName);
-    }
-    
-    private boolean isImageFailed(String imageName)
-    {
-        return this.FAILED.contains(imageName);
-    }
-    
-    private void setImageInProgress(String imageName)
-    {
-        synchronized(this.IN_PROGRESS)
-        {
-            this.IN_PROGRESS.add(imageName);
-        }
-    }
-    
-    private void setImageFinished(String imageName, boolean failed)
-    {
-        synchronized(this.IN_PROGRESS)
-        {
-            this.IN_PROGRESS.remove(imageName);
-        }
-        
-        if(!failed)
-        {
-            synchronized(this.FINAL_IMAGE_READY_LIST)
-            {
-                this.FINAL_IMAGE_READY_LIST.addKeepSorted(imageName);
-            }
-        }
-        else
-        {
-            synchronized(this.FAILED)
-            {
-                this.FAILED.add(imageName);
-            }
-        }
-    }
-    
-    private void makeImageReady(String imageName, Properties properties, byte imageIndex)
-    {
-        this.setImageInProgress(imageName);
-        Thread t = new Thread(new GuiImageWizard(properties, imageIndex, this.imageSize, ImageHandler.getTaggedFile(imageName), (failed) -> this.setImageFinished(imageName, failed)), "YDM Image Downloader");
-        t.setDaemon(false);
-        t.start();
-    }
-    
-    private static String tagWithSize(String imageName, int size)
-    {
-        return size + "/" + imageName;
-    }
-    
-    public static String addInfoTag(String imageName)
-    {
-        return ImageHandler.tagWithSize(imageName, ClientProxy.activeInfoImageSize);
-    }
-    
-    public static String addItemTag(String imageName)
-    {
-        return ImageHandler.tagWithSize(imageName, ClientProxy.activeItemImageSize);
-    }
-    
-    public static String addMainTag(String imageName)
-    {
-        return ImageHandler.tagWithSize(imageName, ClientProxy.activeMainImageSize);
-    }
-    
     public static String getInfoReplacementImage(Properties properties, byte imageIndex)
     {
-        return ImageHandler.INFO_IMAGE_HANDLER.getReplacementImage(properties, imageIndex);
+        return ImageHandler.getReplacementImage(properties, imageIndex, ClientProxy.activeInfoImageSize);
     }
     
     public static String getMainReplacementImage(Properties properties, byte imageIndex)
     {
-        return ImageHandler.MAIN_IMAGE_HANDLER.getReplacementImage(properties, imageIndex);
+        return ImageHandler.getReplacementImage(properties, imageIndex, ClientProxy.activeMainImageSize);
     }
     
-    private static void downloadRawImage(String imageUrl, File rawImageFile) throws MalformedURLException, IOException
+    @Nullable
+    public static Task makeMissingRawTask(Properties p, byte imageIndex)
+    {
+        final String imageName = p.getImageName(imageIndex);
+        File raw = ImageHandler.getRawImageFile(imageName);
+        
+        if(ImageHandler.RAW_IMAGE_LIST.isFinished(imageName) ||
+            ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName) ||
+            ImageHandler.RAW_IMAGE_LIST.isFailed(imageName))
+        {
+            return null;
+        }
+        
+        boolean exists = raw.exists();
+        
+        if(exists)
+        {
+            ImageHandler.RAW_IMAGE_LIST.setImmediateFinished(imageName);
+            return null;
+        }
+        
+        ImageHandler.RAW_IMAGE_LIST.setInProgress(imageName);
+        
+        Task task = new Task(TaskPriority.IMG_DOWNLOAD, () ->
+        {
+            try
+            {
+                long start = System.currentTimeMillis();
+                ImageHandler.downloadRawImage(p.getImageURL(imageIndex), raw);
+                
+                ImageHandler.RAW_IMAGE_LIST.setFinished(imageName);
+                
+                long end = System.currentTimeMillis();
+                
+                long duration = end - start;
+                
+                // only 20 pictures per 1 second allowed.
+                // so each picture dl must take atleast 1000/20 = 50 millis
+                if(duration < 50)
+                {
+                    try
+                    {
+                        TimeUnit.MILLISECONDS.sleep(50 - duration + 1);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        //                        e.printStackTrace();
+                    }
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                ImageHandler.RAW_IMAGE_LIST.setFailed(imageName);
+            }
+        })
+            .setCancelable(() -> !ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName))
+            .setOnCancel(() -> ImageHandler.RAW_IMAGE_LIST.unInProgress(imageName));
+        
+        return task;
+    }
+    
+    public static Task makeMissingAdjustedTask(Properties p, byte imageIndex, int imageSize)
+    {
+        final String imageName = p.getImageName(imageIndex);
+        final String adjustedImageName = ImageHandler.tagImage(imageName, imageSize);
+        File raw = ImageHandler.getRawImageFile(imageName);
+        File adjusted = ImageHandler.getImageFile(adjustedImageName);
+        
+        if(ImageHandler.ADJUSTED_IMAGE_LIST.isFinished(adjustedImageName) ||
+            ImageHandler.ADJUSTED_IMAGE_LIST.isInProgress(adjustedImageName) ||
+            ImageHandler.ADJUSTED_IMAGE_LIST.isFailed(adjustedImageName))
+        {
+            return null;
+        }
+        
+        boolean exists = adjusted.exists();
+        
+        if(exists)
+        {
+            ImageHandler.ADJUSTED_IMAGE_LIST.setImmediateFinished(adjustedImageName);
+            return null;
+        }
+        
+        ImageHandler.ADJUSTED_IMAGE_LIST.setInProgress(adjustedImageName);
+        
+        Task task = new Task(TaskPriority.IMG_ADJUSTMENT, () ->
+        {
+            try
+            {
+                ImageHandler.adjustRawImage(adjusted, raw, imageSize);
+                ImageHandler.ADJUSTED_IMAGE_LIST.setFinished(adjustedImageName);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+                ImageHandler.ADJUSTED_IMAGE_LIST.setFailed(adjustedImageName);
+            }
+        })
+            .setDependency(() -> ImageHandler.RAW_IMAGE_LIST.isFinished(imageName))
+            .setCancelable(() -> ImageHandler.RAW_IMAGE_LIST.isFailed(imageName) ||
+                (!ImageHandler.RAW_IMAGE_LIST.isFinished(imageName) && !ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName)))
+            .setOnCancel(() -> ImageHandler.ADJUSTED_IMAGE_LIST.unInProgress(adjustedImageName));
+        
+        return task;
+    }
+    
+    public static void makeImageReady(Properties p, byte imageIndex, int imageSize)
+    {
+        Task t = ImageHandler.makeMissingRawTask(p, imageIndex);
+        if(t != null)
+        {
+            TaskQueue.addTask(t);
+        }
+        
+        t = ImageHandler.makeMissingAdjustedTask(p, imageIndex, imageSize);
+        if(t != null)
+        {
+            TaskQueue.addTask(t);
+        }
+    }
+    
+    public static void downloadRawImage(String imageUrl, File rawImageFile) throws MalformedURLException, IOException
     {
         YdmIOUtil.downloadFile(new URL(imageUrl), rawImageFile);
     }
     
-    private static void convertImage(File converted, File raw, int size) throws IOException
+    public static void adjustRawImage(File adjusted, File raw, int size) throws IOException
     {
         // size: target size, maybe make different versions for card info and card item
         
-        InputStream in = new FileInputStream(raw);
-        
-        BufferedImage img = ImageIO.read(in);
-        
-        int margin = size / 8;
-        
-        int sizeX = img.getWidth();
-        int sizeY = img.getHeight();
-        
-        double factor = (double)sizeY / sizeX;
-        
-        // (sizeX / sizeY =) factor = newSizeX / newSizeY
-        // <=> newSizeY = newSizeX / factor
-        
-        int newSizeY = size - margin;
-        int newSizeX = (int)Math.round(newSizeY / factor);
-        
-        double scaleFactorX = (double)newSizeX / sizeX;
-        double scaleFactorY = (double)newSizeY / sizeY;
-        
-        // Resize card image to size that fits the next image
-        BufferedImage after = new BufferedImage(newSizeX, newSizeY, BufferedImage.TYPE_INT_ARGB);
-        AffineTransform at = new AffineTransform();
-        at.scale(scaleFactorX, scaleFactorY);
-        AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
-        after = scaleOp.filter(img, after);
-        img = after;
-        
-        // Create new image with pow2 resolution, stick previous image in the middle
-        BufferedImage newImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = newImg.getGraphics();
-        g.drawImage(img, (size - img.getWidth()) / 2, (size - img.getHeight()) / 2, null);
-        g.dispose();
-        
-        ImageIO.write(newImg, "PNG", converted);
-        
-        in.close();
+        try(InputStream in = new FileInputStream(raw))
+        {
+            BufferedImage img = ImageIO.read(in);
+            
+            int margin = size / 8;
+            
+            int sizeX = img.getWidth();
+            int sizeY = img.getHeight();
+            
+            double factor = (double)sizeY / sizeX;
+            
+            // (sizeX / sizeY =) factor = newSizeX / newSizeY
+            // <=> newSizeY = newSizeX / factor
+            
+            int newSizeY = size - margin;
+            int newSizeX = (int)Math.round(newSizeY / factor);
+            
+            double scaleFactorX = (double)newSizeX / sizeX;
+            double scaleFactorY = (double)newSizeY / sizeY;
+            
+            // Resize card image to size that fits the next image
+            BufferedImage after = new BufferedImage(newSizeX, newSizeY, BufferedImage.TYPE_INT_ARGB);
+            AffineTransform at = new AffineTransform();
+            at.scale(scaleFactorX, scaleFactorY);
+            AffineTransformOp scaleOp = new AffineTransformOp(at, AffineTransformOp.TYPE_BILINEAR);
+            after = scaleOp.filter(img, after);
+            img = after;
+            
+            // Create new image with pow2 resolution, stick previous image in the middle
+            BufferedImage newImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+            Graphics g = newImg.getGraphics();
+            g.drawImage(img, (size - img.getWidth()) / 2, (size - img.getHeight()) / 2, null);
+            g.dispose();
+            
+            ImageIO.write(newImg, "PNG", adjusted);
+        }
     }
     
-    public static File getRawFile(String imageName)
+    public static File getRawImageFile(String imageName)
     {
         File f = new File(ClientProxy.rawCardImagesFolder, imageName + ".png");
         
@@ -264,219 +299,117 @@ public class ImageHandler
         }
     }
     
-    public static File getTaggedFile(String taggedImageName)
+    public static File getAdjustedImageFile(String imageName, int size)
     {
-        return ImageHandler.getFile(taggedImageName + ".png");
+        return ImageHandler.getImageFile(ImageHandler.tagImage(imageName, size));
     }
     
-    public static File getFile(String imageName)
+    public static String tagImage(String imageName, int size)
     {
-        return new File(ClientProxy.cardImagesFolder, imageName);
+        return size + "/" + imageName;
     }
     
-    public static boolean areAllItemImagesReady()
+    public static File getImageFile(String imagePathName)
     {
-        return ImageHandler.getMissingItemImages().isEmpty();
+        return ImageHandler.getFile(imagePathName + ".png");
+    }
+    
+    public static File getFile(String imagePathName)
+    {
+        return new File(ClientProxy.cardImagesFolder, imagePathName);
     }
     
     public static List<Card> getMissingItemImages()
     {
         List<Card> list = new LinkedList<>();
+        
         for(Card card : YdmDatabase.CARDS_LIST)
         {
-            if(!card.isHardcoded() && !ImageHandler.getTaggedFile(card.getItemImageName()).exists())
+            if(!card.isHardcoded() && !ImageHandler.getImageFile(card.getItemImageName()).exists())
             {
                 list.add(card);
             }
         }
+        
         return list;
     }
     
-    public static void downloadCardImages(List<Card> list)
+    public static void downloadCardImages(List<Card> missingList)
     {
-        Thread t = new Thread(new ItemImagesWizard(list, list.size()), "YDM Item Image Downloader");
-        t.setDaemon(false);
-        t.start();
-    }
-    
-    private static int imagePipeline(String imageName, String imageUrl, File convertedTarget, int size, Consumer<Boolean> onFinish)
-    {
-        // onFinish params: (failed) -> ???
-        
-        // ret codes:
-        
-        // -2: raw already existed + conversion fails
-        // -1: raw download fail
-        //  0: raw already existed + converted already existed
-        //  1: downloaded raw + converted already existed
-        //  2: raw already existed + done conversion
-        //  3: downloaded raw + done conversion
-        
-        int ret = 0;
-        
-        File raw = ImageHandler.getRawFile(imageName);
-        
-        if(!raw.exists())
+        for(Card card : missingList)
         {
-            try
-            {
-                ImageHandler.downloadRawImage(imageUrl, raw);
-                ret += 1;
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-                
-                onFinish.accept(true);
-                
-                // Without the raw image we cant do anything anyways
-                return -1;
-            }
-        }
-        
-        boolean failed = false;
-        
-        if(!convertedTarget.exists())
-        {
-            try
-            {
-                ImageHandler.convertImage(convertedTarget, raw, size);
-                ret += 2;
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-                failed = true;
-                ret = -2;
-            }
-        }
-        
-        // Delete cache if requested
-        if(!ClientProxy.keepCachedImages)
-        {
-            raw.delete();
-        }
-        
-        onFinish.accept(failed);
-        
-        return ret;
-    }
-    
-    private static class GuiImageWizard implements Runnable
-    {
-        private final Properties properties;
-        private final byte imageIndex;
-        private final int size;
-        private final File file;
-        private final Consumer<Boolean> callback;
-        
-        private GuiImageWizard(Properties properties, byte imageIndex, int size, File file, Consumer<Boolean> callback)
-        {
-            this.properties = properties;
-            this.imageIndex = imageIndex;
-            this.size = size;
-            this.file = file;
-            this.callback = callback;
-        }
-        
-        @Override
-        public void run()
-        {
-            ImageHandler.imagePipeline(
-                this.properties.getImageName(this.imageIndex),
-                this.properties.getImageURL(this.imageIndex),
-                this.file,
-                this.size,
-                this.callback);
+            ImageHandler.makeImageReady(card.getProperties(), card.getImageIndex(), ClientProxy.activeItemImageSize);
         }
     }
     
-    private static class ItemImagesWizard implements Runnable
+    public static class ImageList
     {
-        private Iterable<Card> list;
-        private int size;
+        private final DNCList<String, String> finishedList;
+        private final DNCList<String, String> inProgressList;
+        private final DNCList<String, String> failedList;
         
-        private ItemImagesWizard(Iterable<Card> list, int size)
+        public ImageList()
         {
-            this.list = list;
-            this.size = size;
+            this.finishedList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
+            this.inProgressList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
+            this.failedList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
         }
         
-        @Override
-        public void run()
+        public void setInProgress(String imageName)
         {
-            int i = 0;
-            int j = 0;
-            long millies = System.currentTimeMillis();
-            int status;
-            
-            for(Card card : this.list)
+            synchronized(this.inProgressList)
             {
-                // should never be true, but lets make sure
-                if(card.isHardcoded())
+                this.inProgressList.addKeepSorted(imageName);
+            }
+        }
+        
+        public void unInProgress(String imageName)
+        {
+            if(this.inProgressList.contains(imageName))
+            {
+                synchronized(this.inProgressList)
                 {
-                    continue;
-                }
-                
-                if(!ClientProxy.getMinecraft().isRunning())
-                {
-                    return;
-                }
-                
-                YDM.log("Fetching image of: " + ++j + "/" + this.size + ": " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
-                
-                status = ImageHandler.imagePipeline(card.getImageName(), card.getItemImageURL(), ImageHandler.getTaggedFile(card.getItemImageName()), ClientProxy.activeItemImageSize, (failed) ->
-                {});
-                
-                if(status < 0)
-                {
-                    if(status == -1)
-                    {
-                        YDM.log("Failed downloading raw image!");
-                    }
-                    else if(status == -2)
-                    {
-                        YDM.log("Failed converting image to square format!");
-                    }
-                }
-                else if(status % 2 == 1) // this means that the image needed to be downloaded
-                {
-                    ++i;
-                }
-                
-                if(i >= 20)
-                {
-                    i = 0;
-                    millies = System.currentTimeMillis() - millies;
-                    
-                    if(millies <= 1100)
-                    {
-                        // In case we pulled 20 images in less than 1 second, we need to slow down a bit
-                        // otherwise IP gets blacklisted.
-                        // 1100 instead of 1000 just to make sure any inaccuracy doesnt get us blacklisted.
-                        
-                        try
-                        {
-                            TimeUnit.MILLISECONDS.sleep(1100 - millies);
-                        }
-                        catch (InterruptedException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                    
-                    millies = System.currentTimeMillis();
+                    this.inProgressList.remove(imageName);
                 }
             }
-            
-            YDM.log("Done fething images! Rechecking images to make sure...");
-            
-            for(Card card : ImageHandler.getMissingItemImages())
+        }
+        
+        public void setImmediateFinished(String imageName)
+        {
+            synchronized(this.finishedList)
             {
-                YDM.log("Missing image of: " + card.getProperties().getName() + " (Variant " + card.getImageIndex() + ")");
+                this.finishedList.addKeepSorted(imageName);
             }
-            
-            YDM.log("Done checking images!");
+        }
+        
+        public void setFinished(String imageName)
+        {
+            this.unInProgress(imageName);
+            this.setImmediateFinished(imageName);
+        }
+        
+        public void setFailed(String imageName)
+        {
+            this.unInProgress(imageName);
+            synchronized(this.failedList)
+            {
+                this.failedList.addKeepSorted(imageName);
+            }
+        }
+        
+        public boolean isInProgress(String imageName)
+        {
+            return this.inProgressList.contains(imageName);
+        }
+        
+        public boolean isFinished(String imageName)
+        {
+            return this.finishedList.contains(imageName);
+        }
+        
+        public boolean isFailed(String imageName)
+        {
+            return this.failedList.contains(imageName);
         }
     }
 }

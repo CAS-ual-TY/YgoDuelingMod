@@ -152,7 +152,7 @@ public class FinalCardBakedModel implements IBakedModel
     {
         if(this.singleBackList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + ImageHandler.addItemTag("card_back"));
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addItemTag("card_back"));
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
             this.singleBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1);
         }
@@ -164,7 +164,7 @@ public class FinalCardBakedModel implements IBakedModel
     {
         if(this.partneredBackList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + ImageHandler.addItemTag("card_back"));
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addItemTag("card_back"));
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
             
             this.partneredBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1);
@@ -177,7 +177,7 @@ public class FinalCardBakedModel implements IBakedModel
     {
         if(this.blancList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + ImageHandler.addItemTag("blanc_card"));
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addItemTag("blanc_card"));
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
             this.blancList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1);
         }
