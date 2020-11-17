@@ -240,6 +240,11 @@ public class ImageHandler
     public static void downloadRawImage(String imageUrl, File rawImageFile) throws MalformedURLException, IOException
     {
         YdmIOUtil.downloadFile(new URL(imageUrl), rawImageFile);
+        
+        if(!ClientProxy.keepCachedImages)
+        {
+            rawImageFile.deleteOnExit();
+        }
     }
     
     public static void adjustRawImage(File adjusted, File raw, int size) throws IOException
