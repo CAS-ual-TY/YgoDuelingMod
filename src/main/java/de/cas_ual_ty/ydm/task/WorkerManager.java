@@ -1,5 +1,7 @@
 package de.cas_ual_ty.ydm.task;
 
+import java.util.concurrent.TimeUnit;
+
 import de.cas_ual_ty.ydm.YDM;
 
 public class WorkerManager
@@ -17,11 +19,49 @@ public class WorkerManager
         {
             WorkerManager.initWorker(i);
         }
+        
+        Thread shutdownListener = new Thread(() ->
+        {
+            boolean everythingDone;
+            
+            for(;;)
+            {
+                everythingDone = true;
+                
+                for(Worker w : WorkerManager.WORKERS)
+                {
+                    if(w.isAlive())
+                    {
+                        everythingDone = false;
+                        break;
+                    }
+                }
+                
+                if(everythingDone)
+                {
+                    break;
+                }
+                else
+                {
+                    try
+                    {
+                        TimeUnit.MILLISECONDS.sleep(WorkerManager.sleepMillis);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        break;
+                    }
+                }
+            }
+        },
+            YDM.MOD_ID_UP + " shutdown hook");
+        
+        Runtime.getRuntime().addShutdownHook(shutdownListener);
     }
     
     private static void initWorker(int index)
     {
-        WorkerManager.WORKERS[index] = new Worker(YDM.MOD_ID + " Worker Thread " + (index + 1), index, WorkerManager.sleepMillis);
+        WorkerManager.WORKERS[index] = new Worker(YDM.MOD_ID_UP + " Worker Thread " + (index + 1), index, WorkerManager.sleepMillis);
         WorkerManager.WORKERS[index].start();
         YDM.log("Initialized Worker " + index);
     }

@@ -62,6 +62,7 @@ public class YDM
      */
     
     public static final String MOD_ID = "ydm";
+    public static final String MOD_ID_UP = YDM.MOD_ID.toUpperCase();
     public static final String PROTOCOL_VERSION = "1";
     
     private static final Logger LOGGER = LogManager.getLogger();
