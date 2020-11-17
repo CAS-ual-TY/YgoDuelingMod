@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
+import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
@@ -20,6 +21,7 @@ import de.cas_ual_ty.ydm.duel.network.DuelMessageHeaderType;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
+import de.cas_ual_ty.ydm.task.WorkerManager;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.entity.player.PlayerEntity;
@@ -39,6 +41,7 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
@@ -50,12 +53,6 @@ public class YDM
 {
     /*
      * TODO
-     * - Thread Pools
-     *   - Seperate Raw Downloading from Converting
-     * - Shutdown Hook
-     *   - Properly wait and finish image downloading
-     *   - https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Runtime.html#addShutdownHook(java.lang.Thread)
-     *   - Shutdown Hook to delete cached images
      *   - FMLServerShutdownEvent or smth to save card binders
      * - Randoms and Shuffling in duels!
      * 
@@ -126,6 +123,7 @@ public class YDM
         // bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
         bus.addListener(this::registerCommands);
         bus.addListener(this::findDecks);
+        bus.addListener(this::serverStopped);
         YDM.proxy.registerForgeEventListeners(bus);
         
         YDM.proxy.preInit();
@@ -310,12 +308,24 @@ public class YDM
         }
     }
     
-    public void newRegistry(NewRegistry event)
+    private void newRegistry(NewRegistry event)
     {
         YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setType(ActionIcon.class).setMaxID(511).create();
         YDM.zoneTypeRegistry = new RegistryBuilder<ZoneType>().setName(new ResourceLocation(YDM.MOD_ID, "zone_types")).setType(ZoneType.class).setMaxID(511).create();
         YDM.actionTypeRegistry = new RegistryBuilder<ActionType>().setName(new ResourceLocation(YDM.MOD_ID, "action_types")).setType(ActionType.class).setMaxID(511).create();
         YDM.duelMessageHeaderRegistry = new RegistryBuilder<DuelMessageHeaderType>().setName(new ResourceLocation(YDM.MOD_ID, "duel_message_headers")).setType(DuelMessageHeaderType.class).setMaxID(63).create();
+    }
+    
+    private void serverStopped(FMLServerStoppedEvent event)
+    {
+        synchronized(JsonCardsManager.LOADED_MANAGERS)
+        {
+            for(JsonCardsManager m : JsonCardsManager.LOADED_MANAGERS)
+            {
+                m.safe(() ->
+                {});
+            }
+        }
     }
     
     public static void log(String s)

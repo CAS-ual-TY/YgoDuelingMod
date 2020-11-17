@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.cardinventory;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
@@ -23,6 +24,8 @@ import net.minecraft.nbt.CompoundNBT;
 
 public abstract class JsonCardsManager
 {
+    public static List<JsonCardsManager> LOADED_MANAGERS = new LinkedList<>();
+    
     protected volatile boolean isIdle;
     protected boolean loaded; // false = last safed, true = last loaded
     
@@ -67,6 +70,11 @@ public abstract class JsonCardsManager
             
             this.setWorking();
             this.loaded = true;
+            
+            synchronized(JsonCardsManager.LOADED_MANAGERS)
+            {
+                JsonCardsManager.LOADED_MANAGERS.add(this);
+            }
             
             Task t = new Task(TaskPriority.BINDER_LOAD, () ->
             {
@@ -134,6 +142,11 @@ public abstract class JsonCardsManager
             
             this.setWorking();
             this.loaded = false;
+            
+            synchronized(JsonCardsManager.LOADED_MANAGERS)
+            {
+                JsonCardsManager.LOADED_MANAGERS.remove(this);
+            }
             
             Task t = new Task(TaskPriority.BINDER_SAVE, () ->
             {
