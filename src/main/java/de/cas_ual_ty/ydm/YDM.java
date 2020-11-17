@@ -167,6 +167,7 @@ public class YDM
         DuelMessage.register(YDM.channel, index++, DuelMessages.SendAllMessagesToClient.class, DuelMessages.SendAllMessagesToClient::new);
         
         YDM.proxy.init();
+        WorkerManager.init();
     }
     
     private void initFiles()

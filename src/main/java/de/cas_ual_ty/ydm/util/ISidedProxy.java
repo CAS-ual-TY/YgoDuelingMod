@@ -61,4 +61,9 @@ public interface ISidedProxy
     {
         return null;
     }
+    
+    public default boolean continueTasks()
+    {
+        return true;
+    }
 }

@@ -3,7 +3,6 @@ package de.cas_ual_ty.ydm.task;
 import java.util.concurrent.TimeUnit;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.client.Minecraft;
 
 public class Worker extends Thread
 {
@@ -22,7 +21,7 @@ public class Worker extends Thread
     {
         Task t;
         
-        while(Minecraft.getInstance().isRunning())
+        while(YDM.proxy.continueTasks())
         {
             t = TaskQueue.pollTask();
             

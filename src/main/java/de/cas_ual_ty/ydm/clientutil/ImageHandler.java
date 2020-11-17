@@ -138,7 +138,7 @@ public class ImageHandler
         
         ImageHandler.RAW_IMAGE_LIST.setInProgress(imageName);
         
-        Task task = new Task(TaskPriority.IMG_DOWNLOAD, () ->
+        Task task = new ClientTask(TaskPriority.IMG_DOWNLOAD, () ->
         {
             try
             {
@@ -201,7 +201,7 @@ public class ImageHandler
         
         ImageHandler.ADJUSTED_IMAGE_LIST.setInProgress(adjustedImageName);
         
-        Task task = new Task(TaskPriority.IMG_ADJUSTMENT, () ->
+        Task task = new ClientTask(TaskPriority.IMG_ADJUSTMENT, () ->
         {
             try
             {
