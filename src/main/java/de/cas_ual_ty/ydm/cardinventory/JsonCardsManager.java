@@ -14,6 +14,9 @@ import com.google.gson.JsonSyntaxException;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.task.Task;
+import de.cas_ual_ty.ydm.task.TaskPriority;
+import de.cas_ual_ty.ydm.task.TaskQueue;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.nbt.CompoundNBT;
@@ -65,7 +68,7 @@ public abstract class JsonCardsManager
             this.setWorking();
             this.loaded = true;
             
-            Thread t = new Thread(() ->
+            Task t = new Task(TaskPriority.BINDER_LOAD, () ->
             {
                 this.loadRunnable().run();
                 YDM.log("Done loading from file: " + this.getFile().getAbsolutePath());
@@ -73,7 +76,7 @@ public abstract class JsonCardsManager
                 callback.run();
             });
             
-            t.start();
+            TaskQueue.addTask(t);
         }
     }
     
@@ -132,7 +135,7 @@ public abstract class JsonCardsManager
             this.setWorking();
             this.loaded = false;
             
-            Thread t = new Thread(() ->
+            Task t = new Task(TaskPriority.BINDER_SAVE, () ->
             {
                 this.safeRunnable().run();
                 YDM.log("Done saving to file: " + this.getFile().getAbsolutePath());
@@ -140,7 +143,7 @@ public abstract class JsonCardsManager
                 callback.run();
             });
             
-            t.start();
+            TaskQueue.addTask(t);
         }
     }
     

@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.task;
 
 public enum TaskPriority
 {
-    IMG_DOWNLOAD("img download", 2), IMG_ADJUSTMENT("img adjustment", 1), BINDER_SAVE("binder save", 3);
+    IMG_DOWNLOAD("img download", 2), IMG_ADJUSTMENT("img adjustment", 1), BINDER_SAVE("binder save", 3), BINDER_LOAD("binder load", 3);
     
     public final String name;
     public final int priority;
