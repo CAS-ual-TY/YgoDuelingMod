@@ -15,6 +15,7 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
@@ -195,10 +196,13 @@ public class YdmCommand
                     
                     for(Card card : YdmDatabase.CARDS_LIST)
                     {
-                        for(i = 0; i < amount; ++i)
+                        if(card != CustomCards.DUMMY_CARD)
                         {
-                            h = new CardHolder(card);
-                            list.add(h);
+                            for(i = 0; i < amount; ++i)
+                            {
+                                h = new CardHolder(card);
+                                list.add(h);
+                            }
                         }
                     }
                     

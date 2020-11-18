@@ -12,6 +12,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
+import de.cas_ual_ty.ydm.duel.screen.widget.ImprovedButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -69,13 +70,8 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
             }
         }
         
-        int centerX = this.width / 2;
-        int centerY = this.height / 2;
-        
-        this.prevButton = new Button(centerX + 40, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.prev"), this::onButtonClicked);
-        this.nextButton = new Button(centerX + 80, centerY - 117, 40, 20, new TranslationTextComponent("container.ydm.card_binder.next"), this::onButtonClicked);
-        this.addButton(this.prevButton);
-        this.addButton(this.nextButton);
+        this.addButton(this.prevButton = new ImprovedButton(this.guiLeft + this.xSize - 80 - 8 - 27, this.guiTop + this.ySize - 96, 40, 12, new TranslationTextComponent("container.ydm.card_binder.prev"), this::onButtonClicked));
+        this.addButton(this.nextButton = new ImprovedButton(this.guiLeft + this.xSize - 40 - 8 - 27, this.guiTop + this.ySize - 96, 40, 12, new TranslationTextComponent("container.ydm.card_binder.next"), this::onButtonClicked));
     }
     
     @Override

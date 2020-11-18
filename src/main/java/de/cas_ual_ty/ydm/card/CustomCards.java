@@ -15,6 +15,7 @@ import de.cas_ual_ty.ydm.card.properties.Species;
 import de.cas_ual_ty.ydm.card.properties.SpellProperties;
 import de.cas_ual_ty.ydm.card.properties.SpellType;
 import de.cas_ual_ty.ydm.card.properties.Type;
+import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
 import net.minecraft.util.text.ITextComponent;
 
 public class CustomCards
@@ -48,6 +49,9 @@ public class CustomCards
     
     public static LinkMonsterProperties PATREON_009_PROPERTIES;
     public static Card PATREON_009_CARD;
+    
+    public static XyzMonsterProperties PATREON_010_PROPERTIES;
+    public static Card PATREON_010_CARD;
     
     public static void createAndRegisterEverything()
     {
@@ -275,6 +279,28 @@ public class CustomCards
         CustomCards.PATREON_009_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_009_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_009_PROPERTIES);
         YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_009_CARD);
+        
+        CustomCards.PATREON_010_PROPERTIES = new XyzMonsterProperties();
+        CustomCards.PATREON_010_PROPERTIES.isHardcoded = true;
+        CustomCards.PATREON_010_PROPERTIES.name = "Jin Mori - Monkey King";
+        CustomCards.PATREON_010_PROPERTIES.id = 10;
+        CustomCards.PATREON_010_PROPERTIES.isIllegal = true;
+        CustomCards.PATREON_010_PROPERTIES.isCustom = true;
+        CustomCards.PATREON_010_PROPERTIES.text = "2 or more (max. 5) Level 4 monsters\nThis card gains effects based on the number of Xyz materials attached to it.\n2+: This card is unaffected by your opponent's cards and effects.\n3+: Double this card's ATK and Def.\n4+: Once per turn, you can negate one card's effect up to the number of Xyz material attached to this card.\n5: Triples this card's ATK and Def (on top of the doubled ATK), this card can also attack your opponent directly.";
+        CustomCards.PATREON_010_PROPERTIES.type = Type.MONSTER;
+        CustomCards.PATREON_010_PROPERTIES.images = null;
+        CustomCards.PATREON_010_PROPERTIES.attribute = Attribute.DIVINE;
+        CustomCards.PATREON_010_PROPERTIES.atk = 2500;
+        CustomCards.PATREON_010_PROPERTIES.species = Species.WARRIOR;
+        CustomCards.PATREON_010_PROPERTIES.monsterType = MonsterType.XYZ;
+        CustomCards.PATREON_010_PROPERTIES.isPendulum = false;
+        CustomCards.PATREON_010_PROPERTIES.ability = null;
+        CustomCards.PATREON_010_PROPERTIES.hasEffect = true;
+        CustomCards.PATREON_010_PROPERTIES.def = 2500;
+        CustomCards.PATREON_010_PROPERTIES.rank = 4;
+        CustomCards.PATREON_010_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_010_PROPERTIES);
+        YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_010_PROPERTIES);
+        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_010_CARD);
     }
     
     public static Card createPatreonCard(Properties p) // add rarity here as parameter

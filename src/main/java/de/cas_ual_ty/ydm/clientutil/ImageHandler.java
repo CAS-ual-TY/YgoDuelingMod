@@ -36,7 +36,9 @@ public class ImageHandler
     public static ImageList RAW_IMAGE_LIST = new ImageList();
     public static ImageList ADJUSTED_IMAGE_LIST = new ImageList();
     
-    // only for dev workspace! requires raw image to be manually put in the raw images folder
+    // only for dev workspace!
+    // put raw image in the raw images folder
+    // make sure all size folders (16, 32, 64... exist)
     @Deprecated // so I get a warning
     public static void createCustomCardImages(Card card) throws IOException
     {

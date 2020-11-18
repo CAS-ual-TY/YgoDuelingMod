@@ -25,6 +25,8 @@ public class YdmItems
     public static final CardBinderItem CARD_BINDER = null;
     public static final Item DUEL_PLAYMAT = null;
     public static final Item DUEL_TABLE = null;
+    public static final Item CARD_SUPPLY = null;
+    
     public static final Item DUEL_DISK = null;
     public static final Item CHAOS_DISK = null;
     public static final Item ACADEMIA_DISK = null;
@@ -63,6 +65,8 @@ public class YdmItems
         registry.register(new CardBinderItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card_binder"));
         registry.register(new BlockItem(YdmBlocks.DUEL_PLAYMAT, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
         registry.register(new BlockItem(YdmBlocks.DUEL_TABLE, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_table"));
+        registry.register(new BlockItem(YdmBlocks.CARD_SUPPLY, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_supply"));
+        
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "duel_disk"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "chaos_disk"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "academia_disk"));

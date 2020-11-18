@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "ydm:block/card_supply" }
+    }
+}

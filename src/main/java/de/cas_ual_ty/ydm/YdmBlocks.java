@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm;
 
+import de.cas_ual_ty.ydm.cardsupply.CardSupplyBlock;
 import de.cas_ual_ty.ydm.duel.block.DuelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.SoundType;
@@ -19,6 +20,7 @@ public class YdmBlocks
 {
     public static final DuelBlock DUEL_PLAYMAT = null;
     public static final DuelBlock DUEL_TABLE = null;
+    public static final CardSupplyBlock CARD_SUPPLY = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Block> event)
@@ -30,5 +32,6 @@ public class YdmBlocks
             Block.makeCuboidShape(1, 0, 1, 15, 3, 15),
             Block.makeCuboidShape(0, 13, 0, 16, 15, 16),
             Block.makeCuboidShape(1, 12.5, 1, 15, 15.5, 15))).setRegistryName(YDM.MOD_ID, "duel_table"));
+        registry.register(new CardSupplyBlock(Block.Properties.create(Material.IRON, MaterialColor.IRON)).setRegistryName(YDM.MOD_ID, "card_supply"));
     }
 }

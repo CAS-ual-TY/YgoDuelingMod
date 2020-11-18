@@ -1,0 +1,12 @@
+{
+    "parent": "block/cube",
+    "textures": {
+        "particle": "ydm:block/card_supply_side",
+        "down": "ydm:block/card_supply_bottom",
+        "up": "ydm:block/card_supply_top",
+        "north": "ydm:block/card_supply_side",
+        "east": "ydm:block/card_supply_side",
+        "south": "ydm:block/card_supply_side",
+        "west": "ydm:block/card_supply_side"
+    }
+}

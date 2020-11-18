@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
+import de.cas_ual_ty.ydm.cardsupply.CardSupplyMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
@@ -146,6 +147,7 @@ public class YDM
         YDM.channel.registerMessage(index++, CardBinderMessages.UpdateList.class, CardBinderMessages.UpdateList::encode, CardBinderMessages.UpdateList::decode, CardBinderMessages.UpdateList::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexClicked.class, CardBinderMessages.IndexClicked::encode, CardBinderMessages.IndexClicked::decode, CardBinderMessages.IndexClicked::handle);
         YDM.channel.registerMessage(index++, CardBinderMessages.IndexDropped.class, CardBinderMessages.IndexDropped::encode, CardBinderMessages.IndexDropped::decode, CardBinderMessages.IndexDropped::handle);
+        YDM.channel.registerMessage(index++, CardSupplyMessages.RequestCard.class, CardSupplyMessages.RequestCard::encode, CardSupplyMessages.RequestCard::decode, CardSupplyMessages.RequestCard::handle);
         DuelMessage.register(YDM.channel, index++, DuelMessages.SelectRole.class, DuelMessages.SelectRole::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.UpdateRole.class, DuelMessages.UpdateRole::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.UpdateDuelState.class, DuelMessages.UpdateDuelState::new);
