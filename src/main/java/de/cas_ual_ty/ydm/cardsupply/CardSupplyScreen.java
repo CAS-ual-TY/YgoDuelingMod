@@ -17,7 +17,7 @@ import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.cardbinder.CardButton;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
-import de.cas_ual_ty.ydm.duel.screen.widget.ImprovedButton;
+import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;

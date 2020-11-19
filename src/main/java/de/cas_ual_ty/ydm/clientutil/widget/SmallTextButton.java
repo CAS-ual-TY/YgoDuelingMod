@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel.screen.widget;
+package de.cas_ual_ty.ydm.clientutil.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -34,16 +34,16 @@ public class SmallTextButton extends Button
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        this.blit(ms, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-        this.blit(ms, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+        this.blit(ms, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height / 2);
+        this.blit(ms, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height / 2);
+        this.blit(ms, this.x, this.y + this.height / 2, 0, 46 + (i + 1) * 20 - this.height / 2, this.width / 2, this.height / 2);
+        this.blit(ms, this.x + this.width / 2, this.y + this.height / 2, 200 - this.width / 2, 46 + (i + 1) * 20 - this.height / 2, this.width / 2, this.height / 2);
         this.renderBg(ms, minecraft, mouseX, mouseY);
         
         ms.push();
         ms.scale(0.5F, 0.5F, 1F);
-        
         int j = this.getFGColor();
         AbstractGui.drawCenteredString(ms, fontrenderer, this.getMessage(), (this.x + this.width / 2) * 2, (this.y + this.height / 2) * 2 - fontrenderer.FONT_HEIGHT / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
-        
         ms.pop();
         
         if(this.isHovered())

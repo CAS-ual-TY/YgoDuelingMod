@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.duel.screen.widget;
+package de.cas_ual_ty.ydm.clientutil.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;

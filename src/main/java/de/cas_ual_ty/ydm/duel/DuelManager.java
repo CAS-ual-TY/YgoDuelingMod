@@ -401,6 +401,13 @@ public class DuelManager
         {
             this.updateDuelStateToAll();
         }
+        else
+        {
+            if(this.duelState == DuelState.IDLE)
+            {
+                this.reset();
+            }
+        }
     }
     
     public void receiveMessageFromClient(PlayerEntity player, ITextComponent message)
