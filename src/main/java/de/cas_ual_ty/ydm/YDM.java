@@ -2,12 +2,14 @@ package de.cas_ual_ty.ydm;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
@@ -377,6 +379,27 @@ public class YDM
         else
         {
             YDM.debug(s.toString());
+        }
+    }
+    
+    // For debugging
+    // call this at the end of initFiles
+    @Deprecated
+    public static void scanCardsForErrors()
+    {
+        for(Properties p : YdmDatabase.PROPERTIES_LIST)
+        {
+            try
+            {
+                p.addInformation(new LinkedList<>());
+            }
+            catch (RuntimeException e)
+            {
+                YDM.debug("Failed showing card information for:");
+                YDM.debug(p.getName());
+                YDM.debug(String.valueOf(p.getId()));
+                e.printStackTrace();
+            }
         }
     }
 }

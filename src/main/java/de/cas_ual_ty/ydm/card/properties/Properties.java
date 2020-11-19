@@ -1,6 +1,5 @@
 package de.cas_ual_ty.ydm.card.properties;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.JsonArray;
@@ -154,18 +153,9 @@ public class Properties
     
     public void addInformation(List<ITextComponent> list)
     {
-        list.addAll(this.getRawStringList());
-    }
-    
-    public List<ITextComponent> getRawStringList()
-    {
-        List<ITextComponent> list = new LinkedList<>();
-        
         this.addHeader(list);
         list.add(StringTextComponent.EMPTY);
         this.addText(list);
-        
-        return list;
     }
     
     public void addHeader(List<ITextComponent> list)
