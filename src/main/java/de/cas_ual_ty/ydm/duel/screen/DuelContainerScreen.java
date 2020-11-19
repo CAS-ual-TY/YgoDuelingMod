@@ -132,7 +132,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if(this.textFieldWidget.isFocused() && !this.textFieldWidget.isMouseOver(mouseX, mouseY))
+        if(this.textFieldWidget != null && this.textFieldWidget.isFocused() && !this.textFieldWidget.isMouseOver(mouseX, mouseY))
         {
             this.textFieldWidget.setFocused2(false);
         }
