@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.util;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -64,6 +65,11 @@ public interface ISidedProxy
     
     public default boolean continueTasks()
     {
-        return true;
+        return YDM.continueTasks;
+    }
+    
+    public default boolean forceTaskStop()
+    {
+        return YDM.forceTaskStop;
     }
 }

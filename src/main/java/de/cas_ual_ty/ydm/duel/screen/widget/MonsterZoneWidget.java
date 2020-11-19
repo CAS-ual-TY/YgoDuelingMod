@@ -150,4 +150,24 @@ public class MonsterZoneWidget extends ZoneWidget
             return hoveredCard;
         }
     }
+    
+    @Override
+    public boolean openAdvancedZoneView()
+    {
+        if(this.zone.getCardsAmount() <= 0)
+        {
+            return false;
+        }
+        else
+        {
+            int threshold = 3;
+            
+            if(!this.zone.getTopCard().getCardPosition().isStraight)
+            {
+                threshold++;
+            }
+            
+            return this.zone.getCardsAmount() > threshold;
+        }
+    }
 }

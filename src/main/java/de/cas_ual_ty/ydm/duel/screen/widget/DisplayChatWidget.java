@@ -42,6 +42,7 @@ public class DisplayChatWidget extends Widget
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
+        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
         int color = this.getFGColor();
         DisplayChatWidget.drawLines(ms, fontrenderer, this.textSupplier.get(), this.x, this.y, this.width, this.height, color, (float)ClientProxy.duelChatSize);
     }

@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.duel.screen.animation;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
+import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
@@ -28,6 +29,8 @@ public class MoveAnimation extends Animation
     
     public MoveAnimation(ZoneOwner view, DuelCard duelCard, ZoneWidget sourceZone, ZoneWidget destinationZone, CardPosition sourcePosition, CardPosition destinationPosition)
     {
+        super(ClientProxy.moveAnimationLength);
+        
         this.view = view;
         
         this.duelCard = duelCard;

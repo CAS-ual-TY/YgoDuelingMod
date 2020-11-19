@@ -22,22 +22,24 @@ public class WorkerManager
         
         Thread shutdownListener = new Thread(() ->
         {
-            boolean everythingDone;
+            int everythingDone = 0;
             
             for(;;)
             {
-                everythingDone = true;
+                everythingDone++;
                 
                 for(Worker w : WorkerManager.WORKERS)
                 {
-                    if(w.isAlive())
+                    if(w.isAlive() && w.isWorking)
                     {
-                        everythingDone = false;
+                        everythingDone = 0;
                         break;
                     }
                 }
                 
-                if(everythingDone)
+                // we do this check 3 times
+                // on 3rd time, we finish
+                if(everythingDone >= 3)
                 {
                     break;
                 }
@@ -45,11 +47,26 @@ public class WorkerManager
                 {
                     try
                     {
-                        TimeUnit.MILLISECONDS.sleep(WorkerManager.sleepMillis);
+                        TimeUnit.MILLISECONDS.sleep(WorkerManager.sleepMillis * 2);
                     }
                     catch (InterruptedException e)
                     {
-                        break;
+                    }
+                }
+            }
+            
+            YDM.forceTaskStop = true;
+            
+            for(Worker w : WorkerManager.WORKERS)
+            {
+                if(w.isAlive())
+                {
+                    try
+                    {
+                        w.join();
+                    }
+                    catch (InterruptedException e)
+                    {
                     }
                 }
             }

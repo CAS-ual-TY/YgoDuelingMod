@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +13,7 @@ import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
 import de.cas_ual_ty.ydm.cardsupply.CardSupplyMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
+import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.FindDecksEvent;
@@ -67,6 +69,7 @@ public class YDM
     
     public static YDM instance;
     public static ISidedProxy proxy;
+    public static Random random;
     public static ItemGroup ydmItemGroup;
     public static ItemGroup cardsItemGroup;
     
@@ -90,6 +93,8 @@ public class YDM
     public static IForgeRegistry<ZoneType> zoneTypeRegistry;
     public static IForgeRegistry<ActionType> actionTypeRegistry;
     public static IForgeRegistry<DuelMessageHeaderType> duelMessageHeaderRegistry;
+    public static volatile boolean continueTasks = true;
+    public static volatile boolean forceTaskStop = false;
     
     public YDM()
     {
@@ -97,6 +102,7 @@ public class YDM
         YDM.proxy = DistExecutor.safeRunForDist(
             () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
             () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
+        YDM.random = new Random();
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
         YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD)
         {
@@ -124,6 +130,7 @@ public class YDM
         // bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
         bus.addListener(this::registerCommands);
         bus.addListener(this::findDecks);
+        bus.addListener(this::findPatreonDecks);
         bus.addListener(this::serverStopped);
         YDM.proxy.registerForgeEventListeners(bus);
         
@@ -285,23 +292,44 @@ public class YDM
         PlayerEntity player = event.getPlayer();
         
         ItemStack itemStack;
+        DeckHolder dh;
+        
         for(int i = 0; i < player.inventory.getSizeInventory(); ++i)
         {
             itemStack = player.inventory.getStackInSlot(i);
             
             if(itemStack.getItem() instanceof DeckBoxItem)
             {
-                event.addDeck(new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack)), itemStack);
+                dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack));
+                
+                if(!dh.isEmpty())
+                {
+                    event.addDeck(dh, itemStack);
+                }
             }
         }
         
         itemStack = player.getHeldItemOffhand();
         if(itemStack.getItem() instanceof DeckBoxItem)
         {
-            event.addDeck(new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack)), itemStack);
+            dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack));
+            
+            if(!dh.isEmpty())
+            {
+                event.addDeck(dh, itemStack);
+            }
+        }
+    }
+    
+    private void findPatreonDecks(FindDecksEvent event)
+    {
+        PlayerEntity player = event.getPlayer();
+        
+        if(!player.isCreative())
+        {
+            return;
         }
         
-        // TODO debug
         event.addDeck(DeckSource.getOjamaDeck());
         
         for(DeckSource deck : DeckSource.getAllPatreonDecks())

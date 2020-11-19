@@ -11,6 +11,8 @@ import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.deckbox.DeckBuilder;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class DeckSource
 {
@@ -232,26 +234,26 @@ public class DeckSource
     
     public static DeckSource getOjamaDeck()
     {
-        return DeckSource.makeDeckSource(DeckSource.OJAMA_DECK_MAKER, (c) -> c.getProperties().getName().equals("Ojama Delta Hurricane!!"));
+        return DeckSource.makeDeckSource(DeckSource.OJAMA_DECK_MAKER, new StringTextComponent("CAS_ual_TY's Ojarampage"), (c) -> c.getProperties().getName().equals("Ojama Delta Hurricane!!"));
     }
     
     public static List<DeckSource> getAllPatreonDecks()
     {
         List<DeckSource> list = new LinkedList<>();
         
-        list.add(DeckSource.makeDeckSource(DeckSource.KING_SCRUBBY_DECK_1, (c) -> c.getProperties().getName().equals("Dark Magical Circle")));
-        list.add(DeckSource.makeDeckSource(DeckSource.BLESS_DECK_1, (c) -> c.getProperties().getName().equals("Duza the Meteor Cubic Vessel")));
+        list.add(DeckSource.makeDeckSource(DeckSource.KING_SCRUBBY_DECK_1, new StringTextComponent("King's Soul"), (c) -> c.getProperties().getName().equals("Dark Magical Circle")));
+        list.add(DeckSource.makeDeckSource(DeckSource.BLESS_DECK_1, new StringTextComponent("\"Why did we make this?\""), (c) -> c.getProperties().getName().equals("Duza the Meteor Cubic Vessel")));
         
         return list;
     }
     
-    public static DeckSource makeDeckSource(Supplier<DeckHolder> deckHolder, Predicate<Card> flagShipCardChooser)
+    public static DeckSource makeDeckSource(Supplier<DeckHolder> deckHolder, ITextComponent name, Predicate<Card> flagShipCardChooser)
     {
         DeckHolder deck = deckHolder.get();
         
         Card card = YdmDatabase.CARDS_LIST.getByIndex(0);
         
-        if(deck.getMainDeck() != null && deck.getMainDeck().size() > 0)
+        if(deck.getMainDeck() != null && deck.getMainDeckSize() > 0)
         {
             card = deck.getMainDeck().get(0).getCard();
         }
@@ -265,20 +267,22 @@ public class DeckSource
             }
         }
         
-        return new DeckSource(deck, YdmItems.CARD.createItemForCard(card));
+        return new DeckSource(deck, YdmItems.CARD.createItemForCard(card), name);
     }
     
     public DeckHolder deck;
     public ItemStack source;
+    public ITextComponent name;
     
-    public DeckSource(DeckHolder deck, ItemStack source)
+    public DeckSource(DeckHolder deck, ItemStack source, ITextComponent name)
     {
         this.deck = deck;
         this.source = source;
+        this.name = name;
     }
     
-    public DeckSource(DeckHolder deck)
+    public DeckSource(DeckHolder deck, ItemStack source)
     {
-        this(deck, new ItemStack(YdmItems.CARD_BACK));
+        this(deck, source, source.getDisplayName());
     }
 }

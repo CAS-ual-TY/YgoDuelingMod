@@ -32,6 +32,6 @@ public class YdmBlocks
             Block.makeCuboidShape(1, 0, 1, 15, 3, 15),
             Block.makeCuboidShape(0, 13, 0, 16, 15, 16),
             Block.makeCuboidShape(1, 12.5, 1, 15, 15.5, 15))).setRegistryName(YDM.MOD_ID, "duel_table"));
-        registry.register(new CardSupplyBlock(Block.Properties.create(Material.IRON, MaterialColor.IRON)).setRegistryName(YDM.MOD_ID, "card_supply"));
+        registry.register(new CardSupplyBlock(Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)).setRegistryName(YDM.MOD_ID, "card_supply"));
     }
 }

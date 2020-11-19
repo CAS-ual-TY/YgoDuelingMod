@@ -19,6 +19,8 @@ public class SpecialSummonAnimation extends Animation
     
     public SpecialSummonAnimation(float centerPosX, float centerPosY, int size, int endSize)
     {
+        super(ClientProxy.specialAnimationLength);
+        
         this.centerPosX = centerPosX;
         this.centerPosY = centerPosY;
         this.size = size;

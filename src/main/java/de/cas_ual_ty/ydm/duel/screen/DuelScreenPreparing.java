@@ -11,6 +11,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
+import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
 import de.cas_ual_ty.ydm.clientutil.widget.ItemStackWidget;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
@@ -18,8 +19,8 @@ import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
@@ -66,13 +67,15 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
             this.guiLeft = prevGuiLeft;
             
             //without x+1 its technically not centered, i dont get why :(
-            this.addButton(this.prevDeckButton = new Button(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"), (button) -> this.prevDeckClicked()));
-            this.addButton(this.nextDeckButton = new Button(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow"), (button) -> this.nextDeckClicked()));
-            this.addButton(this.chooseDeckButton = new Button(x - 50, this.guiTop + this.ySize - 20 - 10, 100, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.choose_deck"), (button) -> this.chooseDeckClicked()));
+            int chooseWidth = this.xSize - 20;
+            this.addButton(this.prevDeckButton = new ImprovedButton(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 5 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"), (button) -> this.prevDeckClicked()));
+            this.addButton(this.nextDeckButton = new ImprovedButton(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 5 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow"), (button) -> this.nextDeckClicked()));
+            this.addButton(this.chooseDeckButton = new ImprovedButton(x - chooseWidth / 2, this.guiTop + this.ySize - 20 - 10, chooseWidth, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.choose_deck"), (button) -> this.chooseDeckClicked(), this::chooseDeckTooltip));
             
             this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
             this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
             this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
+            
             this.prevDeckWidget.visible = false;
             this.activeDeckWidget.visible = false;
             this.nextDeckWidget.visible = false;
@@ -372,6 +375,8 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         {
             this.requestDeck(dActive.index);
         }
+        
+        this.chooseDeckButton.setMessage(dActive.name);
     }
     
     // when true, deck choosing must be rendered, otherwise dont render it
@@ -405,6 +410,11 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         this.setActiveDeckWrapper(this.activeDeckWrapperIdx + 1);
     }
     
+    protected void chooseDeckTooltip(Widget w, MatrixStack ms, int mouseX, int mouseY)
+    {
+        this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.choose_deck"), mouseX, mouseY);
+    }
+    
     public DeckWrapper getActiveDeckWrapper()
     {
         if(this.deckWrappers == null || this.deckWrappers.size() <= this.activeDeckWrapperIdx)
@@ -432,12 +442,14 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         public static final DeckWrapper DUMMY = new DeckWrapper(new DeckSource(DeckHolder.DUMMY, new ItemStack(YdmItems.BLANC_CARD)), -1);
         
         public ItemStack source;
+        public ITextComponent name;
         public DeckHolder deck;
         public int index;
         
         public DeckWrapper(DeckSource source, int index)
         {
             this.source = source.source;
+            this.name = source.name;
             this.deck = source.deck; //should be null
         }
         

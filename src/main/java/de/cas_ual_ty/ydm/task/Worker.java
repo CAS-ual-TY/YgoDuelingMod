@@ -8,12 +8,14 @@ public class Worker extends Thread
 {
     public final int index;
     public final long sleepMillis;
+    public volatile boolean isWorking;
     
     public Worker(String name, int index, long sleepMillis)
     {
         super(name);
         this.index = index;
         this.sleepMillis = sleepMillis;
+        this.isWorking = false;
     }
     
     @Override
@@ -21,12 +23,17 @@ public class Worker extends Thread
     {
         Task t;
         
-        while(YDM.proxy.continueTasks())
+        while(YDM.proxy.continueTasks() && !YDM.proxy.forceTaskStop())
         {
             t = TaskQueue.pollTask();
             
             if(t != null)
             {
+                if(!this.isWorking)
+                {
+                    this.isWorking = true;
+                }
+                
                 try
                 {
                     t.run();
@@ -39,6 +46,11 @@ public class Worker extends Thread
             }
             else
             {
+                if(this.isWorking)
+                {
+                    this.isWorking = false;
+                }
+                
                 try
                 {
                     TimeUnit.MILLISECONDS.sleep(this.sleepMillis);

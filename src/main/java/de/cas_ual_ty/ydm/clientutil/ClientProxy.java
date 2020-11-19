@@ -56,6 +56,10 @@ public class ClientProxy implements ISidedProxy
     public static int maxInfoImages;
     public static int maxMainImages;
     public static double duelChatSize;
+    public static int moveAnimationLength;
+    public static int specialAnimationLength;
+    public static int attackAnimationLength;
+    public static int announcementAnimationLength;
     
     public static volatile boolean itemsUseCardImagesActive;
     public static volatile boolean itemsUseCardImagesFailed;
@@ -293,6 +297,10 @@ public class ClientProxy implements ISidedProxy
             ClientProxy.maxInfoImages = ClientProxy.clientConfig.maxInfoImages.get();
             ClientProxy.maxMainImages = ClientProxy.clientConfig.maxMainImages.get();
             ClientProxy.duelChatSize = ClientProxy.clientConfig.duelChatSize.get();
+            ClientProxy.moveAnimationLength = ClientProxy.clientConfig.moveAnimationLength.get();
+            ClientProxy.attackAnimationLength = ClientProxy.clientConfig.attackAnimationLength.get();
+            ClientProxy.specialAnimationLength = ClientProxy.clientConfig.specialAnimationLength.get();
+            ClientProxy.announcementAnimationLength = ClientProxy.clientConfig.announcementAnimationLength.get();
         }
     }
     

@@ -277,13 +277,13 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodeList(this.deckSources, buf, (deckSource, buf1) -> buf1.writeItemStack(deckSource.source));
+            DuelMessageUtility.encodeList(this.deckSources, buf, DuelMessageUtility::encodeDeckSourceParams);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.deckSources = DuelMessageUtility.decodeList(buf, (buf1) -> new DeckSource(null, buf1.readItemStack()));
+            this.deckSources = DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeDeckSourceParams);
         }
         
         @Override

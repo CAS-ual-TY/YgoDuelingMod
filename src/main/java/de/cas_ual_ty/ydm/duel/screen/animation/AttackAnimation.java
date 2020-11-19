@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.duel.screen.animation;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
@@ -22,6 +23,8 @@ public class AttackAnimation extends Animation
     
     public AttackAnimation(ZoneOwner view, ZoneWidget sourceZone, ZoneWidget destinationZone)
     {
+        super(ClientProxy.attackAnimationLength);
+        
         this.view = view;
         this.sourceZone = sourceZone;
         this.destinationZone = destinationZone;

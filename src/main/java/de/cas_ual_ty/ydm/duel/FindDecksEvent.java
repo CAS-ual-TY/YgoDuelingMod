@@ -24,12 +24,6 @@ public class FindDecksEvent extends PlayerEvent
         return this;
     }
     
-    public FindDecksEvent addDeck(DeckHolder deck)
-    {
-        this.decksList.add(new DeckSource(deck));
-        return this;
-    }
-    
     public FindDecksEvent addDeck(DeckSource deck)
     {
         this.decksList.add(deck);

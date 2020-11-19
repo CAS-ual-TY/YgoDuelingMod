@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.deckbox;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
 
@@ -21,6 +22,8 @@ public class DeckHolder
     
     public static final DeckHolder DUMMY = new DeckHolder();
     
+    // these lists can contain null
+    // this is to have deck boxes show gaps in them
     protected List<CardHolder> mainDeck;
     protected List<CardHolder> extraDeck;
     protected List<CardHolder> sideDeck;
@@ -52,19 +55,39 @@ public class DeckHolder
         return this.sideDeck;
     }
     
+    public boolean isEmpty()
+    {
+        return this.getMainDeckSize() == 0 && this.getExtraDeckSize() == 0 && this.getSideDeckSize() == 0;
+    }
+    
+    public Stream<CardHolder> getMainDeckNonNull()
+    {
+        return this.getMainDeck().stream().filter((ch) -> ch != null);
+    }
+    
+    public Stream<CardHolder> getExtraDeckNonNull()
+    {
+        return this.getExtraDeck().stream().filter((ch) -> ch != null);
+    }
+    
+    public Stream<CardHolder> getSideDeckNonNull()
+    {
+        return this.getSideDeck().stream().filter((ch) -> ch != null);
+    }
+    
     public int getMainDeckSize()
     {
-        return this.getMainDeck().size();
+        return (int)this.getMainDeckNonNull().count();
     }
     
     public int getExtraDeckSize()
     {
-        return this.getExtraDeck().size();
+        return (int)this.getExtraDeckNonNull().count();
     }
     
     public int getSideDeckSize()
     {
-        return this.getSideDeck().size();
+        return (int)this.getSideDeckNonNull().count();
     }
     
     @Override

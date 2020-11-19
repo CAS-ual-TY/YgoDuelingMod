@@ -13,6 +13,8 @@ public class QueueAnimation extends Animation
     
     public QueueAnimation(Queue<Animation> animations)
     {
+        super(1);
+        
         this.animations = animations;
         
         this.maxTickTime = 0;

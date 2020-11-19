@@ -18,10 +18,11 @@ public class TextAnimation extends Animation
     
     public TextAnimation(ITextComponent message, float centerPosX, float centerPosY)
     {
+        super(ClientProxy.announcementAnimationLength);
+        
         this.message = message;
         this.centerPosX = centerPosX;
         this.centerPosY = centerPosY;
-        this.maxTickTime *= 2;
     }
     
     @Override

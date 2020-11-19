@@ -6,6 +6,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.clientutil.widget.ITooltip;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -20,12 +21,14 @@ public class LifePointsWidget extends Widget
     
     public Supplier<Integer> lpGetter;
     public int maxLP;
+    public ITooltip tooltip;
     
-    public LifePointsWidget(int x, int y, int width, int height, Supplier<Integer> lpGetter, int maxLP)
+    public LifePointsWidget(int x, int y, int width, int height, Supplier<Integer> lpGetter, int maxLP, ITooltip tooltip)
     {
         super(x, y, width, height, StringTextComponent.EMPTY);
         this.lpGetter = lpGetter;
         this.maxLP = maxLP;
+        this.tooltip = tooltip;
     }
     
     @Override
@@ -64,5 +67,10 @@ public class LifePointsWidget extends Widget
         AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent(String.valueOf(lp)), x * 2, y * 2 - fontrenderer.FONT_HEIGHT / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
         
         ms.pop();
+        
+        if(this.isHovered())
+        {
+            this.tooltip.onTooltip(this, ms, mouseX, mouseY);
+        }
     }
 }

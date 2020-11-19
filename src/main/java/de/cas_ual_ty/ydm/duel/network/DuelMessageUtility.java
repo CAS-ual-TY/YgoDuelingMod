@@ -11,6 +11,7 @@ import javax.annotation.Nullable;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
+import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelChatMessage;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
@@ -209,5 +210,16 @@ public class DuelMessageUtility
     public static DuelChatMessage decodeDuelChatMessage(PacketBuffer buf)
     {
         return new DuelChatMessage(buf.readTextComponent(), (IFormattableTextComponent)buf.readTextComponent(), DuelMessageUtility.decodePlayerRole(buf), buf.readBoolean());
+    }
+    
+    public static void encodeDeckSourceParams(DeckSource deck, PacketBuffer buf)
+    {
+        buf.writeItemStack(deck.source);
+        buf.writeTextComponent(deck.name);
+    }
+    
+    public static DeckSource decodeDeckSourceParams(PacketBuffer buf)
+    {
+        return new DeckSource(null, buf.readItemStack(), buf.readTextComponent());
     }
 }

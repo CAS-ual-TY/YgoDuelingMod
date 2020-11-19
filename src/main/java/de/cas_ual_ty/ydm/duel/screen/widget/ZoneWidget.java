@@ -17,8 +17,6 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneInteraction;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -101,12 +99,10 @@ public class ZoneWidget extends Button
     @Override
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
-        
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
+        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
         
         if(this.context.getClickedZone() == this.zone && this.context.getClickedDuelCard() == null)
         {
@@ -114,9 +110,6 @@ public class ZoneWidget extends Button
         }
         
         this.hoverCard = this.renderCards(ms, mouseX, mouseY);
-        
-        //        int j = this.getFGColor();
-        //        AbstractGui.drawCenteredString(ms, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
         
         if(this.active)
         {
@@ -331,5 +324,10 @@ public class ZoneWidget extends Button
     public ITextComponent getTranslation()
     {
         return new TranslationTextComponent(this.zone.getType().getRegistryName().getNamespace() + ".zone." + this.zone.getType().getRegistryName().getPath());
+    }
+    
+    public boolean openAdvancedZoneView()
+    {
+        return !this.zone.getType().getIsSecret();
     }
 }

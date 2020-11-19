@@ -8,7 +8,7 @@ import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.util.text.ITextComponent;
 
-public class NonSecretStackZoneWidget extends ZoneWidget
+public class NonSecretStackZoneWidget extends StackZoneWidget
 {
     public NonSecretStackZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
     {

@@ -8,7 +8,6 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 
 public class DeckBoxContainer extends Container
 {
@@ -35,20 +34,20 @@ public class DeckBoxContainer extends Container
         {
             for(int x = 0; x < itemsPerRow && x + y * itemsPerRow < DeckHolder.MAIN_DECK_SIZE; ++x)
             {
-                this.addSlot(new SlotItemHandler(this.itemHandler, x + y * itemsPerRow + DeckHolder.MAIN_DECK_INDEX_START, 8 + x * 18, 18 + y * 18));
+                this.addSlot(new DeckBoxSlot(this.itemHandler, x + y * itemsPerRow + DeckHolder.MAIN_DECK_INDEX_START, 8 + x * 18, 18 + y * 18));
             }
         }
         
         // extra deck
         for(int x = 0; x < DeckHolder.EXTRA_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(this.itemHandler, x + DeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 18, 104));
+            this.addSlot(new DeckBoxSlot(this.itemHandler, x + DeckHolder.EXTRA_DECK_INDEX_START, 8 + x * 18, 104));
         }
         
         // side deck
         for(int x = 0; x < DeckHolder.SIDE_DECK_SIZE; ++x)
         {
-            this.addSlot(new SlotItemHandler(this.itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
+            this.addSlot(new DeckBoxSlot(this.itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
         
         // player inventory

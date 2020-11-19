@@ -108,7 +108,7 @@ public class HandZoneWidget extends ZoneWidget
                     c = this.zone.getCardUnsafe(this.zone.getCardsAmount() - i - 1);
                 }
                 
-                newHoverX = hoverXBase + (int)(i * margin);
+                newHoverX = hoverXBase + i * margin;
                 newRenderX = newHoverX - offset / 2;
                 
                 if(this.drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
@@ -140,5 +140,11 @@ public class HandZoneWidget extends ZoneWidget
         {
             return hoveredCard;
         }
+    }
+    
+    @Override
+    public boolean openAdvancedZoneView()
+    {
+        return this.zone.getCardsAmount() > 12;
     }
 }

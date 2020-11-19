@@ -13,6 +13,8 @@ public class ParallelListAnimation extends Animation
     
     public ParallelListAnimation(List<Animation> animations)
     {
+        super(1);
+        
         this.animations = animations;
         
         this.runnablesOnStart = new LinkedList<>();

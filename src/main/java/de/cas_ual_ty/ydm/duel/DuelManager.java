@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.duel;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -12,6 +13,8 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmItems;
+import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionTypes;
@@ -62,6 +65,8 @@ public class DuelManager
     public DeckHolder player1Deck;
     public DeckHolder player2Deck;
     
+    public Random random;
+    
     public DuelManager(boolean isRemote, Supplier<DuelMessageHeader> header)
     {
         this.isRemote = isRemote;
@@ -69,6 +74,7 @@ public class DuelManager
         this.spectators = new LinkedList<>();
         this.actions = new LinkedList<>();
         this.messages = new LinkedList<>();
+        this.random = new Random(YDM.random.nextLong());
         this.reset();
     }
     
@@ -283,6 +289,23 @@ public class DuelManager
     }
     
     @Nullable
+    public PlayerEntity getPlayer(ZoneOwner owner)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            return this.player1;
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            return this.player2;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    @Nullable
     public PlayerRole getRoleFor(PlayerEntity player)
     {
         if(player.getUniqueID().equals(this.player1Id))
@@ -401,13 +424,6 @@ public class DuelManager
         {
             this.updateDuelStateToAll();
         }
-        else
-        {
-            if(this.duelState == DuelState.IDLE)
-            {
-                this.reset();
-            }
-        }
     }
     
     public void receiveMessageFromClient(PlayerEntity player, ITextComponent message)
@@ -518,6 +534,7 @@ public class DuelManager
         
         FindDecksEvent e = new FindDecksEvent(player, this);
         MinecraftForge.EVENT_BUS.post(e);
+        e.decksList.add(new DeckSource(DeckHolder.DUMMY, YdmItems.CARD.createItemForCard(CustomCards.DUMMY_CARD))); // empty deck
         return e.decksList;
     }
     
@@ -622,15 +639,15 @@ public class DuelManager
     {
         // send main decks
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player1Deck.index,
-            this.player1Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+            this.player1Deck.getMainDeckNonNull().map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player2Deck.index,
-            this.player2Deck.getMainDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
+            this.player2Deck.getMainDeckNonNull().map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
         
         // send extra decks
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player1ExtraDeck.index,
-            this.player1Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
+            this.player1Deck.getExtraDeckNonNull().map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player2ExtraDeck.index,
-            this.player2Deck.getExtraDeck().stream().filter(card -> card != null).map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
+            this.player2Deck.getExtraDeckNonNull().map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER2)).collect(Collectors.toList())));
     }
     
     public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
@@ -660,6 +677,8 @@ public class DuelManager
         }
     }
     
+    // this is server side only
+    // first init happens here
     protected void doAction(Action action)
     {
         action.init(this.getPlayField());
@@ -857,5 +876,10 @@ public class DuelManager
     public List<DuelChatMessage> getMessages()
     {
         return this.messages;
+    }
+    
+    public Random getRandom()
+    {
+        return this.random;
     }
 }

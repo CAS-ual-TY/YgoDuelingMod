@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.duel.screen.animation.Animation;
 import net.minecraft.client.gui.widget.Widget;
@@ -41,6 +42,8 @@ public class AnimationsWidget extends Widget
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
+        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        
         if(this.visible)
         {
             for(Animation a : this.animations)

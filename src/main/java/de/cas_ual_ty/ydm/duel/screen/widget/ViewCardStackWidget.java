@@ -80,7 +80,7 @@ public class ViewCardStackWidget extends Button
     {
         if(this.cards != null && this.columns > 0)
         {
-            return Math.max(0, MathHelper.ceil(this.cards.size() / (float)this.columns) - 3);
+            return Math.max(0, MathHelper.ceil(this.cards.size() / (float)this.columns) - this.rows);
         }
         else
         {
@@ -117,6 +117,7 @@ public class ViewCardStackWidget extends Button
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
+        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
         
         if(!this.cards.isEmpty())
         {

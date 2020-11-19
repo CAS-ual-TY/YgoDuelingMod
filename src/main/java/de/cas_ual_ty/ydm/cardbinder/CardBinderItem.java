@@ -35,7 +35,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
         CardBinderCardsManager manager;
         UUID uuid;
         
-        if(itemStack.getOrCreateTag().hasUniqueId(CardBinderItem.MANAGER_UUID_KEY))
+        if(itemStack.getOrCreateTag().contains(CardBinderItem.MANAGER_UUID_KEY))
         {
             uuid = itemStack.getTag().getUniqueId(CardBinderItem.MANAGER_UUID_KEY);
         }

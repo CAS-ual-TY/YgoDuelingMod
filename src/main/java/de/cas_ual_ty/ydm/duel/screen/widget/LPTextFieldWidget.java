@@ -2,12 +2,10 @@ package de.cas_ual_ty.ydm.duel.screen.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import de.cas_ual_ty.ydm.clientutil.widget.ITooltip;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.StringTextComponent;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class LPTextFieldWidget extends TextFieldWidget
 {
@@ -81,11 +79,5 @@ public class LPTextFieldWidget extends TextFieldWidget
         {
             this.tooltip.onTooltip(this, ms, mouseX, mouseY);
         }
-    }
-    
-    @OnlyIn(Dist.CLIENT)
-    public interface ITooltip
-    {
-        void onTooltip(Widget widget, MatrixStack ms, int mouseX, int mouseY);
     }
 }

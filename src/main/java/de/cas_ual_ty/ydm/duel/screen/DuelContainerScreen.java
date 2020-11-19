@@ -170,12 +170,10 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         int y = this.guiTop + margin;
         
         int maxWidth = Math.min(160, (this.width - this.xSize) / 2 - 2 * margin);
-        int maxHeight = this.ySize;// - 2 * (20 + margin);
-        
-        int maxChatHeight = (maxHeight - 4 * (20 + margin) - 2 * margin);
+        int maxHeight = this.ySize;
         
         int chatWidth = maxWidth;
-        int chatHeight = maxChatHeight;
+        int chatHeight = (maxHeight - 4 * (buttonHeight + margin) - 2 * margin);
         
         this.initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);
     }

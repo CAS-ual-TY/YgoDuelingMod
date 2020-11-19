@@ -12,10 +12,10 @@ public abstract class Animation implements IRenderable
     public int tickTime;
     public int maxTickTime;
     
-    public Animation()
+    public Animation(int maxTickTime)
     {
         this.tickTime = 0;
-        this.maxTickTime = 16;
+        this.maxTickTime = maxTickTime;
     }
     
     public Animation setOnStart(Runnable onStart)
