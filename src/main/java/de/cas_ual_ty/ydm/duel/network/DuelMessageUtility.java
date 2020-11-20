@@ -203,7 +203,7 @@ public class DuelMessageUtility
     {
         buf.writeTextComponent(message.message);
         buf.writeTextComponent(message.playerName);
-        DuelMessageUtility.encodePlayerRole(message.playerRole, buf);
+        DuelMessageUtility.encodePlayerRole(message.sourceRole, buf);
         buf.writeBoolean(message.isAnnouncement);
     }
     

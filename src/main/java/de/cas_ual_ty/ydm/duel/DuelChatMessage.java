@@ -10,14 +10,14 @@ public class DuelChatMessage
 {
     public final ITextComponent message;
     public final ITextComponent playerName;
-    public final PlayerRole playerRole;
+    public final PlayerRole sourceRole;
     public final boolean isAnnouncement;
     
     public DuelChatMessage(ITextComponent message, ITextComponent playerName, PlayerRole playerRole, boolean isAnnouncement)
     {
         this.message = message;
         this.playerName = playerName;
-        this.playerRole = playerRole;
+        this.sourceRole = playerRole;
         this.isAnnouncement = isAnnouncement;
     }
     
@@ -32,30 +32,44 @@ public class DuelChatMessage
     {
         IFormattableTextComponent playerName = this.playerName.deepCopy();
         
-        ZoneOwner owner = ZoneOwner.fromPlayerRole(this.playerRole);
         
-        if(owner.isPlayer())
+        
+        if(ZoneOwner.fromPlayerRole(viewerRole).isPlayer())
         {
-            if(this.playerRole == viewerRole)
+            // viewer is a player
+            
+            if(this.sourceRole == viewerRole)
             {
+                // viewer is a player
+                // source = viewer
+                // so viewer is the player who sent the message
+                // blue
+                
                 playerName.modifyStyle((style) -> style.applyFormatting(friendlyColor));
             }
-            else if(owner == ZoneOwner.NONE)
+            else if(ZoneOwner.fromPlayerRole(this.sourceRole) == ZoneOwner.NONE)
             {
+                // viewer is a player
+                // message is not from a player
+                // white
+                
                 playerName.modifyStyle((style) -> style.applyFormatting(neutralColor));
             }
             else
             {
+                // now it can only be opponent
+                // red
+                
                 playerName.modifyStyle((style) -> style.applyFormatting(opponentColor));
             }
         }
         else
         {
-            if(this.playerRole == PlayerRole.PLAYER1)
+            if(this.sourceRole == PlayerRole.PLAYER1)
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(friendlyColor));
             }
-            else if(this.playerRole == PlayerRole.PLAYER2)
+            else if(this.sourceRole == PlayerRole.PLAYER2)
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(opponentColor));
             }

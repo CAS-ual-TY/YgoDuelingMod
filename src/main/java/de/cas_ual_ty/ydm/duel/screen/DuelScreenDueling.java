@@ -883,7 +883,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     {
         List<IReorderingProcessor> list = new LinkedList<>();
         
-        list.add(new StringTextComponent(String.valueOf(this.getPlayField().getLifePoints(this.getView()))).func_241878_f());
+        list.add(new StringTextComponent(String.valueOf(this.getPlayField().getLifePoints(owner))).func_241878_f());
         
         PlayerEntity player = this.getDuelManager().getPlayer(owner);
         
