@@ -77,7 +77,7 @@ public enum ZoneOwner
         }
         else
         {
-            return null;
+            return NONE;
         }
     }
 }

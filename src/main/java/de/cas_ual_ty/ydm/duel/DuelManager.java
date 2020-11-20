@@ -34,6 +34,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -631,6 +633,7 @@ public class DuelManager
     
     protected void startDuel()
     {
+        this.sendInfoMessageToAll(new TranslationTextComponent("container.ydm.duel.info_start"));
         this.populatePlayField();
         this.setDuelStateAndUpdate(DuelState.DUELING);
     }
@@ -688,6 +691,20 @@ public class DuelManager
         }
         this.actions.add(action);
         action.doAction();
+    }
+    
+    public IFormattableTextComponent getInfoNameBold()
+    {
+        return new TranslationTextComponent("container.ydm.duel.info_name")
+            .modifyStyle((s) -> s.applyFormatting(TextFormatting.BOLD));
+    }
+    
+    public void sendInfoMessageToAll(ITextComponent text)
+    {
+        this.sendMessageToAll(new DuelChatMessage(
+            text,
+            this.getInfoNameBold(),
+            PlayerRole.JUDGE));
     }
     
     protected void doForAllPlayers(Consumer<PlayerEntity> consumer)

@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.duel;
 
+import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -25,17 +26,21 @@ public class DuelChatMessage
         this(message, playerName, playerRole, false);
     }
     
-    public ITextComponent generateStyledMessage(PlayerRole viewRole, TextFormatting friendlyColor, TextFormatting opponentColor, TextFormatting neutralColor)
+    // view role has nothing to do with the view itself
+    // flipping does not affect it
+    public ITextComponent generateStyledMessage(PlayerRole viewerRole, TextFormatting friendlyColor, TextFormatting opponentColor, TextFormatting neutralColor)
     {
         IFormattableTextComponent playerName = this.playerName.deepCopy();
         
-        if(viewRole == PlayerRole.PLAYER1 || viewRole == PlayerRole.PLAYER2)
+        ZoneOwner owner = ZoneOwner.fromPlayerRole(this.playerRole);
+        
+        if(owner.isPlayer())
         {
-            if(this.playerRole == viewRole)
+            if(this.playerRole == viewerRole)
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(friendlyColor));
             }
-            else if(this.playerRole == PlayerRole.SPECTATOR)
+            else if(owner == ZoneOwner.NONE)
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(neutralColor));
             }

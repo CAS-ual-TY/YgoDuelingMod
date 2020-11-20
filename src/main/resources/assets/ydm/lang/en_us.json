@@ -23,6 +23,8 @@
     "container.ydm.card_supply": "Card Supply",
     "container.ydm.card_supply.prev": "Prev",
     "container.ydm.card_supply.next": "Next",
+    "container.ydm.duel.info_name": "INFO",
+    "container.ydm.duel.info_start": "Duel Start! Don't forget to shuffle your Decks!",
     "container.ydm.duel.up_arrow": "▲",
     "container.ydm.duel.down_arrow": "▼",
     "container.ydm.duel.right_arrow": "▶",

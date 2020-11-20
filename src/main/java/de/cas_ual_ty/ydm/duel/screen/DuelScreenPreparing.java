@@ -69,8 +69,8 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
             
             //without x+1 its technically not centered, i dont get why :(
             int chooseWidth = this.xSize - 20;
-            this.addButton(this.prevDeckButton = new ImprovedButton(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 5 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"), (button) -> this.prevDeckClicked()));
-            this.addButton(this.nextDeckButton = new ImprovedButton(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 5 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow"), (button) -> this.nextDeckClicked()));
+            this.addButton(this.prevDeckButton = new ImprovedButton(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"), (button) -> this.prevDeckClicked()));
+            this.addButton(this.nextDeckButton = new ImprovedButton(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow"), (button) -> this.nextDeckClicked()));
             this.addButton(this.chooseDeckButton = new ImprovedButton(x - chooseWidth / 2, this.guiTop + this.ySize - 20 - 10, chooseWidth, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.choose_deck"), (button) -> this.chooseDeckClicked(), this::chooseDeckTooltip));
             
             this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
