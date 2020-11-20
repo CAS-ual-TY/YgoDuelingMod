@@ -18,6 +18,7 @@ import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
+import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.AbstractButton;
@@ -55,7 +56,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         
         int x = width / 2;
         
-        if(!this.deckChosen)
+        if(!this.deckChosen && this.getZoneOwner() != ZoneOwner.NONE)
         {
             // Faking this to make the chat smaller on the right side
             int prevXSize = this.xSize;

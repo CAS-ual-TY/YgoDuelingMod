@@ -35,6 +35,10 @@ public class DuelChatMessage
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(friendlyColor));
             }
+            else if(this.playerRole == PlayerRole.SPECTATOR)
+            {
+                playerName.modifyStyle((style) -> style.applyFormatting(neutralColor));
+            }
             else
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(opponentColor));
@@ -50,7 +54,7 @@ public class DuelChatMessage
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(opponentColor));
             }
-            else //if(this.playerRole == PlayerRole.PLAYER2)
+            else //if(this.playerRole == PlayerRole.SPECTATOR)
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(neutralColor));
             }

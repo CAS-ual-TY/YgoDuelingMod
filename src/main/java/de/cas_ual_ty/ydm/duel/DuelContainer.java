@@ -30,12 +30,19 @@ public abstract class DuelContainer extends Container
     {
         if(player.world.isRemote)
         {
-            YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestFullUpdate(this.getDuelManager().getHeader()));
+            this.requestFullUpdate();
         }
         else
         {
             this.getDuelManager().playerOpenContainer(player);
         }
+    }
+    
+    // make sure to only call this on client
+    public void requestFullUpdate()
+    {
+        this.getDuelManager().reset();
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestFullUpdate(this.getDuelManager().getHeader()));
     }
     
     @Override

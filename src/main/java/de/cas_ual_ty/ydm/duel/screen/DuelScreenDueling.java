@@ -88,6 +88,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     protected List<ZoneWidget> zoneWidgets;
     protected List<InteractionWidget> interactionWidgets;
     
+    protected Button reloadButton;
+    protected Button flipViewButton;
     protected Button offerDrawButton;
     protected Button admitDefeatButton;
     
@@ -122,6 +124,10 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.nextPhaseButton = null;
         this.phaseWidget = null;
         this.cardInfo = null;
+        this.reloadButton = null;
+        this.flipViewButton = null;
+        this.offerDrawButton = null;
+        this.admitDefeatButton = null;
     }
     
     @Override
@@ -130,6 +136,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         super.init(minecraft, width, height);
         
         ViewCardStackWidget previousViewStack = this.viewCardStackWidget;
+        
+        if(this.animationsWidget != null)
+        {
+            this.animationsWidget.forceFinish();
+        }
         
         this.initDefaultChat(width, height);
         
@@ -143,13 +154,20 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         x = (width - zoneSize) / 2;
         y = (height - zoneSize) / 2;
         
-        if(this.getZoneOwner() == ZoneOwner.PLAYER1 || this.getZoneOwner() == ZoneOwner.PLAYER2)
+        if(this.getZoneOwner() != ZoneOwner.NONE)
         {
-            this.addButton(this.offerDrawButton = new SmallTextButton(x, y, halfSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.offer_draw.abbr"), this::buttonClicked, this::buttonHovered));
-            this.addButton(this.admitDefeatButton = new SmallTextButton(x + halfSize, y, halfSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.admit_defeat.abbr"), this::buttonClicked, this::buttonHovered));
+            this.addButton(this.reloadButton = new SmallTextButton(x, y, quarterSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.reload"), this::buttonClicked, this::buttonHovered));
+            this.addButton(this.flipViewButton = new SmallTextButton(x + quarterSize, y, quarterSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.flip_view"), this::buttonClicked, this::buttonHovered));
+            this.addButton(this.offerDrawButton = new SmallTextButton(x + 2 * quarterSize, y, quarterSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.offer_draw"), this::buttonClicked, this::buttonHovered));
+            this.addButton(this.admitDefeatButton = new SmallTextButton(x + 3 * quarterSize, y, quarterSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.admit_defeat"), this::buttonClicked, this::buttonHovered));
             this.addButton(this.lifePointsWidget = new LPTextFieldWidget(this.font, x, y + 3 * quarterSize, zoneSize, quarterSize, this::lpTextFieldWidget));
             this.admitDefeatButton.active = false;
             this.offerDrawButton.active = false; //TODO remove these
+        }
+        else
+        {
+            this.addButton(this.reloadButton = new SmallTextButton(x, y, zoneSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.reload_tooltip"), this::buttonClicked, this::buttonHovered));
+            this.addButton(this.flipViewButton = new SmallTextButton(x, y + 3 * quarterSize, zoneSize, quarterSize, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.flip_view_tooltip"), this::buttonClicked, this::buttonHovered));
         }
         this.addButton(new LifePointsWidget(x, y + quarterSize, zoneSize, quarterSize,
             () -> this.getPlayField().getLifePoints(this.getView().opponent()), this.getPlayField().playFieldType.startingLifePoints, this::lpTooltipViewOpponent));
@@ -158,12 +176,21 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         // TODO do all of these properly
         x += (zoneSize + zonesMargin) * 2;
-        this.addButton(this.phaseWidget = new TextWidget(x, y, zoneSize, halfSize, () -> new StringTextComponent("DP"), this::phaseWidgetHovered));
-        this.phaseWidget.active = false;
-        this.addButton(this.prevPhaseButton = new ImprovedButton(x, y + halfSize, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.left_arrow"), this::phaseButtonClicked, this::phaseButtonHovered));
-        this.prevPhaseButton.active = false;
-        this.addButton(this.nextPhaseButton = new ImprovedButton(x + halfSize, y + halfSize, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.right_arrow"), this::phaseButtonClicked, this::phaseButtonHovered));
-        this.nextPhaseButton.active = false;
+        
+        if(this.getZoneOwner() != ZoneOwner.NONE)
+        {
+            this.addButton(this.phaseWidget = new TextWidget(x, y, zoneSize, halfSize, () -> new StringTextComponent("DP"), this::phaseWidgetHovered));
+            this.phaseWidget.active = false;
+            this.addButton(this.prevPhaseButton = new ImprovedButton(x, y + halfSize, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.left_arrow"), this::phaseButtonClicked, this::phaseButtonHovered));
+            this.prevPhaseButton.active = false;
+            this.addButton(this.nextPhaseButton = new ImprovedButton(x + halfSize, y + halfSize, halfSize, halfSize, new TranslationTextComponent("container.ydm.duel.right_arrow"), this::phaseButtonClicked, this::phaseButtonHovered));
+            this.nextPhaseButton.active = false;
+        }
+        else
+        {
+            this.addButton(this.phaseWidget = new TextWidget(x, y, zoneSize, zoneSize, () -> new StringTextComponent("DP"), this::phaseWidgetHovered));
+            this.phaseWidget.active = false;
+        }
         
         this.zoneWidgets = new ArrayList<>(this.getDuelManager().getPlayField().getZones().size());
         this.interactionWidgets.clear();
@@ -174,7 +201,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             this.addButton(widget = this.createZoneWidgetForZone(zone));
             
-            if(this.getPlayerRole() == ZoneOwner.PLAYER2.player)
+            if(this.getView() == ZoneOwner.PLAYER2)
             {
                 widget.setPositionRelativeFlipped(zone.x, zone.y, width, height);
             }
@@ -314,7 +341,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     {
         this.animationsWidget.forceFinish();
         
-        if(this.lifePointsWidget.isFocused() && !this.lifePointsWidget.isMouseOver(mouseX, mouseY))
+        if(this.lifePointsWidget != null && this.lifePointsWidget.isFocused() && !this.lifePointsWidget.isMouseOver(mouseX, mouseY))
         {
             this.lifePointsWidget.setFocused2(false);
         }
@@ -366,21 +393,32 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
     }
     
+    @Override
+    public void renderTooltip(MatrixStack ms, List<? extends IReorderingProcessor> tooltips, int mouseX, int mouseY)
+    {
+        ms.push();
+        ms.translate(0, 0, 1.5);
+        super.renderTooltip(ms, tooltips, mouseX, mouseY);
+        ms.pop();
+    }
+    
     public void flip()
     {
-        if(this.view == ZoneOwner.PLAYER1)
-        {
-            this.view = ZoneOwner.PLAYER2;
-        }
-        else
-        {
-            this.view = ZoneOwner.PLAYER1;
-        }
+        this.view = this.view.opponent();
         
+        /*//re-init anyways, this is not needed
         for(ZoneWidget w : this.zoneWidgets)
         {
             w.flip(this.width, this.height);
         }
+        */
+        
+        this.reInit();
+    }
+    
+    public void reload()
+    {
+        this.getContainer().requestFullUpdate();
     }
     
     public void resetToNormalZoneWidgets()
@@ -682,15 +720,12 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         ZoneOwner owner = this.getZoneOwner();
         
-        if(owner == ZoneOwner.NONE)
+        if(owner != ZoneOwner.NONE)
         {
-            return;
+            this.clickedZoneWidget = widget;
+            this.clickedCard = widget.hoverCard;
+            this.findAndPopulateInteractions(widget);
         }
-        
-        this.clickedZoneWidget = widget;
-        this.clickedCard = widget.hoverCard;
-        
-        this.findAndPopulateInteractions(widget);
         
         if(widget.openAdvancedZoneView())
         {
@@ -781,6 +816,16 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void buttonClicked(Widget w)
     {
+        if(w == this.reloadButton)
+        {
+            this.reload();
+        }
+        else if(w == this.flipViewButton)
+        {
+            this.flip();
+        }
+        // TODO offer draw
+        // TODO admit defeat
     }
     
     protected void parseAndSendLPChange()
@@ -895,13 +940,21 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void buttonHovered(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
-        if(w == this.offerDrawButton)
+        if(w == this.reloadButton)
         {
-            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.offer_draw"), mouseX, mouseY);
+            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.reload_tooltip"), mouseX, mouseY);
+        }
+        else if(w == this.flipViewButton)
+        {
+            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.flip_view_tooltip"), mouseX, mouseY);
+        }
+        else if(w == this.offerDrawButton)
+        {
+            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.offer_draw_tooltip"), mouseX, mouseY);
         }
         else if(w == this.admitDefeatButton)
         {
-            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.admit_defeat"), mouseX, mouseY);
+            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.admit_defeat_tooltip"), mouseX, mouseY);
         }
     }
     
