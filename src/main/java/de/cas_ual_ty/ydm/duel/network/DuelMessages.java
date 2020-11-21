@@ -115,9 +115,14 @@ public class DuelMessages
             {
                 provider.getDuelManager().playerSelectRole(rolePlayer, this.role);
             }
-            else
+            else if(rolePlayer != null)
             {
                 provider.getDuelManager().playerCloseContainer(rolePlayer);
+            }
+            else
+            {
+                // this is weird
+                // player a
             }
         }
     }

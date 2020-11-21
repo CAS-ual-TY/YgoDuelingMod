@@ -131,6 +131,11 @@ public class DuelManager
         // just call removal methods
         // they will differentiate between the game states
         
+        if(player == null)
+        {
+            return;
+        }
+        
         PlayerRole role = this.getRoleFor(player);
         
         if(role == PlayerRole.PLAYER1)
@@ -374,6 +379,11 @@ public class DuelManager
     // player selects a role, if successful send update to everyone
     public void playerSelectRole(PlayerEntity player, PlayerRole role)
     {
+        if(player == null)
+        {
+            return;
+        }
+        
         if(this.canPlayerSelectRole(player, role))
         {
             // remove previous role
