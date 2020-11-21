@@ -704,7 +704,7 @@ public class DuelManager
         this.sendMessageToAll(new DuelChatMessage(
             text,
             this.getInfoNameBold(),
-            PlayerRole.JUDGE));
+            PlayerRole.JUDGE, true));
     }
     
     protected void doForAllPlayers(Consumer<PlayerEntity> consumer)

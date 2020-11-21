@@ -154,7 +154,7 @@ public class MonsterZoneWidget extends ZoneWidget
     @Override
     public boolean openAdvancedZoneView()
     {
-        if(this.zone.getCardsAmount() <= 0)
+        if(this.zone.getCardsAmount() <= 0 || this.zone.getType().getIsSecret())
         {
             return false;
         }

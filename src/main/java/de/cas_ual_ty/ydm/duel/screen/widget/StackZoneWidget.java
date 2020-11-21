@@ -72,4 +72,10 @@ public class StackZoneWidget extends ZoneWidget
             ScreenUtil.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
         }
     }
+    
+    @Override
+    public boolean openAdvancedZoneView()
+    {
+        return !this.zone.getType().getIsSecret() && this.zone.getCardsAmount() > 0;
+    }
 }

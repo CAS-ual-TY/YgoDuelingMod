@@ -32,8 +32,6 @@ public class DuelChatMessage
     {
         IFormattableTextComponent playerName = this.playerName.deepCopy();
         
-        
-        
         if(ZoneOwner.fromPlayerRole(viewerRole).isPlayer())
         {
             // viewer is a player
@@ -65,6 +63,8 @@ public class DuelChatMessage
         }
         else
         {
+            // viewer is a spectator
+            
             if(this.sourceRole == PlayerRole.PLAYER1)
             {
                 playerName.modifyStyle((style) -> style.applyFormatting(friendlyColor));

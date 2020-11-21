@@ -145,6 +145,6 @@ public class HandZoneWidget extends ZoneWidget
     @Override
     public boolean openAdvancedZoneView()
     {
-        return this.zone.getCardsAmount() > 12;
+        return !this.zone.getType().getIsSecret() && this.zone.getCardsAmount() > 12;
     }
 }

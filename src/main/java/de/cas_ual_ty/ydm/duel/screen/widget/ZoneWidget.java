@@ -328,6 +328,6 @@ public class ZoneWidget extends Button
     
     public boolean openAdvancedZoneView()
     {
-        return !this.zone.getType().getIsSecret();
+        return false;
     }
 }
