@@ -45,6 +45,8 @@ public class ActionIcons
     public static final ActionIcon TO_GRAVEYARD = null;
     public static final ActionIcon ATTACK = null;
     public static final ActionIcon ATTACK_DIRECTLY = null;
+    public static final ActionIcon TO_EXTRA_ATK = null;
+    public static final ActionIcon TO_EXTRA_FD = null;
     
     @SubscribeEvent
     public static void registerActionIcons(RegistryEvent.Register<ActionIcon> event)
@@ -83,6 +85,8 @@ public class ActionIcons
         registry.register(ActionIcons.create("to_graveyard"));
         registry.register(ActionIcons.create("attack"));
         registry.register(ActionIcons.create("attack_directly"));
+        registry.register(ActionIcons.create("to_extra_atk"));
+        registry.register(ActionIcons.create("to_extra_fd"));
     }
     
     public static ActionIcon create(String name)

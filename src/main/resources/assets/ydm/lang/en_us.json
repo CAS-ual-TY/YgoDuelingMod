@@ -128,5 +128,7 @@
     "actionIcon.ydm.move": "Move",
     "actionIcon.ydm.to_graveyard": "To Graveyard",
     "actionIcon.ydm.attack": "Attack",
-    "actionIcon.ydm.attack_directly": "Attack Directly"
+    "actionIcon.ydm.attack_directly": "Attack Directly",
+    "actionIcon.ydm.to_extra_atk": "To Extra Zone Face Up",
+    "actionIcon.ydm.to_extra_fd": "To Extra Zone Face Down"
 }
