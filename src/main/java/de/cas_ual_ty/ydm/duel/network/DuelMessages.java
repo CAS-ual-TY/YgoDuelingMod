@@ -111,18 +111,13 @@ public class DuelMessages
         {
             PlayerEntity rolePlayer = player.world.getPlayerByUuid(this.rolePlayerId);
             
-            if(this.role != null)
+            if(this.role != null && rolePlayer != null)
             {
                 provider.getDuelManager().playerSelectRole(rolePlayer, this.role);
             }
-            else if(rolePlayer != null)
-            {
-                provider.getDuelManager().playerCloseContainer(rolePlayer);
-            }
             else
             {
-                // this is weird
-                // player a
+                provider.getDuelManager().playerCloseContainerClient(this.rolePlayerId);
             }
         }
     }

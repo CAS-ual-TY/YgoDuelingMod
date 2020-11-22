@@ -68,6 +68,7 @@ import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -105,6 +106,12 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected DuelCard cardInfo;
     
+    // need to store these seperately
+    // to make sure that we keep them
+    // in case a player leaves
+    protected IFormattableTextComponent player1Name;
+    protected IFormattableTextComponent player2Name;
+    
     public DuelScreenDueling(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
@@ -128,6 +135,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.flipViewButton = null;
         this.offerDrawButton = null;
         this.admitDefeatButton = null;
+        this.player1Name = null;
+        this.player2Name = null;
     }
     
     @Override
@@ -346,7 +355,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             this.lifePointsWidget.setFocused2(false);
         }
         
-        if(button == 1)
+        if(button == GLFW.GLFW_MOUSE_BUTTON_2)
         {
             this.resetToNormalZoneWidgets();
         }
@@ -879,17 +888,19 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     {
     }
     
-    protected void lpTooltip(ZoneOwner owner, Widget w, MatrixStack ms, int mouseX, int mouseY)
+    protected void lpTooltip(ZoneOwner owner, @Nullable IFormattableTextComponent playerName, Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
         List<IReorderingProcessor> list = new LinkedList<>();
         
         list.add(new StringTextComponent(String.valueOf(this.getPlayField().getLifePoints(owner))).func_241878_f());
         
-        PlayerEntity player = this.getDuelManager().getPlayer(owner);
-        
-        if(player != null)
+        if(playerName != null)
         {
-            list.add(player.getName().func_241878_f());
+            list.add(playerName.func_241878_f());
+        }
+        else
+        {
+            list.add(this.getUnknownPlayerName().func_241878_f());
         }
         
         this.renderTooltip(ms, list, mouseX, mouseY);
@@ -897,12 +908,12 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void lpTooltipView(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
-        this.lpTooltip(this.getView(), w, ms, mouseX, mouseY);
+        this.lpTooltip(this.getView(), this.getPlayer1Name(), w, ms, mouseX, mouseY);
     }
     
     protected void lpTooltipViewOpponent(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
-        this.lpTooltip(this.getView().opponent(), w, ms, mouseX, mouseY);
+        this.lpTooltip(this.getView().opponent(), this.getPlayer2Name(), w, ms, mouseX, mouseY);
     }
     
     protected void lpTextFieldWidget(Widget w, MatrixStack ms, int mouseX, int mouseY)
@@ -971,6 +982,95 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.viewCardStackWidget.deactivate();
         this.nameShown = null;
         this.updateButtonStatus();
+    }
+    
+    protected IFormattableTextComponent getUnknownPlayerName()
+    {
+        return new TranslationTextComponent("container.ydm.duel.unknown_player")
+            .modifyStyle((style) -> style.applyFormatting(TextFormatting.ITALIC))
+            .modifyStyle((style) -> style.applyFormatting(TextFormatting.RED));
+    }
+    
+    protected IFormattableTextComponent getPlayer1Name()
+    {
+        if(this.getDuelManager().player1 != null)
+        {
+            return (IFormattableTextComponent)this.getDuelManager().player1.getName();
+        }
+        else
+        {
+            if(!this.fetchPlayer1Name() && this.player1Name == null)
+            {
+                // we have never fetched the name and the player isnt here
+                return null;
+            }
+            else
+            {
+                return this.player1Name.modifyStyle((style) -> style.applyFormatting(TextFormatting.RED));
+            }
+        }
+    }
+    
+    protected IFormattableTextComponent getPlayer2Name()
+    {
+        if(this.getDuelManager().player2 != null)
+        {
+            return (IFormattableTextComponent)this.getDuelManager().player2.getName();
+        }
+        else
+        {
+            if(!this.fetchPlayer2Name() && this.player2Name == null)
+            {
+                // we have never fetched the name and the player isnt here
+                return null;
+            }
+            else
+            {
+                return this.player2Name.modifyStyle((style) -> style.applyFormatting(TextFormatting.RED));
+            }
+        }
+    }
+    
+    // return true if player 1 is still in the same dimension
+    protected boolean fetchPlayer1Name()
+    {
+        // TODO sync UUIDs to client, instead of setting roles only for uuid-fetchable players
+        
+        if(this.getDuelManager().player1Id == null)
+        {
+            return false;
+        }
+        
+        PlayerEntity p = this.minecraft.world.getPlayerByUuid(this.getDuelManager().player1Id);
+        if(p != null)
+        {
+            this.player1Name = (IFormattableTextComponent)p.getName();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    
+    // return true if player 2 is still in the same dimension
+    protected boolean fetchPlayer2Name()
+    {
+        if(this.getDuelManager().player2Id == null)
+        {
+            return false;
+        }
+        
+        PlayerEntity p = this.minecraft.world.getPlayerByUuid(this.getDuelManager().player2Id);
+        if(p != null)
+        {
+            this.player2Name = (IFormattableTextComponent)p.getName();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
     
     @Override

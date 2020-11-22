@@ -164,6 +164,32 @@ public class DuelManager
         }
     }
     
+    // client equivalent
+    // need a seperate method because if the player leaves the server
+    // you can not fetch it using world.get player by uuid (or some method name like that)
+    public void playerCloseContainerClient(UUID playerUUID)
+    {
+        PlayerRole role = this.getRoleFor(playerUUID);
+        
+        if(role == PlayerRole.PLAYER1)
+        {
+            this.removePlayer1();
+        }
+        else if(role == PlayerRole.PLAYER2)
+        {
+            this.removePlayer2();
+        }
+        else if(role == PlayerRole.SPECTATOR)
+        {
+            this.removeSpectator(playerUUID);
+        }
+        
+        if(this.player1 == null && this.player2 == null && this.spectators.isEmpty())
+        {
+            this.onEveryoneLeft();
+        }
+    }
+    
     protected void onEveryoneLeft()
     {
         this.reset();
@@ -183,18 +209,15 @@ public class DuelManager
         }
     }
     
-    // on client side the player can be null
-    protected void handlePlayerLeave(@Nullable PlayerEntity player, PlayerRole role)
+    protected void handlePlayerLeave(PlayerEntity player, PlayerRole role)
     {
         if(this.hasStarted())
         {
             // TODO notify players in case actual duelist left
             // spectators can always be ignored
             
-            if(this.player1 == null && this.player2 == null)
-            {
-                this.reset(); // TODO do ticking instead
-            }
+            // do not reset here
+            // this is done in onEveryoneLeft
         }
     }
     
@@ -290,6 +313,18 @@ public class DuelManager
         this.spectators.remove(player);
     }
     
+    protected void removeSpectator(UUID playerUUID)
+    {
+        for(int i = 0; i < this.spectators.size(); ++i)
+        {
+            if(this.spectators.get(i).getUniqueID().equals(playerUUID))
+            {
+                this.spectators.remove(i);
+                break;
+            }
+        }
+    }
+    
     protected void kickPlayer(PlayerEntity player)
     {
         player.closeScreen();
@@ -315,15 +350,21 @@ public class DuelManager
     @Nullable
     public PlayerRole getRoleFor(PlayerEntity player)
     {
-        if(player.getUniqueID().equals(this.player1Id))
+        return this.getRoleFor(player.getUniqueID());
+    }
+    
+    @Nullable
+    public PlayerRole getRoleFor(UUID playerUUID)
+    {
+        if(playerUUID.equals(this.player1Id))
         {
             return PlayerRole.PLAYER1;
         }
-        if(player.getUniqueID().equals(this.player2Id))
+        if(playerUUID.equals(this.player2Id))
         {
             return PlayerRole.PLAYER2;
         }
-        else if(this.spectators.contains(player))
+        else if(this.spectators.stream().anyMatch((player) -> player.getUniqueID().equals(playerUUID)))
         {
             return PlayerRole.SPECTATOR;
         }
@@ -364,11 +405,11 @@ public class DuelManager
         }
         else if(role == PlayerRole.PLAYER1)
         {
-            return this.player1Id == null;
+            return this.player1Id == null || this.player1Id.equals(player.getUniqueID());
         }
         else if(role == PlayerRole.PLAYER2)
         {
-            return this.player2Id == null;
+            return this.player2Id == null || this.player2Id.equals(player.getUniqueID());
         }
         else
         {
@@ -379,11 +420,6 @@ public class DuelManager
     // player selects a role, if successful send update to everyone
     public void playerSelectRole(PlayerEntity player, PlayerRole role)
     {
-        if(player == null)
-        {
-            return;
-        }
-        
         if(this.canPlayerSelectRole(player, role))
         {
             // remove previous role

@@ -56,13 +56,6 @@ import net.minecraftforge.registries.RegistryBuilder;
 @Mod(YDM.MOD_ID)
 public class YDM
 {
-    /*
-     * TODO
-     *   - FMLServerShutdownEvent or smth to save card binders
-     * - Randoms and Shuffling in duels!
-     * 
-     */
-    
     public static final String MOD_ID = "ydm";
     public static final String MOD_ID_UP = YDM.MOD_ID.toUpperCase();
     public static final String PROTOCOL_VERSION = "1";

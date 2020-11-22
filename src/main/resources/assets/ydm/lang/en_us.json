@@ -47,6 +47,7 @@
     "container.ydm.duel.admit_defeat": "⚐",
     "container.ydm.duel.offer_draw_tooltip": "Offer Draw",
     "container.ydm.duel.admit_defeat_tooltip": "Admit Defeat",
+    "container.ydm.duel.unknown_player": "Unknown Player",
     "item.ydm.black_deck_box": "Black Deck Box",
     "item.ydm.red_deck_box": "Red Deck Box",
     "item.ydm.green_deck_box": "Green Deck Box",
