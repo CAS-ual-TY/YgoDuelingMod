@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -158,6 +159,7 @@ public class YdmDatabase
             {
                 j = YdmIOUtil.parseJsonFile(cardFile).getAsJsonObject();
                 p = YdmUtil.buildProperties(j);
+                p.addInformation(new LinkedList<>()); // this throws in case of wrong information
                 YdmDatabase.PROPERTIES_LIST.add(p);
             }
             catch (NullPointerException e)

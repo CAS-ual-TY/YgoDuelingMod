@@ -13,12 +13,12 @@ import net.minecraft.util.text.TextFormatting;
 
 public class MonsterProperties extends Properties
 {
-    public Attribute attribute;
+    public String attribute;
     public int atk;
-    public Species species;
+    public String species;
     public MonsterType monsterType;
     public boolean isPendulum;
-    public Ability ability;
+    public String ability;
     public boolean hasEffect;
     
     // Only if isPendulum = true
@@ -76,12 +76,12 @@ public class MonsterProperties extends Properties
     
     public void readMonsterProperties(JsonObject j)
     {
-        this.attribute = Attribute.fromString(j.get(JsonKeys.ATTRIBUTE).getAsString());
+        this.attribute = j.get(JsonKeys.ATTRIBUTE).getAsString();
         this.atk = j.get(JsonKeys.ATK).getAsInt();
-        this.species = Species.fromString(j.get(JsonKeys.SPECIES).getAsString());
+        this.species = j.get(JsonKeys.SPECIES).getAsString();
         this.monsterType = MonsterType.fromString(j.get(JsonKeys.MONSTER_TYPE).getAsString());
         this.isPendulum = j.get(JsonKeys.IS_PENDULUM).getAsBoolean();
-        this.ability = Ability.fromString(j.get(JsonKeys.ABILITY).getAsString());
+        this.ability = j.get(JsonKeys.ABILITY).getAsString();
         this.hasEffect = j.get(JsonKeys.HAS_EFFECT).getAsBoolean();
         
         if(this.getIsPendulum())
@@ -94,12 +94,12 @@ public class MonsterProperties extends Properties
     
     public void writeMonsterProperties(JsonObject j)
     {
-        j.addProperty(JsonKeys.ATTRIBUTE, this.attribute.name);
+        j.addProperty(JsonKeys.ATTRIBUTE, this.attribute);
         j.addProperty(JsonKeys.ATK, this.atk);
-        j.addProperty(JsonKeys.SPECIES, this.species.name);
+        j.addProperty(JsonKeys.SPECIES, this.species);
         j.addProperty(JsonKeys.MONSTER_TYPE, this.monsterType.name);
         j.addProperty(JsonKeys.IS_PENDULUM, this.isPendulum);
-        j.addProperty(JsonKeys.ABILITY, this.ability.name);
+        j.addProperty(JsonKeys.ABILITY, this.ability);
         j.addProperty(JsonKeys.HAS_EFFECT, this.hasEffect);
         
         if(this.getIsPendulum())
@@ -210,7 +210,7 @@ public class MonsterProperties extends Properties
     
     public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getAttribute().name));
+        list.add(new StringTextComponent(this.getAttribute()));
     }
     
     public void addMonsterHeader2(List<ITextComponent> list)
@@ -220,7 +220,7 @@ public class MonsterProperties extends Properties
     
     public void addMonsterTextHeader(List<ITextComponent> list)
     {
-        IFormattableTextComponent s = new StringTextComponent(this.getSpecies().name + " / ");
+        IFormattableTextComponent s = new StringTextComponent(this.getSpecies() + " / ");
         
         if(this.getMonsterType() != null)
         {
@@ -234,7 +234,7 @@ public class MonsterProperties extends Properties
         
         if(this.getAbility() != null)
         {
-            s.appendString(this.getAbility().name + " / ");
+            s.appendString(this.getAbility() + " / ");
         }
         
         if(this.getHasEffect())
@@ -251,7 +251,7 @@ public class MonsterProperties extends Properties
     
     // --- Getters ---
     
-    public Attribute getAttribute()
+    public String getAttribute()
     {
         return this.attribute;
     }
@@ -261,7 +261,7 @@ public class MonsterProperties extends Properties
         return this.atk;
     }
     
-    public Species getSpecies()
+    public String getSpecies()
     {
         return this.species;
     }
@@ -276,7 +276,7 @@ public class MonsterProperties extends Properties
         return this.isPendulum;
     }
     
-    public Ability getAbility()
+    public String getAbility()
     {
         return this.ability;
     }

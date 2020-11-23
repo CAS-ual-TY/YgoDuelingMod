@@ -65,13 +65,13 @@ public class LevelMonsterProperties extends DefMonsterProperties
     @Override
     public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getAttribute().name + " / Level " + this.getLevel()));
+        list.add(new StringTextComponent(this.getAttribute() + " / Level " + this.getLevel()));
     }
     
     @Override
     public void addMonsterTextHeader(List<ITextComponent> list)
     {
-        IFormattableTextComponent s = new StringTextComponent(this.getSpecies().name + " / ");
+        IFormattableTextComponent s = new StringTextComponent(this.getSpecies() + " / ");
         
         if(this.getMonsterType() != null)
         {
@@ -85,7 +85,7 @@ public class LevelMonsterProperties extends DefMonsterProperties
         
         if(this.getAbility() != null)
         {
-            s.appendString(this.getAbility().name + " / ");
+            s.appendString(this.getAbility() + " / ");
         }
         
         if(this.getIsTuner())

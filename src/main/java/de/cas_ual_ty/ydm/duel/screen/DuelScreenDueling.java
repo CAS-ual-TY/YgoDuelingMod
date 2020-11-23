@@ -908,12 +908,12 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void lpTooltipView(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
-        this.lpTooltip(this.getView(), this.getPlayer1Name(), w, ms, mouseX, mouseY);
+        this.lpTooltip(this.getView(), this.getViewName(), w, ms, mouseX, mouseY);
     }
     
     protected void lpTooltipViewOpponent(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
-        this.lpTooltip(this.getView().opponent(), this.getPlayer2Name(), w, ms, mouseX, mouseY);
+        this.lpTooltip(this.getView().opponent(), this.getViewOpponentName(), w, ms, mouseX, mouseY);
     }
     
     protected void lpTextFieldWidget(Widget w, MatrixStack ms, int mouseX, int mouseY)
@@ -989,6 +989,16 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         return new TranslationTextComponent("container.ydm.duel.unknown_player")
             .modifyStyle((style) -> style.applyFormatting(TextFormatting.ITALIC))
             .modifyStyle((style) -> style.applyFormatting(TextFormatting.RED));
+    }
+    
+    protected IFormattableTextComponent getViewName()
+    {
+        return this.getView() == ZoneOwner.PLAYER1 ? this.getPlayer1Name() : this.getPlayer2Name();
+    }
+    
+    protected IFormattableTextComponent getViewOpponentName()
+    {
+        return this.getView() == ZoneOwner.PLAYER2 ? this.getPlayer2Name() : this.getPlayer1Name();
     }
     
     protected IFormattableTextComponent getPlayer1Name()
