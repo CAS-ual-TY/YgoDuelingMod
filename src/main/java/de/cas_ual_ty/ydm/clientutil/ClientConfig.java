@@ -58,13 +58,13 @@ public class ClientConfig
             .defineInRange("duelChatSize", 1D, 0.5D, 1D);
         this.moveAnimationLength = builder
             .comment("The length in ticks (20 ticks = 1 sec) for card move animations.")
-            .defineInRange("moveAnimationLength", 16, 8, 40);
+            .defineInRange("moveAnimationLength", 10, 8, 40);
         this.specialAnimationLength = builder
             .comment("The length in ticks (20 ticks = 1 sec) for special card move post-animations (eg. special summon rings).")
-            .defineInRange("specialAnimationLength", 16, 8, 40);
+            .defineInRange("specialAnimationLength", 10, 8, 40);
         this.attackAnimationLength = builder
             .comment("The length in ticks (20 ticks = 1 sec) for attack animations.")
-            .defineInRange("attackAnimationLength", 16, 8, 40);
+            .defineInRange("attackAnimationLength", 12, 8, 40);
         this.announcementAnimationLength = builder
             .comment("The length in ticks (20 ticks = 1 sec) for announcement animations (the text shown when eg. shuffling your deck).")
             .defineInRange("announcementAnimationLength", 16, 8, 40);
