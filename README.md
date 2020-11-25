@@ -7,5 +7,5 @@ The **Ygo Dueling Mod** for Minecraft aims to reflect the real life TCG experien
 ## Database Repository:
 [https://github.com/CAS-ual-TY/YDM2-DB](https://github.com/CAS-ual-TY/YDM2-DB)
 ## Credit
-Big credit goes to [https://ygoprodeck.com/](ygoprodeck.com)  for providing necessary data.  
+Big credit goes to [ygoprodeck.com](https://ygoprodeck.com/)  for providing necessary data.  
 ![ygoprodeck.com](https://i.imgur.com/ogOdaqa.png "ygoprodeck.com")   
