@@ -326,7 +326,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     public void handleAction(Action action)
     {
-        action.init(this.getDuelManager().getPlayField());
+        action.initClient(this.getDuelManager().getPlayField());
         action.doAction();
     }
     

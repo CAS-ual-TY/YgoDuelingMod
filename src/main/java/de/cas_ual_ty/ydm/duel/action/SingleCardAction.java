@@ -29,9 +29,9 @@ public abstract class SingleCardAction extends SingleZoneAction
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
-        super.init(playField);
+        super.initServer(playField);
         this.card = this.sourceZone.getCard(this.sourceCardIndex);
     }
     

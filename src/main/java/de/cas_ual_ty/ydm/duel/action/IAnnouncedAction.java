@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
+import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
@@ -8,7 +9,7 @@ public interface IAnnouncedAction
 {
     String getAnnouncementLocalKey();
     
-    default ITextComponent getAnnouncement(ITextComponent playerName)
+    default IFormattableTextComponent getAnnouncement(ITextComponent playerName)
     {
         if(this.getFieldAnnouncementZone() == null)
         {

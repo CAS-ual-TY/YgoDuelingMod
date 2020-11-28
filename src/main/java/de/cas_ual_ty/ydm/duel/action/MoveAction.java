@@ -42,9 +42,9 @@ public abstract class MoveAction extends SingleCardAction
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
-        super.init(playField);
+        super.initServer(playField);
         this.destinationZone = playField.getZone(this.destinationZoneId);
         this.sourceCardPosition = this.card.getCardPosition();
     }

@@ -17,13 +17,21 @@ public abstract class Action
         this(actionType);
     }
     
+    // not called by superclasses
     public void writeToBuf(PacketBuffer buf)
     {
         // actionType is already encoded. See DuelMessages class
     }
     
-    public void init(PlayField playField)
+    // not called by superclasses
+    public void initServer(PlayField playField)
     {
+    }
+    
+    // not called by superclasses
+    public void initClient(PlayField playField)
+    {
+        this.initServer(playField);
     }
     
     public abstract void doAction();

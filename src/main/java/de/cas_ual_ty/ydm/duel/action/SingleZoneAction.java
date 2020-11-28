@@ -24,12 +24,11 @@ public abstract class SingleZoneAction extends Action
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        super.writeToBuf(buf);
         buf.writeByte(this.sourceZoneId);
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
         this.sourceZone = playField.getZone(this.sourceZoneId);
     }

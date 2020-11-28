@@ -716,13 +716,22 @@ public class DuelManager
             return;
         }
         
-        this.doAction(action);
-        
-        if(action instanceof IAnnouncedAction)
+        try
         {
-            IAnnouncedAction a1 = (IAnnouncedAction)action;
-            ITextComponent playerName = player.getName();
-            this.logAndSendMessage(new DuelChatMessage(a1.getAnnouncement(playerName), playerName, role, true));
+            this.doAction(action);
+            
+            // if action throws, it is no announced
+            
+            if(action instanceof IAnnouncedAction)
+            {
+                IAnnouncedAction a1 = (IAnnouncedAction)action;
+                ITextComponent playerName = player.getName();
+                this.logAndSendMessage(new DuelChatMessage(a1.getAnnouncement(playerName), playerName, role, true));
+            }
+        }
+        catch (Exception e)
+        {
+            // action failed
         }
     }
     
@@ -730,13 +739,21 @@ public class DuelManager
     // first init happens here
     protected void doAction(Action action)
     {
-        action.init(this.getPlayField());
+        action.initServer(this.getPlayField());
+        action.doAction();
+        
+        // if init or doAction failed, the next lines are not executed
+        
         if(!this.isRemote)
         {
             this.sendActionToAll(action);
         }
+        this.logAction(action);
+    }
+    
+    public void logAction(Action action)
+    {
         this.actions.add(action);
-        action.doAction();
     }
     
     public IFormattableTextComponent getInfoNameBold()

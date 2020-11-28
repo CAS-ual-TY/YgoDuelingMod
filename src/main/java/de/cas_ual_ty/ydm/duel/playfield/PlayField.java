@@ -9,6 +9,9 @@ import de.cas_ual_ty.ydm.duel.DuelManager;
 
 public class PlayField
 {
+    public static final int MIN_LP = 0;
+    public static final int MAX_LP = 99999;
+    
     public final DuelManager duelManager;
     public final PlayFieldType playFieldType;
     public final List<Zone> zones;
@@ -185,11 +188,11 @@ public class PlayField
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            return (this.player1LP = Math.max(0, this.player1LP + amount));
+            return (this.player1LP = Math.min(PlayField.MAX_LP, Math.max(PlayField.MIN_LP, this.player1LP + amount)));
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            return (this.player2LP = Math.max(0, this.player2LP + amount));
+            return (this.player2LP = Math.min(PlayField.MAX_LP, Math.max(PlayField.MIN_LP, this.player2LP + amount)));
         }
         else
         {

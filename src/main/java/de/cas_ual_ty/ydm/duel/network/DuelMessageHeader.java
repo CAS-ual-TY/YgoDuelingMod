@@ -77,7 +77,7 @@ public abstract class DuelMessageHeader
             
             return DistExecutor.<IDuelManagerProvider>unsafeRunForDist(
                 () -> () -> new de.cas_ual_ty.ydm.duel.network.ClientDuelManagerProvider(dm),
-                () -> () -> new de.cas_ual_ty.ydm.duel.network.ServerDuelManagerProvider(dm));
+                () -> () -> () -> dm);
         }
     }
 }

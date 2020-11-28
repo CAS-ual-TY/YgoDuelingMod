@@ -41,7 +41,7 @@ public class LifePointsWidget extends Widget
         RenderSystem.enableDepthTest();
         
         int lp = this.lpGetter.get();
-        float relativeLP = lp / (float)this.maxLP;
+        float relativeLP = Math.min(1F, lp / (float)this.maxLP);
         
         final int margin = 1;
         int x = this.x;

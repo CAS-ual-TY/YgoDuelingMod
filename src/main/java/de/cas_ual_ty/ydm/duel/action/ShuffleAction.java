@@ -43,26 +43,23 @@ public class ShuffleAction extends SingleZoneAction implements IAnnouncedAction
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
-        super.init(playField);
-        
-        // -1 is the default, set on client side
-        // now this is sent to server
-        // first init happens here
-        // this is overritten
-        // profit
-        if(this.randomSeed == -1)
-        {
-            this.randomSeed = playField.getDuelManager().getRandom().nextLong();
-        }
+        super.initServer(playField);
+        this.randomSeed = playField.getDuelManager().getRandom().nextLong();
+    }
+    
+    @Override
+    public void initClient(PlayField playField)
+    {
+        super.initServer(playField);
     }
     
     @Override
     public void doAction()
     {
         this.before = this.sourceZone.getCardsList();
-        this.sourceZone.shuffle(new Random(this.randomSeed)); //TODO instead use random from a playfield, and synch the random seed before all actions are synched
+        this.sourceZone.shuffle(new Random(this.randomSeed));
         this.after = this.sourceZone.getCardsList();
     }
     

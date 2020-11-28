@@ -34,9 +34,9 @@ public class AttackAction extends SingleZoneAction
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
-        super.init(playField);
+        super.initServer(playField);
         this.attackedZone = playField.getZone(this.attackedZoneId);
     }
     

@@ -24,16 +24,24 @@ public class ListAction extends Action
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        super.writeToBuf(buf);
         DuelMessageUtility.encodeList(this.actions, buf, DuelMessageUtility::encodeAction);
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
         for(Action action : this.actions)
         {
-            action.init(playField);
+            action.initServer(playField);
+        }
+    }
+    
+    @Override
+    public void initClient(PlayField playField)
+    {
+        for(Action action : this.actions)
+        {
+            action.initClient(playField);
         }
     }
     

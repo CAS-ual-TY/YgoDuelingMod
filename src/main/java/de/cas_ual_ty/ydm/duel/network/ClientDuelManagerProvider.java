@@ -45,6 +45,19 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
     }
     
     @Override
+    public void handleAllActions(List<Action> actions)
+    {
+        // just do all actions without animation
+        
+        for(Action action : actions)
+        {
+            action.initClient(this.getDuelManager().getPlayField());
+            action.doAction();
+            this.getDuelManager().logAction(action);
+        }
+    }
+    
+    @Override
     public void receiveDeckSources(List<DeckSource> deckSources)
     {
         ClientDuelManagerProvider.doForScreen((screen) -> screen.populateDeckSources(deckSources));

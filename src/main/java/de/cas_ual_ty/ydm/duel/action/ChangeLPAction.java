@@ -34,15 +34,13 @@ public class ChangeLPAction extends Action implements IAnnouncedAction
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        super.writeToBuf(buf);
         buf.writeInt(this.changeAmount);
         DuelMessageUtility.encodeZoneOwner(this.owner, buf);
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
-        super.init(playField);
         this.playField = playField;
         this.prevLP = this.playField.getLifePoints(this.owner);
     }
@@ -73,7 +71,7 @@ public class ChangeLPAction extends Action implements IAnnouncedAction
     }
     
     @Override
-    public ITextComponent getAnnouncement(ITextComponent playerName)
+    public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
     {
         IFormattableTextComponent t = new StringTextComponent(String.valueOf(this.trueChange));
         

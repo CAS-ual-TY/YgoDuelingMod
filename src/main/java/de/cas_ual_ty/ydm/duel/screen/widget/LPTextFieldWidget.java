@@ -15,8 +15,7 @@ public class LPTextFieldWidget extends TextFieldWidget
     {
         super(fontrenderer, x, y, width, height, StringTextComponent.EMPTY);
         this.tooltip = tooltip;
-        
-        //        this.setMaxStringLength(16);
+        this.setMaxStringLength(6);
         
         this.setValidator((text) ->
         {

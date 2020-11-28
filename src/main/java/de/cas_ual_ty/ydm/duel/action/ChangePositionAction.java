@@ -36,9 +36,9 @@ public class ChangePositionAction extends SingleCardAction
     }
     
     @Override
-    public void init(PlayField playField)
+    public void initServer(PlayField playField)
     {
-        super.init(playField);
+        super.initServer(playField);
         //        this.card.setPosition(this.destinationCardPosition);
         this.sourceCardPosition = this.sourceZone.getCard(this.sourceCardIndex).getCardPosition();
     }
