@@ -27,6 +27,7 @@ public class ActionTypes
     public static final ActionType CHANGE_LP = null;
     public static final ActionType COIN_FLIP = null;
     public static final ActionType DICE_ROLL = null;
+    public static final ActionType CHANGE_COUNTERS = null;
     
     @SubscribeEvent
     public static void registerActionTypes(RegistryEvent.Register<ActionType> event)
@@ -47,5 +48,6 @@ public class ActionTypes
         registry.register(new ActionType(ChangeLPAction::new).setRegistryName(YDM.MOD_ID, "change_lp"));
         registry.register(new ActionType(CoinFlipAction::new).setRegistryName(YDM.MOD_ID, "coin_flip"));
         registry.register(new ActionType(DiceRollAction::new).setRegistryName(YDM.MOD_ID, "dice_roll"));
+        registry.register(new ActionType(ChangeCountersAction::new).setRegistryName(YDM.MOD_ID, "change_counters"));
     }
 }

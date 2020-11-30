@@ -15,6 +15,7 @@ public class PlayFieldType
     public DuelManager duelManager;
     public List<ZoneEntry> zoneEntries;
     public List<InteractionEntry> interactionEntries;
+    public List<InteractionEntry> advancedInteractionEntries;
     
     public ZoneEntry player1Deck;
     public ZoneEntry player1ExtraDeck;
@@ -27,6 +28,7 @@ public class PlayFieldType
     {
         this.zoneEntries = new ArrayList<>(0);
         this.interactionEntries = new ArrayList<>(0);
+        this.advancedInteractionEntries = new ArrayList<>(0);
         this.startingLifePoints = startingLifePoints;
     }
     
@@ -147,12 +149,23 @@ public class PlayFieldType
     
     public InteractionBuilder newInteraction()
     {
-        return new InteractionBuilder();
+        return new InteractionBuilder(false);
+    }
+    
+    public InteractionBuilder newAdvancedInteraction()
+    {
+        return new InteractionBuilder(true);
     }
     
     public PlayFieldType registerInteraction(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<DuelCard> interactorCard, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
     {
         this.interactionEntries.add(new InteractionEntry(icon, interactor, interactorCard, interactee, interaction));
+        return this;
+    }
+    
+    public PlayFieldType registerAdvancedInteraction(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<DuelCard> interactorCard, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
+    {
+        this.advancedInteractionEntries.add(new InteractionEntry(icon, interactor, interactorCard, interactee, interaction));
         return this;
     }
     
@@ -188,6 +201,27 @@ public class PlayFieldType
         return list;
     }
     
+    public List<ZoneInteraction> getAdvancedActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
+    {
+        List<ZoneInteraction> list = new ArrayList<>(4);
+        
+        Action action;
+        for(InteractionEntry e : this.advancedInteractionEntries)
+        {
+            if(e.interactor.test(interactor.type) && e.interactorCard.test(interactorCard) && e.interactee.test(interactee.type))
+            {
+                action = e.interaction.createAction(player, interactor, interactorCard, interactee);
+                
+                if(action != null)
+                {
+                    list.add(new ZoneInteraction(interactor, interactorCard, interactee, action, e.icon));
+                }
+            }
+        }
+        
+        return list;
+    }
+    
     public class InteractionBuilder
     {
         private ActionIcon icon;
@@ -195,13 +229,15 @@ public class PlayFieldType
         private Predicate<DuelCard> interactorCard;
         private Predicate<ZoneType> interactee;
         private SingleZoneInteraction interaction;
+        private boolean isAdvanced;
         
-        public InteractionBuilder()
+        public InteractionBuilder(boolean isAdvanced)
         {
             this.interactor = null;
             this.interactorCard = null;
             this.interactee = null;
             this.interaction = null;
+            this.isAdvanced = isAdvanced;
         }
         
         public InteractionBuilder icon(ActionIcon icon)
@@ -470,7 +506,15 @@ public class PlayFieldType
                 return PlayFieldType.this;
             }
             
-            PlayFieldType.this.registerInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
+            if(!this.isAdvanced)
+            {
+                PlayFieldType.this.registerInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
+            }
+            else
+            {
+                PlayFieldType.this.registerAdvancedInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
+            }
+            
             return PlayFieldType.this;
         }
     }

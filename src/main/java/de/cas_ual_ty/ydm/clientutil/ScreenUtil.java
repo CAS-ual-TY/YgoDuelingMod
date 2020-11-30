@@ -77,20 +77,16 @@ public class ScreenUtil
     {
         // from ContainerScreen#render
         
-        RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);
         ScreenUtil.drawRect(ms, x, y, w, h, 1F, 1F, 1F, 0.5F);
         RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableDepthTest();
     }
     
     public static void renderDisabledRect(MatrixStack ms, float x, float y, float w, float h)
     {
-        RenderSystem.disableDepthTest();
         RenderSystem.colorMask(true, true, true, false);
         ScreenUtil.drawRect(ms, x, y, w, h, 0F, 0F, 0F, 0.5F);
         RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.enableDepthTest();
     }
     
     public static void white()

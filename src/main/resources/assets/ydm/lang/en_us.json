@@ -104,6 +104,8 @@
     "action.ydm.coin_flip.heads": "Heads",
     "action.ydm.coin_flip.tails": "Tails",
     "action.ydm.dice_roll": "Dice Roll",
+    "action.ydm.change_counters": "Change Counters",
+    "action.ydm.counters": "Counters",
     "actionIcon.ydm.to_top_of_deck_fd": "To Top of Deck",
     "actionIcon.ydm.to_bottom_of_deck_fd": "To Bottom of Deck",
     "actionIcon.ydm.to_top_of_deck_atk": "To Top of Deck Face Up",
@@ -137,5 +139,6 @@
     "actionIcon.ydm.attack": "Attack",
     "actionIcon.ydm.attack_directly": "Attack Directly",
     "actionIcon.ydm.to_extra_atk": "To Extra Zone Face Up",
-    "actionIcon.ydm.to_extra_fd": "To Extra Zone Face Down"
+    "actionIcon.ydm.to_extra_fd": "To Extra Zone Face Down",
+    "actionIcon.ydm.all_to_graveyard": "All to Graveyard"
 }

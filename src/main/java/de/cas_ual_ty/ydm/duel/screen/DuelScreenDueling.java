@@ -11,7 +11,6 @@ import org.lwjgl.glfw.GLFW;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
@@ -24,6 +23,7 @@ import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionTypes;
 import de.cas_ual_ty.ydm.duel.action.AttackAction;
+import de.cas_ual_ty.ydm.duel.action.ChangeCountersAction;
 import de.cas_ual_ty.ydm.duel.action.ChangeLPAction;
 import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
 import de.cas_ual_ty.ydm.duel.action.CoinFlipAction;
@@ -92,6 +92,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected List<ZoneWidget> zoneWidgets;
     protected List<InteractionWidget> interactionWidgets;
+    protected boolean isAdvanced;
     
     protected Button coinFlipButton;
     protected Button diceRollButton;
@@ -124,6 +125,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     {
         super(screenContainer, inv, titleIn);
         this.interactionWidgets = new ArrayList<>(); // Need to temporarily initialize with placeholder this to make sure no clear() call gets NPEd
+        this.isAdvanced = false;
+        
         this.viewCardStackWidget = null;
         this.nameShown = null;
         this.clickedZoneWidget = null;
@@ -297,7 +300,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             this.viewCards(previousViewStack.getCards(), this.nameShown, previousViewStack.getForceFaceUp());
         }
         
-        this.updateButtonStatus();
+        this.updateScrollButtonStatus();
+        this.updateLeftButtonStatus();
     }
     
     @Override
@@ -451,8 +455,17 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     public void renderTooltip(MatrixStack ms, List<? extends IReorderingProcessor> tooltips, int mouseX, int mouseY)
     {
         ms.push();
-        ms.translate(0, 0, 1.5);
+        ms.translate(0, 0, 10D);
         super.renderTooltip(ms, tooltips, mouseX, mouseY);
+        ms.pop();
+    }
+    
+    @Override
+    public void renderTooltip(MatrixStack ms, ITextComponent text, int mouseX, int mouseY)
+    {
+        ms.push();
+        ms.translate(0, 0, 10D);
+        super.renderTooltip(ms, text, mouseX, mouseY);
         ms.pop();
     }
     
@@ -486,6 +499,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
         
         this.makeChatVisible();
+        this.isAdvanced = false;
     }
     
     protected void viewZone(ZoneWidget w, boolean forceFaceUp)
@@ -505,11 +519,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.viewCardStackWidget.activate(cards, forceFaceUp);
         this.nameShown = name;
         
-        this.updateButtonStatus();
+        this.updateScrollButtonStatus();
         this.makeChatInvisible();
     }
     
-    protected void updateButtonStatus()
+    protected void updateScrollButtonStatus()
     {
         this.scrollUpButton.active = false;
         this.scrollUpButton.visible = false;
@@ -532,6 +546,32 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             {
                 this.scrollDownButton.active = true;
             }
+        }
+    }
+    
+    protected void updateLeftButtonStatus()
+    {
+        if(this.clickedZoneWidget != null &&
+            this.clickedZoneWidget.zone.getType().getCanHaveCounters() &&
+            this.clickedZoneWidget.zone.getCardsAmount() > 0 &&
+            this.clickedZoneWidget.zone.getOwner() == this.getZoneOwner())
+        {
+            this.addCounterButton.active = true;
+            this.removeCounterButton.active = true;
+        }
+        else
+        {
+            this.addCounterButton.active = false;
+            this.removeCounterButton.active = false;
+        }
+        
+        if(this.clickedZoneWidget != null)
+        {
+            this.advancedOptionsButton.active = true;
+        }
+        else
+        {
+            this.advancedOptionsButton.active = false;
         }
     }
     
@@ -618,7 +658,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                     action.destinationCardPosition)
                         .setOnStart(() ->
                         {
-                            action.removeCardFromZone();
+                            action.sourceZone.removeCardKeepCounters(action.sourceCardIndex);
                         })
                         .setOnEnd(() ->
                         {
@@ -778,16 +818,18 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             this.clickedZoneWidget = widget;
             this.clickedCard = widget.hoverCard;
-            this.findAndPopulateInteractions(widget);
+            this.findAndPopulateInteractions(widget, false);
         }
         
         if(widget.openAdvancedZoneView())
         {
             this.viewZone(widget, owner == widget.zone.getOwner() && widget.zone.type.getShowFaceDownCardsToOwner());
         }
+        
+        this.updateLeftButtonStatus();
     }
     
-    protected void findAndPopulateInteractions(ZoneWidget widget)
+    protected void findAndPopulateInteractions(ZoneWidget widget, boolean isAdvanced)
     {
         ZoneOwner owner = this.getZoneOwner();
         
@@ -797,7 +839,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         for(ZoneWidget w : this.zoneWidgets)
         {
-            w.addInteractionWidgets(owner, this.clickedZoneWidget.zone, this.clickedCard, this.getDuelManager(), this.interactionWidgets, this::interactionClicked, this::interactionTooltip);
+            w.addInteractionWidgets(owner, this.clickedZoneWidget.zone, this.clickedCard, this.getDuelManager(), this.interactionWidgets, this::interactionClicked, this::interactionTooltip, isAdvanced);
             w.active = false;
         }
         
@@ -815,7 +857,19 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             (interactorType.getIsSecret() ? this.viewCardStackWidget.active : true))
         {
             this.clickedCard = null;
-            this.findAndPopulateInteractions(this.getZoneWidget(widget.interaction.interactor));
+            this.repopulateInteractions();
+        }
+        else
+        {
+            this.resetToNormalZoneWidgets();
+        }
+    }
+    
+    protected void repopulateInteractions()
+    {
+        if(this.clickedZoneWidget != null)
+        {
+            this.findAndPopulateInteractions(this.clickedZoneWidget, this.isAdvanced);
         }
         else
         {
@@ -885,7 +939,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             }
         }
         
-        this.updateButtonStatus();
+        this.updateScrollButtonStatus();
     }
     
     protected void middleButtonClicked(Widget w)
@@ -912,14 +966,18 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             this.requestDuelAction(new DiceRollAction(ActionTypes.DICE_ROLL));
         }
-        else if(button == this.addCounterButton)
+        else if(this.getClickedZone() != null && this.clickedZoneWidget.zone.getOwner() == this.getZoneOwner() && button == this.addCounterButton)
         {
+            this.requestDuelAction(new ChangeCountersAction(ActionTypes.CHANGE_COUNTERS, this.getClickedZone().index, +1));
         }
-        else if(button == this.removeCounterButton)
+        else if(this.getClickedZone() != null && this.clickedZoneWidget.zone.getOwner() == this.getZoneOwner() && button == this.removeCounterButton)
         {
+            this.requestDuelAction(new ChangeCountersAction(ActionTypes.CHANGE_COUNTERS, this.getClickedZone().index, -1));
         }
         else if(button == this.advancedOptionsButton)
         {
+            this.isAdvanced = !this.isAdvanced;
+            this.repopulateInteractions();
         }
     }
     
@@ -929,6 +987,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void zoneTooltip(Widget w0, MatrixStack ms, int mouseX, int mouseY)
     {
+        List<IReorderingProcessor> tooltip = new LinkedList<>();
+        
         ZoneWidget w = (ZoneWidget)w0;
         
         IFormattableTextComponent t = new StringTextComponent("").append(w.getMessage());
@@ -938,7 +998,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             t.appendString(" (" + w.zone.getCardsAmount() + ")");
         }
         
-        this.renderTooltip(ms, t, mouseX, mouseY);
+        tooltip.add(t.func_241878_f());
+        
+        if(w.zone.getType().getCanHaveCounters() && w.zone.getCounters() > 0)
+        {
+            tooltip.add(new TranslationTextComponent("action.ydm.counters").appendString(": " + w.zone.getCounters()).func_241878_f());
+        }
+        
+        this.renderTooltip(ms, tooltip, mouseX, mouseY);
     }
     
     protected void interactionTooltip(Widget w, MatrixStack ms, int mouseX, int mouseY)
@@ -1067,7 +1134,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.clickedCard = null;
         this.viewCardStackWidget.deactivate();
         this.nameShown = null;
-        this.updateButtonStatus();
+        this.updateScrollButtonStatus();
+        this.updateLeftButtonStatus();
     }
     
     protected IFormattableTextComponent getUnknownPlayerName()
@@ -1195,15 +1263,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     public static void renderSelectedRect(MatrixStack ms, float x, float y, float w, float h)
     {
-        RenderSystem.disableDepthTest();
         ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 0, 0, 1F, 1F);
-        RenderSystem.enableDepthTest();
     }
     
     public static void renderEnemySelectedRect(MatrixStack ms, float x, float y, float w, float h)
     {
-        RenderSystem.disableDepthTest();
         ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 1F, 0, 0, 1F);
-        RenderSystem.enableDepthTest();
     }
 }

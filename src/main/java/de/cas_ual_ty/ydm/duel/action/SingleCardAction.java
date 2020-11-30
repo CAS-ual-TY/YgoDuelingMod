@@ -37,6 +37,8 @@ public abstract class SingleCardAction extends SingleZoneAction
     
     public void removeCardFromZone()
     {
+        // dont use index here
+        // zone might have changed, index might catch different card
         this.sourceZone.removeCard(this.card);
     }
     

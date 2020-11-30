@@ -135,6 +135,11 @@ public class PlayField
         return this.playFieldType.getActionsFor(player, interactor, interactorCard, interactee);
     }
     
+    public List<ZoneInteraction> getAdvancedActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
+    {
+        return this.playFieldType.getAdvancedActionsFor(player, interactor, interactorCard, interactee);
+    }
+    
     public Zone getReplacementZoneForCard(Zone zone, DuelCard card)
     {
         /*

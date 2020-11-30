@@ -29,6 +29,8 @@ public class Zone
     @Nullable
     public CardPosition defaultCardPosition;
     
+    public int counters;
+    
     public Zone(PlayField playField, ZoneType type, byte index, ZoneOwner owner, int x, int y, int width, int height)
     {
         this.playField = playField;
@@ -42,6 +44,7 @@ public class Zone
         this.isOwnerTemporary = !this.hasOwner();
         this.cardsList = new ArrayList<>(0);
         this.defaultCardPosition = this.type.defaultCardPosition;
+        this.counters = 0;
     }
     
     public boolean isOwner(PlayerRole player)
@@ -116,17 +119,36 @@ public class Zone
     
     public boolean removeCard(DuelCard card)
     {
-        return this.getCardsList().remove(card);
+        boolean b = this.getCardsList().remove(card);
+        this.onCardsRemoval();
+        return b;
     }
     
     public DuelCard removeCard(int index)
     {
+        DuelCard c = this.removeCardKeepCounters(index);
+        this.onCardsRemoval();
+        return c;
+    }
+    
+    public DuelCard removeCardKeepCounters(int index)
+    {
+        Thread.currentThread();
+        Thread.dumpStack();
         return this.getCardsList().remove(index);
     }
     
     public DuelCard removeTopCard()
     {
         return this.removeCard(0);
+    }
+    
+    protected void onCardsRemoval()
+    {
+        if(this.getCardsAmount() <= 0)
+        {
+            this.removeAllCounters();
+        }
     }
     
     public int getCardsAmount()
@@ -188,5 +210,25 @@ public class Zone
         {
             this.defaultCardPosition = this.defaultCardPosition.flip();
         }
+    }
+    
+    public int getCounters()
+    {
+        return this.counters;
+    }
+    
+    public void setCounters(int counters)
+    {
+        this.counters = counters;
+    }
+    
+    public void changeCounters(int change)
+    {
+        this.counters = Math.max(0, Math.min(99, this.counters + change));
+    }
+    
+    public void removeAllCounters()
+    {
+        this.counters = 0;
     }
 }

@@ -704,6 +704,11 @@ public class DuelManager
         return this.getPlayField().getActionsFor(player, interactor, interactorCard, interactee);
     }
     
+    public List<ZoneInteraction> getAdvancedActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
+    {
+        return this.getPlayField().getAdvancedActionsFor(player, interactor, interactorCard, interactee);
+    }
+    
     public void receiveActionFrom(PlayerEntity player, Action action)
     {
         this.receiveActionFrom(player, this.getRoleFor(player), action);

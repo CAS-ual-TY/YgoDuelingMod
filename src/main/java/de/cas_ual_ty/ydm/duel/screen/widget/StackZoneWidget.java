@@ -18,6 +18,8 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class StackZoneWidget extends ZoneWidget
 {
+    // this does not render counters
+    
     public StackZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
     {
         super(zone, context, width, height, title, onPress, onTooltip);
@@ -48,7 +50,7 @@ public class StackZoneWidget extends ZoneWidget
             // see font renderer, top static Vector3f
             // white is translated in front by that
             ms.push();
-            ms.translate(0, 0, -0.03F);
+            ms.translate(0, 0, 0.03F);
             AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent(String.valueOf(this.zone.getCardsAmount())),
                 this.x + this.width / 2, this.y + this.height / 2 - fontrenderer.FONT_HEIGHT / 2,
                 16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);

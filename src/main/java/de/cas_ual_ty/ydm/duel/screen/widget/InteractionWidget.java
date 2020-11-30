@@ -11,8 +11,6 @@ import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.duel.action.ActionIcon;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneInteraction;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
 
@@ -38,6 +36,9 @@ public class InteractionWidget extends Button
     @Override
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
+        ms.push();
+        ms.translate(0, 0, 5);
+        
         ActionIcon icon = this.interaction.icon;
         
         int iconWidth = icon.iconWidth;
@@ -55,9 +56,6 @@ public class InteractionWidget extends Button
             iconWidth = this.width;
         }
         
-        Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
-        
         ScreenUtil.white();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -66,13 +64,12 @@ public class InteractionWidget extends Button
         ClientProxy.getMinecraft().getTextureManager().bindTexture(icon.sourceFile);
         YdmBlitUtil.blit(ms, this.x + (this.width - iconWidth) / 2, this.y + (this.height - iconHeight) / 2, iconWidth, iconHeight, icon.iconX, icon.iconY, icon.iconWidth, icon.iconHeight, icon.fileSize, icon.fileSize);
         
-        //        int j = this.getFGColor();
-        //        AbstractGui.drawCenteredString(ms, fontrenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
-        
         if(this.isHovered() && this.active)
         {
             ScreenUtil.renderHoverRect(ms, this.x, this.y, this.width, this.height);
             this.renderToolTip(ms, mouseX, mouseY);
         }
+        
+        ms.pop();
     }
 }

@@ -15,6 +15,7 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
     private boolean isSecret;
     private boolean showFaceDownCardsToOwner;
     private boolean keepFocusedAfterInteraction;
+    private boolean canHaveCounters;
     
     @Nullable
     public CardPosition defaultCardPosition;
@@ -28,6 +29,7 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
         this.isSecret = false;
         this.showFaceDownCardsToOwner = false;
         this.keepFocusedAfterInteraction = false;
+        this.canHaveCounters = false;
         
         this.defaultCardPosition = null;
         
@@ -78,6 +80,12 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
         return this;
     }
     
+    public ZoneType canHaveCounters()
+    {
+        this.canHaveCounters = true;
+        return this;
+    }
+    
     // change the default card position when
     public ZoneType defaultCardPosition(CardPosition defaultCardPosition)
     {
@@ -115,6 +123,11 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
     public boolean getShowFaceDownCardsToOwner()
     {
         return this.showFaceDownCardsToOwner;
+    }
+    
+    public boolean getCanHaveCounters()
+    {
+        return this.canHaveCounters;
     }
     
     @Nullable

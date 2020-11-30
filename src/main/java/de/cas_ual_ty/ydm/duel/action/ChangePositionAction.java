@@ -39,7 +39,6 @@ public class ChangePositionAction extends SingleCardAction
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        //        this.card.setPosition(this.destinationCardPosition);
         this.sourceCardPosition = this.sourceZone.getCard(this.sourceCardIndex).getCardPosition();
     }
     
@@ -47,13 +46,11 @@ public class ChangePositionAction extends SingleCardAction
     public void doAction()
     {
         this.card.setPosition(this.destinationCardPosition);
-        //        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.destinationCardPosition);
     }
     
     @Override
     public void undoAction()
     {
         this.card.setPosition(this.sourceCardPosition);
-        //        this.sourceZone.getCard(this.sourceCardIndex).setPosition(this.sourceCardPosition);
     }
 }

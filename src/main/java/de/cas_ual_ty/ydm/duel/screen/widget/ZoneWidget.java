@@ -17,8 +17,13 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneInteraction;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.AbstractGui;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
 public class ZoneWidget extends Button
@@ -99,6 +104,9 @@ public class ZoneWidget extends Button
     @Override
     public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
+        Minecraft minecraft = Minecraft.getInstance();
+        FontRenderer fontrenderer = minecraft.fontRenderer;
+        
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
@@ -110,6 +118,20 @@ public class ZoneWidget extends Button
         }
         
         this.hoverCard = this.renderCards(ms, mouseX, mouseY);
+        
+        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        
+        if(this.zone.type.getCanHaveCounters() && this.zone.getCounters() > 0)
+        {
+            // see font renderer, top static Vector3f
+            // white is translated in front by that
+            ms.push();
+            ms.translate(0, 0, 0.03F);
+            AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent("(" + this.zone.getCounters() + ")"),
+                this.x + this.width / 2, this.y + this.height / 2 - fontrenderer.FONT_HEIGHT / 2,
+                16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
+            ms.pop();
+        }
         
         if(this.active)
         {
@@ -220,9 +242,18 @@ public class ZoneWidget extends Button
         }
     }
     
-    public void addInteractionWidgets(ZoneOwner player, Zone interactor, DuelCard interactorCard, DuelManager m, List<InteractionWidget> list, Consumer<InteractionWidget> onPress, ITooltip onTooltip)
+    public void addInteractionWidgets(ZoneOwner player, Zone interactor, DuelCard interactorCard, DuelManager m, List<InteractionWidget> list, Consumer<InteractionWidget> onPress, ITooltip onTooltip, boolean isAdvanced)
     {
-        List<ZoneInteraction> interactions = m.getActionsFor(player, interactor, interactorCard, this.zone);
+        List<ZoneInteraction> interactions;
+        
+        if(!isAdvanced)
+        {
+            interactions = m.getActionsFor(player, interactor, interactorCard, this.zone);
+        }
+        else
+        {
+            interactions = m.getAdvancedActionsFor(player, interactor, interactorCard, this.zone);
+        }
         
         if(interactions.size() == 0)
         {
