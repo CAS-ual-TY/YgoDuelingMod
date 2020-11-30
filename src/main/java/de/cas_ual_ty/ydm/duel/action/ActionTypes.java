@@ -29,7 +29,7 @@ public class ActionTypes
     public static final ActionType DICE_ROLL = null;
     public static final ActionType CHANGE_COUNTERS = null;
     public static final ActionType CREATE_TOKEN = null;
-    public static final ActionType DESTROY_TOKEN = null;
+    public static final ActionType REMOVE_TOKEN = null;
     
     @SubscribeEvent
     public static void registerActionTypes(RegistryEvent.Register<ActionType> event)
@@ -52,6 +52,6 @@ public class ActionTypes
         registry.register(new ActionType(DiceRollAction::new).setRegistryName(YDM.MOD_ID, "dice_roll"));
         registry.register(new ActionType(ChangeCountersAction::new).setRegistryName(YDM.MOD_ID, "change_counters"));
         registry.register(new ActionType(CreateTokenAction::new).setRegistryName(YDM.MOD_ID, "create_token"));
-        registry.register(new ActionType(DestroyTokenAction::new).setRegistryName(YDM.MOD_ID, "destroy_token"));
+        registry.register(new ActionType(RemoveTokenAction::new).setRegistryName(YDM.MOD_ID, "remove_token"));
     }
 }

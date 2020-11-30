@@ -6,22 +6,22 @@ import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.network.PacketBuffer;
 
-public class DestroyTokenAction extends DualZoneAction
+public class RemoveTokenAction extends DualZoneAction
 {
     public ZoneOwner player;
     
-    public DestroyTokenAction(ActionType actionType, byte zoneId, short cardIndex, byte destinationZoneId, ZoneOwner player)
+    public RemoveTokenAction(ActionType actionType, byte zoneId, short cardIndex, byte destinationZoneId, ZoneOwner player)
     {
         super(actionType, zoneId, cardIndex, destinationZoneId);
         this.player = player;
     }
     
-    public DestroyTokenAction(ActionType actionType, Zone sourceZone, DuelCard card, Zone destinationZone, ZoneOwner player)
+    public RemoveTokenAction(ActionType actionType, Zone sourceZone, DuelCard card, Zone destinationZone, ZoneOwner player)
     {
         this(actionType, sourceZone.index, sourceZone.getCardIndexShort(card), destinationZone.index, player);
     }
     
-    public DestroyTokenAction(ActionType actionType, PacketBuffer buf)
+    public RemoveTokenAction(ActionType actionType, PacketBuffer buf)
     {
         this(actionType, buf.readByte(), buf.readShort(), buf.readByte(), DuelMessageUtility.decodeZoneOwner(buf));
     }

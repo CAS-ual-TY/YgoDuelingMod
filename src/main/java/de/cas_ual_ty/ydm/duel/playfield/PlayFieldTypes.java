@@ -13,10 +13,10 @@ import de.cas_ual_ty.ydm.duel.action.ActionTypes;
 import de.cas_ual_ty.ydm.duel.action.AttackAction;
 import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
 import de.cas_ual_ty.ydm.duel.action.CreateTokenAction;
-import de.cas_ual_ty.ydm.duel.action.DestroyTokenAction;
 import de.cas_ual_ty.ydm.duel.action.ListAction;
 import de.cas_ual_ty.ydm.duel.action.MoveBottomAction;
 import de.cas_ual_ty.ydm.duel.action.MoveTopAction;
+import de.cas_ual_ty.ydm.duel.action.RemoveTokenAction;
 import de.cas_ual_ty.ydm.duel.action.ShowCardAction;
 import de.cas_ual_ty.ydm.duel.action.ShowZoneAction;
 import de.cas_ual_ty.ydm.duel.action.ShuffleAction;
@@ -79,10 +79,11 @@ public class PlayFieldTypes
         .newInteraction().icon(ActionIcons.ATTACK_DIRECTLY).interactorIncluded(PlayFieldTypes.getAllMonsterZones()).interactorCardAny().interacteeEquals(ZoneTypes.HAND).interaction((player, interactor, card, interactee) -> new AttackAction(ActionTypes.ATTACK, interactor, interactee)).playerAndInteractorSameOwner().interactorAndInteracteeNotSameOwner().interactorNonEmpty().addInteraction()
         .newInteraction().icon(ActionIcons.TO_EXTRA_ATK).interactorUnequals(ZoneTypes.EXTRA).interactorCardNotNullNoToken().interacteeEquals(ZoneTypes.EXTRA).interaction((player, interactor, card, interactee) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, interactor, card, interactee, CardPosition.ATK, player)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().addInteraction()
         .newInteraction().icon(ActionIcons.TO_EXTRA_FD).interactorUnequals(ZoneTypes.EXTRA).interactorCardNotNullNoToken().interacteeEquals(ZoneTypes.EXTRA).interaction((player, interactor, card, interactee) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, interactor, card, interactee, CardPosition.FD, player)).playerAndInteractorSameOwner().interactorAndInteracteeSameOwner().addInteraction()
-        .newAdvancedInteraction().icon(ActionIcons.ALL_TO_GRAVEYARD).interactorIncluded(ImmutableList.of(ZoneTypes.MONSTER, ZoneTypes.EXTRA_MONSTER_LEFT, ZoneTypes.EXTRA_MONSTER_RIGHT, ZoneTypes.EXTRA, ZoneTypes.HAND)).interactorCardAny().interacteeEquals(ZoneTypes.GRAVEYARD).interaction((player, interactor, card, interactee) -> PlayFieldTypes.doForAllCardsInZone(ActionTypes.LIST, interactor, (c) -> new MoveTopAction(ActionTypes.MOVE_ON_TOP, interactor, c, interactee, CardPosition.ATK, player))).playerAndInteractorSameOwner().interactorNonEmptyNoTokens().addInteraction()
         .newAdvancedInteraction().icon(ActionIcons.SPECIAL_SUMMON_TOKEN_ATK).interactorIncluded(PlayFieldTypes.getAllFieldZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllMonsterZones()).interaction((player, interactor, card, interactee) -> new CreateTokenAction(ActionTypes.CREATE_TOKEN, interactor, card, interactee, CardPosition.ATK, player)).playerAndInteractorSameOwner().interacteeEmpty().addInteraction()
         .newAdvancedInteraction().icon(ActionIcons.SPECIAL_SUMMON_TOKEN_DEF).interactorIncluded(PlayFieldTypes.getAllFieldZones()).interactorCardNotNull().interacteeIncluded(PlayFieldTypes.getAllMonsterZones()).interaction((player, interactor, card, interactee) -> new CreateTokenAction(ActionTypes.CREATE_TOKEN, interactor, card, interactee, CardPosition.DEF, player)).playerAndInteractorSameOwner().interacteeEmpty().addInteraction()
-        .newInteraction().icon(ActionIcons.TO_GRAVEYARD).interactorUnequals(ZoneTypes.GRAVEYARD).interactorCardToken().interacteeEquals(ZoneTypes.GRAVEYARD).interaction((player, interactor, card, interactee) -> new DestroyTokenAction(ActionTypes.DESTROY_TOKEN, interactor, card, interactee, player)).playerAndInteractorSameOwner().addInteraction();
+        .newInteraction().icon(ActionIcons.REMOVE_TOKEN_ATK).interactorIncluded(PlayFieldTypes.getAllFieldZones()).interactorCardToken().interacteeIncluded(PlayFieldTypes.getAllFieldZones()).interaction((player, interactor, card, interactee) -> new RemoveTokenAction(ActionTypes.REMOVE_TOKEN, interactor, card, interactee, player)).playerAndInteractorSameOwner().interactorEqualsInteractee().cardInPosition(CardPosition.ATK).addInteraction()
+        .newInteraction().icon(ActionIcons.REMOVE_TOKEN_DEF).interactorIncluded(PlayFieldTypes.getAllFieldZones()).interactorCardToken().interacteeIncluded(PlayFieldTypes.getAllFieldZones()).interaction((player, interactor, card, interactee) -> new RemoveTokenAction(ActionTypes.REMOVE_TOKEN, interactor, card, interactee, player)).playerAndInteractorSameOwner().interactorEqualsInteractee().cardInPosition(CardPosition.DEF).addInteraction();
+    //TODO advanced interaction: moved all to GY/banished
     
     public static Action doForAllCardsInZone(ActionType listActionType, Zone sourceZone, Function<DuelCard, Action> consumer)
     {

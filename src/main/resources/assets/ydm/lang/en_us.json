@@ -50,6 +50,7 @@
     "container.ydm.duel.offer_draw": "Offer Draw",
     "container.ydm.duel.admit_defeat": "Admit Defeat",
     "container.ydm.duel.unknown_player": "Unknown Player",
+    "container.ydm.duel.counters": "Counters",
     "item.ydm.black_deck_box": "Black Deck Box",
     "item.ydm.red_deck_box": "Red Deck Box",
     "item.ydm.green_deck_box": "Green Deck Box",
@@ -105,7 +106,8 @@
     "action.ydm.coin_flip.tails": "Tails",
     "action.ydm.dice_roll": "Dice Roll",
     "action.ydm.change_counters": "Change Counters",
-    "action.ydm.counters": "Counters",
+    "action.ydm.create_token": "Create Token",
+    "action.ydm.remove_token": "Remove Token",
     "actionIcon.ydm.to_top_of_deck_fd": "To Top of Deck",
     "actionIcon.ydm.to_bottom_of_deck_fd": "To Bottom of Deck",
     "actionIcon.ydm.to_top_of_deck_atk": "To Top of Deck Face Up",
@@ -141,6 +143,8 @@
     "actionIcon.ydm.to_extra_atk": "To Extra Zone Face Up",
     "actionIcon.ydm.to_extra_fd": "To Extra Zone Face Down",
     "actionIcon.ydm.all_to_graveyard": "All to Graveyard",
-    "actionIcon.ydm.special_summon_overlay_atk": "Special Summon Token ATK",
-    "actionIcon.ydm.special_summon_overlay_def": "Special Summon Token DEF"
+    "actionIcon.ydm.special_summon_token_atk": "Special Summon Token ATK",
+    "actionIcon.ydm.special_summon_token_def": "Special Summon Token DEF",
+    "actionIcon.ydm.remove_token_atk": "Remove Token",
+    "actionIcon.ydm.remove_token_def": "Remove Token"
 }

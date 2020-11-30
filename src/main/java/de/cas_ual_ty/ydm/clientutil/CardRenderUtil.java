@@ -41,6 +41,11 @@ public class CardRenderUtil
     
     public static void renderCardInfo(MatrixStack ms, CardHolder card, int width)
     {
+        CardRenderUtil.renderCardInfo(ms, card, false, width);
+    }
+    
+    public static void renderCardInfo(MatrixStack ms, CardHolder card, boolean token, int width)
+    {
         if(card == null || card.getCard() == null)
         {
             return;
@@ -69,6 +74,12 @@ public class CardRenderUtil
             
             CardRenderUtil.bindInfoResourceLocation(card);
             YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
+            
+            if(token)
+            {
+                ClientProxy.getMinecraft().textureManager.bindTexture(CardRenderUtil.getInfoTokenOverlay());
+                YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
+            }
         }
         
         // need to multiply x2 because we are scaling the text to x0.5

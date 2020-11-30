@@ -27,11 +27,13 @@ import de.cas_ual_ty.ydm.duel.action.ChangeCountersAction;
 import de.cas_ual_ty.ydm.duel.action.ChangeLPAction;
 import de.cas_ual_ty.ydm.duel.action.ChangePositionAction;
 import de.cas_ual_ty.ydm.duel.action.CoinFlipAction;
+import de.cas_ual_ty.ydm.duel.action.CreateTokenAction;
 import de.cas_ual_ty.ydm.duel.action.DiceRollAction;
 import de.cas_ual_ty.ydm.duel.action.IAnnouncedAction;
 import de.cas_ual_ty.ydm.duel.action.ListAction;
 import de.cas_ual_ty.ydm.duel.action.MoveAction;
 import de.cas_ual_ty.ydm.duel.action.MoveTopAction;
+import de.cas_ual_ty.ydm.duel.action.RemoveTokenAction;
 import de.cas_ual_ty.ydm.duel.action.ShowCardAction;
 import de.cas_ual_ty.ydm.duel.action.ShowZoneAction;
 import de.cas_ual_ty.ydm.duel.action.ShuffleAction;
@@ -48,8 +50,10 @@ import de.cas_ual_ty.ydm.duel.screen.animation.AttackAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.MoveAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.ParallelListAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.QueueAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.RemoveTokenAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.SpecialSummonAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.SpecialSummonOverlayAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.SpecialSummonTokenAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.TextAnimation;
 import de.cas_ual_ty.ydm.duel.screen.widget.AnimationsWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.HandZoneWidget;
@@ -323,7 +327,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         this.addButton(this.cardStackNameWidget = new TextWidget(x, y, w, buttonHeight, this::getShownZoneName));
         y += offset;
         
-        this.addButton(this.scrollUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::scrollButtonClicked));
+        this.addButton(this.scrollUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::scrollButtonClicked, this::scrollButtonHovered));
         y += offset;
         
         int columns = chatWidth / cardsSize;
@@ -332,7 +336,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             .setRowsAndColumns(cardsSize, rows, columns));
         y += chatHeight + margin;
         
-        this.addButton(this.scrollDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::scrollButtonClicked));
+        this.addButton(this.scrollDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::scrollButtonClicked, this::scrollButtonHovered));
         y += offset;
     }
     
@@ -385,7 +389,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         if(this.cardInfo != null)
         {
-            CardRenderUtil.renderCardInfo(ms, this.cardInfo.getCardHolder(), (this.width - this.xSize) / 2);
+            CardRenderUtil.renderCardInfo(ms, this.cardInfo.getCardHolder(), this.cardInfo.getIsToken(), (this.width - this.xSize) / 2);
         }
     }
     
@@ -449,24 +453,6 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             return super.keyPressed(keyCode, scanCode, modifiers);
         }
-    }
-    
-    @Override
-    public void renderTooltip(MatrixStack ms, List<? extends IReorderingProcessor> tooltips, int mouseX, int mouseY)
-    {
-        ms.push();
-        ms.translate(0, 0, 10D);
-        super.renderTooltip(ms, tooltips, mouseX, mouseY);
-        ms.pop();
-    }
-    
-    @Override
-    public void renderTooltip(MatrixStack ms, ITextComponent text, int mouseX, int mouseY)
-    {
-        ms.push();
-        ms.translate(0, 0, 10D);
-        super.renderTooltip(ms, text, mouseX, mouseY);
-        ms.pop();
     }
     
     public void flip()
@@ -694,7 +680,9 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                     queue.add(listAnimation);
                     
                     MoveTopAction moveAction = (MoveTopAction)action.actions.get(action.actions.size() - 1);
+                    
                     ZoneWidget w = this.getZoneWidget(moveAction.destinationZone);
+                    
                     int size = Math.max(w.getWidth(), w.getHeightRealms());
                     queue.add(new SpecialSummonOverlayAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2));
                     
@@ -712,6 +700,26 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             AttackAction action = (AttackAction)action0;
             
             return new AttackAnimation(this.getView(), this.getZoneWidget(action.sourceZone), this.getZoneWidget(action.attackedZone));
+        }
+        else if(action0 instanceof CreateTokenAction)
+        {
+            CreateTokenAction action = (CreateTokenAction)action0;
+            
+            ZoneWidget w = this.getZoneWidget(action.destinationZone);
+            
+            int size = Math.max(w.getWidth(), w.getHeightRealms());
+            return new SpecialSummonTokenAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2)
+                .setOnStart(() -> action.doAction());
+        }
+        else if(action0 instanceof RemoveTokenAction)
+        {
+            RemoveTokenAction action = (RemoveTokenAction)action0;
+            
+            ZoneWidget w = this.getZoneWidget(action.destinationZone);
+            
+            int size = Math.max(w.getWidth(), w.getHeightRealms());
+            return new RemoveTokenAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2)
+                .setOnEnd(() -> action.doAction());
         }
         else if(action0 instanceof IAnnouncedAction)
         {
@@ -859,6 +867,10 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             this.clickedCard = null;
             this.repopulateInteractions();
         }
+        else if(widget.interaction.action.getActionType() == ActionTypes.CREATE_TOKEN)
+        {
+            this.repopulateInteractions();
+        }
         else
         {
             this.resetToNormalZoneWidgets();
@@ -1002,7 +1014,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         if(w.zone.getType().getCanHaveCounters() && w.zone.getCounters() > 0)
         {
-            tooltip.add(new TranslationTextComponent("action.ydm.counters").appendString(": " + w.zone.getCounters()).func_241878_f());
+            tooltip.add(new TranslationTextComponent("container.ydm.duel.counters").appendString(": " + w.zone.getCounters()).func_241878_f());
         }
         
         this.renderTooltip(ms, tooltip, mouseX, mouseY);
@@ -1058,7 +1070,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void phaseWidgetHovered(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
-        this.renderTooltip(ms, new StringTextComponent("Draw Phase"), mouseX, mouseY);
+        this.renderDisabledTooltip(ms, new StringTextComponent("Draw Phase"), mouseX, mouseY);
+    }
+    
+    protected void scrollButtonHovered(Widget w, MatrixStack ms, int mouseX, int mouseY)
+    {
     }
     
     protected void middleButtonHovered(Widget w, MatrixStack ms, int mouseX, int mouseY)
@@ -1073,11 +1089,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
         else if(w == this.offerDrawButton)
         {
-            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.offer_draw"), mouseX, mouseY);
+            this.renderDisabledTooltip(ms, new TranslationTextComponent("container.ydm.duel.offer_draw"), mouseX, mouseY);
         }
         else if(w == this.admitDefeatButton)
         {
-            this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.admit_defeat"), mouseX, mouseY);
+            this.renderDisabledTooltip(ms, new TranslationTextComponent("container.ydm.duel.admit_defeat"), mouseX, mouseY);
         }
     }
     
@@ -1111,15 +1127,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         if(w == this.prevPhaseButton)
         {
-            //            list.add(new StringTextComponent("-").func_241878_f());
-            return;
+            this.renderDisabledTooltip(ms, (ITextComponent)null, mouseX, mouseY);
         }
         else if(w == this.nextPhaseButton)
         {
             list.add(new StringTextComponent("to Standby Phase").func_241878_f());
         }
         
-        this.renderTooltip(ms, list, mouseX, mouseY);
+        this.renderDisabledTooltip(ms, list, mouseX, mouseY);
     }
     
     protected void removeInteractionWidgets()

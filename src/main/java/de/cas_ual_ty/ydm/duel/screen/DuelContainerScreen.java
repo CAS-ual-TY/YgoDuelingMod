@@ -1,8 +1,11 @@
 package de.cas_ual_ty.ydm.duel.screen;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Supplier;
+
+import javax.annotation.Nullable;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -28,8 +31,10 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.widget.DisplayChatWidget;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -50,7 +55,6 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     protected Button chatDownButton;
     protected DisplayChatWidget chatWidget;
     protected TextFieldWidget textFieldWidget;
-    //    protected Button sendChatButton;
     
     protected Button duelChatButton;
     protected Button worldChatButton;
@@ -161,6 +165,43 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         }
     }
     
+    @Override
+    public void renderTooltip(MatrixStack ms, List<? extends IReorderingProcessor> tooltips, int mouseX, int mouseY)
+    {
+        ms.push();
+        ms.translate(0, 0, 10D);
+        super.renderTooltip(ms, tooltips, mouseX, mouseY);
+        ms.pop();
+    }
+    
+    @Override
+    public void renderTooltip(MatrixStack ms, ITextComponent text, int mouseX, int mouseY)
+    {
+        ms.push();
+        ms.translate(0, 0, 10D);
+        super.renderTooltip(ms, text, mouseX, mouseY);
+        ms.pop();
+    }
+    
+    public void renderDisabledTooltip(MatrixStack ms, List<IReorderingProcessor> tooltips, int mouseX, int mouseY)
+    {
+        tooltips.add(new StringTextComponent("DISABLED").modifyStyle((s) -> s.applyFormatting(TextFormatting.ITALIC).applyFormatting(TextFormatting.RED)).func_241878_f());
+        tooltips.add(new StringTextComponent("COMING SOON").modifyStyle((s) -> s.applyFormatting(TextFormatting.ITALIC).applyFormatting(TextFormatting.RED)).func_241878_f());
+        this.renderTooltip(ms, tooltips, mouseX, mouseY);
+    }
+    
+    public void renderDisabledTooltip(MatrixStack ms, @Nullable ITextComponent text, int mouseX, int mouseY)
+    {
+        List<IReorderingProcessor> tooltips = new LinkedList<>();
+        
+        if(text != null)
+        {
+            tooltips.add(text.func_241878_f());
+        }
+        
+        this.renderDisabledTooltip(ms, tooltips, mouseX, mouseY);
+    }
+    
     protected void initDefaultChat(int width, int height)
     {
         final int margin = 4;
@@ -189,21 +230,18 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         this.addButton(this.worldChatButton = new Button(x + halfW - extraOff, y, halfW + extraOff, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.world_chat"), (b) -> this.switchChat()));
         y += offset;
         
-        this.addButton(this.chatUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::chatScrollButtonClicked));
+        this.addButton(this.chatUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
         y += offset;
         
         this.addButton(this.chatWidget = new DisplayChatWidget(x, y - (chatHeight % this.font.FONT_HEIGHT) / 2, chatWidth, chatHeight, StringTextComponent.EMPTY));
         y += chatHeight + margin;
         
-        this.addButton(this.chatDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::chatScrollButtonClicked));
+        this.addButton(this.chatDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
         y += offset;
         
         this.addButton(this.textFieldWidget = new TextFieldWidget(this.font, x + 1, y + 1, w - 2, buttonHeight - 2, StringTextComponent.EMPTY));
         this.textFieldWidget.setMaxStringLength(64);
         y += offset;
-        
-        //        this.addButton(this.sendChatButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.send_chat"), (b) -> this.sendChat()));
-        //        y += offset;
         
         this.appendToInitChat(width, height, extraOff, y, w, halfW, chatWidth, chatHeight, margin);
         
@@ -227,7 +265,6 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         this.chatDownButton.visible = flag;
         this.chatWidget.visible = flag;
         this.textFieldWidget.visible = flag;
-        //        this.sendChatButton.visible = flag;
         this.duelChatButton.visible = flag;
         this.worldChatButton.visible = flag;
     }
@@ -310,6 +347,12 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     protected void chatScrollButtonClicked(Button button)
     {
         //TODO
+    }
+    
+    protected void chatScrollButtonHovered(Widget w, MatrixStack ms, int mouseX, int mouseY)
+    {
+        //TODO
+        this.renderDisabledTooltip(ms, (ITextComponent)null, mouseX, mouseY);
     }
     
     public void populateDeckSources(List<DeckSource> deckSources)
