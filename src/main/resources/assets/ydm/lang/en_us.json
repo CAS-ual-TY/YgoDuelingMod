@@ -140,5 +140,7 @@
     "actionIcon.ydm.attack_directly": "Attack Directly",
     "actionIcon.ydm.to_extra_atk": "To Extra Zone Face Up",
     "actionIcon.ydm.to_extra_fd": "To Extra Zone Face Down",
-    "actionIcon.ydm.all_to_graveyard": "All to Graveyard"
+    "actionIcon.ydm.all_to_graveyard": "All to Graveyard",
+    "actionIcon.ydm.special_summon_overlay_atk": "Special Summon Token ATK",
+    "actionIcon.ydm.special_summon_overlay_def": "Special Summon Token DEF"
 }

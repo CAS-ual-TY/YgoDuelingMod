@@ -3,16 +3,13 @@ package de.cas_ual_ty.ydm.duel.action;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.network.PacketBuffer;
 
-public abstract class MoveAction extends SingleCardAction
+public abstract class MoveAction extends DualZoneAction
 {
-    public byte destinationZoneId;
     public CardPosition destinationCardPosition;
     
-    public Zone destinationZone;
     public CardPosition sourceCardPosition;
     
     public short destinationCardIndex;
@@ -21,8 +18,7 @@ public abstract class MoveAction extends SingleCardAction
     
     public MoveAction(ActionType actionType, byte zoneId, short cardIndex, byte destinationZoneId, CardPosition destinationCardPosition, ZoneOwner player)
     {
-        super(actionType, zoneId, cardIndex);
-        this.destinationZoneId = destinationZoneId;
+        super(actionType, zoneId, cardIndex, destinationZoneId);
         this.destinationCardPosition = destinationCardPosition;
         this.player = player;
     }
@@ -36,7 +32,6 @@ public abstract class MoveAction extends SingleCardAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeByte(this.destinationZoneId);
         buf.writeByte(this.destinationCardPosition.getIndex());
         DuelMessageUtility.encodeZoneOwner(this.player, buf);
     }
@@ -45,7 +40,6 @@ public abstract class MoveAction extends SingleCardAction
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.destinationZone = playField.getZone(this.destinationZoneId);
         this.sourceCardPosition = this.card.getCardPosition();
     }
     

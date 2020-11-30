@@ -136,7 +136,7 @@ public class CardRenderUtil
         return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeInfoImageSize + "/" + "token_overlay" + ".png");
     }
     
-    public static ResourceLocation getMainMainOverlay()
+    public static ResourceLocation getMainTokenOverlay()
     {
         return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + "token_overlay" + ".png");
     }
@@ -172,7 +172,7 @@ public class CardRenderUtil
         
         if(card.getIsToken())
         {
-            mc.getTextureManager().bindTexture(CardRenderUtil.getMainCardBack());
+            mc.getTextureManager().bindTexture(CardRenderUtil.getMainTokenOverlay());
             blitMethod.fullBlit(ms, x, y, width, height);
         }
     }

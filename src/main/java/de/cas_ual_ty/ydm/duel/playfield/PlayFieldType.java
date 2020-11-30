@@ -296,13 +296,25 @@ public class PlayFieldType
         
         public InteractionBuilder interactorCardNull()
         {
-            this.interactorCard = (interactorCard) -> interactorCard != null;
+            this.interactorCard = (interactorCard) -> interactorCard == null;
             return this;
         }
         
         public InteractionBuilder interactorCardAny()
         {
             this.interactorCard = (interactorCard) -> true;
+            return this;
+        }
+        
+        public InteractionBuilder interactorCardToken()
+        {
+            this.interactorCard = (interactorCard) -> interactorCard != null && interactorCard.getIsToken();
+            return this;
+        }
+        
+        public InteractionBuilder interactorCardNotNullNoToken()
+        {
+            this.interactorCard = (interactorCard) -> interactorCard != null && !interactorCard.getIsToken();
             return this;
         }
         
@@ -414,6 +426,39 @@ public class PlayFieldType
             return this;
         }
         
+        public InteractionBuilder interactorNonEmptyNoTokens()
+        {
+            if(this.interaction == null)
+            {
+                return this;
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            
+            this.interaction = (player, interactor, interactorCard, interactee) ->
+            {
+                if(interactor.getCardsAmount() <= 0)
+                {
+                    // no cards, so conditions not met
+                    return null;
+                }
+                
+                for(short i = 0; i < interactor.getCardsAmount(); ++i)
+                {
+                    if(interactor.getCard(i).getIsToken())
+                    {
+                        // cards, but tokens, so conditions not met
+                        return null;
+                    }
+                }
+                
+                // cards, no tokens, conditions met
+                return interaction.createAction(player, interactor, interactorCard, interactee);
+            };
+            
+            return this;
+        }
+        
         public InteractionBuilder interacteeEmpty()
         {
             if(this.interaction == null)
@@ -435,6 +480,39 @@ public class PlayFieldType
             
             SingleZoneInteraction interaction = this.interaction;
             this.interaction = (player, interactor, interactorCard, interactee) -> interactee.getCardsAmount() > 0 ? interaction.createAction(player, interactor, interactorCard, interactee) : null;
+            return this;
+        }
+        
+        public InteractionBuilder interacteeNonEmptyNoTokens()
+        {
+            if(this.interaction == null)
+            {
+                return this;
+            }
+            
+            SingleZoneInteraction interaction = this.interaction;
+            
+            this.interaction = (player, interactor, interactorCard, interactee) ->
+            {
+                if(interactee.getCardsAmount() <= 0)
+                {
+                    // no cards, so conditions not met
+                    return null;
+                }
+                
+                for(short i = 0; i < interactee.getCardsAmount(); ++i)
+                {
+                    if(interactee.getCard(i).getIsToken())
+                    {
+                        // cards, but tokens, so conditions not met
+                        return null;
+                    }
+                }
+                
+                // cards, no tokens, conditions met
+                return interaction.createAction(player, interactor, interactorCard, interactee);
+            };
+            
             return this;
         }
         

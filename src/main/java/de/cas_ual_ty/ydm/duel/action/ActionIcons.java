@@ -49,6 +49,8 @@ public class ActionIcons
     public static final ActionIcon TO_EXTRA_FD = null;
     
     public static final ActionIcon ALL_TO_GRAVEYARD = null;
+    public static final ActionIcon SPECIAL_SUMMON_TOKEN_ATK = null;
+    public static final ActionIcon SPECIAL_SUMMON_TOKEN_DEF = null;
     
     @SubscribeEvent
     public static void registerActionIcons(RegistryEvent.Register<ActionIcon> event)
@@ -91,6 +93,8 @@ public class ActionIcons
         registry.register(ActionIcons.create("to_extra_fd"));
         
         registry.register(ActionIcons.create("all_to_graveyard"));
+        registry.register(ActionIcons.create("special_summon_token_atk"));
+        registry.register(ActionIcons.create("special_summon_token_def"));
     }
     
     public static ActionIcon create(String name)

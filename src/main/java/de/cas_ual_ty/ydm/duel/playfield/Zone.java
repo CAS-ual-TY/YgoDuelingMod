@@ -133,8 +133,6 @@ public class Zone
     
     public DuelCard removeCardKeepCounters(int index)
     {
-        Thread.currentThread();
-        Thread.dumpStack();
         return this.getCardsList().remove(index);
     }
     
