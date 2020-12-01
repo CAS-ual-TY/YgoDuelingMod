@@ -401,7 +401,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        this.animationsWidget.forceFinish();
+        this.forceFinishAnimations(mouseX, mouseY);
         
         if(this.lifePointsWidget != null && this.lifePointsWidget.isFocused() && !this.lifePointsWidget.isMouseOver(mouseX, mouseY))
         {
@@ -607,6 +607,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                     {
                         action.addCard();
                         action.finish();
+                        DuelScreenDueling.this.repopulateInteractions();
                     });
             
             if(action.actionType == ActionTypes.SPECIAL_SUMMON)
@@ -650,6 +651,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                         {
                             action.sourceZone.addCard(owner, action.card, action.sourceCardIndex);
                             action.sourceZone.getCard(action.sourceCardIndex).setPosition(action.destinationCardPosition);
+                            DuelScreenDueling.this.repopulateInteractions();
                         });
             }
         }
@@ -692,7 +694,6 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                 {
                     return listAnimation;
                 }
-                
             }
         }
         else if(action0 instanceof AttackAction)
@@ -709,7 +710,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             
             int size = Math.max(w.getWidth(), w.getHeightRealms());
             return new SpecialSummonTokenAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2)
-                .setOnStart(() -> action.doAction());
+                .setOnStart(() ->
+                {
+                    action.doAction();
+                    DuelScreenDueling.this.repopulateInteractions();
+                });
         }
         else if(action0 instanceof RemoveTokenAction)
         {
@@ -719,7 +724,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             
             int size = Math.max(w.getWidth(), w.getHeightRealms());
             return new RemoveTokenAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2)
-                .setOnEnd(() -> action.doAction());
+                .setOnEnd(() ->
+                {
+                    action.doAction();
+                    DuelScreenDueling.this.repopulateInteractions();
+                });
         }
         else if(action0 instanceof IAnnouncedAction)
         {
@@ -776,6 +785,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             
             a.doAction();
         }
+    }
+    
+    protected void forceFinishAnimations(double mouseX, double mouseY)
+    {
+        this.animationsWidget.forceFinish();
     }
     
     protected void viewZone(Zone zone)
@@ -867,7 +881,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             this.clickedCard = null;
             this.repopulateInteractions();
         }
-        else if(widget.interaction.action.getActionType() == ActionTypes.CREATE_TOKEN)
+        else if(this.shouldRepopulateInteractions(widget))
         {
             this.repopulateInteractions();
         }
@@ -875,6 +889,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             this.resetToNormalZoneWidgets();
         }
+    }
+    
+    protected boolean shouldRepopulateInteractions(InteractionWidget clickedWidget)
+    {
+        return clickedWidget.interaction.action.getActionType() == ActionTypes.CREATE_TOKEN;
     }
     
     protected void repopulateInteractions()
