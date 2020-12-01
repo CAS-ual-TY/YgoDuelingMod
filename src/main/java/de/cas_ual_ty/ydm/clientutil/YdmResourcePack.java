@@ -38,8 +38,8 @@ public class YdmResourcePack extends ResourcePack
         super(null);
         this.packMeta = new JsonObject();
         JsonObject pack = new JsonObject();
-        pack.addProperty("description", "YDM Card Images");
-        pack.addProperty("pack_format", 5);
+        pack.addProperty("description", "All dynamically downloaded images of the Ygo Dueling Mod.");
+        pack.addProperty("pack_format", 6);
         this.packMeta.add("pack", pack);
     }
     
@@ -154,6 +154,6 @@ public class YdmResourcePack extends ResourcePack
     @Override
     public String getName()
     {
-        return "YDM Card Images";
+        return "YDM Images";
     }
 }
