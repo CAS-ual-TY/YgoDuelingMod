@@ -13,6 +13,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelChatMessage;
+import de.cas_ual_ty.ydm.duel.DuelPhase;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.action.Action;
@@ -221,5 +222,15 @@ public class DuelMessageUtility
     public static DeckSource decodeDeckSourceParams(PacketBuffer buf)
     {
         return new DeckSource(null, buf.readItemStack(), buf.readTextComponent());
+    }
+    
+    public static void encodePhase(DuelPhase phase, PacketBuffer buf)
+    {
+        buf.writeByte(phase.getIndex());
+    }
+    
+    public static DuelPhase decodePhase(PacketBuffer buf)
+    {
+        return DuelPhase.getFromIndex(buf.readByte());
     }
 }

@@ -30,6 +30,8 @@ public class ActionTypes
     public static final ActionType CHANGE_COUNTERS = null;
     public static final ActionType CREATE_TOKEN = null;
     public static final ActionType REMOVE_TOKEN = null;
+    public static final ActionType CHANGE_PHASE = null;
+    public static final ActionType END_TURN = null;
     
     @SubscribeEvent
     public static void registerActionTypes(RegistryEvent.Register<ActionType> event)
@@ -53,5 +55,7 @@ public class ActionTypes
         registry.register(new ActionType(ChangeCountersAction::new).setRegistryName(YDM.MOD_ID, "change_counters"));
         registry.register(new ActionType(CreateTokenAction::new).setRegistryName(YDM.MOD_ID, "create_token"));
         registry.register(new ActionType(RemoveTokenAction::new).setRegistryName(YDM.MOD_ID, "remove_token"));
+        registry.register(new ActionType(ChangePhaseAction::new).setRegistryName(YDM.MOD_ID, "change_phase"));
+        registry.register(new ActionType(EndTurnAction::new).setRegistryName(YDM.MOD_ID, "end_turn"));
     }
 }

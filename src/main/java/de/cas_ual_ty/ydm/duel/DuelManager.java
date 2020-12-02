@@ -769,10 +769,12 @@ public class DuelManager
     
     public void sendInfoMessageToAll(ITextComponent text)
     {
-        this.sendMessageToAll(new DuelChatMessage(
+        DuelChatMessage msg = new DuelChatMessage(
             text,
             this.getInfoNameBold(),
-            PlayerRole.JUDGE, true));
+            PlayerRole.JUDGE, true);
+        this.messages.add(msg);
+        this.sendMessageToAll(msg);
     }
     
     protected void doForAllPlayers(Consumer<PlayerEntity> consumer)

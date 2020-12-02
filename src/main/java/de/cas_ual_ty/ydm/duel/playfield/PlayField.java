@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.duel.DuelManager;
+import de.cas_ual_ty.ydm.duel.DuelPhase;
 
 public class PlayField
 {
@@ -27,6 +28,9 @@ public class PlayField
     
     public int player1LP;
     public int player2LP;
+    
+    public boolean player1Turn;
+    public DuelPhase phase;
     
     public PlayField(DuelManager duelManager, PlayFieldType type)
     {
@@ -123,6 +127,9 @@ public class PlayField
         
         this.player1LP = type.startingLifePoints;
         this.player2LP = type.startingLifePoints;
+        
+        this.player1Turn = true;
+        this.phase = DuelPhase.DP;
     }
     
     public List<Zone> getZones()
@@ -230,6 +237,44 @@ public class PlayField
         else if(owner == ZoneOwner.PLAYER2)
         {
             this.player2LP = amount;
+        }
+    }
+    
+    public void setPhase(DuelPhase phase)
+    {
+        this.phase = phase;
+    }
+    
+    public DuelPhase getPhase()
+    {
+        return this.phase;
+    }
+    
+    public void endTurn()
+    {
+        this.phase = DuelPhase.getFromIndex(DuelPhase.FIRST_INDEX);
+        this.player1Turn = !this.player1Turn;
+    }
+    
+    public boolean isPlayer1Turn()
+    {
+        return this.player1Turn;
+    }
+    
+    public boolean isPlayer2Turn()
+    {
+        return !this.player1Turn;
+    }
+    
+    public boolean isPlayerTurn(ZoneOwner player)
+    {
+        if(player == ZoneOwner.PLAYER2)
+        {
+            return this.isPlayer2Turn();
+        }
+        else
+        {
+            return this.isPlayer1Turn();
         }
     }
 }
