@@ -9,6 +9,8 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class LPTextFieldWidget extends TextFieldWidget
 {
+    // doing it exactly in the super class
+    private boolean enableBackgroundDrawing = true;
     public ITooltip tooltip;
     
     public LPTextFieldWidget(FontRenderer fontrenderer, int x, int y, int width, int height, ITooltip tooltip)
@@ -78,5 +80,20 @@ public class LPTextFieldWidget extends TextFieldWidget
         {
             this.tooltip.onTooltip(this, ms, mouseX, mouseY);
         }
+    }
+    
+    @Override
+    public int getAdjustedWidth()
+    {
+        return 2 * (this.enableBackgroundDrawing ? this.width - 8 : this.width);
+    }
+    
+    // the getter is private,
+    // so we gotta catch the value here
+    @Override
+    public void setEnableBackgroundDrawing(boolean enableBackgroundDrawingIn)
+    {
+        this.enableBackgroundDrawing = enableBackgroundDrawingIn;
+        super.setEnableBackgroundDrawing(enableBackgroundDrawingIn);
     }
 }

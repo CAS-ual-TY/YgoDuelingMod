@@ -66,7 +66,6 @@ import de.cas_ual_ty.ydm.duel.screen.widget.StackZoneWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.ViewCardStackWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.ZoneWidget;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerEntity;
@@ -108,7 +107,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     protected Button flipViewButton;
     protected Button offerDrawButton;
     protected Button admitDefeatButton;
-    protected TextFieldWidget lifePointsWidget;
+    protected LPTextFieldWidget lifePointsWidget;
     
     protected Button prevPhaseButton;
     protected Button nextPhaseButton;
