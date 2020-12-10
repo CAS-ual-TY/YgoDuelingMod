@@ -27,6 +27,7 @@ public class ColoredButton extends Button
     public ColoredButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ITooltip onTooltip)
     {
         super(x, y, width, height, title, pressedAction, onTooltip);
+        this.offset = 0;
     }
     
     @Override

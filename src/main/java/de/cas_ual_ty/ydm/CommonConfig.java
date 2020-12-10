@@ -9,11 +9,11 @@ public class CommonConfig
     
     public CommonConfig(ForgeConfigSpec.Builder builder)
     {
-        builder.push("client");
+        builder.push("common");
         
         this.dbSourceUrl = builder
-            .comment("Download link for the cards and sets database. Must be a .zip file.")
-            .define("dbSourceUrl", "https://github.com/CAS-ual-TY/YDM2-DB/archive/master.zip");
+            .comment("Link to the db.json of the used cards and sets database.")
+            .define("dbSourceUrl", "https://raw.githubusercontent.com/CAS-ual-TY/YDM2-DB/master/db.json");
         
         builder.pop();
     }
