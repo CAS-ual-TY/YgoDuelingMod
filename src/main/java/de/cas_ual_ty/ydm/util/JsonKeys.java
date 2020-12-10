@@ -2,6 +2,11 @@ package de.cas_ual_ty.ydm.util;
 
 public class JsonKeys
 {
+    // general
+    
+    public static final String VERSION_ITERATION = "version_iteration";
+    public static final String DOWNLOAD_LINK = "download_link";
+    
     // cards
     
     public static final String NAME = "name";

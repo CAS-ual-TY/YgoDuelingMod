@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Reader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,8 +15,7 @@ import java.util.function.Predicate;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.JsonParseException;
 
 import de.cas_ual_ty.ydm.YdmDatabase;
 
@@ -31,9 +31,14 @@ public class YdmIOUtil
         return () -> requiredSuffix;
     }
     
+    public static InputStream urlInputStream(URL url) throws IOException
+    {
+        return url.openStream();
+    }
+    
     public static void downloadFile(URL url, File target) throws IOException
     {
-        InputStream in = url.openStream();
+        InputStream in = YdmIOUtil.urlInputStream(url);
         Files.copy(in, Paths.get(target.toURI()));
     }
     
@@ -95,11 +100,16 @@ public class YdmIOUtil
         parent.delete();
     }
     
-    public static JsonElement parseJsonFile(File file) throws JsonIOException, JsonSyntaxException, IOException
+    public static JsonElement parseJsonFile(File file) throws JsonParseException, IOException
     {
-        FileReader fr = new FileReader(file);
-        JsonElement e = YdmDatabase.JSON_PARSER.parse(fr);
-        fr.close();
-        return e;
+        try(FileReader fr = new FileReader(file))
+        {
+            return YdmIOUtil.parseJsonFile(fr);
+        }
+    }
+    
+    public static JsonElement parseJsonFile(Reader reader) throws JsonParseException
+    {
+        return YdmDatabase.JSON_PARSER.parse(reader);
     }
 }

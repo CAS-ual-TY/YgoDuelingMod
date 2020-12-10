@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Random;
 
@@ -175,22 +174,6 @@ public class YDM
     private void initFiles()
     {
         YDM.mainFolder = new File("ydm_db");
-        
-        if(!YDM.mainFolder.exists())
-        {
-            try
-            {
-                YdmDatabase.downloadDatabase();
-                YDM.mainFolder = new File("ydm_db");
-            }
-            catch (IOException e)
-            {
-                YDM.log("Failed downloading cards database.");
-                e.printStackTrace();
-                return;
-            }
-        }
-        
         YDM.cardsFolder = new File(YDM.mainFolder, "cards");
         YDM.setsFolder = new File(YDM.mainFolder, "sets");
         YDM.distributionsFolder = new File(YDM.mainFolder, "distributions");
@@ -200,7 +183,7 @@ public class YDM
         
         YDM.proxy.initFiles();
         YdmIOUtil.setAgent();
-        YdmDatabase.readFiles();
+        YdmDatabase.initDatabase();
     }
     
     /*
