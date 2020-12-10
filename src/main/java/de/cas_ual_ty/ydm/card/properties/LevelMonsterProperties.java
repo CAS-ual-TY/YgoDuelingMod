@@ -83,7 +83,7 @@ public class LevelMonsterProperties extends DefMonsterProperties
             s.appendString("Pendulum" + " / ");
         }
         
-        if(this.getAbility() != null)
+        if(!this.getAbility().isEmpty())
         {
             s.appendString(this.getAbility() + " / ");
         }
