@@ -51,6 +51,7 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneType;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneTypes;
 import de.cas_ual_ty.ydm.duel.screen.animation.Animation;
 import de.cas_ual_ty.ydm.duel.screen.animation.AttackAnimation;
+import de.cas_ual_ty.ydm.duel.screen.animation.DummyAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.MoveAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.ParallelListAnimation;
 import de.cas_ual_ty.ydm.duel.screen.animation.QueueAnimation;
@@ -426,16 +427,12 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         action.initClient(this.getDuelManager().getPlayField());
         this.getDuelManager().actions.add(action);
         
+        // all actions must return an animation
+        // otherwise, their order might be disrupted
+        // eg Action1 still in animation, then Action2 (without animation) gets done before Action1 finishes
+        // so, by default a dummy animation is returned, doing nothing, lasting 1 tick, just doing the Action
         Animation animation = this.getAnimationForAction(action);
-        
-        if(animation != null)
-        {
-            this.playAnimation(animation);
-        }
-        else
-        {
-            this.handleNonAnimatedAction(action);
-        }
+        this.playAnimation(animation);
     }
     
     @Override
@@ -788,18 +785,27 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                     .setOnStart(() -> this.handleAnnouncedAction(action0));
             }
         }
+        else if(action0.actionType == ActionTypes.CHANGE_PHASE || action0.actionType == ActionTypes.END_TURN)
+        {
+            Animation a = this.getDefaultAnimation(action0);
+            
+            a.setOnEnd(() ->
+            {
+                this.updateRightButtonStatus();
+            });
+            
+            return a;
+        }
         
-        return null;
+        return this.getDefaultAnimation(action0);
     }
     
-    protected void handleNonAnimatedAction(Action action)
+    protected Animation getDefaultAnimation(Action action)
     {
-        action.doAction();
-        
-        if(action.actionType == ActionTypes.CHANGE_PHASE || action.actionType == ActionTypes.END_TURN)
+        return new DummyAnimation().setOnStart(() ->
         {
-            this.updateRightButtonStatus();
-        }
+            action.doAction();
+        });
     }
     
     protected void handleAnnouncedAction(Action action)
