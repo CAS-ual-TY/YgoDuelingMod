@@ -100,7 +100,7 @@ public class CustomCards
         CustomCards.PATREON_001_PROPERTIES.species = Species.DESTROYER_GOD.name;
         CustomCards.PATREON_001_PROPERTIES.monsterType = null;
         CustomCards.PATREON_001_PROPERTIES.isPendulum = false;
-        CustomCards.PATREON_001_PROPERTIES.ability = null;
+        CustomCards.PATREON_001_PROPERTIES.ability = "";
         CustomCards.PATREON_001_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_001_PROPERTIES.def = -1;
         CustomCards.PATREON_001_PROPERTIES.level = 12;
@@ -123,7 +123,7 @@ public class CustomCards
         CustomCards.PATREON_002_PROPERTIES.species = Species.BEAST_WARRIOR.name;
         CustomCards.PATREON_002_PROPERTIES.monsterType = null;
         CustomCards.PATREON_002_PROPERTIES.isPendulum = false;
-        CustomCards.PATREON_002_PROPERTIES.ability = null;
+        CustomCards.PATREON_002_PROPERTIES.ability = "";
         CustomCards.PATREON_002_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_002_PROPERTIES.def = 1600;
         CustomCards.PATREON_002_PROPERTIES.level = 4;
@@ -149,7 +149,7 @@ public class CustomCards
         CustomCards.PATREON_003_PROPERTIES.pendulumText = "Once Per turn, you can pay 2000 LP to Special Summon 1 \"Onomic:\" monster from your Deck or Graveyard. All \"Onomic\" Monsters you control gain 100 ATK for each FIRE monster In both players' Graveyard and on the field.";
         CustomCards.PATREON_003_PROPERTIES.pendulumScaleLeftBlue = (byte)6;
         CustomCards.PATREON_003_PROPERTIES.pendulumScaleRightRed = (byte)6;
-        CustomCards.PATREON_003_PROPERTIES.ability = null;
+        CustomCards.PATREON_003_PROPERTIES.ability = "";
         CustomCards.PATREON_003_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_003_PROPERTIES.def = 1400;
         CustomCards.PATREON_003_PROPERTIES.level = 3;
@@ -172,7 +172,7 @@ public class CustomCards
         CustomCards.PATREON_004_PROPERTIES.species = Species.BEAST.name;
         CustomCards.PATREON_004_PROPERTIES.monsterType = MonsterType.FUSION;
         CustomCards.PATREON_004_PROPERTIES.isPendulum = false;
-        CustomCards.PATREON_004_PROPERTIES.ability = null;
+        CustomCards.PATREON_004_PROPERTIES.ability = "";
         CustomCards.PATREON_004_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_004_PROPERTIES.def = 3000;
         CustomCards.PATREON_004_PROPERTIES.level = 8;
@@ -198,7 +198,7 @@ public class CustomCards
         CustomCards.PATREON_005_PROPERTIES.pendulumText = "Your opponent cannot activate any cards in response to \"Onomic:\" monster effects.";
         CustomCards.PATREON_005_PROPERTIES.pendulumScaleLeftBlue = (byte)2;
         CustomCards.PATREON_005_PROPERTIES.pendulumScaleRightRed = (byte)2;
-        CustomCards.PATREON_005_PROPERTIES.ability = null;
+        CustomCards.PATREON_005_PROPERTIES.ability = "";
         CustomCards.PATREON_005_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_005_PROPERTIES.def = 2000;
         CustomCards.PATREON_005_PROPERTIES.level = 4;
@@ -249,7 +249,7 @@ public class CustomCards
         CustomCards.PATREON_008_PROPERTIES.species = Species.BEAST_WARRIOR.name;
         CustomCards.PATREON_008_PROPERTIES.monsterType = null;
         CustomCards.PATREON_008_PROPERTIES.isPendulum = false;
-        CustomCards.PATREON_008_PROPERTIES.ability = null;
+        CustomCards.PATREON_008_PROPERTIES.ability = "";
         CustomCards.PATREON_008_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_008_PROPERTIES.def = 1600;
         CustomCards.PATREON_008_PROPERTIES.level = 4;
@@ -272,7 +272,7 @@ public class CustomCards
         CustomCards.PATREON_009_PROPERTIES.species = Species.CYBERSE.name;
         CustomCards.PATREON_009_PROPERTIES.monsterType = MonsterType.LINK;
         CustomCards.PATREON_009_PROPERTIES.isPendulum = false;
-        CustomCards.PATREON_009_PROPERTIES.ability = null;
+        CustomCards.PATREON_009_PROPERTIES.ability = "";
         CustomCards.PATREON_009_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_009_PROPERTIES.linkRating = (byte)4;
         CustomCards.PATREON_009_PROPERTIES.linkArrows = Lists.newArrayList(LinkArrow.TOP_RIGHT, LinkArrow.BOTTOM_RIGHT, LinkArrow.BOTTOM, LinkArrow.BOTTOM_LEFT);
@@ -294,7 +294,7 @@ public class CustomCards
         CustomCards.PATREON_010_PROPERTIES.species = Species.WARRIOR_GOD.name;
         CustomCards.PATREON_010_PROPERTIES.monsterType = MonsterType.XYZ;
         CustomCards.PATREON_010_PROPERTIES.isPendulum = false;
-        CustomCards.PATREON_010_PROPERTIES.ability = null;
+        CustomCards.PATREON_010_PROPERTIES.ability = "";
         CustomCards.PATREON_010_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_010_PROPERTIES.def = 2500;
         CustomCards.PATREON_010_PROPERTIES.rank = 4;
