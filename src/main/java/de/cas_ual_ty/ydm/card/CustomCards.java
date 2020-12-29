@@ -83,7 +83,7 @@ public class CustomCards
         CustomCards.DUMMY_CARD.properties = CustomCards.DUMMY_PROPERTIES;
         CustomCards.DUMMY_CARD.setId = "DUM-MY";
         CustomCards.DUMMY_CARD.imageIndex = (byte)0;
-        CustomCards.DUMMY_CARD.rarity = Rarity.COMMON;
+        CustomCards.DUMMY_CARD.rarity = Rarity.COMMON.name;
         YdmDatabase.CARDS_LIST.add(CustomCards.DUMMY_CARD);
         
         CustomCards.PATREON_001_PROPERTIES = new LevelMonsterProperties();
@@ -309,7 +309,7 @@ public class CustomCards
         card.properties = p;
         card.setId = "PATREON-" + p.id;
         card.imageIndex = (byte)0;
-        card.rarity = Rarity.COMMON;
+        card.rarity = Rarity.COMMON.name;
         return card;
     }
 }

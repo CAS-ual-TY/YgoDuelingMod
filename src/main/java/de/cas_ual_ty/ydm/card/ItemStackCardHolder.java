@@ -9,7 +9,7 @@ public class ItemStackCardHolder extends CardHolder
     
     public ItemStackCardHolder(ItemStack itemStack)
     {
-        super(null, (byte)-1, (Rarity)null);
+        super(null, (byte)-1, null);
         this.itemStack = itemStack;
         this.readCardHolderFromNBT(this.getNBT());
     }
@@ -39,7 +39,7 @@ public class ItemStackCardHolder extends CardHolder
     }
     
     @Override
-    public void overrideRarity(Rarity rarity)
+    public void overrideRarity(String rarity)
     {
         super.overrideRarity(rarity);
         this.saveToItemStack();

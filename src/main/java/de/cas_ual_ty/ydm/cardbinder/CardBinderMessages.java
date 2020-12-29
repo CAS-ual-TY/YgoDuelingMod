@@ -8,7 +8,6 @@ import java.util.function.Supplier;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.card.Rarity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -126,7 +125,7 @@ public class CardBinderMessages
             {
                 buf.writeString(cardHolder.getCard().getSetId(), 0x100);
                 buf.writeByte(cardHolder.getOverriddenImageIndex());
-                buf.writeString(cardHolder.getOverriddenRarity() != null ? cardHolder.getOverriddenRarity().name : "", 0x100);
+                buf.writeString(cardHolder.getOverriddenRarity() != null ? cardHolder.getOverriddenRarity() : "", 0x100);
             }
         }
         
@@ -139,7 +138,7 @@ public class CardBinderMessages
             
             for(int i = 0; i < size; ++i)
             {
-                list.add(new CardHolder(YdmDatabase.CARDS_LIST.get(buf.readString(0x100)), buf.readByte(), Rarity.fromString(buf.readString(0x100))));
+                list.add(new CardHolder(YdmDatabase.CARDS_LIST.get(buf.readString(0x100)), buf.readByte(), buf.readString(0x100)));
             }
             
             return new UpdateList(page, list);

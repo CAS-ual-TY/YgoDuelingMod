@@ -83,7 +83,7 @@ public class CardHolderStack
         }
         
         // Compare active rarity
-        comp = h1.getActiveRarity().name.compareTo(h2.getActiveRarity().name);
+        comp = h1.getActiveRarity().compareTo(h2.getActiveRarity());
         
         if(comp != 0)
         {

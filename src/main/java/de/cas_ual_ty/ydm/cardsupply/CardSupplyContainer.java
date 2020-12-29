@@ -47,7 +47,7 @@ public class CardSupplyContainer extends Container
     
     public void giveCard(Card card)
     {
-        this.player.addItemStackToInventory(YdmItems.CARD.createItemForCardHolder(new CardHolder(card, (byte)-1, Rarity.SUPPLY)));
+        this.player.addItemStackToInventory(YdmItems.CARD.createItemForCardHolder(new CardHolder(card, (byte)-1, Rarity.SUPPLY.name)));
     }
     
     @Override

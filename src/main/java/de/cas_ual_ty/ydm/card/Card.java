@@ -10,7 +10,7 @@ public class Card
     public Properties properties;
     public String setId;
     public byte imageIndex;
-    public Rarity rarity;
+    public String rarity;
     
     public Card(JsonObject j)
     {
@@ -22,7 +22,7 @@ public class Card
         this.properties = p;
         this.setId = String.valueOf(this.properties.getId() + "_" + imageIndex);
         this.imageIndex = imageIndex;
-        this.rarity = Rarity.COMMON;
+        this.rarity = Rarity.COMMON.name;
     }
     
     public Card()
@@ -71,7 +71,7 @@ public class Card
         return this.imageIndex;
     }
     
-    public Rarity getRarity()
+    public String getRarity()
     {
         return this.rarity;
     }

@@ -185,7 +185,7 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
         {
             if(c.getProperties().getName().toLowerCase().contains(name))
             {
-                this.cardsList.add(new CardHolder(c, (byte)-1, Rarity.SUPPLY));
+                this.cardsList.add(new CardHolder(c, (byte)-1, Rarity.SUPPLY.name));
             }
         }
     }
@@ -199,7 +199,7 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
         {
             if(c != CustomCards.DUMMY_CARD)
             {
-                this.cardsList.add(new CardHolder(c, (byte)-1, Rarity.SUPPLY));
+                this.cardsList.add(new CardHolder(c, (byte)-1, Rarity.SUPPLY.name));
             }
         }
     }

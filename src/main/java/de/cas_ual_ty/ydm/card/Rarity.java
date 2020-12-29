@@ -10,19 +10,4 @@ public enum Rarity
     {
         this.name = name;
     }
-    
-    public static final Rarity[] VALUES = Rarity.values();
-    
-    public static Rarity fromString(String s)
-    {
-        for(Rarity rarity : Rarity.VALUES)
-        {
-            if(rarity.name.equals(s))
-            {
-                return rarity;
-            }
-        }
-        
-        return null;
-    }
 }
