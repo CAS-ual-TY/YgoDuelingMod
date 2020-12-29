@@ -16,7 +16,6 @@ import de.cas_ual_ty.ydm.cardsupply.CardSupplyMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
-import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.FindDecksEvent;
 import de.cas_ual_ty.ydm.duel.action.ActionIcon;
 import de.cas_ual_ty.ydm.duel.action.ActionType;
@@ -124,7 +123,6 @@ public class YDM
         // bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
         bus.addListener(this::registerCommands);
         bus.addListener(this::findDecks);
-        bus.addListener(this::findPatreonDecks);
         bus.addListener(this::serverStopped);
         YDM.proxy.registerForgeEventListeners(bus);
         
@@ -296,23 +294,6 @@ public class YDM
             {
                 event.addDeck(dh, itemStack);
             }
-        }
-    }
-    
-    private void findPatreonDecks(FindDecksEvent event)
-    {
-        PlayerEntity player = event.getPlayer();
-        
-        if(!player.isCreative())
-        {
-            return;
-        }
-        
-        event.addDeck(DeckSource.getOjamaDeck());
-        
-        for(DeckSource deck : DeckSource.getAllPatreonDecks())
-        {
-            event.addDeck(deck);
         }
     }
     
