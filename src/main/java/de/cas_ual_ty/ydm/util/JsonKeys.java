@@ -5,6 +5,7 @@ public class JsonKeys
     // general
     
     public static final String VERSION_ITERATION = "version_iteration";
+    public static final String DB_ID = "id";
     public static final String DOWNLOAD_LINK = "download_link";
     
     // cards

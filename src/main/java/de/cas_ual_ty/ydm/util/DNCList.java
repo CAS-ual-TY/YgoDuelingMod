@@ -47,6 +47,11 @@ public class DNCList<K, V> implements Iterable<V>
     
     public int getIndex(K key, boolean forceReturn)
     {
+        if(this.list.isEmpty() && !forceReturn)
+        {
+            return -1;
+        }
+        
         if(!this.isSorted)
         {
             this.sort();

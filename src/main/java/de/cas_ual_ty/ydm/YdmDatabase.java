@@ -35,61 +35,77 @@ public class YdmDatabase
     
     public static final JsonParser JSON_PARSER = new JsonParser();
     
-    public static JsonObject localVersion = null;
-    public static int localVersionIteration = Integer.MIN_VALUE;
+    public static boolean databaseReady = false;
     
-    public static JsonObject remoteVersion = null;
+    public static JsonObject localDbInfo = null;
+    public static int localVersionIteration = Integer.MIN_VALUE;
+    public static String localVersionId = null;
+    
+    public static JsonObject remoteDbInfo = null;
     public static int remoteVersionIteration = Integer.MIN_VALUE;
     public static String remoteDownloadLink = null;
+    public static String remoteVersionId = null;
     
     public static void initDatabase()
     {
-        boolean downloadDB = false;
-        boolean remoteRead = false;
-        
-        if(!YDM.mainFolder.exists())
+        if(!YDM.dbSourceUrl.isEmpty())
         {
-            downloadDB = true;
-        }
-        else
-        {
-            if(YdmDatabase.readLocalVersion())
-            {
-                remoteRead = true;
-                if(YdmDatabase.readRemoteVersion() && YdmDatabase.localVersionIteration < YdmDatabase.remoteVersionIteration)
-                {
-                    YDM.log("New database version: " + YdmDatabase.remoteVersionIteration + " (Old version: " + YdmDatabase.localVersionIteration + ")");
-                    downloadDB = true;
-                }
-            }
-            else
+            boolean downloadDB = false;
+            boolean remoteRead = false;
+            
+            if(!YDM.mainFolder.exists())
             {
                 downloadDB = true;
             }
-        }
-        
-        if(downloadDB)
-        {
-            if(!remoteRead)
+            else
             {
-                YdmDatabase.readRemoteVersion();
+                try
+                {
+                    if(YdmDatabase.readLocalVersion())
+                    {
+                        remoteRead = true;
+                        if(YdmDatabase.readRemoteVersion() && (YdmDatabase.localVersionIteration < YdmDatabase.remoteVersionIteration || !YdmDatabase.localVersionId.equals(YdmDatabase.remoteVersionId)))
+                        {
+                            YDM.log("New database version: " + YdmDatabase.remoteVersionIteration + " (Old version: " + YdmDatabase.localVersionIteration + ")");
+                            downloadDB = true;
+                        }
+                    }
+                    else
+                    {
+                        downloadDB = true;
+                    }
+                }
+                catch (Exception e)
+                {
+                    downloadDB = true;
+                    YDM.log("Failed assessing if a new database needs to be downloaded. Doing it anyways...");
+                    e.printStackTrace();
+                }
             }
             
-            if(YdmDatabase.remoteDownloadLink == null)
+            if(downloadDB)
             {
-                YDM.log("Cannot download database.");
-                return;
-            }
-            
-            try
-            {
-                YdmDatabase.downloadDatabase();
-            }
-            catch (IOException e)
-            {
-                YDM.log("Failed downloading database.");
-                e.printStackTrace();
-                return;
+                if(!remoteRead)
+                {
+                    YdmDatabase.readRemoteVersion();
+                }
+                
+                if(YdmDatabase.remoteDownloadLink == null)
+                {
+                    YDM.log("Cannot download database.");
+                    return;
+                }
+                
+                try
+                {
+                    YdmDatabase.downloadDatabase();
+                }
+                catch (IOException e)
+                {
+                    YDM.log("Failed downloading database.");
+                    e.printStackTrace();
+                    return;
+                }
             }
         }
         
@@ -108,8 +124,9 @@ public class YdmDatabase
             }
             
             YDM.log("Reading local db.json file: " + version.getAbsolutePath());
-            YdmDatabase.localVersion = YdmIOUtil.parseJsonFile(version).getAsJsonObject();
-            YdmDatabase.localVersionIteration = YdmDatabase.localVersion.get(JsonKeys.VERSION_ITERATION).getAsInt();
+            YdmDatabase.localDbInfo = YdmIOUtil.parseJsonFile(version).getAsJsonObject();
+            YdmDatabase.localVersionIteration = YdmDatabase.localDbInfo.get(JsonKeys.VERSION_ITERATION).getAsInt();
+            YdmDatabase.localVersionId = YdmDatabase.localDbInfo.get(JsonKeys.DB_ID).getAsString();
             
             return true;
         }
@@ -135,9 +152,10 @@ public class YdmDatabase
             URL url = new URL(YDM.dbSourceUrl);
             try(InputStream in = YdmIOUtil.urlInputStream(url))
             {
-                YdmDatabase.remoteVersion = YdmIOUtil.parseJsonFile(new InputStreamReader(in)).getAsJsonObject();
-                YdmDatabase.remoteVersionIteration = YdmDatabase.remoteVersion.get(JsonKeys.VERSION_ITERATION).getAsInt();
-                YdmDatabase.remoteDownloadLink = YdmDatabase.remoteVersion.get(JsonKeys.DOWNLOAD_LINK).getAsString();
+                YdmDatabase.remoteDbInfo = YdmIOUtil.parseJsonFile(new InputStreamReader(in)).getAsJsonObject();
+                YdmDatabase.remoteVersionIteration = YdmDatabase.remoteDbInfo.get(JsonKeys.VERSION_ITERATION).getAsInt();
+                YdmDatabase.remoteDownloadLink = YdmDatabase.remoteDbInfo.get(JsonKeys.DOWNLOAD_LINK).getAsString();
+                YdmDatabase.remoteVersionId = YdmDatabase.remoteDbInfo.get(JsonKeys.DB_ID).getAsString();
             }
             
             return true;
@@ -159,6 +177,7 @@ public class YdmDatabase
     private static void readFiles()
     {
         YDM.log("Reading database!");
+        YdmDatabase.databaseReady = true;
         
         CustomCards.createAndRegisterEverything();
         
@@ -283,7 +302,7 @@ public class YdmDatabase
         
         try(FileWriter fw = new FileWriter(dbJson))
         {
-            YdmIOUtil.GSON.toJson(YdmDatabase.remoteVersion, fw);
+            YdmIOUtil.GSON.toJson(YdmDatabase.remoteDbInfo, fw);
             fw.flush();
         }
         
