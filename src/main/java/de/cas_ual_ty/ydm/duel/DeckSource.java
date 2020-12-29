@@ -199,7 +199,7 @@ public class DeckSource
         .name("Cosmic Cyclone")
         .repeat()
         .name("Called by the Grave")
-        .name("Crossout Designator")
+        .name("Prohibition")
         .repeat()
         .name("Cubic Dharma")
         .name("Cubic Karma")
