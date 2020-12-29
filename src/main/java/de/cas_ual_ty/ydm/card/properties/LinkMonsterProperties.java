@@ -1,7 +1,10 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -53,13 +56,25 @@ public class LinkMonsterProperties extends MonsterProperties
     public void readLinkMonsterProperties(JsonObject j)
     {
         this.linkRating = j.get(JsonKeys.LINK_RATING).getAsByte();
-        this.linkArrows = LinkArrow.fromShort(j.get(JsonKeys.LINK_ARROWS).getAsShort());
+        
+        JsonArray linkArrows = j.get(JsonKeys.LINK_ARROWS).getAsJsonArray();
+        this.linkArrows = new ArrayList<>(linkArrows.size());
+        for(JsonElement linkArrow : linkArrows)
+        {
+            this.linkArrows.add(LinkArrow.fromString(linkArrow.getAsString()));
+        }
     }
     
     public void writeLinkProperties(JsonObject j)
     {
         j.addProperty(JsonKeys.LINK_RATING, this.linkRating);
-        j.addProperty(JsonKeys.LINK_ARROWS, LinkArrow.toShort(this.linkArrows));
+        
+        JsonArray linkArrows = new JsonArray();
+        for(LinkArrow linkArrow : this.linkArrows)
+        {
+            linkArrows.add(linkArrow.name);
+        }
+        j.add(JsonKeys.LINK_ARROWS, linkArrows);
     }
     
     @Override

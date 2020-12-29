@@ -50,43 +50,6 @@ public enum LinkArrow
         return null;
     }
     
-    public static List<LinkArrow> fromShort(short sum)
-    {
-        if(sum == 0)
-        {
-            return new ArrayList<>(0);
-        }
-        else
-        {
-            List<LinkArrow> list = new ArrayList<>(1);
-            
-            LinkArrow linkArrow;
-            for(int i = LinkArrow.VALUES.length - 1; i >= 0; --i)
-            {
-                linkArrow = LinkArrow.VALUES[i];
-                if(sum >= linkArrow.number)
-                {
-                    list.add(0, linkArrow);
-                    sum %= linkArrow.number;
-                }
-            }
-            
-            return list;
-        }
-    }
-    
-    public static short toShort(List<LinkArrow> linkArrows)
-    {
-        short sum = 0;
-        
-        for(LinkArrow linkArrow : linkArrows)
-        {
-            sum += linkArrow.number;
-        }
-        
-        return sum;
-    }
-    
     public static List<ITextComponent> buildSymbolsString(List<LinkArrow> arrows, TextFormatting unactive, TextFormatting active, String joiner)
     {
         LinkArrow arrow;
