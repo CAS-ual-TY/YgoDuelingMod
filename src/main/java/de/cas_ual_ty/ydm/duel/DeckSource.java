@@ -237,7 +237,7 @@ public class DeckSource
         return DeckSource.makeDeckSource(DeckSource.OJAMA_DECK_MAKER, new StringTextComponent("CAS_ual_TY's Ojarampage"), (c) -> c.getProperties().getName().equals("Ojama Delta Hurricane!!"));
     }
     
-    public static List<DeckSource> getAllPatreonDecks()
+    public static List<DeckSource> getAllPatreonDeckSources()
     {
         List<DeckSource> list = new LinkedList<>();
         

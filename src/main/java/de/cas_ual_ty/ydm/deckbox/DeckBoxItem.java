@@ -2,6 +2,8 @@ package de.cas_ual_ty.ydm.deckbox;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
+import de.cas_ual_ty.ydm.YdmItems;
+import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -70,9 +72,63 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         return new TranslationTextComponent("container." + YDM.MOD_ID + ".deck_box");
     }
     
-    public DeckHolder getDeckHolder(ItemStack itemStack)
+    public ItemHandlerDeckHolder getDeckHolder(ItemStack itemStack)
     {
         return new ItemHandlerDeckHolder(this.getItemHandler(itemStack));
+    }
+    
+    public void setDeckHolder(ItemStack itemStack, DeckHolder holder)
+    {
+        IItemHandler itemHandler = new ItemStackHandler(DeckHolder.TOTAL_DECK_SIZE);
+        
+        CardHolder c;
+        
+        for(int i = 0; i < holder.getMainDeckSize(); ++i)
+        {
+            c = holder.getMainDeck().get(i);
+            
+            if(c != null)
+            {
+                itemHandler.insertItem(DeckHolder.MAIN_DECK_INDEX_START + i, YdmItems.CARD.createItemForCardHolder(c), false);
+            }
+        }
+        
+        for(int i = holder.getMainDeckSize(); i < DeckHolder.MAIN_DECK_SIZE; ++i)
+        {
+            itemHandler.insertItem(DeckHolder.MAIN_DECK_INDEX_START + i, ItemStack.EMPTY, false);
+        }
+        
+        for(int i = 0; i < holder.getExtraDeckSize(); ++i)
+        {
+            c = holder.getExtraDeck().get(i);
+            
+            if(c != null)
+            {
+                itemHandler.insertItem(DeckHolder.EXTRA_DECK_INDEX_START + i, YdmItems.CARD.createItemForCardHolder(c), false);
+            }
+        }
+        
+        for(int i = holder.getExtraDeckSize(); i < DeckHolder.EXTRA_DECK_SIZE; ++i)
+        {
+            itemHandler.insertItem(DeckHolder.EXTRA_DECK_INDEX_START + i, ItemStack.EMPTY, false);
+        }
+        
+        for(int i = 0; i < holder.getSideDeckSize(); ++i)
+        {
+            c = holder.getSideDeck().get(i);
+            
+            if(c != null)
+            {
+                itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, YdmItems.CARD.createItemForCardHolder(c), false);
+            }
+        }
+        
+        for(int i = holder.getSideDeckSize(); i < DeckHolder.SIDE_DECK_SIZE; ++i)
+        {
+            itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, ItemStack.EMPTY, false);
+        }
+        
+        this.saveItemHandlerToNBT(itemStack, itemHandler);
     }
     
     public static ItemStack getActiveDeckBox(PlayerEntity player)

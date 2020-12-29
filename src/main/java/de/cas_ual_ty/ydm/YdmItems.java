@@ -4,6 +4,7 @@ import de.cas_ual_ty.ydm.card.CardItem;
 import de.cas_ual_ty.ydm.card.CosmeticItem;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderItem;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
+import de.cas_ual_ty.ydm.deckbox.PatreonDeckBoxItem;
 import de.cas_ual_ty.ydm.duel.dueldisk.DuelDiskItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
@@ -54,6 +55,7 @@ public class YdmItems
     public static final DeckBoxItem GOLD_DECK_BOX = null;
     public static final DeckBoxItem DIAMOND_DECK_BOX = null;
     public static final DeckBoxItem EMERALD_DECK_BOX = null;
+    public static final DeckBoxItem PATREON_DECK_BOX = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
@@ -94,5 +96,6 @@ public class YdmItems
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "gold_deck_box"));
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "diamond_deck_box"));
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "emerald_deck_box"));
+        registry.register(new PatreonDeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "patreon_deck_box"));
     }
 }
