@@ -94,7 +94,7 @@ public class CardRenderUtil
             FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
             
             List<ITextComponent> list = new LinkedList<>();
-            card.getProperties().addInformation(list);
+            card.getCard().addInformation(list);
             
             ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
         }

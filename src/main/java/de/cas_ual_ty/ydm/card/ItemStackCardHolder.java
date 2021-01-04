@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.card;
 
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 
@@ -9,7 +10,7 @@ public class ItemStackCardHolder extends CardHolder
     
     public ItemStackCardHolder(ItemStack itemStack)
     {
-        super(null, (byte)-1, null);
+        super();
         this.itemStack = itemStack;
         this.readCardHolderFromNBT(this.getNBT());
     }
@@ -25,23 +26,30 @@ public class ItemStackCardHolder extends CardHolder
     }
     
     @Override
-    public void setCard(Card card)
+    public void setCard(Properties card)
     {
         super.setCard(card);
         this.saveToItemStack();
     }
     
     @Override
-    public void overrideImageIndex(byte imageIndex)
+    public void setImageIndex(byte imageIndex)
     {
-        super.overrideImageIndex(imageIndex);
+        super.setImageIndex(imageIndex);
         this.saveToItemStack();
     }
     
     @Override
-    public void overrideRarity(String rarity)
+    public void setRarity(String rarity)
     {
-        super.overrideRarity(rarity);
+        super.setRarity(rarity);
+        this.saveToItemStack();
+    }
+    
+    @Override
+    public void setCode(String code)
+    {
+        super.setCode(code);
         this.saveToItemStack();
     }
     

@@ -13,8 +13,6 @@ import javax.annotation.Nullable;
 import com.google.common.collect.ImmutableList;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionTypes;
@@ -582,7 +580,7 @@ public class DuelManager
         
         FindDecksEvent e = new FindDecksEvent(player, this);
         MinecraftForge.EVENT_BUS.post(e);
-        e.decksList.add(new DeckSource(DeckHolder.DUMMY, YdmItems.CARD.createItemForCard(CustomCards.DUMMY_CARD))); // empty deck
+        e.decksList.add(DeckSource.EMPTY_DECK.get()); // empty deck
         return e.decksList;
     }
     

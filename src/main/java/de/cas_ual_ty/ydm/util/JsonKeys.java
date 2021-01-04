@@ -52,14 +52,27 @@ public class JsonKeys
     public static final String PENDULUM_SCALE_LEFT_BLUE = "pendulum_scale_left_blue";
     public static final String PENDULUM_SCALE_RIGHT_RED = "pendulum_scale_right_red";
     
-    // set entries
+    // sets and set entries
     
-    public static final String SET_ID = "set_id";
+    public static final String CODE = "code";
+    public static final String DATE = "date";
+    public static final String PULL_TYPE = "pull_type";
     public static final String IMAGE_INDEX = "image_index";
     public static final String RARITY = "rarity";
+    public static final String CARDS = "cards";
+    public static final String DISTRIBUTION = "distribution";
+    public static final String AMOUNT = "amount";
+    public static final String SUB_SETS = "sub_sets";
+    
+    // distribution
+    
+    public static final String PULLS = "pulls";
+    public static final String WEIGHT = "weight";
+    public static final String ENTRIES = "rarities";
+    public static final String RARITIES = "rarities";
+    public static final String COUNT = "count";
     
     // other
     
-    public static final String COUNT = "count";
     public static final String UUID = "uuid";
 }

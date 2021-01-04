@@ -19,7 +19,7 @@ import javax.imageio.ImageIO;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.card.Card;
+import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.task.Task;
 import de.cas_ual_ty.ydm.task.TaskPriority;
@@ -40,7 +40,7 @@ public class ImageHandler
     // put raw image in the raw images folder
     // make sure all size folders (16, 32, 64... exist)
     @Deprecated // so I get a warning
-    public static void createCustomCardImages(Card card) throws IOException
+    public static void createCustomCardImages(Properties card) throws IOException
     {
         YDM.log("creating custom card images!");
         
@@ -54,8 +54,8 @@ public class ImageHandler
             size = YdmUtil.getPow2(i);
             YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
             ImageHandler.adjustRawImage(
-                ImageHandler.getAdjustedImageFile(card.getImageName(), size),
-                ImageHandler.getRawImageFile(card.getImageName()),
+                ImageHandler.getAdjustedImageFile(card.getImageName((byte)0), size),
+                ImageHandler.getRawImageFile(card.getImageName((byte)0)),
                 size);
         }
     }
@@ -326,26 +326,26 @@ public class ImageHandler
         return new File(ClientProxy.cardImagesFolder, imagePathName);
     }
     
-    public static List<Card> getMissingItemImages()
+    public static List<CardHolder> getMissingItemImages()
     {
-        List<Card> list = new LinkedList<>();
+        List<CardHolder> list = new LinkedList<>();
         
-        for(Card card : YdmDatabase.CARDS_LIST)
+        YdmDatabase.forAllCardVariants((card, imageIndex) ->
         {
-            if(!card.isHardcoded() && !ImageHandler.getImageFile(card.getItemImageName()).exists())
+            if(!card.getIsHardcoded() && !ImageHandler.getImageFile(card.getItemImageName(imageIndex)).exists())
             {
-                list.add(card);
+                list.add(new CardHolder(card, imageIndex, null, null));
             }
-        }
+        });
         
         return list;
     }
     
-    public static void downloadCardImages(List<Card> missingList)
+    public static void downloadCardImages(List<CardHolder> missingList)
     {
-        for(Card card : missingList)
+        for(CardHolder card : missingList)
         {
-            ImageHandler.makeImageReady(card.getProperties(), card.getImageIndex(), ClientProxy.activeItemImageSize);
+            ImageHandler.makeImageReady(card.getCard(), card.getImageIndex(), ClientProxy.activeItemImageSize);
         }
     }
     

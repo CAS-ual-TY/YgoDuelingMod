@@ -1,13 +1,12 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -119,29 +118,12 @@ public class CardBinderMessages
         public static void encode(UpdateList msg, PacketBuffer buf)
         {
             buf.writeInt(msg.page);
-            
-            buf.writeInt(msg.list.size());
-            for(CardHolder cardHolder : msg.list)
-            {
-                buf.writeString(cardHolder.getCard().getSetId(), 0x100);
-                buf.writeByte(cardHolder.getOverriddenImageIndex());
-                buf.writeString(cardHolder.getOverriddenRarity() != null ? cardHolder.getOverriddenRarity() : "", 0x100);
-            }
+            DuelMessageUtility.encodeList(msg.list, buf, DuelMessageUtility::encodeCardHolder);
         }
         
         public static UpdateList decode(PacketBuffer buf)
         {
-            int page = buf.readInt();
-            
-            int size = buf.readInt();
-            List<CardHolder> list = new ArrayList<>(size);
-            
-            for(int i = 0; i < size; ++i)
-            {
-                list.add(new CardHolder(YdmDatabase.CARDS_LIST.get(buf.readString(0x100)), buf.readByte(), buf.readString(0x100)));
-            }
-            
-            return new UpdateList(page, list);
+            return new UpdateList(buf.readInt(), DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeCardHolder));
         }
         
         public static void handle(UpdateList msg, Supplier<NetworkEvent.Context> ctx)

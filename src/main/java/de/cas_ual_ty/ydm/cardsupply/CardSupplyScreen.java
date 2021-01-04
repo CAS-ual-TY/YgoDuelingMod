@@ -10,9 +10,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.cardbinder.CardButton;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
@@ -50,7 +48,7 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
         super(screenContainer, inv, titleIn);
         this.xSize = 176;
         this.ySize = 114 + 6 * 18; //222
-        this.cardsList = new ArrayList<>(YdmDatabase.CARDS_LIST.size());
+        this.cardsList = new ArrayList<>(YdmDatabase.getTotalCardsAndVariants());
     }
     
     @Override
@@ -181,13 +179,13 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
         this.cardsList.clear();
         this.page = 0;
         
-        for(Card c : YdmDatabase.CARDS_LIST)
+        YdmDatabase.forAllCardVariants((card, imageIndex) ->
         {
-            if(c.getProperties().getName().toLowerCase().contains(name))
+            if(card.getName().toLowerCase().contains(name))
             {
-                this.cardsList.add(new CardHolder(c, (byte)-1, Rarity.SUPPLY.name));
+                this.cardsList.add(new CardHolder(card, imageIndex, Rarity.SUPPLY.name));
             }
-        }
+        });
     }
     
     public void updateCards()
@@ -195,20 +193,17 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
         this.page = 0;
         this.cardsList.clear();
         
-        for(Card c : YdmDatabase.CARDS_LIST)
+        YdmDatabase.forAllCardVariants((card, imageIndex) ->
         {
-            if(c != CustomCards.DUMMY_CARD)
-            {
-                this.cardsList.add(new CardHolder(c, (byte)-1, Rarity.SUPPLY.name));
-            }
-        }
+            this.cardsList.add(new CardHolder(card, imageIndex, Rarity.SUPPLY.name));
+        });
     }
     
     protected void onCardClicked(CardButton button, int index)
     {
         if(button.getCard() != null && button.getCard().getCard() != null)
         {
-            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardSupplyMessages.RequestCard(button.getCard().getCard()));
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardSupplyMessages.RequestCard(button.getCard().getCard(), button.getCard().getImageIndex()));
         }
     }
     

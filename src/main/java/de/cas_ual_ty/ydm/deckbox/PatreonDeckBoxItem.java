@@ -23,9 +23,9 @@ public class PatreonDeckBoxItem extends DeckBoxItem
             
             if(YdmDatabase.databaseReady)
             {
-                items.add(this.makeItemStackFromDeckSource(DeckSource.getOjamaDeck()));
+                items.add(this.makeItemStackFromDeckSource(CustomDecks.getOjamaDeck()));
                 
-                for(DeckSource s : DeckSource.getAllPatreonDeckSources())
+                for(DeckSource s : CustomDecks.getAllPatreonDeckSources())
                 {
                     items.add(this.makeItemStackFromDeckSource(s));
                 }

@@ -59,7 +59,15 @@ public class CardHolderStack
     public static int compareCardHolders(CardHolder h1, CardHolder h2)
     {
         // Compare card name
-        int comp = h1.getCard().getProperties().getName().compareTo(h2.getCard().getProperties().getName());
+        int comp = h1.getCard().getName().compareTo(h2.getCard().getName());
+        
+        if(comp != 0)
+        {
+            return comp;
+        }
+        
+        // Compare image index
+        comp = Byte.compare(h1.getImageIndex(), h2.getImageIndex());
         
         if(comp != 0)
         {
@@ -67,63 +75,14 @@ public class CardHolderStack
         }
         
         // Compare set id
-        comp = h1.getCard().getSetId().compareTo(h2.getCard().getSetId());
+        comp = h1.getCode().compareTo(h2.getCode());
         
         if(comp != 0)
         {
             return comp;
         }
         
-        // Compare active image index
-        comp = Byte.compare(h1.getActiveImageIndex(), h2.getActiveImageIndex());
-        
-        if(comp != 0)
-        {
-            return comp;
-        }
-        
-        // Compare active rarity
-        comp = h1.getActiveRarity().compareTo(h2.getActiveRarity());
-        
-        if(comp != 0)
-        {
-            return comp;
-        }
-        
-        // If active image index and rarity are the same,
-        // prioritize modified ones
-        
-        // Compare overridden image index
-        // -1 is nothing and should come after any other
-        // so negate result
-        comp = -Byte.compare(h1.getOverriddenImageIndex(), h2.getOverriddenImageIndex());
-        
-        if(comp != 0)
-        {
-            return comp;
-        }
-        
-        // Compare active rarity
-        // if one is null and two is not null, two is preferred
-        if(h1.getOverriddenRarity() == null)
-        {
-            if(h2.getOverriddenRarity() != null)
-            {
-                // one is null, two is not null
-                // so one comes after two
-                return 1;
-            }
-        }
-        else
-        {
-            if(h2.getOverriddenRarity() == null)
-            {
-                // one is not null, two is null
-                // so one comes before two
-                return -1;
-            }
-        }
-        
-        return 0;
+        // Compare rarity
+        return h1.getRarity().compareTo(h2.getRarity());
     }
 }

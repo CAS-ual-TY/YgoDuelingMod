@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -11,7 +12,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.Card;
+import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.cardsupply.CardSupplyScreen;
@@ -111,7 +112,7 @@ public class ClientProxy implements ISidedProxy
         {
             try
             {
-                List<Card> list = ImageHandler.getMissingItemImages();
+                List<CardHolder> list = ImageHandler.getMissingItemImages();
                 
                 if(list.size() == 0)
                 {
@@ -240,12 +241,14 @@ public class ClientProxy implements ISidedProxy
         
         if(ClientProxy.itemsUseCardImagesActive)
         {
-            YDM.log("Stitching " + YdmDatabase.CARDS_LIST.size() + " card item textures!");
+            YDM.log("Stitching " + YdmDatabase.getTotalCardsAndVariants() + " card item textures!");
             
-            for(Card card : YdmDatabase.CARDS_LIST)
+            AtomicInteger count = new AtomicInteger(0);
+            YdmDatabase.forAllCardVariants((card, imageIndex) ->
             {
-                event.addSprite(card.getItemImageResourceLocation());
-            }
+                event.addSprite(card.getItemImageResourceLocation(imageIndex));
+                count.incrementAndGet();
+            });
         }
     }
     

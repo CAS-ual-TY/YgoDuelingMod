@@ -105,7 +105,7 @@ public class CardInventory implements ICardInventory
         {
             for(CardHolder card : this.list)
             {
-                if(card.getProperties().getName().contains(search))
+                if(card.getCard().getName().contains(search))
                 {
                     this.activeList.add(card);
                 }

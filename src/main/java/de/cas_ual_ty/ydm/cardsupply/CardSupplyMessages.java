@@ -4,8 +4,8 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CustomCards;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
@@ -23,34 +23,37 @@ public class CardSupplyMessages
     
     public static class RequestCard
     {
-        public Card card;
+        public Properties card;
+        public byte imageIndex;
         
-        public RequestCard(Card card)
+        public RequestCard(Properties card, byte imageIndex)
         {
             this.card = card;
+            this.imageIndex = imageIndex;
         }
         
         public static void encode(RequestCard msg, PacketBuffer buf)
         {
-            buf.writeString(msg.card.getSetId(), 0x100);
+            buf.writeLong(msg.card.getId());
+            buf.writeByte(msg.imageIndex);
         }
         
         public static RequestCard decode(PacketBuffer buf)
         {
-            return new RequestCard(YdmDatabase.CARDS_LIST.get(buf.readString(0x100)));
+            return new RequestCard(YdmDatabase.PROPERTIES_LIST.get(buf.readLong()), buf.readByte());
         }
         
         public static void handle(RequestCard msg, Supplier<NetworkEvent.Context> ctx)
         {
             Context context = ctx.get();
             
-            if(msg.card != null && msg.card != CustomCards.DUMMY_CARD)
+            if(msg.card != null && msg.card != CustomCards.DUMMY_PROPERTIES)
             {
                 context.enqueueWork(() ->
                 {
                     CardSupplyMessages.doForBinderContainer(context.getSender(), (container) ->
                     {
-                        container.giveCard(msg.card);
+                        container.giveCard(msg.card, msg.imageIndex);
                     });
                 });
             }

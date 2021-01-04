@@ -7,16 +7,18 @@ import java.util.UUID;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.card.CustomCards;
+import de.cas_ual_ty.ydm.card.Rarity;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
+import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.EntityArgument;
@@ -36,14 +38,18 @@ public class YdmCommand
                     .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
                     .then(Commands.literal("get")
                         .requires((source) -> source.getEntity() instanceof PlayerEntity)
-                        .then(Commands.argument("set-id", StringArgumentType.word())
-                            .executes((context) -> YdmCommand.cardsGet(context, context.getArgument("set-id", String.class)))))
+                        .then(Commands.argument(JsonKeys.ID, LongArgumentType.longArg())
+                            .then(Commands.argument(JsonKeys.IMAGE_INDEX, IntegerArgumentType.integer(0, Byte.MAX_VALUE))
+                                .executes((context) -> YdmCommand.cardsGet(context, LongArgumentType.getLong(context, JsonKeys.ID), context.getArgument(JsonKeys.IMAGE_INDEX, Byte.class))))
+                            .executes((context) -> YdmCommand.cardsGet(context, LongArgumentType.getLong(context, JsonKeys.ID), (byte)0))))
                     .then(Commands.literal("give")
                         .then(Commands.argument("targets", EntityArgument.players())
-                            .then(Commands.argument("set-id", StringArgumentType.word())
-                                .executes((context) -> YdmCommand.cardsGive(context, StringArgumentType.getString(context, "set-id"), EntityArgument.getPlayers(context, "targets"), 1))
+                            .then(Commands.argument(JsonKeys.ID, LongArgumentType.longArg())
+                                .then(Commands.argument(JsonKeys.IMAGE_INDEX, IntegerArgumentType.integer(0, Byte.MAX_VALUE))
+                                    .executes((context) -> YdmCommand.cardsGive(context, LongArgumentType.getLong(context, JsonKeys.ID), context.getArgument(JsonKeys.IMAGE_INDEX, Byte.class), EntityArgument.getPlayers(context, "targets"), 1)))
+                                .executes((context) -> YdmCommand.cardsGive(context, LongArgumentType.getLong(context, JsonKeys.ID), (byte)0, EntityArgument.getPlayers(context, "targets"), 1))
                                 .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                                    .executes((context) -> YdmCommand.cardsGive(context, StringArgumentType.getString(context, "set-id"), EntityArgument.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "count"))))))))
+                                    .executes((context) -> YdmCommand.cardsGive(context, LongArgumentType.getLong(context, JsonKeys.ID), (byte)0, EntityArgument.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "count"))))))))
                 .then(Commands.literal("binders")
                     .then(Commands.literal("uuid")
                         .requires((source) -> source.getEntity() instanceof PlayerEntity)
@@ -65,16 +71,16 @@ public class YdmCommand
         );
     }
     
-    public static int cardsGet(CommandContext<CommandSource> context, String setId)
+    public static int cardsGet(CommandContext<CommandSource> context, long id, byte imageIndex)
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            Card card = YdmDatabase.CARDS_LIST.get(setId);
+            Properties card = YdmDatabase.PROPERTIES_LIST.get(id);
             
             if(card != null)
             {
                 PlayerEntity player = (PlayerEntity)context.getSource().getEntity();
-                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card));
+                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
             }
             
             return Command.SINGLE_SUCCESS;
@@ -83,19 +89,19 @@ public class YdmCommand
         return 0;
     }
     
-    public static int cardsGive(CommandContext<CommandSource> context, String setId, Collection<ServerPlayerEntity> players, int amount)
+    public static int cardsGive(CommandContext<CommandSource> context, long id, byte imageIndex, Collection<ServerPlayerEntity> players, int amount)
     {
-        Card card = YdmDatabase.CARDS_LIST.get(setId);
+        Properties card = YdmDatabase.PROPERTIES_LIST.get(id);
         
         if(card != null)
         {
             for(ServerPlayerEntity player : players)
             {
-                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card));
+                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
             }
         }
         
-        context.getSource().sendFeedback(new StringTextComponent("Given \"" + card.getProperties().getName() + "\" (" + setId + ") to " + players.size() + " players!"), true);
+        context.getSource().sendFeedback(new StringTextComponent("Given \"" + card.getName() + "\" (" + imageIndex + ") to " + players.size() + " players!"), true);
         
         return players.size();
     }
@@ -191,20 +197,13 @@ public class YdmCommand
                     
                     List<CardHolder> list = m.forceGetList();
                     
-                    int i;
-                    CardHolder h;
-                    
-                    for(Card card : YdmDatabase.CARDS_LIST)
+                    YdmDatabase.forAllCardVariants((card, imageIndex) ->
                     {
-                        if(card != CustomCards.DUMMY_CARD)
+                        for(int i = 0; i < amount; ++i)
                         {
-                            for(i = 0; i < amount; ++i)
-                            {
-                                h = new CardHolder(card);
-                                list.add(h);
-                            }
+                            list.add(new CardHolder(card, imageIndex, Rarity.CREATIVE.name));
                         }
-                    }
+                    });
                     
                     // --- Saving ---
                     

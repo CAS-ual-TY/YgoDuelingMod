@@ -1,9 +1,9 @@
 package de.cas_ual_ty.ydm.cardsupply;
 
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -45,9 +45,9 @@ public class CardSupplyContainer extends Container
         }
     }
     
-    public void giveCard(Card card)
+    public void giveCard(Properties card, byte imageIndex)
     {
-        this.player.addItemStackToInventory(YdmItems.CARD.createItemForCardHolder(new CardHolder(card, (byte)-1, Rarity.SUPPLY.name)));
+        this.player.addItemStackToInventory(YdmItems.CARD.createItemForCardHolder(new CardHolder(card, imageIndex, Rarity.SUPPLY.name)));
     }
     
     @Override

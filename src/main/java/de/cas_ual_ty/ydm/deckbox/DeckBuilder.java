@@ -5,8 +5,8 @@ import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.Rarity;
 
 public class DeckBuilder
 {
@@ -106,12 +106,6 @@ public class DeckBuilder
         return this;
     }
     
-    public DeckBuilder setId(String setId)
-    {
-        this.addEntry(new SetIdEntry(setId));
-        return this;
-    }
-    
     public DeckBuilder repeat()
     {
         LinkedList<Entry> list = this.getList();
@@ -135,7 +129,7 @@ public class DeckBuilder
         {
             DeckHolder deck = new DeckHolder();
             
-            Card card;
+            CardHolder card;
             
             for(Entry s : this.main)
             {
@@ -143,7 +137,7 @@ public class DeckBuilder
                 
                 if(card != null)
                 {
-                    deck.getMainDeck().add(new CardHolder(card));
+                    deck.getMainDeck().add(card);
                 }
                 else
                 {
@@ -157,7 +151,7 @@ public class DeckBuilder
                 
                 if(card != null)
                 {
-                    deck.getExtraDeck().add(new CardHolder(card));
+                    deck.getExtraDeck().add(card);
                 }
                 else
                 {
@@ -171,7 +165,7 @@ public class DeckBuilder
                 
                 if(card != null)
                 {
-                    deck.getSideDeck().add(new CardHolder(card));
+                    deck.getSideDeck().add(card);
                 }
                 else
                 {
@@ -183,7 +177,7 @@ public class DeckBuilder
         };
     }
     
-    private static abstract class Entry implements Supplier<Card>
+    private static abstract class Entry implements Supplier<CardHolder>
     {
         public abstract String getErrorString();
     }
@@ -199,10 +193,15 @@ public class DeckBuilder
             this.imageIndex = imageIndex;
         }
         
-        @Override
-        public Card get()
+        public IdEntry(long id)
         {
-            return YdmDatabase.CARDS_LIST.getFirst((t) -> t.getProperties().getId() == this.id && t.getImageIndex() == this.imageIndex);
+            this(id, (byte)0);
+        }
+        
+        @Override
+        public CardHolder get()
+        {
+            return new CardHolder(YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getId() == this.id), this.imageIndex, Rarity.CREATIVE.name);
         }
         
         @Override
@@ -224,37 +223,15 @@ public class DeckBuilder
         }
         
         @Override
-        public Card get()
+        public CardHolder get()
         {
-            return YdmDatabase.CARDS_LIST.getFirst((t) -> t.getProperties().getName().equals(this.name) && t.getImageIndex() == this.imageIndex);
+            return new CardHolder(YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getName().equals(this.name)), this.imageIndex, Rarity.CREATIVE.name);
         }
         
         @Override
         public String getErrorString()
         {
             return "Name Entry (name, image index): " + this.name + " " + this.imageIndex;
-        }
-    }
-    
-    private static class SetIdEntry extends Entry
-    {
-        private final String setId;
-        
-        public SetIdEntry(String setId)
-        {
-            this.setId = setId;
-        }
-        
-        @Override
-        public Card get()
-        {
-            return YdmDatabase.CARDS_LIST.get(this.setId);
-        }
-        
-        @Override
-        public String getErrorString()
-        {
-            return "Set-Id Entry (set-id): " + this.setId;
         }
     }
 }

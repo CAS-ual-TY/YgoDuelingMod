@@ -24,6 +24,8 @@ public class Properties
     public Type type;
     public String[] images;
     
+    protected int imageIndicesAmt;
+    
     public Properties(Properties p0)
     {
         this.isHardcoded = false;
@@ -34,17 +36,20 @@ public class Properties
         this.text = p0.text;
         this.type = p0.type;
         this.images = p0.images;
+        this.imageIndicesAmt = this.images.length;
     }
     
     public Properties(JsonObject j)
     {
         this.isHardcoded = false;
         this.readAllProperties(j);
+        this.imageIndicesAmt = 1;
     }
     
     public Properties()
     {
         this.isHardcoded = false;
+        this.imageIndicesAmt = 1;
     }
     
     public void readAllProperties(JsonObject j)
@@ -109,6 +114,11 @@ public class Properties
     public boolean getIsMonster()
     {
         return this.getType() == Type.MONSTER;
+    }
+    
+    public int getImageIndicesAmt()
+    {
+        return this.imageIndicesAmt;
     }
     
     public String getImageURL(byte imageIndex)

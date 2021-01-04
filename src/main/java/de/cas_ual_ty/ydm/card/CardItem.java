@@ -46,7 +46,7 @@ public class CardItem extends Item
         }
         else
         {
-            return new StringTextComponent(holder.getProperties().getName());
+            return new StringTextComponent(holder.getCard().getName());
         }
     }
     
@@ -55,11 +55,23 @@ public class CardItem extends Item
         return new ItemStackCardHolder(itemStack);
     }
     
-    public ItemStack createItemForCard(Card card)
+    public ItemStack createItemForCard(de.cas_ual_ty.ydm.card.properties.Properties card, byte imageIndex, String rarity, String code)
     {
         ItemStack itemStack = new ItemStack(this);
-        this.getCardHolder(itemStack).setCard(card);
+        this.getCardHolder(itemStack).override(new CardHolder(card, imageIndex, rarity, code));
         return itemStack;
+    }
+    
+    public ItemStack createItemForCard(de.cas_ual_ty.ydm.card.properties.Properties card, byte imageIndex, String rarity)
+    {
+        ItemStack itemStack = new ItemStack(this);
+        this.getCardHolder(itemStack).override(new CardHolder(card, imageIndex, rarity));
+        return itemStack;
+    }
+    
+    public ItemStack createItemForCard(de.cas_ual_ty.ydm.card.properties.Properties card)
+    {
+        return this.createItemForCard(card, (byte)0, Rarity.CREATIVE.name);
     }
     
     public ItemStack createItemForCardHolder(CardHolder card)
@@ -77,24 +89,10 @@ public class CardItem extends Item
             return;
         }
         
-        //        YDM.log("Creating card item variants (" + YdmDatabase.CARDS_LIST.size() + " different variants)");
-        
-        ItemStack itemStack;
-        CardHolder holder;
-        
-        for(Card card : YdmDatabase.CARDS_LIST)
+        YdmDatabase.forAllCardVariants((card, imageIndex) ->
         {
-            if(card == CustomCards.DUMMY_CARD)
-            {
-                continue;
-            }
-            
-            // not using ::createItemForCard to conserve the memory of the method calls
-            itemStack = new ItemStack(this);
-            holder = this.getCardHolder(itemStack);
-            holder.setCard(card);
-            items.add(itemStack);
-        }
+            items.add(this.createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
+        });
     }
     
     @Override

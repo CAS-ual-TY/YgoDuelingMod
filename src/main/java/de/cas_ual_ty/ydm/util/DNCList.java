@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -174,6 +175,26 @@ public class DNCList<K, V> implements Iterable<V>
         this.list.add(value);
     }
     
+    public void addAll(Collection<V> collection)
+    {
+        if(this.isSorted)
+        {
+            this.isSorted = false;
+        }
+        
+        this.list.addAll(collection);
+    }
+    
+    public void addAll(DNCList<K, V> list)
+    {
+        if(this.isSorted)
+        {
+            this.isSorted = false;
+        }
+        
+        this.list.addAll(list.list);
+    }
+    
     public void addKeepSorted(V value)
     {
         K key = this.keyExtractor.getKeyFrom(value);
@@ -232,6 +253,11 @@ public class DNCList<K, V> implements Iterable<V>
     public void ensureExtraCapacity(int size)
     {
         this.list.ensureCapacity(this.list.size() + size);
+    }
+    
+    public List<V> getList()
+    {
+        return this.list;
     }
     
     public List<V> getSubList(int min, int max)

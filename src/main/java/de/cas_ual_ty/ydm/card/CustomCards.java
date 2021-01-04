@@ -21,37 +21,37 @@ import net.minecraft.util.text.ITextComponent;
 public class CustomCards
 {
     public static Properties DUMMY_PROPERTIES;
-    public static Card DUMMY_CARD;
+    public static CardHolder DUMMY_CARD;
     
     public static LevelMonsterProperties PATREON_001_PROPERTIES;
-    public static Card PATREON_001_CARD;
+    public static CardHolder PATREON_001_CARD;
     
     public static LevelMonsterProperties PATREON_002_PROPERTIES;
-    public static Card PATREON_002_CARD;
+    public static CardHolder PATREON_002_CARD;
     
     public static LevelMonsterProperties PATREON_003_PROPERTIES;
-    public static Card PATREON_003_CARD;
+    public static CardHolder PATREON_003_CARD;
     
     public static LevelMonsterProperties PATREON_004_PROPERTIES;
-    public static Card PATREON_004_CARD;
+    public static CardHolder PATREON_004_CARD;
     
     public static LevelMonsterProperties PATREON_005_PROPERTIES;
-    public static Card PATREON_005_CARD;
+    public static CardHolder PATREON_005_CARD;
     
     public static SpellProperties PATREON_006_PROPERTIES;
-    public static Card PATREON_006_CARD;
+    public static CardHolder PATREON_006_CARD;
     
     public static SpellProperties PATREON_007_PROPERTIES;
-    public static Card PATREON_007_CARD;
+    public static CardHolder PATREON_007_CARD;
     
     public static LevelMonsterProperties PATREON_008_PROPERTIES;
-    public static Card PATREON_008_CARD;
+    public static CardHolder PATREON_008_CARD;
     
     public static LinkMonsterProperties PATREON_009_PROPERTIES;
-    public static Card PATREON_009_CARD;
+    public static CardHolder PATREON_009_CARD;
     
     public static XyzMonsterProperties PATREON_010_PROPERTIES;
-    public static Card PATREON_010_CARD;
+    public static CardHolder PATREON_010_CARD;
     
     public static void createAndRegisterEverything()
     {
@@ -78,13 +78,7 @@ public class CustomCards
         CustomCards.DUMMY_PROPERTIES.type = null;
         CustomCards.DUMMY_PROPERTIES.images = null;
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.DUMMY_PROPERTIES);
-        
-        CustomCards.DUMMY_CARD = new Card();
-        CustomCards.DUMMY_CARD.properties = CustomCards.DUMMY_PROPERTIES;
-        CustomCards.DUMMY_CARD.setId = "DUM-MY";
-        CustomCards.DUMMY_CARD.imageIndex = (byte)0;
-        CustomCards.DUMMY_CARD.rarity = Rarity.COMMON.name;
-        YdmDatabase.CARDS_LIST.add(CustomCards.DUMMY_CARD);
+        CustomCards.DUMMY_CARD = new CardHolder(CustomCards.DUMMY_PROPERTIES, (byte)0, Rarity.CREATIVE.name, "DUM-MY");
         
         CustomCards.PATREON_001_PROPERTIES = new LevelMonsterProperties();
         CustomCards.PATREON_001_PROPERTIES.isHardcoded = true;
@@ -107,7 +101,6 @@ public class CustomCards
         CustomCards.PATREON_001_PROPERTIES.isTuner = false;
         CustomCards.PATREON_001_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_001_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_001_PROPERTIES); // Wants Secret Rare
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_001_CARD);
         
         CustomCards.PATREON_002_PROPERTIES = new LevelMonsterProperties();
         CustomCards.PATREON_002_PROPERTIES.isHardcoded = true;
@@ -130,7 +123,6 @@ public class CustomCards
         CustomCards.PATREON_002_PROPERTIES.isTuner = false;
         CustomCards.PATREON_002_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_002_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_002_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_002_CARD);
         
         CustomCards.PATREON_003_PROPERTIES = new LevelMonsterProperties();
         CustomCards.PATREON_003_PROPERTIES.isHardcoded = true;
@@ -156,7 +148,6 @@ public class CustomCards
         CustomCards.PATREON_003_PROPERTIES.isTuner = false;
         CustomCards.PATREON_003_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_003_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_003_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_003_CARD);
         
         CustomCards.PATREON_004_PROPERTIES = new LevelMonsterProperties();
         CustomCards.PATREON_004_PROPERTIES.isHardcoded = true;
@@ -179,7 +170,6 @@ public class CustomCards
         CustomCards.PATREON_004_PROPERTIES.isTuner = false;
         CustomCards.PATREON_004_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_004_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_004_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_004_CARD);
         
         CustomCards.PATREON_005_PROPERTIES = new LevelMonsterProperties();
         CustomCards.PATREON_005_PROPERTIES.isHardcoded = true;
@@ -205,7 +195,6 @@ public class CustomCards
         CustomCards.PATREON_005_PROPERTIES.isTuner = false;
         CustomCards.PATREON_005_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_005_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_005_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_005_CARD);
         
         CustomCards.PATREON_006_PROPERTIES = new SpellProperties();
         CustomCards.PATREON_006_PROPERTIES.isHardcoded = true;
@@ -219,7 +208,6 @@ public class CustomCards
         CustomCards.PATREON_006_PROPERTIES.spellType = SpellType.FIELD;
         CustomCards.PATREON_006_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_006_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_006_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_006_CARD);
         
         CustomCards.PATREON_007_PROPERTIES = new SpellProperties();
         CustomCards.PATREON_007_PROPERTIES.isHardcoded = true;
@@ -233,7 +221,6 @@ public class CustomCards
         CustomCards.PATREON_007_PROPERTIES.spellType = SpellType.CONTINUOUS;
         CustomCards.PATREON_007_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_007_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_007_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_007_CARD);
         
         CustomCards.PATREON_008_PROPERTIES = new LevelMonsterProperties();
         CustomCards.PATREON_008_PROPERTIES.isHardcoded = true;
@@ -256,7 +243,6 @@ public class CustomCards
         CustomCards.PATREON_008_PROPERTIES.isTuner = false;
         CustomCards.PATREON_008_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_008_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_008_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_008_CARD);
         
         CustomCards.PATREON_009_PROPERTIES = new LinkMonsterProperties();
         CustomCards.PATREON_009_PROPERTIES.isHardcoded = true;
@@ -278,7 +264,6 @@ public class CustomCards
         CustomCards.PATREON_009_PROPERTIES.linkArrows = Lists.newArrayList(LinkArrow.TOP_RIGHT, LinkArrow.BOTTOM_RIGHT, LinkArrow.BOTTOM, LinkArrow.BOTTOM_LEFT);
         CustomCards.PATREON_009_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_009_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_009_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_009_CARD);
         
         CustomCards.PATREON_010_PROPERTIES = new XyzMonsterProperties();
         CustomCards.PATREON_010_PROPERTIES.isHardcoded = true;
@@ -300,16 +285,10 @@ public class CustomCards
         CustomCards.PATREON_010_PROPERTIES.rank = 4;
         CustomCards.PATREON_010_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_010_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_010_PROPERTIES);
-        YdmDatabase.CARDS_LIST.add(CustomCards.PATREON_010_CARD);
     }
     
-    public static Card createPatreonCard(Properties p) // add rarity here as parameter
+    public static CardHolder createPatreonCard(Properties c) // add rarity here as parameter
     {
-        Card card = new Card();
-        card.properties = p;
-        card.setId = "PATREON-" + p.id;
-        card.imageIndex = (byte)0;
-        card.rarity = Rarity.COMMON.name;
-        return card;
+        return new CardHolder(c, (byte)0, Rarity.COMMON.name, "PATREON-" + c.id);
     }
 }

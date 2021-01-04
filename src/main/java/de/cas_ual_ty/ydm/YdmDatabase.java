@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.LinkedList;
+import java.util.function.BiConsumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -20,9 +22,10 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
 
-import de.cas_ual_ty.ydm.card.Card;
 import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.set.CardSet;
+import de.cas_ual_ty.ydm.set.Distribution;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
@@ -31,9 +34,13 @@ import de.cas_ual_ty.ydm.util.YdmUtil;
 public class YdmDatabase
 {
     public static final DNCList<Long, Properties> PROPERTIES_LIST = new DNCList<>((p) -> p.getId(), Long::compare);
-    public static final DNCList<String, Card> CARDS_LIST = new DNCList<>((c) -> c.getSetId(), (s1, s2) -> s1.compareTo(s2));
+    private static int cardsVariantsCount = -1;
+    
+    public static final DNCList<String, Distribution> DISTRIBUTIONS_LIST = new DNCList<>((d) -> d.name, (s1, s2) -> s1.compareTo(s2));
+    public static final DNCList<String, CardSet> SETS_LIST = new DNCList<>((s) -> s.code, (s1, s2) -> s1.compareTo(s2));
     
     public static final JsonParser JSON_PARSER = new JsonParser();
+    public static final SimpleDateFormat SET_DATE_PARSER = new SimpleDateFormat("dd-MM-yyyy");
     
     public static boolean databaseReady = false;
     
@@ -201,6 +208,7 @@ public class YdmDatabase
             return;
         }
         
+        YdmDatabase.readDistributions(YDM.distributionsFolder);
         YdmDatabase.readSets(YDM.setsFolder);
     }
     
@@ -360,27 +368,128 @@ public class YdmDatabase
         YDM.log("Done reading card files!");
     }
     
+    private static void readDistributions(File distributionsFolder)
+    {
+        YDM.log("Reading distribution files from: " + distributionsFolder.getAbsolutePath());
+        
+        File[] distributionsFiles = distributionsFolder.listFiles(YdmIOUtil.JSON_FILTER);
+        YdmDatabase.DISTRIBUTIONS_LIST.ensureExtraCapacity(distributionsFiles.length);
+        
+        JsonObject j;
+        Distribution d;
+        
+        for(File distributionFile : distributionsFiles)
+        {
+            try
+            {
+                j = YdmIOUtil.parseJsonFile(distributionFile).getAsJsonObject();
+                d = new Distribution(j);
+                YdmDatabase.DISTRIBUTIONS_LIST.add(d);
+            }
+            catch (NullPointerException | IllegalArgumentException e)
+            {
+                YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (JsonSyntaxException e)
+            {
+                YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (JsonIOException | FileNotFoundException e)
+            {
+                YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (Exception e)
+            {
+                YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
+                throw e;
+            }
+        }
+        
+        YdmDatabase.DISTRIBUTIONS_LIST.sort();
+        
+        YDM.log("Done reading distribution files!");
+    }
+    
     private static void readSets(File setsFolder)
     {
         YDM.log("Reading set files from: " + setsFolder.getAbsolutePath());
         
-        //TODO
+        File[] setsFiles = setsFolder.listFiles(YdmIOUtil.JSON_FILTER);
+        YdmDatabase.SETS_LIST.ensureExtraCapacity(setsFiles.length);
         
-        YdmDatabase.CARDS_LIST.ensureExtraCapacity(YdmDatabase.PROPERTIES_LIST.size());
-        for(Properties properties : YdmDatabase.PROPERTIES_LIST)
+        JsonObject j;
+        CardSet s;
+        
+        for(File setFile : setsFiles)
         {
-            if(properties.getIsHardcoded())
+            /*
+            try
+            {
+                
+            }
+            catch (NullPointerException | IllegalArgumentException e)
+            {
+                YDM.log("Failed reading set: " + setFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (JsonSyntaxException e)
+            {
+                YDM.log("Failed reading set: " + setFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (JsonIOException | FileNotFoundException e)
+            {
+                YDM.log("Failed reading set: " + setFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (IOException e)
+            {
+                YDM.log("Failed reading set: " + setFile.getAbsolutePath());
+                e.printStackTrace();
+            }
+            catch (Exception e)
+            {
+                YDM.log("Failed reading set: " + setFile.getAbsolutePath());
+                throw e;
+            }
+            */
+        }
+        
+        YDM.log("Done reading set files!");
+    }
+    
+    public static int getTotalCardsAndVariants()
+    {
+        if(YdmDatabase.cardsVariantsCount == -1)
+        {
+            YdmDatabase.cardsVariantsCount = YdmDatabase.PROPERTIES_LIST.getList().stream().mapToInt((p) -> p.getImageIndicesAmt()).sum();
+        }
+        
+        return YdmDatabase.cardsVariantsCount;
+    }
+    
+    public static void forAllCardVariants(BiConsumer<Properties, Byte> cardImageConsumer)
+    {
+        byte i;
+        for(Properties c : YdmDatabase.PROPERTIES_LIST)
+        {
+            if(c == CustomCards.DUMMY_PROPERTIES)
             {
                 continue;
             }
             
-            for(byte imageIndex = 0; imageIndex < properties.images.length; ++imageIndex)
+            for(i = 0; i < c.getImageIndicesAmt(); ++i)
             {
-                YdmDatabase.CARDS_LIST.add(new Card(properties, imageIndex));
+                cardImageConsumer.accept(c, i);
             }
         }
-        YdmDatabase.CARDS_LIST.sort();
-        
-        YDM.log("Done reading set files!");
     }
 }
