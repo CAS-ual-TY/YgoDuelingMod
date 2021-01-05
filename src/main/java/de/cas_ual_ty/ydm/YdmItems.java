@@ -6,6 +6,7 @@ import de.cas_ual_ty.ydm.cardbinder.CardBinderItem;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.PatreonDeckBoxItem;
 import de.cas_ual_ty.ydm.duel.dueldisk.DuelDiskItem;
+import de.cas_ual_ty.ydm.set.CardSetItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
@@ -23,6 +24,7 @@ public class YdmItems
     public static final Item BLANC_CARD = null;
     public static final Item CARD_BACK = null;
     public static final CardItem CARD = null;
+    public static final CardSetItem SET = null;
     public static final CardBinderItem CARD_BINDER = null;
     public static final Item DUEL_PLAYMAT = null;
     public static final Item DUEL_TABLE = null;
@@ -64,6 +66,7 @@ public class YdmItems
         registry.register(new CosmeticItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "blanc_card"));
         registry.register(new CosmeticItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
         registry.register(new CardItem(new Properties().group(YDM.cardsItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card"));
+        registry.register(new CardSetItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "set"));
         registry.register(new CardBinderItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card_binder"));
         registry.register(new BlockItem(YdmBlocks.DUEL_PLAYMAT, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
         registry.register(new BlockItem(YdmBlocks.DUEL_TABLE, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_table"));

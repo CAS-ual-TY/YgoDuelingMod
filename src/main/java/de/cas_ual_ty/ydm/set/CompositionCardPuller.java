@@ -13,13 +13,13 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 
-public class CompositionPull extends Pull
+public class CompositionCardPuller extends CardPuller
 {
     public final List<String> subSetCodes;
     protected List<CardSet> subSets;
     
     @SuppressWarnings("unchecked")
-    public CompositionPull(JsonObject setJson, CardSet set) throws IllegalArgumentException
+    public CompositionCardPuller(JsonObject setJson, CardSet set) throws IllegalArgumentException
     {
         super(setJson, set);
         

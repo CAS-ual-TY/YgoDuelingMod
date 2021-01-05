@@ -15,6 +15,33 @@ import net.minecraft.util.text.TextFormatting;
 
 public class Properties
 {
+    public static final Properties DUMMY = new Properties()
+    {
+        @Override
+        public String getImageName(byte imageIndex)
+        {
+            return "blanc_card";
+        }
+        
+        @Override
+        public void addCardType(List<ITextComponent> list)
+        {
+            
+        }
+    };
+    
+    static
+    {
+        Properties.DUMMY.isHardcoded = true;
+        Properties.DUMMY.name = "Dummy";
+        Properties.DUMMY.id = 0;
+        Properties.DUMMY.isIllegal = false;
+        Properties.DUMMY.isCustom = true;
+        Properties.DUMMY.text = "This is a replacement card!";
+        Properties.DUMMY.type = null;
+        Properties.DUMMY.images = null;
+    }
+    
     public boolean isHardcoded;
     public String name;
     public long id;

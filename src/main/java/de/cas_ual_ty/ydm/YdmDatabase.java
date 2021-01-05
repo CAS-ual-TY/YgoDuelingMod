@@ -186,6 +186,9 @@ public class YdmDatabase
         YDM.log("Reading database!");
         YdmDatabase.databaseReady = true;
         
+        YdmDatabase.PROPERTIES_LIST.add(Properties.DUMMY);
+        YdmDatabase.SETS_LIST.add(CardSet.DUMMY);
+        
         CustomCards.createAndRegisterEverything();
         
         if(!YDM.mainFolder.exists())
@@ -430,10 +433,11 @@ public class YdmDatabase
         
         for(File setFile : setsFiles)
         {
-            /*
             try
             {
-                
+                j = YdmIOUtil.parseJsonFile(setFile).getAsJsonObject();
+                s = new CardSet(j);
+                YdmDatabase.SETS_LIST.add(s);
             }
             catch (NullPointerException | IllegalArgumentException e)
             {
@@ -460,8 +464,9 @@ public class YdmDatabase
                 YDM.log("Failed reading set: " + setFile.getAbsolutePath());
                 throw e;
             }
-            */
         }
+        
+        YdmDatabase.SETS_LIST.sort();
         
         YDM.log("Done reading set files!");
     }
@@ -481,7 +486,7 @@ public class YdmDatabase
         byte i;
         for(Properties c : YdmDatabase.PROPERTIES_LIST)
         {
-            if(c == CustomCards.DUMMY_PROPERTIES)
+            if(c == Properties.DUMMY)
             {
                 continue;
             }

@@ -14,6 +14,7 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class CardHolder
 {
+    public static final CardHolder DUMMY = new CardHolder(Properties.DUMMY, (byte)0, Rarity.CREATIVE.name, "DUM-MY");
     public Properties card;
     public byte imageIndex;
     public String rarity;

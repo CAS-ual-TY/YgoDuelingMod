@@ -3,14 +3,14 @@ package de.cas_ual_ty.ydm.duel;
 import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.CustomCards;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
 public class DeckSource
 {
-    public static final Supplier<DeckSource> EMPTY_DECK = () -> new DeckSource(DeckHolder.DUMMY, YdmItems.CARD.createItemForCard(CustomCards.DUMMY_PROPERTIES));
+    public static final Supplier<DeckSource> EMPTY_DECK = () -> new DeckSource(DeckHolder.DUMMY, YdmItems.CARD.createItemForCard(Properties.DUMMY));
     
     public DeckHolder deck;
     public ItemStack source;

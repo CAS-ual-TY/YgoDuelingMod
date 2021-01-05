@@ -4,7 +4,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -47,7 +46,7 @@ public class CardSupplyMessages
         {
             Context context = ctx.get();
             
-            if(msg.card != null && msg.card != CustomCards.DUMMY_PROPERTIES)
+            if(msg.card != null && msg.card != Properties.DUMMY)
             {
                 context.enqueueWork(() ->
                 {

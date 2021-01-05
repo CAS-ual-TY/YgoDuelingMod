@@ -7,9 +7,9 @@ import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
 
-public class FullPull extends Pull
+public class FullCardPuller extends CardPuller
 {
-    public FullPull(JsonObject setJson, CardSet set)
+    public FullCardPuller(JsonObject setJson, CardSet set)
     {
         super(setJson, set);
     }

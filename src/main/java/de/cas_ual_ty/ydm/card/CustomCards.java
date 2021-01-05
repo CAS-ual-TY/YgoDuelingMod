@@ -1,7 +1,5 @@
 package de.cas_ual_ty.ydm.card;
 
-import java.util.List;
-
 import com.google.common.collect.Lists;
 
 import de.cas_ual_ty.ydm.YdmDatabase;
@@ -16,13 +14,9 @@ import de.cas_ual_ty.ydm.card.properties.SpellProperties;
 import de.cas_ual_ty.ydm.card.properties.SpellType;
 import de.cas_ual_ty.ydm.card.properties.Type;
 import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
-import net.minecraft.util.text.ITextComponent;
 
 public class CustomCards
 {
-    public static Properties DUMMY_PROPERTIES;
-    public static CardHolder DUMMY_CARD;
-    
     public static LevelMonsterProperties PATREON_001_PROPERTIES;
     public static CardHolder PATREON_001_CARD;
     
@@ -55,31 +49,6 @@ public class CustomCards
     
     public static void createAndRegisterEverything()
     {
-        CustomCards.DUMMY_PROPERTIES = new Properties()
-        {
-            @Override
-            public String getImageName(byte imageIndex)
-            {
-                return "blanc_card";
-            }
-            
-            @Override
-            public void addCardType(List<ITextComponent> list)
-            {
-                
-            }
-        };
-        CustomCards.DUMMY_PROPERTIES.isHardcoded = true;
-        CustomCards.DUMMY_PROPERTIES.name = "Dummy";
-        CustomCards.DUMMY_PROPERTIES.id = 0;
-        CustomCards.DUMMY_PROPERTIES.isIllegal = false;
-        CustomCards.DUMMY_PROPERTIES.isCustom = true;
-        CustomCards.DUMMY_PROPERTIES.text = "This is a replacement card!";
-        CustomCards.DUMMY_PROPERTIES.type = null;
-        CustomCards.DUMMY_PROPERTIES.images = null;
-        YdmDatabase.PROPERTIES_LIST.add(CustomCards.DUMMY_PROPERTIES);
-        CustomCards.DUMMY_CARD = new CardHolder(CustomCards.DUMMY_PROPERTIES, (byte)0, Rarity.CREATIVE.name, "DUM-MY");
-        
         CustomCards.PATREON_001_PROPERTIES = new LevelMonsterProperties();
         CustomCards.PATREON_001_PROPERTIES.isHardcoded = true;
         CustomCards.PATREON_001_PROPERTIES.name = "Creator of Darkness - Set";

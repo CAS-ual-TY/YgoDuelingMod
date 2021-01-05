@@ -7,11 +7,11 @@ import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
 
-public abstract class Pull
+public abstract class CardPuller
 {
     public final CardSet set;
     
-    public Pull(JsonObject setJson, CardSet set) throws IllegalArgumentException
+    public CardPuller(JsonObject setJson, CardSet set) throws IllegalArgumentException
     {
         this.set = set;
     }

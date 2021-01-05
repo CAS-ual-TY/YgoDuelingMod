@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 
 public enum PullType
 {
-    FULL("full", FullPull::new), DISTRIBUTION("distribution", DistributionPull::new), COMPOSITION("composition", CompositionPull::new);
+    FULL("full", FullCardPuller::new), DISTRIBUTION("distribution", DistributionCardPuller::new), COMPOSITION("composition", CompositionCardPuller::new);
     
     public static final PullType[] VALUES = PullType.values();
     
@@ -17,7 +17,7 @@ public enum PullType
         this.factory = factory;
     }
     
-    public static Pull createPull(String pullType, JsonObject setJson, CardSet set) throws IllegalArgumentException
+    public static CardPuller createPull(String pullType, JsonObject setJson, CardSet set) throws IllegalArgumentException
     {
         for(PullType type : PullType.VALUES)
         {
@@ -32,6 +32,6 @@ public enum PullType
     
     public static interface Factory
     {
-        public Pull create(JsonObject setJson, CardSet set);
+        public CardPuller create(JsonObject setJson, CardSet set);
     }
 }

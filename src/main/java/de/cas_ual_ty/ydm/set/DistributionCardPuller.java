@@ -9,11 +9,11 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 
-public class DistributionPull extends Pull
+public class DistributionCardPuller extends CardPuller
 {
     public final Distribution distribution;
     
-    public DistributionPull(JsonObject setJson, CardSet set) throws IllegalArgumentException
+    public DistributionCardPuller(JsonObject setJson, CardSet set) throws IllegalArgumentException
     {
         super(setJson, set);
         
