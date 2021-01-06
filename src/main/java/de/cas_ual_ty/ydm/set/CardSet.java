@@ -16,6 +16,7 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -27,6 +28,7 @@ public class CardSet
     public String code;
     public String type;
     public Date date;
+    public String image;
     public CardPuller pull;
     
     // must be same size and order as cards JsonArray
@@ -69,9 +71,18 @@ public class CardSet
             }
             catch (ParseException e)
             {
-                YDM.debug("Can not parse date: " + date);
+                YDM.log("Can not parse date: " + date);
                 throw new IllegalArgumentException(e);
             }
+        }
+        
+        if(!j.has(JsonKeys.IMAGE))
+        {
+            this.image = null;
+        }
+        else
+        {
+            this.image = j.get(JsonKeys.IMAGE).getAsString();
         }
         
         this.pull = PullType.createPull(j.get(JsonKeys.PULL_TYPE).getAsString(), j, this);
@@ -127,8 +138,43 @@ public class CardSet
         tooltip.add(new StringTextComponent(YdmDatabase.SET_DATE_PARSER.format(this.date)));
     }
     
-    public boolean addToCreativeTab()
+    public boolean isIndependentAndItem()
     {
         return this != CardSet.DUMMY && !this.type.equals("Sub-Set") && this.name != null && this.date != null;
+    }
+    
+    public String getImageName()
+    {
+        return this.code.toLowerCase();
+    }
+    
+    public String getImageURL()
+    {
+        return this.image;
+    }
+    
+    public String getInfoImageName()
+    {
+        return YDM.proxy.addSetInfoTag(this.getImageName());
+    }
+    
+    public String getItemImageName()
+    {
+        return YDM.proxy.addSetItemTag(this.getImageName());
+    }
+    
+    public ResourceLocation getInfoImageResourceLocation()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + YDM.proxy.getSetInfoReplacementImage(this) + ".png");
+    }
+    
+    public ResourceLocation getItemImageResourceLocation()
+    {
+        return new ResourceLocation(YDM.MOD_ID, "item/" + this.getItemImageName());
+    }
+    
+    public boolean getIsHardcoded()
+    {
+        return false;
     }
 }

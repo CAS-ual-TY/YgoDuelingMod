@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.function.Consumer;
@@ -33,7 +34,12 @@ public class YdmIOUtil
     
     public static InputStream urlInputStream(URL url) throws IOException
     {
-        return url.openStream();
+        //        /*
+        URLConnection c = url.openConnection();
+        c.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+        return c.getInputStream();
+        //        */
+        //        return url.openStream();
     }
     
     public static void downloadFile(URL url, File target) throws IOException
@@ -45,6 +51,7 @@ public class YdmIOUtil
     public static void setAgent()
     {
         System.setProperty("http.agent", "Netscape 1.0");
+        //        System.setProperty("http.agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
     }
     
     public static void createDirIfNonExistant(File file)

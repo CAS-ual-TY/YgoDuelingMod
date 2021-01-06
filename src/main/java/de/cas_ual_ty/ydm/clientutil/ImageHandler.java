@@ -21,6 +21,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.set.CardSet;
 import de.cas_ual_ty.ydm.task.Task;
 import de.cas_ual_ty.ydm.task.TaskPriority;
 import de.cas_ual_ty.ydm.task.TaskQueue;
@@ -30,8 +31,11 @@ import de.cas_ual_ty.ydm.util.YdmUtil;
 
 public class ImageHandler
 {
-    private static final String IN_PROGRESS_IMAGE = "card_back";
-    private static final String FAILED_IMAGE = "blanc_card";
+    private static final String CARD_IN_PROGRESS = "card_back";
+    private static final String CARD_FAILED = "blanc_card";
+    private static final String SET_IN_PROGRESS = "blanc_card";
+    private static final String SET_FAILED = "blanc_card";
+    //    private static final String FAILED_IMAGE = "blanc_card";
     
     public static ImageList RAW_IMAGE_LIST = new ImageList();
     public static ImageList ADJUSTED_IMAGE_LIST = new ImageList();
@@ -54,75 +58,95 @@ public class ImageHandler
             size = YdmUtil.getPow2(i);
             YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
             ImageHandler.adjustRawImage(
-                ImageHandler.getAdjustedImageFile(card.getImageName((byte)0), size),
-                ImageHandler.getRawImageFile(card.getImageName((byte)0)),
+                ImageHandler.getAdjustedCardImageFile(card.getImageName((byte)0), size),
+                ImageHandler.getRawCardImageFile(card.getImageName((byte)0)),
                 size);
         }
     }
     
-    public static String getReplacementImage(Properties properties, byte imageIndex, int imageSize)
+    public static String getReplacementImage(Properties p, byte imageIndex, int imageSize)
     {
-        String imageName = ImageHandler.tagImage(properties.getImageName(imageIndex), imageSize);
+        String imageName = p.getImageName(imageIndex);
+        String imagePathName = ImageHandler.tagImage(imageName, imageSize);
         
-        // if its hardcoded, image should already exist
-        if(properties.getIsHardcoded())
+        if(p.getIsHardcoded())
         {
-            return imageName;
+            return imagePathName;
         }
         
-        if(!ImageHandler.ADJUSTED_IMAGE_LIST.isFinished(imageName))
+        return ImageHandler.getReplacementImage(imageName, imagePathName, p.getImageURL(imageIndex), ImageHandler.CARD_IN_PROGRESS, ImageHandler.CARD_FAILED, imageSize, ImageHandler.getCardImageFile(imagePathName), ImageHandler.getRawCardImageFile(imageName));
+    }
+    
+    public static String getReplacementImage(CardSet s, int imageSize)
+    {
+        String imageName = s.getImageName();
+        String imagePathName = ImageHandler.tagImage(imageName, imageSize);
+        
+        if(s.getIsHardcoded())
         {
-            if(!ImageHandler.ADJUSTED_IMAGE_LIST.isInProgress(imageName))
+            return imagePathName;
+        }
+        
+        return ImageHandler.getReplacementImage(imageName, imagePathName, s.getImageURL(), ImageHandler.SET_IN_PROGRESS, ImageHandler.SET_FAILED, imageSize, ImageHandler.getSetImageFile(imagePathName), ImageHandler.getRawSetImageFile(imageName));
+    }
+    
+    public static String getReplacementImage(String imageName, String imagePathName, String imageURL, String inProgress, String failed, int imageSize, File adjusted, File raw)
+    {
+        if(!ImageHandler.ADJUSTED_IMAGE_LIST.isFinished(imagePathName))
+        {
+            if(!ImageHandler.ADJUSTED_IMAGE_LIST.isInProgress(imagePathName))
             {
                 // not finished, not in progress
                 
-                if(ImageHandler.getImageFile(imageName).exists())
+                if(adjusted.exists())
                 {
                     // image exists, so set ready and return
-                    ImageHandler.ADJUSTED_IMAGE_LIST.setImmediateFinished(imageName);
-                    return imageName;
+                    ImageHandler.ADJUSTED_IMAGE_LIST.setImmediateFinished(imagePathName);
+                    return imagePathName;
                 }
-                else if(ImageHandler.ADJUSTED_IMAGE_LIST.isFailed(imageName))
+                else if(ImageHandler.ADJUSTED_IMAGE_LIST.isFailed(imagePathName))
                 {
                     // image does not exist, check if failed already and return replacement
-                    return ImageHandler.tagImage(ImageHandler.FAILED_IMAGE, imageSize);
+                    return ImageHandler.tagImage(failed, imageSize);
                 }
                 else
                 {
                     // image does not exist and has not been tried, so make it ready and return replacement
-                    ImageHandler.makeImageReady(properties, imageIndex, imageSize);
-                    return ImageHandler.tagImage(ImageHandler.IN_PROGRESS_IMAGE, imageSize);
+                    ImageHandler.makeImageReady(imageName, imageURL, imageSize, adjusted, raw);
+                    return ImageHandler.tagImage(inProgress, imageSize);
                 }
             }
             else
             {
                 // in progress
-                return ImageHandler.tagImage(ImageHandler.IN_PROGRESS_IMAGE, imageSize);
+                return ImageHandler.tagImage(inProgress, imageSize);
             }
         }
         else
         {
             // finished
-            return imageName;
+            return imagePathName;
         }
     }
     
     public static String getInfoReplacementImage(Properties properties, byte imageIndex)
     {
-        return ImageHandler.getReplacementImage(properties, imageIndex, ClientProxy.activeInfoImageSize);
+        return ImageHandler.getReplacementImage(properties, imageIndex, ClientProxy.activeCardInfoImageSize);
     }
     
     public static String getMainReplacementImage(Properties properties, byte imageIndex)
     {
-        return ImageHandler.getReplacementImage(properties, imageIndex, ClientProxy.activeMainImageSize);
+        return ImageHandler.getReplacementImage(properties, imageIndex, ClientProxy.activeCardMainImageSize);
+    }
+    
+    public static String getInfoReplacementImage(CardSet set)
+    {
+        return ImageHandler.getReplacementImage(set, ClientProxy.activeSetInfoImageSize);
     }
     
     @Nullable
-    public static Task makeMissingRawTask(Properties p, byte imageIndex)
+    public static Task makeMissingRawTask(String imageName, String imageURL, File raw)
     {
-        final String imageName = p.getImageName(imageIndex);
-        File raw = ImageHandler.getRawImageFile(imageName);
-        
         if(ImageHandler.RAW_IMAGE_LIST.isFinished(imageName) ||
             ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName) ||
             ImageHandler.RAW_IMAGE_LIST.isFailed(imageName))
@@ -145,7 +169,7 @@ public class ImageHandler
             try
             {
                 long start = System.currentTimeMillis();
-                ImageHandler.downloadRawImage(p.getImageURL(imageIndex), raw);
+                ImageHandler.downloadRawImage(imageURL, raw);
                 
                 ImageHandler.RAW_IMAGE_LIST.setFinished(imageName);
                 
@@ -179,12 +203,9 @@ public class ImageHandler
         return task;
     }
     
-    public static Task makeMissingAdjustedTask(Properties p, byte imageIndex, int imageSize)
+    public static Task makeMissingAdjustedTask(String imageName, int imageSize, File raw, File adjusted)
     {
-        final String imageName = p.getImageName(imageIndex);
         final String adjustedImageName = ImageHandler.tagImage(imageName, imageSize);
-        File raw = ImageHandler.getRawImageFile(imageName);
-        File adjusted = ImageHandler.getImageFile(adjustedImageName);
         
         if(ImageHandler.ADJUSTED_IMAGE_LIST.isFinished(adjustedImageName) ||
             ImageHandler.ADJUSTED_IMAGE_LIST.isInProgress(adjustedImageName) ||
@@ -224,15 +245,15 @@ public class ImageHandler
         return task;
     }
     
-    public static void makeImageReady(Properties p, byte imageIndex, int imageSize)
+    public static void makeImageReady(String imageName, String imageURL, int imageSize, File adjusted, File raw)
     {
-        Task t = ImageHandler.makeMissingRawTask(p, imageIndex);
+        Task t = ImageHandler.makeMissingRawTask(imageName, imageURL, raw);
         if(t != null)
         {
             TaskQueue.addTask(t);
         }
         
-        t = ImageHandler.makeMissingAdjustedTask(p, imageIndex, imageSize);
+        t = ImageHandler.makeMissingAdjustedTask(imageName, imageSize, raw, adjusted);
         if(t != null)
         {
             TaskQueue.addTask(t);
@@ -291,7 +312,7 @@ public class ImageHandler
         }
     }
     
-    public static File getRawImageFile(String imageName)
+    public static File getRawCardImageFile(String imageName)
     {
         File f = new File(ClientProxy.rawCardImagesFolder, imageName + ".png");
         
@@ -306,9 +327,29 @@ public class ImageHandler
         }
     }
     
-    public static File getAdjustedImageFile(String imageName, int size)
+    public static File getRawSetImageFile(String imageName)
     {
-        return ImageHandler.getImageFile(ImageHandler.tagImage(imageName, size));
+        File f = new File(ClientProxy.rawSetImagesFolder, imageName + ".png");
+        
+        // prefer png over jpg
+        if(f.exists())
+        {
+            return f;
+        }
+        else
+        {
+            return new File(ClientProxy.rawSetImagesFolder, imageName + ".jpg");
+        }
+    }
+    
+    public static File getAdjustedCardImageFile(String imageName, int size)
+    {
+        return ImageHandler.getCardImageFile(ImageHandler.tagImage(imageName, size));
+    }
+    
+    public static File getAdjustedSetImageFile(String imageName, int size)
+    {
+        return ImageHandler.getSetImageFile(ImageHandler.tagImage(imageName, size));
     }
     
     public static String tagImage(String imageName, int size)
@@ -316,14 +357,24 @@ public class ImageHandler
         return size + "/" + imageName;
     }
     
-    public static File getImageFile(String imagePathName)
+    public static File getCardImageFile(String imagePathName)
     {
-        return ImageHandler.getFile(imagePathName + ".png");
+        return ImageHandler.getCardFile(imagePathName + ".png");
     }
     
-    public static File getFile(String imagePathName)
+    public static File getSetImageFile(String imagePathName)
+    {
+        return ImageHandler.getSetFile(imagePathName + ".png");
+    }
+    
+    public static File getCardFile(String imagePathName)
     {
         return new File(ClientProxy.cardImagesFolder, imagePathName);
+    }
+    
+    public static File getSetFile(String imagePathName)
+    {
+        return new File(ClientProxy.setImagesFolder, imagePathName);
     }
     
     public static List<CardHolder> getMissingItemImages()
@@ -332,7 +383,7 @@ public class ImageHandler
         
         YdmDatabase.forAllCardVariants((card, imageIndex) ->
         {
-            if(!card.getIsHardcoded() && !ImageHandler.getImageFile(card.getItemImageName(imageIndex)).exists())
+            if(!card.getIsHardcoded() && !ImageHandler.getCardImageFile(card.getItemImageName(imageIndex)).exists())
             {
                 list.add(new CardHolder(card, imageIndex, null, null));
             }
@@ -341,11 +392,34 @@ public class ImageHandler
         return list;
     }
     
+    public static List<CardSet> getMissingSetImages()
+    {
+        List<CardSet> list = new LinkedList<>();
+        
+        for(CardSet set : YdmDatabase.SETS_LIST)
+        {
+            if(set.isIndependentAndItem() && !set.getIsHardcoded() && !ImageHandler.getSetImageFile(set.getItemImageName()).exists())
+            {
+                list.add(set);
+            }
+        }
+        
+        return list;
+    }
+    
     public static void downloadCardImages(List<CardHolder> missingList)
     {
         for(CardHolder card : missingList)
         {
-            ImageHandler.makeImageReady(card.getCard(), card.getImageIndex(), ClientProxy.activeItemImageSize);
+            ImageHandler.makeImageReady(card.getImageName(), card.getImageURL(), ClientProxy.activeCardItemImageSize, ImageHandler.getCardImageFile(card.getItemImageName()), ImageHandler.getRawCardImageFile(card.getImageName()));
+        }
+    }
+    
+    public static void downloadSetImages(List<CardSet> missingList)
+    {
+        for(CardSet set : missingList)
+        {
+            ImageHandler.makeImageReady(set.getImageName(), set.getImageURL(), ClientProxy.activeSetItemImageSize, ImageHandler.getSetImageFile(set.getItemImageName()), ImageHandler.getRawSetImageFile(set.getImageName()));
         }
     }
     
@@ -362,61 +436,61 @@ public class ImageHandler
             this.failedList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
         }
         
-        public void setInProgress(String imageName)
+        public void setInProgress(String imagePathName)
         {
             synchronized(this.inProgressList)
             {
-                this.inProgressList.addKeepSorted(imageName);
+                this.inProgressList.addKeepSorted(imagePathName);
             }
         }
         
-        public void unInProgress(String imageName)
+        public void unInProgress(String imagePathName)
         {
-            if(this.inProgressList.contains(imageName))
+            if(this.inProgressList.contains(imagePathName))
             {
                 synchronized(this.inProgressList)
                 {
-                    this.inProgressList.remove(imageName);
+                    this.inProgressList.remove(imagePathName);
                 }
             }
         }
         
-        public void setImmediateFinished(String imageName)
+        public void setImmediateFinished(String imagePathName)
         {
             synchronized(this.finishedList)
             {
-                this.finishedList.addKeepSorted(imageName);
+                this.finishedList.addKeepSorted(imagePathName);
             }
         }
         
-        public void setFinished(String imageName)
+        public void setFinished(String imagePathName)
         {
-            this.unInProgress(imageName);
-            this.setImmediateFinished(imageName);
+            this.unInProgress(imagePathName);
+            this.setImmediateFinished(imagePathName);
         }
         
-        public void setFailed(String imageName)
+        public void setFailed(String imagePathName)
         {
-            this.unInProgress(imageName);
+            this.unInProgress(imagePathName);
             synchronized(this.failedList)
             {
-                this.failedList.addKeepSorted(imageName);
+                this.failedList.addKeepSorted(imagePathName);
             }
         }
         
-        public boolean isInProgress(String imageName)
+        public boolean isInProgress(String imagePathName)
         {
-            return this.inProgressList.contains(imageName);
+            return this.inProgressList.contains(imagePathName);
         }
         
-        public boolean isFinished(String imageName)
+        public boolean isFinished(String imagePathName)
         {
-            return this.finishedList.contains(imageName);
+            return this.finishedList.contains(imagePathName);
         }
         
-        public boolean isFailed(String imageName)
+        public boolean isFailed(String imagePathName)
         {
-            return this.failedList.contains(imageName);
+            return this.failedList.contains(imagePathName);
         }
     }
 }

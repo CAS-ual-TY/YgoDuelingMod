@@ -24,6 +24,6 @@ public class YdmResourcePackFinder implements IPackFinder
     
     private Supplier<IResourcePack> makePackSupplier()
     {
-        return () -> new YdmResourcePack();
+        return () -> new YdmCardResourcePack();
     }
 }

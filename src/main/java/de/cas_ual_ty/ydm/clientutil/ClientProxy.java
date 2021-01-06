@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -20,6 +19,7 @@ import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenBase;
+import de.cas_ual_ty.ydm.set.CardSet;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -48,11 +48,14 @@ public class ClientProxy implements ISidedProxy
     public static ForgeConfigSpec clientConfigSpec;
     public static ClientConfig clientConfig;
     
-    public static int activeInfoImageSize;
-    public static volatile int activeItemImageSize;
-    public static int activeMainImageSize;
+    public static int activeCardInfoImageSize;
+    public static volatile int activeCardItemImageSize;
+    public static int activeCardMainImageSize;
+    public static int activeSetInfoImageSize;
+    public static volatile int activeSetItemImageSize;
     public static boolean keepCachedImages;
     public static boolean itemsUseCardImages;
+    public static boolean itemsUseSetImages;
     public static boolean showBinderId;
     public static int maxInfoImages;
     public static int maxMainImages;
@@ -64,13 +67,19 @@ public class ClientProxy implements ISidedProxy
     
     public static volatile boolean itemsUseCardImagesActive;
     public static volatile boolean itemsUseCardImagesFailed;
+    public static volatile boolean itemsUseSetImagesActive;
+    public static volatile boolean itemsUseSetImagesFailed;
     
     public static File imagesParentFolder;
     public static File cardImagesFolder;
+    public static File setImagesFolder;
     public static File rawCardImagesFolder;
+    public static File rawSetImagesFolder;
     private static File cardInfoImagesFolder;
     private static File cardItemImagesFolder;
     private static File cardMainImagesFolder;
+    private static File setInfoImagesFolder;
+    private static File setItemImagesFolder;
     
     @Override
     public void registerModEventListeners(IEventBus bus)
@@ -94,6 +103,8 @@ public class ClientProxy implements ISidedProxy
     {
         ClientProxy.itemsUseCardImagesActive = false;
         ClientProxy.itemsUseCardImagesFailed = false;
+        ClientProxy.itemsUseSetImagesActive = false;
+        ClientProxy.itemsUseSetImagesFailed = false;
         
         Pair<ClientConfig, ForgeConfigSpec> client = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
         ClientProxy.clientConfig = client.getLeft();
@@ -106,7 +117,7 @@ public class ClientProxy implements ISidedProxy
     @Override
     public void init()
     {
-        YDM.log("Sizes from client config (info/item/main): " + ClientProxy.activeInfoImageSize + " / " + ClientProxy.activeItemImageSize + " (" + ClientProxy.itemsUseCardImages + ") / " + ClientProxy.activeMainImageSize);
+        YDM.log("Sizes from client config (info/item/main): " + ClientProxy.activeCardInfoImageSize + " / " + ClientProxy.activeCardItemImageSize + " (" + ClientProxy.itemsUseCardImages + ") / " + ClientProxy.activeCardMainImageSize);
         
         if(ClientProxy.itemsUseCardImages)
         {
@@ -134,6 +145,32 @@ public class ClientProxy implements ISidedProxy
             }
         }
         
+        if(ClientProxy.itemsUseSetImages)
+        {
+            try
+            {
+                List<CardSet> list = ImageHandler.getMissingSetImages();
+                
+                if(list.size() == 0)
+                {
+                    YDM.log("Items will use set images!");
+                    ClientProxy.itemsUseSetImagesActive = true;
+                }
+                else
+                {
+                    YDM.log("Items will not use set images, still missing " + list.size() + " images. Fetching...");
+                    ImageHandler.downloadSetImages(list);
+                    ClientProxy.itemsUseSetImagesFailed = true;
+                }
+            }
+            catch (Exception e)
+            {
+                YDM.log("Failed checking missing set images!");
+                e.printStackTrace();
+                ClientProxy.itemsUseSetImagesFailed = true;
+            }
+        }
+        
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
         ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
@@ -147,19 +184,29 @@ public class ClientProxy implements ISidedProxy
     {
         ClientProxy.imagesParentFolder = new File("ydm_db_images");
         ClientProxy.cardImagesFolder = new File(ClientProxy.imagesParentFolder, "cards");
+        ClientProxy.setImagesFolder = new File(ClientProxy.imagesParentFolder, "sets");
         ClientProxy.rawCardImagesFolder = new File(ClientProxy.cardImagesFolder, "raw");
+        ClientProxy.rawSetImagesFolder = new File(ClientProxy.setImagesFolder, "raw");
         
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
-        ClientProxy.cardInfoImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeInfoImageSize);
-        ClientProxy.cardItemImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeItemImageSize);
-        ClientProxy.cardMainImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeMainImageSize);
+        ClientProxy.cardInfoImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeCardInfoImageSize);
+        ClientProxy.cardItemImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeCardItemImageSize);
+        ClientProxy.cardMainImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeCardMainImageSize);
+        
+        // change this depending on resolution (64/128/256)
+        ClientProxy.setInfoImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetInfoImageSize);
+        ClientProxy.setItemImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetItemImageSize);
         
         YdmIOUtil.createDirIfNonExistant(ClientProxy.imagesParentFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.setImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.rawCardImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawSetImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardMainImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.setInfoImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.setItemImagesFolder);
     }
     
     @Override
@@ -169,33 +216,51 @@ public class ClientProxy implements ISidedProxy
     }
     
     @Override
-    public String addInfoTag(String imageName)
+    public String addCardInfoTag(String imageName)
     {
-        return ClientProxy.activeInfoImageSize + "/" + imageName;
+        return ClientProxy.activeCardInfoImageSize + "/" + imageName;
     }
     
     @Override
-    public String addItemTag(String imageName)
+    public String addCardItemTag(String imageName)
     {
-        return ClientProxy.activeItemImageSize + "/" + imageName;
+        return ClientProxy.activeCardItemImageSize + "/" + imageName;
     }
     
     @Override
-    public String addMainTag(String imageName)
+    public String addCardMainTag(String imageName)
     {
-        return ClientProxy.activeMainImageSize + "/" + imageName;
+        return ClientProxy.activeCardMainImageSize + "/" + imageName;
     }
     
     @Override
-    public String getInfoReplacementImage(Properties properties, byte imageIndex)
+    public String addSetInfoTag(String imageName)
+    {
+        return ClientProxy.activeSetInfoImageSize + "/" + imageName;
+    }
+    
+    @Override
+    public String addSetItemTag(String imageName)
+    {
+        return ClientProxy.activeSetItemImageSize + "/" + imageName;
+    }
+    
+    @Override
+    public String getCardInfoReplacementImage(Properties properties, byte imageIndex)
     {
         return ImageHandler.getInfoReplacementImage(properties, imageIndex);
     }
     
     @Override
-    public String getMainReplacementImage(Properties properties, byte imageIndex)
+    public String getCardMainReplacementImage(Properties properties, byte imageIndex)
     {
         return ImageHandler.getMainReplacementImage(properties, imageIndex);
+    }
+    
+    @Override
+    public String getSetInfoReplacementImage(CardSet set)
+    {
+        return ImageHandler.getInfoReplacementImage(set);
     }
     
     @SuppressWarnings("deprecation")
@@ -209,7 +274,8 @@ public class ClientProxy implements ISidedProxy
         boolean flag = false;
         int i = 0;
         
-        while(ClientProxy.itemsUseCardImages && !ClientProxy.itemsUseCardImagesFailed && !ClientProxy.itemsUseCardImagesActive)
+        while((ClientProxy.itemsUseCardImages && !ClientProxy.itemsUseCardImagesFailed && !ClientProxy.itemsUseCardImagesActive)
+            || (ClientProxy.itemsUseSetImages && !ClientProxy.itemsUseSetImagesFailed && !ClientProxy.itemsUseSetImagesActive))
         {
             if(!flag)
             {
@@ -243,47 +309,61 @@ public class ClientProxy implements ISidedProxy
         {
             YDM.log("Stitching " + YdmDatabase.getTotalCardsAndVariants() + " card item textures!");
             
-            AtomicInteger count = new AtomicInteger(0);
             YdmDatabase.forAllCardVariants((card, imageIndex) ->
             {
                 event.addSprite(card.getItemImageResourceLocation(imageIndex));
-                count.incrementAndGet();
             });
+        }
+        
+        if(ClientProxy.itemsUseSetImagesActive)
+        {
+            YDM.log("Stitching " + YdmDatabase.SETS_LIST.size() + " set item textures!");
+            
+            for(CardSet set : YdmDatabase.SETS_LIST)
+            {
+                if(set.isIndependentAndItem())
+                {
+                    event.addSprite(set.getItemImageResourceLocation());
+                }
+            }
         }
     }
     
     private void modelRegistry(ModelRegistryEvent event)
     {
-        YDM.log("Registering models (size: " + ClientProxy.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
+        YDM.log("Registering models (size: " + ClientProxy.activeCardItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
         
         // 16 is default texture; no need to do anything special in that case
-        if(ClientProxy.activeItemImageSize != 16)
+        if(ClientProxy.activeCardItemImageSize != 16)
         {
-            ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory"));
-            ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory"));
+            ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
+            ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
         }
     }
     
     private void modelBake(ModelBakeEvent event)
     {
-        YDM.log("Baking models (size: " + ClientProxy.activeItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
+        YDM.log("Baking models (size: " + ClientProxy.activeCardItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
         
         // 16 is default texture; no need to do anything special in that case
-        if(ClientProxy.activeItemImageSize != 16)
+        if(ClientProxy.activeCardItemImageSize != 16)
         {
             event.getModelRegistry().put(new ModelResourceLocation(YdmItems.BLANC_CARD.getRegistryName(), "inventory"),
                 event.getModelRegistry().get(
                     new ModelResourceLocation(
-                        new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory")));
+                        new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
             
             event.getModelRegistry().put(new ModelResourceLocation(YdmItems.CARD_BACK.getRegistryName(), "inventory"),
                 event.getModelRegistry().get(
                     new ModelResourceLocation(
-                        new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeItemImageSize), "inventory")));
+                        new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
         }
         
         ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
         event.getModelRegistry().put(key, new CardBakedModel(event.getModelRegistry().get(key)));
+        
+        key = new ModelResourceLocation(YdmItems.SET.getRegistryName(), "inventory");
+        event.getModelRegistry().put(key, new CardSetBakedModel(event.getModelRegistry().get(key)));
     }
     
     private void modConfig(final ModConfig.ModConfigEvent event)
@@ -291,11 +371,14 @@ public class ClientProxy implements ISidedProxy
         if(event.getConfig().getSpec() == ClientProxy.clientConfigSpec)
         {
             YDM.log("Baking client config!");
-            ClientProxy.activeInfoImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeInfoImageSize.get(), 4);
-            ClientProxy.activeItemImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeItemImageSize.get(), 4);
-            ClientProxy.activeMainImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeMainImageSize.get(), 4);
+            ClientProxy.activeCardInfoImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeCardInfoImageSize.get(), 4);
+            ClientProxy.activeCardItemImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeCardItemImageSize.get(), 4);
+            ClientProxy.activeCardMainImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeCardMainImageSize.get(), 4);
+            ClientProxy.activeSetInfoImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeSetInfoImageSize.get(), 4);
+            ClientProxy.activeSetItemImageSize = YdmUtil.toPow2ConfigValue(ClientProxy.clientConfig.activeSetItemImageSize.get(), 4);
             ClientProxy.keepCachedImages = ClientProxy.clientConfig.keepCachedImages.get();
             ClientProxy.itemsUseCardImages = ClientProxy.clientConfig.itemsUseCardImages.get();
+            ClientProxy.itemsUseSetImages = ClientProxy.clientConfig.itemsUseSetImages.get();
             ClientProxy.showBinderId = ClientProxy.clientConfig.showBinderId.get();
             ClientProxy.maxInfoImages = ClientProxy.clientConfig.maxInfoImages.get();
             ClientProxy.maxMainImages = ClientProxy.clientConfig.maxMainImages.get();

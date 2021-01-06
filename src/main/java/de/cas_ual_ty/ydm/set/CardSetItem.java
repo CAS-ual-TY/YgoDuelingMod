@@ -82,7 +82,7 @@ public class CardSetItem extends Item
         
         for(CardSet set : YdmDatabase.SETS_LIST)
         {
-            if(set.addToCreativeTab())
+            if(set.isIndependentAndItem())
             {
                 items.add(this.createItemForSet(set));
             }

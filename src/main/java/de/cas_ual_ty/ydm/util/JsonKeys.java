@@ -56,6 +56,7 @@ public class JsonKeys
     
     public static final String CODE = "code";
     public static final String DATE = "date";
+    public static final String IMAGE = "image";
     public static final String PULL_TYPE = "pull_type";
     public static final String IMAGE_INDEX = "image_index";
     public static final String RARITY = "rarity";
@@ -68,7 +69,7 @@ public class JsonKeys
     
     public static final String PULLS = "pulls";
     public static final String WEIGHT = "weight";
-    public static final String ENTRIES = "rarities";
+    public static final String ENTRIES = "entries";
     public static final String RARITIES = "rarities";
     public static final String COUNT = "count";
     

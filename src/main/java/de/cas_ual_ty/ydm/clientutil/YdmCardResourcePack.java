@@ -24,7 +24,7 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 
-public class YdmResourcePack extends ResourcePack
+public class YdmCardResourcePack extends ResourcePack
 {
     public static final String PATH_PREFIX = "assets/" + YDM.MOD_ID + "/textures/item/";
     
@@ -33,7 +33,7 @@ public class YdmResourcePack extends ResourcePack
     
     private JsonObject packMeta;
     
-    public YdmResourcePack()
+    public YdmCardResourcePack()
     {
         super(null);
         this.packMeta = new JsonObject();
@@ -45,9 +45,9 @@ public class YdmResourcePack extends ResourcePack
     
     public static String convertPath(String s)
     {
-        if(YdmResourcePack.OS_WINDOWS)
+        if(YdmCardResourcePack.OS_WINDOWS)
         {
-            s = YdmResourcePack.BACKSLASH_MATCHER.replaceFrom(s, '/');
+            s = YdmCardResourcePack.BACKSLASH_MATCHER.replaceFrom(s, '/');
         }
         
         return s;
@@ -59,7 +59,7 @@ public class YdmResourcePack extends ResourcePack
         //TODO pack.png needs to be returned as well
         
         // We get system dependent resource paths here (so eg. \ for windows, / for mac) so we need to convert
-        File image = this.getFile(YdmResourcePack.convertPath(resourcePath));
+        File image = this.getFile(YdmCardResourcePack.convertPath(resourcePath));
         
         if(image == null)
         {
@@ -86,16 +86,16 @@ public class YdmResourcePack extends ResourcePack
         }
         
         // We only look for assets with this path as prefix (so eg. no models)
-        if(!filename.startsWith(YdmResourcePack.PATH_PREFIX))
+        if(!filename.startsWith(YdmCardResourcePack.PATH_PREFIX))
         {
             return null;
         }
         
         // We remove that prefix part
-        filename = filename.substring(YdmResourcePack.PATH_PREFIX.length());
+        filename = filename.substring(YdmCardResourcePack.PATH_PREFIX.length());
         
         // Get the file
-        File image = ImageHandler.getFile(filename);
+        File image = ImageHandler.getCardFile(filename);
         
         if(image.exists())
         {
@@ -103,7 +103,16 @@ public class YdmResourcePack extends ResourcePack
         }
         else
         {
-            return null;
+            image = ImageHandler.getSetFile(filename);
+            
+            if(image.exists())
+            {
+                return image;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
     

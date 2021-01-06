@@ -9,7 +9,7 @@ import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.set.CardSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -26,7 +26,7 @@ import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraftforge.client.model.ItemTextureQuadConverter;
 
 @SuppressWarnings("deprecation")
-public class FinalCardBakedModel implements IBakedModel
+public class FinalCardSetBakedModel implements IBakedModel
 {
     private IBakedModel mainModel;
     private ItemStack activeItemStack;
@@ -38,14 +38,14 @@ public class FinalCardBakedModel implements IBakedModel
     
     private final float distance = 0.002F;
     
-    public FinalCardBakedModel(IBakedModel mainModel)
+    public FinalCardSetBakedModel(IBakedModel mainModel)
     {
         this.mainModel = mainModel;
         this.setActiveItemStack(ItemStack.EMPTY);
         this.textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
     }
     
-    public FinalCardBakedModel setActiveItemStack(ItemStack itemStack)
+    public FinalCardSetBakedModel setActiveItemStack(ItemStack itemStack)
     {
         this.activeItemStack = itemStack;
         return this;
@@ -54,31 +54,23 @@ public class FinalCardBakedModel implements IBakedModel
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
     {
-        if(ClientProxy.itemsUseCardImagesActive)
+        if(ClientProxy.itemsUseSetImagesActive)
         {
-            CardHolder card = YdmItems.CARD.getCardHolder(this.activeItemStack);
+            CardSet set = YdmItems.SET.getCardSet(this.activeItemStack);
             
-            if(card != null)
+            if(set != CardSet.DUMMY)
             {
                 List<BakedQuad> list = new ArrayList<>();
-                list.addAll(this.getPartneredBackList());
                 
-                if(card.getCard() != null)
-                {
-                    ResourceLocation front = card.getItemImageResourceLocation();
-                    TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
-                    list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
-                }
-                else
-                {
-                    list.addAll(this.getBlancList());
-                }
+                ResourceLocation front = set.getItemImageResourceLocation();
+                TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
+                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
                 
                 return list;
             }
         }
         
-        return this.getSingleBackList();
+        return this.getSetList();
     }
     
     @Override
@@ -148,7 +140,7 @@ public class FinalCardBakedModel implements IBakedModel
         return this;
     }
     
-    private List<BakedQuad> getSingleBackList()
+    private List<BakedQuad> getSetList()
     {
         if(this.singleBackList == null)
         {
@@ -158,30 +150,5 @@ public class FinalCardBakedModel implements IBakedModel
         }
         
         return this.singleBackList;
-    }
-    
-    private List<BakedQuad> getPartneredBackList()
-    {
-        if(this.partneredBackList == null)
-        {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addCardItemTag("card_back"));
-            TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            
-            this.partneredBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1);
-        }
-        
-        return this.partneredBackList;
-    }
-    
-    private List<BakedQuad> getBlancList()
-    {
-        if(this.blancList == null)
-        {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addCardItemTag("blanc_card"));
-            TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.blancList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1);
-        }
-        
-        return this.blancList;
     }
 }

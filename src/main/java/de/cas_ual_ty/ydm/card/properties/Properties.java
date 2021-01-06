@@ -160,22 +160,22 @@ public class Properties
     
     public String getInfoImageName(byte imageIndex)
     {
-        return YDM.proxy.addInfoTag(this.getImageName(imageIndex));
+        return YDM.proxy.addCardInfoTag(this.getImageName(imageIndex));
     }
     
     public String getItemImageName(byte imageIndex)
     {
-        return YDM.proxy.addItemTag(this.getImageName(imageIndex));
+        return YDM.proxy.addCardItemTag(this.getImageName(imageIndex));
     }
     
     public String getMainImageName(byte imageIndex)
     {
-        return YDM.proxy.addMainTag(this.getImageName(imageIndex));
+        return YDM.proxy.addCardMainTag(this.getImageName(imageIndex));
     }
     
     public ResourceLocation getInfoImageResourceLocation(byte imageIndex)
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + YDM.proxy.getInfoReplacementImage(this, imageIndex) + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + YDM.proxy.getCardInfoReplacementImage(this, imageIndex) + ".png");
     }
     
     public ResourceLocation getItemImageResourceLocation(byte imageIndex)
@@ -185,7 +185,7 @@ public class Properties
     
     public ResourceLocation getMainImageResourceLocation(byte imageIndex)
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + YDM.proxy.getMainReplacementImage(this, imageIndex) + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + YDM.proxy.getCardMainReplacementImage(this, imageIndex) + ".png");
     }
     
     public void addInformation(List<ITextComponent> list)

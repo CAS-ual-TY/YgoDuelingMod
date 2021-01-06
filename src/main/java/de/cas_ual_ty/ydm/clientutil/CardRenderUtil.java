@@ -134,22 +134,22 @@ public class CardRenderUtil
     
     public static ResourceLocation getInfoCardBack()
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeInfoImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath() + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeCardInfoImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath() + ".png");
     }
     
     public static ResourceLocation getMainCardBack()
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath() + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeCardMainImageSize + "/" + YdmItems.CARD_BACK.getRegistryName().getPath() + ".png");
     }
     
     public static ResourceLocation getInfoTokenOverlay()
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeInfoImageSize + "/" + "token_overlay" + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeCardInfoImageSize + "/" + "token_overlay" + ".png");
     }
     
     public static ResourceLocation getMainTokenOverlay()
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeMainImageSize + "/" + "token_overlay" + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + ClientProxy.activeCardMainImageSize + "/" + "token_overlay" + ".png");
     }
     
     public static void renderDuelCardAdvanced(MatrixStack ms, float x, float y, float width, float height, DuelCard card, YdmBlitUtil.FullBlitMethod blitMethod, boolean forceFaceUp)
