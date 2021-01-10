@@ -32,9 +32,7 @@ public class FinalCardSetBakedModel implements IBakedModel
     private ItemStack activeItemStack;
     private Function<ResourceLocation, TextureAtlasSprite> textureGetter;
     
-    private List<BakedQuad> singleBackList = null;
-    private List<BakedQuad> partneredBackList = null;
-    private List<BakedQuad> blancList = null;
+    private List<BakedQuad> backList = null;
     
     private final float distance = 0.002F;
     
@@ -64,7 +62,10 @@ public class FinalCardSetBakedModel implements IBakedModel
                 
                 ResourceLocation front = set.getItemImageResourceLocation();
                 TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
+                
                 list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
+                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.NORTH, 0xFFFFFFFF, 1));
+                list.addAll(this.getSetList());
                 
                 return list;
             }
@@ -142,13 +143,13 @@ public class FinalCardSetBakedModel implements IBakedModel
     
     private List<BakedQuad> getSetList()
     {
-        if(this.singleBackList == null)
+        if(this.backList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addCardItemTag("card_back"));
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addSetItemTag("blanc_set"));
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.singleBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1);
+            this.backList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1);
         }
         
-        return this.singleBackList;
+        return this.backList;
     }
 }

@@ -31,10 +31,10 @@ import de.cas_ual_ty.ydm.util.YdmUtil;
 
 public class ImageHandler
 {
-    private static final String CARD_IN_PROGRESS = "card_back";
-    private static final String CARD_FAILED = "blanc_card";
-    private static final String SET_IN_PROGRESS = "blanc_card";
-    private static final String SET_FAILED = "blanc_card";
+    private static final String CARD_IN_PROGRESS = "card_loading";
+    private static final String CARD_FAILED = "card_failed";
+    private static final String SET_IN_PROGRESS = "set_loading";
+    private static final String SET_FAILED = "set_failed";
     //    private static final String FAILED_IMAGE = "blanc_card";
     
     public static ImageList RAW_IMAGE_LIST = new ImageList();
@@ -276,7 +276,16 @@ public class ImageHandler
         
         try(InputStream in = new FileInputStream(raw))
         {
-            BufferedImage img = ImageIO.read(in);
+            BufferedImage rawImg = ImageIO.read(in);
+            
+            if(rawImg == null)
+            {
+                YDM.log("Can not read image: " + raw.getAbsolutePath());
+                throw new NullPointerException();
+            }
+            
+            BufferedImage img = new BufferedImage(rawImg.getWidth(), rawImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            img.getGraphics().drawImage(rawImg, 0, 0, null);
             
             int margin = size / 8;
             
@@ -306,9 +315,9 @@ public class ImageHandler
             BufferedImage newImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
             Graphics g = newImg.getGraphics();
             g.drawImage(img, (size - img.getWidth()) / 2, (size - img.getHeight()) / 2, null);
-            g.dispose();
             
             ImageIO.write(newImg, "PNG", adjusted);
+            g.dispose();
         }
     }
     

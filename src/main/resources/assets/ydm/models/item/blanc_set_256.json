@@ -1,6 +1,6 @@
 {
     "parent": "item/generated",
     "textures": {
-        "layer0": "ydm:item/16/blanc_set"
+        "layer0": "ydm:item/256/blanc_set"
     }
 }

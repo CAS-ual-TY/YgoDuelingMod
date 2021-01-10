@@ -23,6 +23,7 @@ public class YdmItems
 {
     public static final Item BLANC_CARD = null;
     public static final Item CARD_BACK = null;
+    public static final Item BLANC_SET = null;
     public static final CardItem CARD = null;
     public static final CardSetItem SET = null;
     public static final CardBinderItem CARD_BINDER = null;
@@ -65,6 +66,7 @@ public class YdmItems
         IForgeRegistry<Item> registry = event.getRegistry();
         registry.register(new CosmeticItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "blanc_card"));
         registry.register(new CosmeticItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
+        registry.register(new CosmeticItem(new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "blanc_set"));
         registry.register(new CardItem(new Properties().group(YDM.cardsItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card"));
         registry.register(new CardSetItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "set"));
         registry.register(new CardBinderItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "card_binder"));

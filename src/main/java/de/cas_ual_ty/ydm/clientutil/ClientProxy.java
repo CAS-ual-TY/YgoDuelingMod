@@ -2,10 +2,13 @@ package de.cas_ual_ty.ydm.clientutil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.tuple.Pair;
+
+import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
@@ -24,13 +27,16 @@ import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -323,6 +329,7 @@ public class ClientProxy implements ISidedProxy
             {
                 if(set.isIndependentAndItem())
                 {
+                    YDM.debug("SET: " + set.code + " " + set.getItemImageResourceLocation());
                     event.addSprite(set.getItemImageResourceLocation());
                 }
             }
@@ -338,6 +345,11 @@ public class ClientProxy implements ISidedProxy
         {
             ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
             ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
+        }
+        
+        if(ClientProxy.activeSetItemImageSize != 16)
+        {
+            ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_SET.getRegistryName().toString() + "_" + ClientProxy.activeSetItemImageSize), "inventory"));
         }
     }
     
@@ -357,6 +369,14 @@ public class ClientProxy implements ISidedProxy
                 event.getModelRegistry().get(
                     new ModelResourceLocation(
                         new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
+        }
+        
+        if(ClientProxy.activeSetItemImageSize != 16)
+        {
+            event.getModelRegistry().put(new ModelResourceLocation(YdmItems.BLANC_SET.getRegistryName(), "inventory"),
+                event.getModelRegistry().get(
+                    new ModelResourceLocation(
+                        new ResourceLocation(YdmItems.BLANC_SET.getRegistryName().toString() + "_" + ClientProxy.activeSetItemImageSize), "inventory")));
         }
         
         ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
@@ -396,9 +416,18 @@ public class ClientProxy implements ISidedProxy
         {
             ContainerScreen<?> containerScreen = (ContainerScreen<?>)event.getGui();
             
-            if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty() && containerScreen.getSlotUnderMouse().getStack().getItem() == YdmItems.CARD)
+            if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty())
             {
-                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(containerScreen.getSlotUnderMouse().getStack()), containerScreen);
+                ItemStack itemStack = containerScreen.getSlotUnderMouse().getStack();
+                
+                if(itemStack.getItem() == YdmItems.CARD)
+                {
+                    CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(itemStack), containerScreen);
+                }
+                else if(itemStack.getItem() == YdmItems.SET)
+                {
+                    this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(itemStack), containerScreen.getGuiLeft());
+                }
             }
         }
     }
@@ -418,11 +447,72 @@ public class ClientProxy implements ISidedProxy
             {
                 CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()));
             }
+            else if(player.getHeldItemMainhand().getItem() == YdmItems.SET)
+            {
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemMainhand()), 100);
+            }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
             {
                 CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
             }
+            else if(player.getHeldItemOffhand().getItem() == YdmItems.SET)
+            {
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemOffhand()), 100);
+            }
         }
+    }
+    
+    private void renderSetInfo(MatrixStack ms, CardSet set, int width)
+    {
+        if(set == null)
+        {
+            return;
+        }
+        
+        final float f = 0.5f;
+        final int imageSize = 64;
+        int margin = 2;
+        
+        int maxWidth = width - margin * 2;
+        
+        ms.push();
+        ScreenUtil.white();
+        
+        {
+            int x = margin;
+            
+            if(maxWidth < imageSize)
+            {
+                // draw it centered if the space we got is limited
+                // to make sure the image is NOT rendered more to the right of the center
+                x = (maxWidth - imageSize) / 2 + margin;
+            }
+            
+            // card texture
+            
+            Minecraft.getInstance().textureManager.bindTexture(set.getInfoImageResourceLocation());
+            YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
+        }
+        
+        // need to multiply x2 because we are scaling the text to x0.5
+        maxWidth *= 2;
+        margin *= 2;
+        ms.scale(f, f, f);
+        
+        {
+            // card description text
+            
+            @SuppressWarnings("resource")
+            FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
+            
+            List<ITextComponent> list = new LinkedList<>();
+            //set.addInformation(list);
+            list.add(new StringTextComponent(set.name));
+            
+            ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
+        }
+        
+        ms.pop();
     }
     
     public static int maxMessages = 50; //TODO make configurable
