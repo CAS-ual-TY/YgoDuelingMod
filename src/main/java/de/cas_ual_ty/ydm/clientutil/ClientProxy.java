@@ -329,7 +329,6 @@ public class ClientProxy implements ISidedProxy
             {
                 if(set.isIndependentAndItem())
                 {
-                    YDM.debug("SET: " + set.code + " " + set.getItemImageResourceLocation());
                     event.addSprite(set.getItemImageResourceLocation());
                 }
             }
