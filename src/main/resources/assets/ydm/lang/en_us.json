@@ -1,6 +1,7 @@
 {
     "itemGroup.ydm": "YDM: Ygo Dueling Mod",
     "itemGroup.ydm.cards": "YDM Cards",
+    "itemGroup.ydm.sets": "YDM Sets",
     "block.ydm.duel_playmat": "Duel Playmat",
     "block.ydm.duel_table": "Duel Table",
     "block.ydm.card_supply": "Card Supply Block",

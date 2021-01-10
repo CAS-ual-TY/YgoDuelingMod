@@ -65,6 +65,7 @@ public class YDM
     public static Random random;
     public static ItemGroup ydmItemGroup;
     public static ItemGroup cardsItemGroup;
+    public static ItemGroup setsItemGroup;
     
     public static ForgeConfigSpec commonConfigSpec;
     public static CommonConfig commonConfig;
@@ -98,6 +99,14 @@ public class YDM
         YDM.random = new Random();
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
         YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD)
+        {
+            @Override
+            public boolean hasSearchBar()
+            {
+                return true;
+            }
+        }.setBackgroundImageName("item_search.png");
+        YDM.setsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".sets", () -> YdmItems.BLANC_SET)
         {
             @Override
             public boolean hasSearchBar()
