@@ -149,6 +149,12 @@ public class CardHolder
     public void readCardHolderFromNBT(CompoundNBT nbt)
     {
         this.card = YdmDatabase.PROPERTIES_LIST.get(nbt.getLong(JsonKeys.ID));
+        
+        if(this.card == null)
+        {
+            this.card = Properties.DUMMY;
+        }
+        
         this.imageIndex = nbt.getByte(JsonKeys.IMAGE_INDEX);
         this.rarity = nbt.getString(JsonKeys.RARITY);
         this.code = nbt.getString(JsonKeys.CODE);
@@ -156,7 +162,11 @@ public class CardHolder
     
     public void writeCardHolderToNBT(CompoundNBT nbt)
     {
-        nbt.putLong(JsonKeys.ID, this.card.getId());
+        if(this.card != Properties.DUMMY)
+        {
+            nbt.putLong(JsonKeys.ID, this.card.getId());
+        }
+        
         nbt.putByte(JsonKeys.IMAGE_INDEX, this.imageIndex);
         nbt.putString(JsonKeys.RARITY, this.rarity);
         nbt.putString(JsonKeys.CODE, this.code);
@@ -165,6 +175,12 @@ public class CardHolder
     public void readFromJson(JsonObject json)
     {
         this.card = YdmDatabase.PROPERTIES_LIST.get(json.get(JsonKeys.ID).getAsLong());
+        
+        if(this.card == null)
+        {
+            this.card = Properties.DUMMY;
+        }
+        
         this.imageIndex = json.get(JsonKeys.IMAGE_INDEX).getAsByte();
         this.rarity = json.get(JsonKeys.RARITY).getAsString();
         this.code = json.get(JsonKeys.CODE).getAsString();
@@ -172,7 +188,11 @@ public class CardHolder
     
     public void writeToJson(JsonObject json)
     {
-        json.addProperty(JsonKeys.ID, this.card.getId());
+        if(this.card != Properties.DUMMY)
+        {
+            json.addProperty(JsonKeys.ID, this.card.getId());
+        }
+        
         json.addProperty(JsonKeys.IMAGE_INDEX, this.imageIndex);
         json.addProperty(JsonKeys.RARITY, this.rarity);
         json.addProperty(JsonKeys.CODE, this.code);
