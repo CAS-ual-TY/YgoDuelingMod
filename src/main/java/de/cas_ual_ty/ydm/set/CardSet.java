@@ -22,7 +22,20 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class CardSet
 {
-    public static final CardSet DUMMY = new CardSet("Dummy", "DUM-MY", "DUMMY", new Date(0), new FullCardPuller(new JsonObject(), null), ImmutableList.of());
+    public static final CardSet DUMMY = new CardSet("Dummy", "DUM-MY", "DUMMY", new Date(0), new FullCardPuller(new JsonObject(), null), ImmutableList.of())
+    {
+        @Override
+        public String getImageName()
+        {
+            return "blanc_set";
+        }
+        
+        @Override
+        public boolean getIsHardcoded()
+        {
+            return true;
+        }
+    };
     
     public String name;
     public String code;
