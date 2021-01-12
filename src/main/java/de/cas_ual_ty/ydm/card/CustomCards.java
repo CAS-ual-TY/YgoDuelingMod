@@ -47,6 +47,9 @@ public class CustomCards
     public static XyzMonsterProperties PATREON_010_PROPERTIES;
     public static CardHolder PATREON_010_CARD;
     
+    public static LevelMonsterProperties PATREON_011_PROPERTIES;
+    public static CardHolder PATREON_011_CARD;
+    
     public static void createAndRegisterEverything()
     {
         CustomCards.PATREON_001_PROPERTIES = new LevelMonsterProperties();
@@ -254,6 +257,28 @@ public class CustomCards
         CustomCards.PATREON_010_PROPERTIES.rank = 4;
         CustomCards.PATREON_010_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_010_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_010_PROPERTIES);
+        
+        CustomCards.PATREON_011_PROPERTIES = new LevelMonsterProperties();
+        CustomCards.PATREON_011_PROPERTIES.isHardcoded = true;
+        CustomCards.PATREON_011_PROPERTIES.name = "Drake Lockheart - Jedi Knight";
+        CustomCards.PATREON_011_PROPERTIES.id = 11;
+        CustomCards.PATREON_011_PROPERTIES.isIllegal = true;
+        CustomCards.PATREON_011_PROPERTIES.isCustom = true;
+        CustomCards.PATREON_011_PROPERTIES.text = "You can Special Summon this card from your hand or GY by sending 3 cards from your hand and/or field to the GY. This card is unaffected by your opponent's cards and effects. This card can make a second attack during each Battle Phase. When this card battles you can roll a six-sided die, multiply this card's ATK and DEF by the result until the end of the Damage Step. Once per turn, when you opponent targets another monster you control for an attack you can change the attack target to this card.";
+        CustomCards.PATREON_011_PROPERTIES.type = Type.MONSTER;
+        CustomCards.PATREON_011_PROPERTIES.images = null;
+        CustomCards.PATREON_011_PROPERTIES.attribute = Attribute.LIGHT.name;
+        CustomCards.PATREON_011_PROPERTIES.atk = 3000;
+        CustomCards.PATREON_011_PROPERTIES.species = Species.WARRIOR.name;
+        CustomCards.PATREON_011_PROPERTIES.monsterType = null;
+        CustomCards.PATREON_011_PROPERTIES.isPendulum = false;
+        CustomCards.PATREON_011_PROPERTIES.ability = "";
+        CustomCards.PATREON_011_PROPERTIES.hasEffect = true;
+        CustomCards.PATREON_011_PROPERTIES.def = 3000;
+        CustomCards.PATREON_011_PROPERTIES.level = 12;
+        CustomCards.PATREON_011_PROPERTIES.isTuner = false;
+        CustomCards.PATREON_011_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_011_PROPERTIES);
+        YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_011_PROPERTIES);
     }
     
     public static CardHolder createPatreonCard(Properties c) // add rarity here as parameter
