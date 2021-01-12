@@ -1,4 +1,4 @@
-package de.cas_ual_ty.ydm.card;
+package de.cas_ual_ty.ydm;
 
 import java.util.List;
 

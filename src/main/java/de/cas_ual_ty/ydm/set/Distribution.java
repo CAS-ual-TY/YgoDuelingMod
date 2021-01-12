@@ -11,6 +11,8 @@ public class Distribution
     public final String name;
     public final Pull[] pulls;
     
+    public final int totalWeight;
+    
     public Distribution(JsonObject j)
     {
         this.name = j.get(JsonKeys.NAME).getAsString();
@@ -23,6 +25,7 @@ public class Distribution
         JsonObject pullJson;
         
         int weight;
+        int totalWeight = 0;
         JsonArray entriesJson;
         PullEntry[] entries;
         
@@ -57,7 +60,10 @@ public class Distribution
             }
             
             this.pulls[q] = new Pull(weight, entries);
+            totalWeight += weight;
         }
+        
+        this.totalWeight = totalWeight;
     }
     
     public static class Pull

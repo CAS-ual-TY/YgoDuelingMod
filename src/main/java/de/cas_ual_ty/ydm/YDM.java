@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
+import de.cas_ual_ty.ydm.carditeminventory.CardItemInventoryMessages;
 import de.cas_ual_ty.ydm.cardsupply.CardSupplyMessages;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
@@ -171,6 +172,7 @@ public class YDM
         DuelMessage.register(YDM.channel, index++, DuelMessages.SendMessageToServer.class, DuelMessages.SendMessageToServer::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.SendMessageToClient.class, DuelMessages.SendMessageToClient::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.SendAllMessagesToClient.class, DuelMessages.SendAllMessagesToClient::new);
+        YDM.channel.registerMessage(index++, CardItemInventoryMessages.ChangePage.class, CardItemInventoryMessages.ChangePage::encode, CardItemInventoryMessages.ChangePage::decode, CardItemInventoryMessages.ChangePage::handle);
         
         YDM.proxy.init();
         WorkerManager.init();

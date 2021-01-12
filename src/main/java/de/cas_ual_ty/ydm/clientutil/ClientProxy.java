@@ -23,6 +23,7 @@ import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenBase;
 import de.cas_ual_ty.ydm.set.CardSet;
+import de.cas_ual_ty.ydm.set.CardSetScreen;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -181,6 +182,7 @@ public class ClientProxy implements ISidedProxy
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
         ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
         ScreenManager.registerFactory(YdmContainerTypes.CARD_SUPPLY, CardSupplyScreen::new);
+        ScreenManager.registerFactory(YdmContainerTypes.CARD_SET, CardSetScreen::new);
         
         CardRenderUtil.init(ClientProxy.maxInfoImages, ClientProxy.maxMainImages);
     }
@@ -412,6 +414,8 @@ public class ClientProxy implements ISidedProxy
         
         key = new ModelResourceLocation(YdmItems.SET.getRegistryName(), "inventory");
         event.getModelRegistry().put(key, new CardSetBakedModel(event.getModelRegistry().get(key)));
+        key = new ModelResourceLocation(YdmItems.OPENED_SET.getRegistryName(), "inventory");
+        event.getModelRegistry().put(key, new CardSetBakedModel(event.getModelRegistry().get(key)));
     }
     
     private void modConfig(final ModConfig.ModConfigEvent event)
@@ -479,6 +483,10 @@ public class ClientProxy implements ISidedProxy
             {
                 this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemMainhand()), 100);
             }
+            else if(player.getHeldItemMainhand().getItem() == YdmItems.OPENED_SET)
+            {
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemMainhand()), 100);
+            }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
             {
                 CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
@@ -486,6 +494,10 @@ public class ClientProxy implements ISidedProxy
             else if(player.getHeldItemOffhand().getItem() == YdmItems.SET)
             {
                 this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemOffhand()), 100);
+            }
+            else if(player.getHeldItemOffhand().getItem() == YdmItems.OPENED_SET)
+            {
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemOffhand()), 100);
             }
         }
     }

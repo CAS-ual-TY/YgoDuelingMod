@@ -34,7 +34,7 @@ public class ClientConfig
             .comment("The size of card images in shown card infos (\"info\" images).")
             .defineInRange("cardInfoImageSize", 256, 16, 1024);
         this.activeCardItemImageSize = builder
-            .comment("The size of card images used for items (only if itemsUseCardImages is set to true) (\"item\" images).")
+            .comment("The size of card images used for items (only if cardItemsUseImages is set to true) (\"item\" images).")
             .defineInRange("cardItemImageSize", 16, 16, 256);
         this.activeCardMainImageSize = builder
             .comment("The size of card images in duels and in card inventories (\"main\" images).")
@@ -54,13 +54,13 @@ public class ClientConfig
         builder.push("set_images");
         
         this.activeSetInfoImageSize = builder
-            .comment("The size of card images in shown card infos (\"info\" images).")
+            .comment("The size of set images in shown set infos (\"info\" images).")
             .defineInRange("setInfoImageSize", 256, 16, 1024);
         this.activeSetItemImageSize = builder
-            .comment("The size of card images used for items (only if itemsUseCardImages is set to true) (\"item\" images).")
+            .comment("The size of set images used for items (only if setItemsUseImages is set to true) (\"item\" images).")
             .defineInRange("setItemImageSize", 16, 16, 256);
         this.itemsUseSetImages = builder
-            .comment("Make set items use their images instead of only the back side. Requires a lot more resources.")
+            .comment("Make set items use their images instead of the dummy texture. Requires more resources.")
             .define("setItemsUseImages", false);
         
         builder.pop();

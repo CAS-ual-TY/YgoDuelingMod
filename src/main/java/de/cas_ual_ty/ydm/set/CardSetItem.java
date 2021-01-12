@@ -1,20 +1,16 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.List;
-
 import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
+import de.cas_ual_ty.ydm.YdmItems;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
-public class CardSetItem extends Item
+public class CardSetItem extends CardSetItemBase
 {
     public CardSetItem(Properties properties)
     {
@@ -22,47 +18,23 @@ public class CardSetItem extends Item
     }
     
     @Override
-    public void addInformation(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
     {
-        CardSet set = this.getCardSet(itemStack);
-        tooltip.clear();
-        set.addInformation(tooltip);
-    }
-    
-    @Override
-    public ITextComponent getDisplayName(ItemStack itemStack)
-    {
-        CardSet set = this.getCardSet(itemStack);
-        return new StringTextComponent(set.name);
-    }
-    
-    public CardSet getCardSet(ItemStack itemStack)
-    {
-        String code = this.getNBT(itemStack).getString(JsonKeys.CODE);
+        ItemStack stack = CardSetItem.getActiveSet(player);
         
-        if(code.isEmpty())
+        if(player.getHeldItem(hand) == stack)
         {
-            return CardSet.DUMMY;
+            this.unseal(stack, player, hand);
+            return player.getHeldItem(hand).getItem().onItemRightClick(world, player, hand);
         }
         
-        CardSet set = YdmDatabase.SETS_LIST.get(code);
-        
-        if(set == null)
-        {
-            set = CardSet.DUMMY;
-        }
-        
-        return set;
+        return super.onItemRightClick(world, player, hand);
     }
     
-    public void setCardSet(ItemStack itemStack, CardSet set)
+    public void unseal(ItemStack itemStack, PlayerEntity player, Hand hand)
     {
-        this.getNBT(itemStack).putString(JsonKeys.CODE, set.code);
-    }
-    
-    public CompoundNBT getNBT(ItemStack itemStack)
-    {
-        return itemStack.getOrCreateTag();
+        ItemStack newStack = YdmItems.OPENED_SET.createItemForSet(this.getCardSet(itemStack));
+        player.setHeldItem(hand, newStack);
     }
     
     public ItemStack createItemForSet(CardSet set)
@@ -89,9 +61,19 @@ public class CardSetItem extends Item
         }
     }
     
-    @Override
-    public boolean shouldSyncTag()
+    public static ItemStack getActiveSet(PlayerEntity player)
     {
-        return true;
+        if(player.getHeldItemMainhand().getItem() == YdmItems.SET)
+        {
+            return player.getHeldItemMainhand();
+        }
+        else if(player.getHeldItemOffhand().getItem() == YdmItems.SET)
+        {
+            return player.getHeldItemOffhand();
+        }
+        else
+        {
+            return ItemStack.EMPTY;
+        }
     }
 }
