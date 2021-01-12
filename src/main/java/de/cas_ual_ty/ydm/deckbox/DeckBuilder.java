@@ -7,6 +7,7 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 
 public class DeckBuilder
 {
@@ -201,7 +202,14 @@ public class DeckBuilder
         @Override
         public CardHolder get()
         {
-            return new CardHolder(YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getId() == this.id), this.imageIndex, Rarity.CREATIVE.name);
+            Properties p = YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getId() == this.id);
+            
+            if(p == null)
+            {
+                p = Properties.DUMMY;
+            }
+            
+            return new CardHolder(p, this.imageIndex, Rarity.CREATIVE.name);
         }
         
         @Override
@@ -225,7 +233,14 @@ public class DeckBuilder
         @Override
         public CardHolder get()
         {
-            return new CardHolder(YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getName().equals(this.name)), this.imageIndex, Rarity.CREATIVE.name);
+            Properties p = YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getName().equals(this.name));
+            
+            if(p == null)
+            {
+                p = Properties.DUMMY;
+            }
+            
+            return new CardHolder(p, this.imageIndex, Rarity.CREATIVE.name);
         }
         
         @Override
