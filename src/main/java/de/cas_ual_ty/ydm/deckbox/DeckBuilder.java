@@ -143,6 +143,7 @@ public class DeckBuilder
                 else
                 {
                     YDM.log("Deck Builder Entry gives null: " + s.getErrorString());
+                    new NullPointerException().printStackTrace();
                 }
             }
             
@@ -157,6 +158,7 @@ public class DeckBuilder
                 else
                 {
                     YDM.log("Deck Builder Entry gives null: " + s.getErrorString());
+                    new NullPointerException().printStackTrace();
                 }
             }
             
@@ -171,6 +173,7 @@ public class DeckBuilder
                 else
                 {
                     YDM.log("Deck Builder Entry gives null: " + s.getErrorString());
+                    new NullPointerException().printStackTrace();
                 }
             }
             
@@ -206,7 +209,7 @@ public class DeckBuilder
             
             if(p == null)
             {
-                p = Properties.DUMMY;
+                return null;
             }
             
             return new CardHolder(p, this.imageIndex, Rarity.CREATIVE.name);
@@ -237,7 +240,7 @@ public class DeckBuilder
             
             if(p == null)
             {
-                p = Properties.DUMMY;
+                return null;
             }
             
             return new CardHolder(p, this.imageIndex, Rarity.CREATIVE.name);
