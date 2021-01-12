@@ -262,7 +262,18 @@ public class ImageHandler
     
     public static void downloadRawImage(String imageUrl, File rawImageFile) throws MalformedURLException, IOException
     {
-        YdmIOUtil.downloadFile(new URL(imageUrl), rawImageFile);
+        URL url;
+        try
+        {
+            url = new URL(imageUrl);
+        }
+        catch (MalformedURLException e)
+        {
+            YDM.log("Malformed url: \"" + imageUrl + "\" for raw image file target: " + rawImageFile.getAbsolutePath());
+            throw e;
+        }
+        
+        YdmIOUtil.downloadFile(url, rawImageFile);
         
         if(!ClientProxy.keepCachedImages)
         {
@@ -315,9 +326,29 @@ public class ImageHandler
             BufferedImage newImg = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
             Graphics g = newImg.getGraphics();
             g.drawImage(img, (size - img.getWidth()) / 2, (size - img.getHeight()) / 2, null);
-            
-            ImageIO.write(newImg, "PNG", adjusted);
             g.dispose();
+            
+            int x, y, color;
+            for(x = 0; x < newImg.getWidth(); ++x)
+            {
+                for(y = 0; y < newImg.getHeight(); ++y)
+                {
+                    color = newImg.getRGB(x, y);
+                    
+                    if((color >> 24) == 0x00)
+                    {
+                        newImg.setRGB(x, y, 0x00000000);
+                    }
+                    else
+                    {
+                        newImg.setRGB(x, y, color | 0xFF000000);
+                    }
+                    
+                }
+            }
+            
+            newImg.flush();
+            ImageIO.write(newImg, "PNG", adjusted);
         }
     }
     
