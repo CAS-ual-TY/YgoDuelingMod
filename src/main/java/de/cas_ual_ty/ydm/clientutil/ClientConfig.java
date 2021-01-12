@@ -39,27 +39,29 @@ public class ClientConfig
         this.activeCardMainImageSize = builder
             .comment("The size of card images in duels and in card inventories (\"main\" images).")
             .defineInRange("cardMainImageSize", 64, 16, 256);
-        this.activeSetInfoImageSize = builder
-            .comment("The size of card images in shown card infos (\"info\" images).")
-            .defineInRange("setInfoImageSize", 256, 16, 1024);
-        this.activeSetItemImageSize = builder
-            .comment("The size of card images used for items (only if itemsUseCardImages is set to true) (\"item\" images).")
-            .defineInRange("setItemImageSize", 16, 16, 256);
-        this.keepCachedImages = builder
-            .comment("Keep the raw images cached when downloading and converting them to the appropriate size.")
-            .define("keepCachedImages", true);
         this.itemsUseCardImages = builder
             .comment("Make card items use their images instead of only the back side. Requires a lot more resources.")
             .define("cardItemsUseImages", false);
-        this.itemsUseSetImages = builder
-            .comment("Make set items use their images instead of only the back side. Requires a lot more resources.")
-            .define("setItemsUseImages", false);
         this.maxInfoImages = builder
             .comment("The amount of \"info\" images that may be loaded at once (oldest ones get unloaded not to overstep this limit).")
             .defineInRange("maxInfoImages", 64, 1, 256);
         this.maxMainImages = builder
             .comment("The amount of \"main\" images that may be loaded at once (oldest ones get unloaded not to overstep this limit).")
             .defineInRange("maxMainImages", 256, 64, 1024);
+        
+        builder.pop();
+        
+        builder.push("set_images");
+        
+        this.activeSetInfoImageSize = builder
+            .comment("The size of card images in shown card infos (\"info\" images).")
+            .defineInRange("setInfoImageSize", 256, 16, 1024);
+        this.activeSetItemImageSize = builder
+            .comment("The size of card images used for items (only if itemsUseCardImages is set to true) (\"item\" images).")
+            .defineInRange("setItemImageSize", 16, 16, 256);
+        this.itemsUseSetImages = builder
+            .comment("Make set items use their images instead of only the back side. Requires a lot more resources.")
+            .define("setItemsUseImages", false);
         
         builder.pop();
         
@@ -88,6 +90,9 @@ public class ClientConfig
         this.showBinderId = builder
             .comment("Show card binder UUIDs when hovering over them.")
             .define("showBinderId", true);
+        this.keepCachedImages = builder
+            .comment("Keep the raw images cached when downloading and converting them to the appropriate size.")
+            .define("keepCachedImages", true);
         
         builder.pop();
         
