@@ -337,6 +337,33 @@ public class ClientProxy implements ISidedProxy
     
     private void modelRegistry(ModelRegistryEvent event)
     {
+        boolean flag = false;
+        
+        while((ClientProxy.activeCardItemImageSize == 0 || ClientProxy.activeSetItemImageSize == 0))
+        {
+            if(!flag)
+            {
+                flag = true;
+                YDM.log("Sleeping for a couple seconds to give the worker enough time to read the config...");
+            }
+            
+            // sometimes this gets done before YDM.itemsUseCardImagesActive is set to true
+            // so lets wait a bit to make sure the value is correct
+            
+            //++i;
+            
+            try
+            {
+                TimeUnit.SECONDS.sleep(1);
+            }
+            catch (InterruptedException e)
+            {
+                YDM.log("Tried sleeping to give textures enough time... It didnt work :(");
+                e.printStackTrace();
+                break;
+            }
+        }
+        
         YDM.log("Registering models (size: " + ClientProxy.activeCardItemImageSize + ") for " + YdmItems.BLANC_CARD.getRegistryName().toString() + " and " + YdmItems.CARD_BACK.getRegistryName().toString());
         
         // 16 is default texture; no need to do anything special in that case
@@ -345,6 +372,8 @@ public class ClientProxy implements ISidedProxy
             ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
             ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
         }
+        
+        YDM.log("Registering models (size: " + ClientProxy.activeSetItemImageSize + ") for " + YdmItems.BLANC_SET.getRegistryName().toString());
         
         if(ClientProxy.activeSetItemImageSize != 16)
         {
