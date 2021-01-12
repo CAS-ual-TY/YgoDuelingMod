@@ -64,7 +64,7 @@ public class FinalCardSetBakedModel implements IBakedModel
                 TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
                 
                 list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
-                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.NORTH, 0xFFFFFFFF, 1));
+                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1));
                 list.addAll(this.getSetList());
                 
                 return list;
@@ -147,7 +147,9 @@ public class FinalCardSetBakedModel implements IBakedModel
         {
             ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addSetItemTag("blanc_set"));
             TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.backList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1);
+            this.backList = new ArrayList<>(0);
+            this.backList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
+            this.backList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1));
         }
         
         return this.backList;
