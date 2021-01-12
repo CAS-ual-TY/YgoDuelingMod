@@ -95,7 +95,7 @@ public class LinkMonsterProperties extends MonsterProperties
     public void addLinkMarkers(List<ITextComponent> list)
     {
         //        list.add(this.linkArrows.stream().map((arrow) -> arrow.name).collect(Collectors.joining(", ")));
-        list.addAll(LinkArrow.buildSymbolsString(this.getLinkArrows(), TextFormatting.WHITE, TextFormatting.RED, "  "));
+        list.addAll(LinkArrow.buildSymbolsString(this.getLinkArrows(), TextFormatting.DARK_GRAY, TextFormatting.RED, "  "));
     }
     
     // --- Getters ---

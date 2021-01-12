@@ -23,31 +23,15 @@ public class CardItem extends Item
     public void addInformation(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
     {
         CardHolder holder = this.getCardHolder(itemStack);
-        
-        if(holder.getCard() == null)
-        {
-            super.addInformation(itemStack, worldIn, tooltip, flagIn);
-        }
-        else
-        {
-            tooltip.clear();
-            holder.addInformation(tooltip);
-        }
+        tooltip.clear();
+        holder.addInformation(tooltip);
     }
     
     @Override
     public ITextComponent getDisplayName(ItemStack itemStack)
     {
         CardHolder holder = this.getCardHolder(itemStack);
-        
-        if(holder.getCard() == null)
-        {
-            return super.getDisplayName(itemStack);
-        }
-        else
-        {
-            return new StringTextComponent(holder.getCard().getName());
-        }
+        return new StringTextComponent(holder.getCard().getName());
     }
     
     public CardHolder getCardHolder(ItemStack itemStack)

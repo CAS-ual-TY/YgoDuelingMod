@@ -93,7 +93,7 @@ public enum LinkArrow
             s.append(new StringTextComponent(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
         }
         
-        s.appendString(joiner + " " + joiner);
+        s.appendString(joiner + "" + joiner);
         
         if(arrows.contains(RIGHT))
         {
