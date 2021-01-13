@@ -9,6 +9,7 @@ import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.util.text.TextFormatting;
 
 public class Distribution
 {
@@ -70,7 +71,7 @@ public class Distribution
         this.totalWeight = totalWeight;
     }
     
-    public void addInformation(List<ITextComponent> tooltip)
+    public void addInformation(List<ITextComponent> tooltip, CardSet set)
     {
         for(Pull pull : this.pulls)
         {
@@ -81,12 +82,31 @@ public class Distribution
                 StringBuilder s = new StringBuilder();
                 s.append("    " + pe.count + "x: ");
                 
+                boolean rarityFound = false;
+                
                 for(String rarity : pe.rarities)
                 {
-                    s.append(rarity + " / ");
+                    if(set.rarityPool.contains(rarity))
+                    {
+                        s.append(rarity + " / ");
+                        
+                        if(!rarityFound)
+                        {
+                            rarityFound = true;
+                        }
+                    }
                 }
                 
-                tooltip.add(new StringTextComponent(s.substring(0, s.length() - 3)));
+                if(rarityFound)
+                {
+                    s.delete(s.length() - 3, s.length());
+                }
+                else
+                {
+                    s.append(TextFormatting.RED.toString() + "NO MATCH");
+                }
+                
+                tooltip.add(new StringTextComponent(s.toString()));
             }
             
             tooltip.add(StringTextComponent.EMPTY);

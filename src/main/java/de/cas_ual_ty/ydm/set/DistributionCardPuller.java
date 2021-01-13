@@ -92,6 +92,6 @@ public class DistributionCardPuller extends CardPuller
     @Override
     public void addInformation(List<ITextComponent> tooltip)
     {
-        this.distribution.addInformation(tooltip);
+        this.distribution.addInformation(tooltip, this.set);
     }
 }

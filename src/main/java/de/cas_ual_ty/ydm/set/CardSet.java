@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.set;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -46,6 +47,9 @@ public class CardSet
     
     // must be same size and order as cards JsonArray
     public List<CardHolder> cards;
+    
+    // list of all contained rarities
+    public List<String> rarityPool;
     
     public CardSet(String name, String code, String type, Date date, CardPuller pull, List<CardHolder> cards)
     {
@@ -103,16 +107,19 @@ public class CardSet
         if(!j.has(JsonKeys.CARDS))
         {
             this.cards = ImmutableList.of();
+            this.rarityPool = ImmutableList.of();
         }
         else
         {
             JsonArray cards = j.get(JsonKeys.CARDS).getAsJsonArray();
             this.cards = new ArrayList<>(cards.size());
+            this.rarityPool = new LinkedList<>();
             
             JsonObject c;
             long id;
             Properties card;
             byte imageIndex;
+            String rarity;
             for(JsonElement e : cards)
             {
                 c = e.getAsJsonObject();
@@ -133,7 +140,14 @@ public class CardSet
                     YDM.log("Bad image index for card in: " + this.name + " card: " + card);
                 }
                 
-                this.cards.add(new CardHolder(card, imageIndex, c.get(JsonKeys.RARITY).getAsString(), c.get(JsonKeys.CODE).getAsString()));
+                rarity = c.get(JsonKeys.RARITY).getAsString();
+                
+                if(!this.rarityPool.contains(rarity))
+                {
+                    this.rarityPool.add(rarity);
+                }
+                
+                this.cards.add(new CardHolder(card, imageIndex, rarity, c.get(JsonKeys.CODE).getAsString()));
             }
         }
     }

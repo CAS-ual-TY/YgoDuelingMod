@@ -22,7 +22,7 @@ public class CardSetItem extends CardSetItemBase
     {
         ItemStack stack = CardSetItem.getActiveSet(player);
         
-        if(player.getHeldItem(hand) == stack)
+        if(!world.isRemote && player.getHeldItem(hand) == stack)
         {
             this.unseal(stack, player, hand);
             return player.getHeldItem(hand).getItem().onItemRightClick(world, player, hand);
