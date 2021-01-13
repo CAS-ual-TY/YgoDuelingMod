@@ -172,7 +172,7 @@ public class YdmDatabase
             YDM.log("Cannot read remote db.json file. Staying on current database...");
             e.printStackTrace();
         }
-        catch (JsonParseException e)
+        catch (JsonParseException | NullPointerException e)
         {
             YDM.log("Cannot parse remote db.json file. Staying on current database...");
             e.printStackTrace();
