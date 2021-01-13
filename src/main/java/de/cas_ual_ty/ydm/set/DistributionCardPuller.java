@@ -11,6 +11,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.set.Distribution.Pull;
 import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
 
 public class DistributionCardPuller extends CardPuller
 {
@@ -86,5 +87,11 @@ public class DistributionCardPuller extends CardPuller
         }
         
         return null;
+    }
+    
+    @Override
+    public void addInformation(List<ITextComponent> tooltip)
+    {
+        this.distribution.addInformation(tooltip);
     }
 }

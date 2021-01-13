@@ -37,7 +37,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -460,6 +459,10 @@ public class ClientProxy implements ISidedProxy
                 {
                     this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(itemStack), containerScreen.getGuiLeft());
                 }
+                else if(itemStack.getItem() == YdmItems.OPENED_SET)
+                {
+                    this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(itemStack), containerScreen.getGuiLeft());
+                }
             }
         }
     }
@@ -481,11 +484,11 @@ public class ClientProxy implements ISidedProxy
             }
             else if(player.getHeldItemMainhand().getItem() == YdmItems.SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemMainhand()), 100);
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemMainhand()));
             }
             else if(player.getHeldItemMainhand().getItem() == YdmItems.OPENED_SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemMainhand()), 100);
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemMainhand()));
             }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
             {
@@ -493,13 +496,18 @@ public class ClientProxy implements ISidedProxy
             }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemOffhand()), 100);
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemOffhand()));
             }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.OPENED_SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemOffhand()), 100);
+                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemOffhand()));
             }
         }
+    }
+    
+    private void renderSetInfo(MatrixStack ms, CardSet set)
+    {
+        this.renderSetInfo(ms, set, 150);
     }
     
     private void renderSetInfo(MatrixStack ms, CardSet set, int width)
@@ -546,8 +554,7 @@ public class ClientProxy implements ISidedProxy
             FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
             
             List<ITextComponent> list = new LinkedList<>();
-            //set.addInformation(list);
-            list.add(new StringTextComponent(set.name));
+            set.addInformation(list);
             
             ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
         }

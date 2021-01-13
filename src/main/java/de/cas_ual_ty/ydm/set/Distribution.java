@@ -1,10 +1,14 @@
 package de.cas_ual_ty.ydm.set;
 
+import java.util.List;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class Distribution
 {
@@ -64,6 +68,67 @@ public class Distribution
         }
         
         this.totalWeight = totalWeight;
+    }
+    
+    public void addInformation(List<ITextComponent> tooltip)
+    {
+        for(Pull pull : this.pulls)
+        {
+            tooltip.add(new StringTextComponent("Odds:  " + Distribution.makeOddsString(pull.weight, this.totalWeight)));
+            
+            for(PullEntry pe : pull.pullEntries)
+            {
+                StringBuilder s = new StringBuilder();
+                s.append("    " + pe.count + "x: ");
+                
+                for(String rarity : pe.rarities)
+                {
+                    s.append(rarity + " / ");
+                }
+                
+                tooltip.add(new StringTextComponent(s.substring(0, s.length() - 3)));
+            }
+            
+            tooltip.add(StringTextComponent.EMPTY);
+        }
+        
+        if(this.pulls.length > 0)
+        {
+            tooltip.remove(tooltip.size() - 1);
+        }
+    }
+    
+    public static String makeOddsString(int weight, int totalWeight)
+    {
+        int a = weight;
+        int b = totalWeight;
+        int gcd = -1;
+        
+        while((gcd = Distribution.gcd(a, b)) != 1)
+        {
+            a /= gcd;
+            b /= gcd;
+        }
+        
+        String s2 = weight + ":" + totalWeight;
+        
+        if(gcd == -1)
+        {
+            return s2;
+        }
+        else
+        {
+            return a + ":" + b + " (" + s2 + ")";
+        }
+    }
+    
+    private static int gcd(int a, int b)
+    {
+        if(b == 0)
+        {
+            return a;
+        }
+        return Distribution.gcd(b, a % b);
     }
     
     public static class Pull

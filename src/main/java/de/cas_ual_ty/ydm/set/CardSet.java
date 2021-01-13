@@ -143,12 +143,20 @@ public class CardSet
         return this.pull.open(random);
     }
     
+    public void addItemInformation(List<ITextComponent> tooltip)
+    {
+        tooltip.add(new StringTextComponent(this.name));
+        tooltip.add(new StringTextComponent(this.type));
+    }
+    
     public void addInformation(List<ITextComponent> tooltip)
     {
         tooltip.add(new StringTextComponent(this.name));
         tooltip.add(new StringTextComponent(this.type));
-        tooltip.add(new StringTextComponent(this.code));
         tooltip.add(new StringTextComponent(YdmDatabase.SET_DATE_PARSER.format(this.date)));
+        tooltip.add(new StringTextComponent(this.code));
+        tooltip.add(StringTextComponent.EMPTY);
+        this.pull.addInformation(tooltip);
     }
     
     public boolean isIndependentAndItem()

@@ -27,7 +27,7 @@ public abstract class CardSetItemBase extends Item
     {
         CardSet set = this.getCardSet(itemStack);
         tooltip.clear();
-        set.addInformation(tooltip);
+        set.addItemInformation(tooltip);
     }
     
     @Override
