@@ -54,7 +54,7 @@ public class FinalCardSetBakedModel implements IBakedModel
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
     {
         List<BakedQuad> list = new ArrayList<>(0);
-        //        list.addAll(this.getSetList());
+        list.addAll(this.getSetList());
         
         if(this.activeItemStack.getItem() == YdmItems.OPENED_SET)
         {
