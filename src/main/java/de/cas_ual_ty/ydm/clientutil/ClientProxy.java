@@ -19,8 +19,6 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.cardsupply.CardSupplyScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
-import de.cas_ual_ty.ydm.duel.DuelContainer;
-import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenBase;
 import de.cas_ual_ty.ydm.set.CardSet;
 import de.cas_ual_ty.ydm.set.CardSetScreen;
@@ -179,7 +177,7 @@ public class ClientProxy implements ISidedProxy
         
         ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
-        ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
+        ScreenManager.registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
         ScreenManager.registerFactory(YdmContainerTypes.CARD_SUPPLY, CardSupplyScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.CARD_SET, CardSetScreen::new);
         

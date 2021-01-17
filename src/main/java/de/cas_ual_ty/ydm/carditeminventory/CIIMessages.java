@@ -3,18 +3,54 @@ package de.cas_ual_ty.ydm.carditeminventory;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
-public class CardItemInventoryMessages
+public class CIIMessages
 {
-    public static void doForBinderContainer(PlayerEntity player, Consumer<CardItemInventoryContainer> consumer)
+    public static void doForContainer(PlayerEntity player, Consumer<CIIContainer> consumer)
     {
-        if(player != null && player.openContainer instanceof CardItemInventoryContainer)
+        if(player != null && player.openContainer instanceof CIIContainer)
         {
-            consumer.accept((CardItemInventoryContainer)player.openContainer);
+            consumer.accept((CIIContainer)player.openContainer);
+        }
+    }
+    
+    public static class SetPage
+    {
+        public int page;
+        
+        public SetPage(int page)
+        {
+            this.page = page;
+        }
+        
+        public static void encode(SetPage msg, PacketBuffer buf)
+        {
+            buf.writeInt(msg.page);
+        }
+        
+        public static SetPage decode(PacketBuffer buf)
+        {
+            return new SetPage(buf.readInt());
+        }
+        
+        public static void handle(SetPage msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            
+            context.enqueueWork(() ->
+            {
+                CIIMessages.doForContainer(YDM.proxy.getClientPlayer(), (container) ->
+                {
+                    container.setPage(msg.page);
+                });
+            });
+            
+            context.setPacketHandled(true);
         }
     }
     
@@ -40,9 +76,10 @@ public class CardItemInventoryMessages
         public static void handle(ChangePage msg, Supplier<NetworkEvent.Context> ctx)
         {
             Context context = ctx.get();
+            
             context.enqueueWork(() ->
             {
-                CardItemInventoryMessages.doForBinderContainer(context.getSender(), (container) ->
+                CIIMessages.doForContainer(context.getSender(), (container) ->
                 {
                     if(msg.nextPage)
                     {

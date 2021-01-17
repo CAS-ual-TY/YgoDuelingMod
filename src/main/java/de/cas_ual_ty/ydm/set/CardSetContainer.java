@@ -1,28 +1,30 @@
 package de.cas_ual_ty.ydm.set;
 
 import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.carditeminventory.CardItemInventoryContainer;
+import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.Hand;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
-public class CardSetContainer extends CardItemInventoryContainer
+public class CardSetContainer extends CIIContainer
 {
-    protected ItemStack itemStack;
+    protected final Hand hand;
     
-    public CardSetContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler, ItemStack itemStack)
+    public CardSetContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler, Hand hand)
     {
         super(type, id, playerInventoryIn, itemHandler);
-        this.itemStack = itemStack;
+        this.hand = hand;
     }
     
-    public CardSetContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn)
+    public CardSetContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
     {
-        super(type, id, playerInventoryIn);
-        this.itemStack = null;
+        this(type, id, playerInventoryIn, new ItemStackHandler(extraData.readInt()), extraData.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
     }
     
     @Override
@@ -47,33 +49,59 @@ public class CardSetContainer extends CardItemInventoryContainer
     @Override
     protected void createBottomSlots(PlayerInventory playerInventoryIn)
     {
+        if(this.hand == Hand.OFF_HAND)
+        {
+            super.createBottomSlots(playerInventoryIn);
+            return;
+        }
+        
         final int i = (6 - 4) * 18;
+        
+        int id;
         
         for(int l = 0; l < 3; ++l)
         {
             for(int j1 = 0; j1 < 9; ++j1)
             {
-                this.addSlot(new Slot(playerInventoryIn, j1 + l * 9 + 9, 8 + j1 * 18, 103 + l * 18 + i)
+                id = j1 + l * 9 + 9;
+                
+                if(id == playerInventoryIn.currentItem)
                 {
-                    @Override
-                    public boolean canTakeStack(PlayerEntity playerIn)
+                    this.addSlot(new Slot(playerInventoryIn, id, 8 + j1 * 18, 103 + l * 18 + i)
                     {
-                        return this.getStack() != CardSetContainer.this.itemStack;
-                    }
-                });
+                        @Override
+                        public boolean canTakeStack(PlayerEntity playerIn)
+                        {
+                            return false;
+                        }
+                    });
+                }
+                else
+                {
+                    this.addSlot(new Slot(playerInventoryIn, id, 8 + j1 * 18, 103 + l * 18 + i));
+                }
             }
         }
         
         for(int i1 = 0; i1 < 9; ++i1)
         {
-            this.addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i)
+            id = i1;
+            
+            if(id == playerInventoryIn.currentItem)
             {
-                @Override
-                public boolean canTakeStack(PlayerEntity playerIn)
+                this.addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i)
                 {
-                    return this.getStack() != CardSetContainer.this.itemStack;
-                }
-            });
+                    @Override
+                    public boolean canTakeStack(PlayerEntity playerIn)
+                    {
+                        return false;
+                    }
+                });
+            }
+            else
+            {
+                this.addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i));
+            }
         }
     }
     
@@ -86,9 +114,6 @@ public class CardSetContainer extends CardItemInventoryContainer
     public void onContainerClosed(PlayerEntity playerIn)
     {
         super.onContainerClosed(playerIn);
-        if(this.itemHandler != null && this.itemStack != null)
-        {
-            YdmItems.OPENED_SET.setItemHandler(this.itemStack, this.itemHandler);
-        }
+        YdmItems.OPENED_SET.setItemHandler(playerIn.getHeldItem(this.hand), this.itemHandler);
     }
 }

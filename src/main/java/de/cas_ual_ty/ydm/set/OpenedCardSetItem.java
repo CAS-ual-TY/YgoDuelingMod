@@ -9,9 +9,11 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemGroup;
@@ -24,6 +26,7 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -45,15 +48,31 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
     @Override
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
     {
-        ItemStack stack = OpenedCardSetItem.getActiveOpenedSet(player);
-        
-        if(player.getHeldItem(hand) == stack)
+        if(!world.isRemote && hand == YdmUtil.getActiveItem(player, this))
         {
-            player.openContainer(this);
-            return ActionResult.resultSuccess(stack);
+            NetworkHooks.openGui((ServerPlayerEntity)player, this, (extraData) ->
+            {
+                extraData.writeInt(this.getSize(player.getHeldItem(hand)));
+                extraData.writeBoolean(hand == Hand.MAIN_HAND);
+            });
+            return ActionResult.resultSuccess(player.getHeldItem(hand));
         }
         
         return super.onItemRightClick(world, player, hand);
+    }
+    
+    public int getSize(ItemStack itemStack)
+    {
+        CompoundNBT nbt = this.getNBT(itemStack);
+        
+        if(!nbt.contains("size"))
+        {
+            return -1;
+        }
+        else
+        {
+            return nbt.getInt("size");
+        }
     }
     
     public @Nullable IItemHandler getItemHandler(ItemStack itemStack)
@@ -116,30 +135,15 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
     @Override
     public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
     {
-        ItemStack itemStack = OpenedCardSetItem.getActiveOpenedSet(player);
+        Hand hand = YdmUtil.getActiveItem(player, this);
+        ItemStack itemStack = player.getHeldItem(hand);
         IItemHandler itemHandler = this.getItemHandler(itemStack);
-        return new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInventory, itemHandler, itemStack);
+        return new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInventory, itemHandler, hand);
     }
     
     @Override
     public ITextComponent getDisplayName()
     {
         return new TranslationTextComponent("container." + YDM.MOD_ID + ".card_set");
-    }
-    
-    public static ItemStack getActiveOpenedSet(PlayerEntity player)
-    {
-        if(player.getHeldItemMainhand().getItem() == YdmItems.OPENED_SET)
-        {
-            return player.getHeldItemMainhand();
-        }
-        else if(player.getHeldItemOffhand().getItem() == YdmItems.OPENED_SET)
-        {
-            return player.getHeldItemOffhand();
-        }
-        else
-        {
-            return ItemStack.EMPTY;
-        }
     }
 }

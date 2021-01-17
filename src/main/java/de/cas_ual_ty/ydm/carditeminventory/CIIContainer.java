@@ -1,17 +1,23 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
+import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
-public class CardItemInventoryContainer extends Container
+public class CIIContainer extends Container
 {
+    protected final PlayerEntity player;
     protected final Inventory slotInv;
     protected final IItemHandler itemHandler;
     
@@ -19,10 +25,11 @@ public class CardItemInventoryContainer extends Container
     protected final int maxPage;
     protected boolean filling;
     
-    public CardItemInventoryContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler)
+    public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler)
     {
         super(type, id);
         
+        this.player = playerInventoryIn.player;
         this.slotInv = new Inventory(6 * 9);
         this.slotInv.addListener(this::onCraftMatrixChanged);
         this.itemHandler = itemHandler;
@@ -30,16 +37,19 @@ public class CardItemInventoryContainer extends Container
         this.createTopSlots();
         this.createBottomSlots(playerInventoryIn);
         
-        if(this.itemHandler != null)
-        {
-            this.page = 0;
-            this.maxPage = this.itemHandler.getSlots() / (6 * 9);
-            this.updateSlots();
-        }
-        else
-        {
-            this.maxPage = 0;
-        }
+        this.page = 0;
+        this.maxPage = 1 + this.itemHandler.getSlots() / (6 * 9);
+        this.updateSlots();
+    }
+    
+    public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, int itemHandlerSize)
+    {
+        this(type, id, playerInventoryIn, new ItemStackHandler(itemHandlerSize));
+    }
+    
+    public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
+    {
+        this(type, id, playerInventoryIn, extraData.readInt());
     }
     
     protected void createTopSlots()
@@ -71,9 +81,25 @@ public class CardItemInventoryContainer extends Container
         }
     }
     
-    public CardItemInventoryContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn)
+    // sets the page but does not update anything
+    public void setPage(int page)
     {
-        this(type, id, playerInventoryIn, null);
+        this.page = page;
+    }
+    
+    public int getPage()
+    {
+        return this.page;
+    }
+    
+    public int getMaxPage()
+    {
+        return this.maxPage;
+    }
+    
+    protected void updatePage()
+    {
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CIIMessages.SetPage(this.page));
     }
     
     public void nextPage()
@@ -84,6 +110,8 @@ public class CardItemInventoryContainer extends Container
         {
             this.page = 0;
         }
+        
+        this.updateSlots();
     }
     
     public void prevPage()
@@ -94,6 +122,8 @@ public class CardItemInventoryContainer extends Container
         {
             this.page = this.maxPage;
         }
+        
+        this.updateSlots();
     }
     
     public void updateSlots()

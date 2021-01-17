@@ -1,6 +1,9 @@
 package de.cas_ual_ty.ydm.util;
 
 import java.util.UUID;
+import java.util.function.Predicate;
+
+import javax.annotation.Nullable;
 
 import com.google.gson.JsonObject;
 
@@ -13,6 +16,10 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.card.properties.SpellProperties;
 import de.cas_ual_ty.ydm.card.properties.TrapProperties;
 import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.NonNullSupplier;
 
@@ -87,5 +94,26 @@ public class YdmUtil
     public static int range(int i, int min, int max)
     {
         return Math.max(min, Math.min(max, i));
+    }
+    
+    public static @Nullable Hand getActiveItem(PlayerEntity player, Item item)
+    {
+        return YdmUtil.getActiveItem(player, (itemStack) -> itemStack.getItem() == item);
+    }
+    
+    public static @Nullable Hand getActiveItem(PlayerEntity player, Predicate<ItemStack> item)
+    {
+        if(item.test(player.getHeldItemMainhand()))
+        {
+            return Hand.MAIN_HAND;
+        }
+        else if(item.test(player.getHeldItemOffhand()))
+        {
+            return Hand.OFF_HAND;
+        }
+        else
+        {
+            return null;
+        }
     }
 }
