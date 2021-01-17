@@ -9,11 +9,11 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.ItemGroup;
@@ -26,7 +26,6 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -50,12 +49,9 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
     {
         if(!world.isRemote && hand == YdmUtil.getActiveItem(player, this))
         {
-            NetworkHooks.openGui((ServerPlayerEntity)player, this, (extraData) ->
-            {
-                extraData.writeInt(this.getSize(player.getHeldItem(hand)));
-                extraData.writeBoolean(hand == Hand.MAIN_HAND);
-            });
-            return ActionResult.resultSuccess(player.getHeldItem(hand));
+            ItemStack itemStack = player.getHeldItem(hand);
+            HeldCIIContainer.openGui(player, hand, this.getSize(itemStack), this);
+            return ActionResult.resultSuccess(itemStack);
         }
         
         return super.onItemRightClick(world, player, hand);
