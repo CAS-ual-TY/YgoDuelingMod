@@ -68,7 +68,7 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
         
         if(!nbt.contains("size"))
         {
-            return -1;
+            return 0;
         }
         else
         {
