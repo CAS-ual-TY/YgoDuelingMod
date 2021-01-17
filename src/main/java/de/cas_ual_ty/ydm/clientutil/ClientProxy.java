@@ -180,6 +180,7 @@ public class ClientProxy implements ISidedProxy
         ScreenManager.registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
         ScreenManager.registerFactory(YdmContainerTypes.CARD_SUPPLY, CardSupplyScreen::new);
         ScreenManager.registerFactory(YdmContainerTypes.CARD_SET, CIIScreen::new);
+        ScreenManager.registerFactory(YdmContainerTypes.SIMPLE_BINDER, CIIScreen::new);
         
         CardRenderUtil.init(ClientProxy.maxInfoImages, ClientProxy.maxMainImages);
     }

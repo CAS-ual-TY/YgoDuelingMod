@@ -11,6 +11,7 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -38,7 +39,7 @@ public class CIIContainer extends Container
         this.createBottomSlots(playerInventoryIn);
         
         this.page = 0;
-        this.maxPage = 1 + this.itemHandler.getSlots() / (6 * 9);
+        this.maxPage = MathHelper.ceil(this.itemHandler.getSlots() / (6D * 9D));
         this.updateSlots();
     }
     
@@ -58,7 +59,14 @@ public class CIIContainer extends Container
         {
             for(int k = 0; k < 9; ++k)
             {
-                this.addSlot(new Slot(this.slotInv, k + j * 9, 8 + k * 18, 18 + j * 18));
+                this.addSlot(new Slot(this.slotInv, k + j * 9, 8 + k * 18, 18 + j * 18)
+                {
+                    @Override
+                    public boolean isItemValid(ItemStack stack)
+                    {
+                        return CIIContainer.this.canPutStack(stack);
+                    }
+                });
             }
         }
     }
@@ -79,6 +87,11 @@ public class CIIContainer extends Container
         {
             this.addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i));
         }
+    }
+    
+    public boolean canPutStack(ItemStack itemStack)
+    {
+        return false;
     }
     
     // sets the page but does not update anything
@@ -106,12 +119,13 @@ public class CIIContainer extends Container
     {
         ++this.page;
         
-        if(this.page > this.maxPage)
+        if(this.page >= this.maxPage)
         {
             this.page = 0;
         }
         
         this.updateSlots();
+        this.updatePage();
     }
     
     public void prevPage()
@@ -124,6 +138,7 @@ public class CIIContainer extends Container
         }
         
         this.updateSlots();
+        this.updatePage();
     }
     
     public void updateSlots()
@@ -139,12 +154,12 @@ public class CIIContainer extends Container
         int end = start + this.slotInv.getSizeInventory();
         int i, j;
         
-        for(i = start, j = 0; i < end && i < this.itemHandler.getSlots(); ++i, ++j)
+        for(i = start, j = 0; i < end && i < this.itemHandler.getSlots() && j < this.slotInv.getSizeInventory(); ++i, ++j)
         {
             this.slotInv.setInventorySlotContents(j, this.itemHandler.getStackInSlot(i));
         }
         
-        for(; i < this.itemHandler.getSlots(); ++i)
+        for(; j < this.slotInv.getSizeInventory(); ++j)
         {
             this.slotInv.setInventorySlotContents(j, ItemStack.EMPTY);
         }
@@ -157,15 +172,10 @@ public class CIIContainer extends Container
     @Override
     public void onCraftMatrixChanged(IInventory inventoryIn)
     {
-        if(this.itemHandler == null)
-        {
-            return;
-        }
-        
-        if(!this.filling)
+        if(!this.filling && !this.player.world.isRemote)
         {
             int start = this.page * this.slotInv.getSizeInventory();
-            int end = start += this.slotInv.getSizeInventory();
+            int end = start + this.slotInv.getSizeInventory();
             int i, j;
             
             for(i = start, j = 0; i < end && i < this.itemHandler.getSlots(); ++i, ++j)

@@ -6,6 +6,7 @@ import de.cas_ual_ty.ydm.cardsupply.CardSupplyContainer;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxContainer;
 import de.cas_ual_ty.ydm.duel.block.DuelBlockContainer;
 import de.cas_ual_ty.ydm.set.CardSetContainer;
+import de.cas_ual_ty.ydm.simplebinder.SimpleBinderContainer;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,6 +25,7 @@ public class YdmContainerTypes
     public static final ContainerType<DuelBlockContainer> DUEL_BLOCK_CONTAINER = null;
     public static final ContainerType<CardSupplyContainer> CARD_SUPPLY = null;
     public static final ContainerType<CIIContainer> CARD_SET = null;
+    public static final ContainerType<CIIContainer> SIMPLE_BINDER = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<ContainerType<?>> event)
@@ -34,5 +36,6 @@ public class YdmContainerTypes
         registry.register(new ContainerType<>((IContainerFactory<DuelBlockContainer>)(id, playerInv, extraData) -> new DuelBlockContainer(YdmContainerTypes.DECK_BOX, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "duel_block_container"));
         registry.register(new ContainerType<>((IContainerFactory<CardSupplyContainer>)(id, playerInv, extraData) -> new CardSupplyContainer(YdmContainerTypes.CARD_SUPPLY, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_supply"));
         registry.register(new ContainerType<>((IContainerFactory<CIIContainer>)(id, playerInv, extraData) -> new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_set"));
+        registry.register(new ContainerType<>((IContainerFactory<CIIContainer>)(id, playerInv, extraData) -> new SimpleBinderContainer(YdmContainerTypes.CARD_SET, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "simple_binder"));
     }
 }

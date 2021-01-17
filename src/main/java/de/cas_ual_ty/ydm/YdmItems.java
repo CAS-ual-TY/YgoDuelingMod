@@ -7,6 +7,7 @@ import de.cas_ual_ty.ydm.deckbox.PatreonDeckBoxItem;
 import de.cas_ual_ty.ydm.duel.dueldisk.DuelDiskItem;
 import de.cas_ual_ty.ydm.set.CardSetItem;
 import de.cas_ual_ty.ydm.set.OpenedCardSetItem;
+import de.cas_ual_ty.ydm.simplebinder.SimpleBinderItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.Item.Properties;
@@ -31,6 +32,10 @@ public class YdmItems
     public static final Item DUEL_PLAYMAT = null;
     public static final Item DUEL_TABLE = null;
     public static final Item CARD_SUPPLY = null;
+    
+    public static final SimpleBinderItem SIMPLE_BINDER_3 = null;
+    public static final SimpleBinderItem SIMPLE_BINDER_9 = null;
+    public static final SimpleBinderItem SIMPLE_BINDER_27 = null;
     
     public static final Item DUEL_DISK = null;
     public static final Item CHAOS_DISK = null;
@@ -75,6 +80,10 @@ public class YdmItems
         registry.register(new BlockItem(YdmBlocks.DUEL_PLAYMAT, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
         registry.register(new BlockItem(YdmBlocks.DUEL_TABLE, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_table"));
         registry.register(new BlockItem(YdmBlocks.CARD_SUPPLY, new Properties().group(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_supply"));
+        
+        registry.register(SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 3));
+        registry.register(SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 9));
+        registry.register(SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 27));
         
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "duel_disk"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "chaos_disk"));

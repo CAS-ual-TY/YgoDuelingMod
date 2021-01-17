@@ -177,7 +177,6 @@ public class MonsterProperties extends Properties
     
     public void addPendulumTextHeader(List<ITextComponent> list)
     {
-        // TODO Pendulum Text Header Formatting and Color
         IFormattableTextComponent leftScale = new StringTextComponent("" + this.getPendulumScaleLeftBlue());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
         IFormattableTextComponent leftArrow = new StringTextComponent("◀").setStyle(Style.EMPTY.applyFormatting(TextFormatting.BLUE));
         IFormattableTextComponent rightArrow = new StringTextComponent("▶").setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED));

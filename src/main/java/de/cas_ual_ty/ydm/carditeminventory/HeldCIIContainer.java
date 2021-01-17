@@ -42,7 +42,7 @@ public abstract class HeldCIIContainer extends CIIContainer
                     @Override
                     public boolean isItemValid(ItemStack stack)
                     {
-                        return HeldCIIContainer.this.canPutStack();
+                        return HeldCIIContainer.this.canPutStack(stack);
                     }
                 });
             }
@@ -108,16 +108,15 @@ public abstract class HeldCIIContainer extends CIIContainer
         }
     }
     
-    public boolean canPutStack()
-    {
-        return false;
-    }
-    
     @Override
     public void onContainerClosed(PlayerEntity playerIn)
     {
         super.onContainerClosed(playerIn);
-        this.saveItemHandler(this.player, playerIn.getHeldItem(this.hand), this.itemHandler);
+        
+        if(!playerIn.world.isRemote)
+        {
+            this.saveItemHandler(this.player, playerIn.getHeldItem(this.hand), this.itemHandler);
+        }
     }
     
     public static void openGui(PlayerEntity player, Hand hand, int itemHandlerSize, INamedContainerProvider p)

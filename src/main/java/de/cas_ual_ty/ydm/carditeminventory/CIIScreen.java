@@ -40,8 +40,8 @@ public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
     {
         super.init();
         
-        this.addButton(this.prevButton = new ImprovedButton(this.guiLeft + this.xSize - 24 - 8, this.guiTop + 4, 12, 12, new TranslationTextComponent("container.ydm.card_set.prev"), this::onButtonClicked));
-        this.addButton(this.nextButton = new ImprovedButton(this.guiLeft + this.xSize - 12 - 8, this.guiTop + 4, 12, 12, new TranslationTextComponent("container.ydm.card_set.next"), this::onButtonClicked));
+        this.addButton(this.prevButton = new ImprovedButton(this.guiLeft + this.xSize - 24 - 8, this.guiTop + 4, 12, 12, new TranslationTextComponent("generic.ydm.left_arrow"), this::onButtonClicked));
+        this.addButton(this.nextButton = new ImprovedButton(this.guiLeft + this.xSize - 12 - 8, this.guiTop + 4, 12, 12, new TranslationTextComponent("generic.ydm.right_arrow"), this::onButtonClicked));
     }
     
     @Override

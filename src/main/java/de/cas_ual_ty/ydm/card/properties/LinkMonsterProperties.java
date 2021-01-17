@@ -86,7 +86,6 @@ public class LinkMonsterProperties extends MonsterProperties
     @Override
     public void addText(List<ITextComponent> list)
     {
-        // TODO Link Marker Formatting and Colors
         this.addLinkMarkers(list);
         list.add(StringTextComponent.EMPTY);
         super.addText(list);
