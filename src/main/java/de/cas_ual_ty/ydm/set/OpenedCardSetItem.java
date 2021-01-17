@@ -65,15 +65,7 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
     public int getSize(ItemStack itemStack)
     {
         CompoundNBT nbt = this.getNBT(itemStack);
-        
-        if(!nbt.contains("size"))
-        {
-            return 0;
-        }
-        else
-        {
-            return nbt.getInt("size");
-        }
+        return nbt.getInt("size");
     }
     
     public boolean hasItemHandler(ItemStack itemStack)
