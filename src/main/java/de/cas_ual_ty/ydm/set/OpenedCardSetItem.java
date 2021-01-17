@@ -50,7 +50,12 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
         if(!world.isRemote && hand == YdmUtil.getActiveItem(player, this))
         {
             ItemStack itemStack = player.getHeldItem(hand);
-            HeldCIIContainer.openGui(player, hand, this.getSize(itemStack), this);
+            
+            if(this.hasItemHandler(itemStack))
+            {
+                HeldCIIContainer.openGui(player, hand, this.getSize(itemStack), this);
+            }
+            
             return ActionResult.resultSuccess(itemStack);
         }
         
@@ -69,6 +74,11 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
         {
             return nbt.getInt("size");
         }
+    }
+    
+    public boolean hasItemHandler(ItemStack itemStack)
+    {
+        return this.getNBT(itemStack).contains("itemHandler");
     }
     
     public @Nullable IItemHandler getItemHandler(ItemStack itemStack)
