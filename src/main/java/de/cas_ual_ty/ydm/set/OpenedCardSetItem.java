@@ -107,6 +107,12 @@ public class OpenedCardSetItem extends CardSetItemBase implements INamedContaine
     public ItemStack createItemForSet(CardSet set)
     {
         List<CardHolder> cards = set.open(new Random());
+        
+        if(cards == null)
+        {
+            return this.createItemForSet(set, NonNullList.withSize(0, ItemStack.EMPTY));
+        }
+        
         NonNullList<ItemStack> items = NonNullList.withSize(cards.size(), ItemStack.EMPTY);
         
         int i = 0;
