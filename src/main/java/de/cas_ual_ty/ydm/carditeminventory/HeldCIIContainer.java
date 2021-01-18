@@ -31,25 +31,6 @@ public abstract class HeldCIIContainer extends CIIContainer
     public abstract void saveItemHandler(PlayerEntity player, ItemStack itemStack, IItemHandler itemHandler);
     
     @Override
-    protected void createTopSlots()
-    {
-        for(int j = 0; j < 6; ++j)
-        {
-            for(int k = 0; k < 9; ++k)
-            {
-                this.addSlot(new Slot(this.slotInv, k + j * 9, 8 + k * 18, 18 + j * 18)
-                {
-                    @Override
-                    public boolean isItemValid(ItemStack stack)
-                    {
-                        return HeldCIIContainer.this.canPutStack(stack);
-                    }
-                });
-            }
-        }
-    }
-    
-    @Override
     protected void createBottomSlots(PlayerInventory playerInventoryIn)
     {
         if(this.hand == Hand.OFF_HAND)

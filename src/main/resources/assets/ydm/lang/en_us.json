@@ -33,6 +33,7 @@
     "container.ydm.card_supply.prev": "Prev",
     "container.ydm.card_supply.next": "Next",
     "container.ydm.card_set": "Opened Set",
+    "container.ydm.card_set_contents": "Set Contents",
     "container.ydm.simple_binder": "Card Binder",
     "container.ydm.duel.info_name": "INFO",
     "container.ydm.duel.info_start": "Duel Start! Don't forget to shuffle your Decks!",

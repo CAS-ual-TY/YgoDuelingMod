@@ -157,6 +157,11 @@ public class CardSet
         return this.pull.open(random);
     }
     
+    public List<CardHolder> getAllCardEntries()
+    {
+        return this.pull.getAllCardEntries();
+    }
+    
     public void addItemInformation(List<ITextComponent> tooltip)
     {
         tooltip.add(new StringTextComponent(this.name));

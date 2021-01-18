@@ -183,6 +183,7 @@ public class ClientProxy implements ISidedProxy
         ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
         ScreenManager.registerFactory(YdmContainerTypes.CARD_SUPPLY, CardSupplyScreen::new);
         ScreenManager.<CIIContainer, CIIScreen<CIIContainer>>registerFactory(YdmContainerTypes.CARD_SET, CIIScreen::new);
+        ScreenManager.<CIIContainer, CIIScreen<CIIContainer>>registerFactory(YdmContainerTypes.CARD_SET_CONTENTS, CIIScreen::new);
         ScreenManager.<CIIContainer, CIIScreen<CIIContainer>>registerFactory(YdmContainerTypes.SIMPLE_BINDER, CIIScreen::new);
         
         CardRenderUtil.init(ClientProxy.maxInfoImages, ClientProxy.maxMainImages);

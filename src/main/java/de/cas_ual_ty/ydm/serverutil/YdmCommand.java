@@ -15,10 +15,12 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
+import de.cas_ual_ty.ydm.set.CardSetItemBase;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
 
 public class YdmCommand
@@ -27,6 +29,9 @@ public class YdmCommand
     {
         dispatcher.register(
             Commands.literal(YDM.MOD_ID)
+                .then(Commands.literal("setcontents")
+                    .requires((source) -> source.getEntity() instanceof PlayerEntity)
+                    .executes((source) -> YdmCommand.setcontents(source)))
                 .then(Commands.literal("binders")
                     .then(Commands.literal("uuid")
                         .requires((source) -> source.getEntity() instanceof PlayerEntity)
@@ -160,6 +165,26 @@ public class YdmCommand
             }
             
             return Command.SINGLE_SUCCESS;
+        }
+        
+        return 0;
+    }
+    
+    public static int setcontents(CommandContext<CommandSource> context)
+    {
+        if(context.getSource().getEntity() instanceof PlayerEntity)
+        {
+            PlayerEntity player = (PlayerEntity)context.getSource().getEntity();
+            Hand hand = CardSetItemBase.getActiveSetItem(player);
+            
+            if(hand != null)
+            {
+                ItemStack itemStack = player.getHeldItem(hand);
+                
+                ((CardSetItemBase)itemStack.getItem()).viewSetContents(player.world, player, hand, itemStack);
+                
+                return Command.SINGLE_SUCCESS;
+            }
         }
         
         return 0;

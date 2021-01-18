@@ -66,6 +66,12 @@ public class CIIContainer extends Container
                     {
                         return CIIContainer.this.canPutStack(stack);
                     }
+                    
+                    @Override
+                    public boolean canTakeStack(PlayerEntity playerIn)
+                    {
+                        return CIIContainer.this.canTakeStack(playerIn, this.getStack());
+                    }
                 });
             }
         }
@@ -92,6 +98,11 @@ public class CIIContainer extends Container
     public boolean canPutStack(ItemStack itemStack)
     {
         return false;
+    }
+    
+    public boolean canTakeStack(PlayerEntity player, ItemStack itemStack)
+    {
+        return true;
     }
     
     // sets the page but does not update anything
@@ -134,7 +145,7 @@ public class CIIContainer extends Container
         
         if(this.page < 0)
         {
-            this.page = this.maxPage;
+            this.page = this.maxPage - 1;
         }
         
         this.updateSlots();

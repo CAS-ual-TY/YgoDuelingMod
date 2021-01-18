@@ -66,4 +66,17 @@ public class CompositionCardPuller extends CardPuller
         
         return list;
     }
+    
+    @Override
+    public List<CardHolder> getAllCardEntries()
+    {
+        List<CardHolder> list = new ArrayList<>();
+        
+        for(CardSet subSet : this.subSets)
+        {
+            list.addAll(subSet.getAllCardEntries());
+        }
+        
+        return list;
+    }
 }

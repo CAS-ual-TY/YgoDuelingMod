@@ -23,4 +23,9 @@ public abstract class CardPuller
     {
         
     }
+    
+    public List<CardHolder> getAllCardEntries()
+    {
+        return this.set.cards;
+    }
 }
