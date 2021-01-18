@@ -25,7 +25,6 @@ import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenBase;
 import de.cas_ual_ty.ydm.set.CardSet;
-import de.cas_ual_ty.ydm.set.CardSetContainer;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
@@ -290,7 +289,7 @@ public class ClientProxy implements ISidedProxy
             if(!flag)
             {
                 flag = true;
-                YDM.log("Sleeping for a couple seconds to give the worker enough time to check the item images...");
+                YDM.log("Sleeping for a couple seconds to give the worker enough time to check the item and set images...");
             }
             
             // sometimes this gets done before YDM.itemsUseCardImagesActive is set to true

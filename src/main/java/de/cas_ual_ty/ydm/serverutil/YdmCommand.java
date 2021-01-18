@@ -1,13 +1,11 @@
 package de.cas_ual_ty.ydm.serverutil;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.LongArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 
@@ -16,14 +14,10 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
-import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
-import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.command.arguments.EntityArgument;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -32,78 +26,25 @@ public class YdmCommand
     public static void registerCommand(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-            
             Commands.literal(YDM.MOD_ID)
-                .then(Commands.literal("cards")
-                    .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
-                    .then(Commands.literal("get")
-                        .requires((source) -> source.getEntity() instanceof PlayerEntity)
-                        .then(Commands.argument(JsonKeys.ID, LongArgumentType.longArg())
-                            .then(Commands.argument(JsonKeys.IMAGE_INDEX, IntegerArgumentType.integer(0, Byte.MAX_VALUE))
-                                .executes((context) -> YdmCommand.cardsGet(context, LongArgumentType.getLong(context, JsonKeys.ID), context.getArgument(JsonKeys.IMAGE_INDEX, Byte.class))))
-                            .executes((context) -> YdmCommand.cardsGet(context, LongArgumentType.getLong(context, JsonKeys.ID), (byte)0))))
-                    .then(Commands.literal("give")
-                        .then(Commands.argument("targets", EntityArgument.players())
-                            .then(Commands.argument(JsonKeys.ID, LongArgumentType.longArg())
-                                .then(Commands.argument(JsonKeys.IMAGE_INDEX, IntegerArgumentType.integer(0, Byte.MAX_VALUE))
-                                    .executes((context) -> YdmCommand.cardsGive(context, LongArgumentType.getLong(context, JsonKeys.ID), context.getArgument(JsonKeys.IMAGE_INDEX, Byte.class), EntityArgument.getPlayers(context, "targets"), 1)))
-                                .executes((context) -> YdmCommand.cardsGive(context, LongArgumentType.getLong(context, JsonKeys.ID), (byte)0, EntityArgument.getPlayers(context, "targets"), 1))
-                                .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                                    .executes((context) -> YdmCommand.cardsGive(context, LongArgumentType.getLong(context, JsonKeys.ID), (byte)0, EntityArgument.getPlayers(context, "targets"), IntegerArgumentType.getInteger(context, "count"))))))))
                 .then(Commands.literal("binders")
                     .then(Commands.literal("uuid")
                         .requires((source) -> source.getEntity() instanceof PlayerEntity)
                         .then(Commands.literal("get")
                             .executes((context) -> YdmCommand.bindersGet(context)))
                         .then(Commands.literal("create")
+                            .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
                             .then(Commands.argument("uuid", StringArgumentType.word())
                                 .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid")))))
                         .then(Commands.literal("set")
+                            .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
                             .then(Commands.argument("uuid", StringArgumentType.word())
                                 .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid"))))))
-                    .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
                     .then(Commands.literal("fill")
-                        .requires((source) -> source.getEntity() instanceof PlayerEntity/* && !YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity)source.getEntity()).isEmpty()*/)
+                        .requires((source) -> source.getEntity() instanceof PlayerEntity)
                         .executes((context) -> YdmCommand.bindersFill(context, 3))
                         .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                            .executes((context) -> YdmCommand.bindersFill(context, IntegerArgumentType.getInteger(context, "count"))))))
-        
-        );
-    }
-    
-    public static int cardsGet(CommandContext<CommandSource> context, long id, byte imageIndex)
-    {
-        if(context.getSource().getEntity() instanceof PlayerEntity)
-        {
-            Properties card = YdmDatabase.PROPERTIES_LIST.get(id);
-            
-            if(card != null)
-            {
-                PlayerEntity player = (PlayerEntity)context.getSource().getEntity();
-                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
-            }
-            
-            return Command.SINGLE_SUCCESS;
-        }
-        
-        return 0;
-    }
-    
-    public static int cardsGive(CommandContext<CommandSource> context, long id, byte imageIndex, Collection<ServerPlayerEntity> players, int amount)
-    {
-        Properties card = YdmDatabase.PROPERTIES_LIST.get(id);
-        
-        if(card != null)
-        {
-            for(ServerPlayerEntity player : players)
-            {
-                player.addItemStackToInventory(YdmItems.CARD.createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
-            }
-        }
-        
-        context.getSource().sendFeedback(new StringTextComponent("Given \"" + card.getName() + "\" (" + imageIndex + ") to " + players.size() + " players!"), true);
-        
-        return players.size();
+                            .executes((context) -> YdmCommand.bindersFill(context, IntegerArgumentType.getInteger(context, "count")))))));
     }
     
     public static int bindersGet(CommandContext<CommandSource> context)
