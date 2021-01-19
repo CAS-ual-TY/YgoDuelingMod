@@ -339,7 +339,7 @@ public class YdmDatabase
                 p.addInformation(new LinkedList<>()); // this throws in case of wrong information
                 YdmDatabase.PROPERTIES_LIST.add(p);
             }
-            catch (NullPointerException e)
+            catch (NullPointerException | IllegalArgumentException | IllegalStateException e)
             {
                 YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
@@ -389,7 +389,7 @@ public class YdmDatabase
                 d = new Distribution(j);
                 YdmDatabase.DISTRIBUTIONS_LIST.add(d);
             }
-            catch (NullPointerException | IllegalArgumentException e)
+            catch (NullPointerException | IllegalArgumentException | IllegalStateException e)
             {
                 YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
                 e.printStackTrace();
@@ -439,7 +439,7 @@ public class YdmDatabase
                 s = new CardSet(j);
                 YdmDatabase.SETS_LIST.add(s);
             }
-            catch (NullPointerException | IllegalArgumentException e)
+            catch (NullPointerException | IllegalArgumentException | IllegalStateException e)
             {
                 YDM.log("Failed reading set: " + setFile.getAbsolutePath());
                 e.printStackTrace();
