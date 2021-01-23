@@ -10,7 +10,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
 import net.minecraft.world.World;
 
-public class CardSetItem extends CardSetItemBase
+public class CardSetItem extends CardSetBaseItem
 {
     public CardSetItem(Properties properties)
     {
@@ -22,10 +22,14 @@ public class CardSetItem extends CardSetItemBase
     {
         ItemStack stack = CardSetItem.getActiveSet(player);
         
-        if(!world.isRemote && player.getHeldItem(hand) == stack)
+        if(player.getHeldItem(hand) == stack)
         {
             this.unseal(stack, player, hand);
-            return player.getHeldItem(hand).getItem().onItemRightClick(world, player, hand);
+            
+            if(!world.isRemote)
+            {
+                return player.getHeldItem(hand).getItem().onItemRightClick(world, player, hand);
+            }
         }
         
         return super.onItemRightClick(world, player, hand);
@@ -35,6 +39,16 @@ public class CardSetItem extends CardSetItemBase
     {
         ItemStack newStack = YdmItems.OPENED_SET.createItemForSet(this.getCardSet(itemStack));
         player.setHeldItem(hand, newStack);
+        
+        if(itemStack.getCount() > 1)
+        {
+            itemStack.shrink(1);
+            
+            if(!player.world.isRemote)
+            {
+                player.inventory.placeItemBackInInventory(player.world, itemStack);
+            }
+        }
     }
     
     public ItemStack createItemForSet(CardSet set)

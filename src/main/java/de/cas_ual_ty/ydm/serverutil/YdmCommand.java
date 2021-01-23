@@ -15,7 +15,7 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
-import de.cas_ual_ty.ydm.set.CardSetItemBase;
+import de.cas_ual_ty.ydm.set.CardSetBaseItem;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
 import net.minecraft.entity.player.PlayerEntity;
@@ -175,13 +175,13 @@ public class YdmCommand
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
             PlayerEntity player = (PlayerEntity)context.getSource().getEntity();
-            Hand hand = CardSetItemBase.getActiveSetItem(player);
+            Hand hand = CardSetBaseItem.getActiveSetItem(player);
             
             if(hand != null)
             {
                 ItemStack itemStack = player.getHeldItem(hand);
                 
-                ((CardSetItemBase)itemStack.getItem()).viewSetContents(player.world, player, hand, itemStack);
+                ((CardSetBaseItem)itemStack.getItem()).viewSetContents(player.world, player, itemStack);
                 
                 return Command.SINGLE_SUCCESS;
             }

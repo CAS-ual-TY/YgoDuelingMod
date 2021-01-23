@@ -7,7 +7,7 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
+import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
@@ -28,12 +28,11 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public abstract class CardSetItemBase extends Item
+public abstract class CardSetBaseItem extends Item
 {
-    public CardSetItemBase(Properties properties)
+    public CardSetBaseItem(Properties properties)
     {
         super(properties);
-        properties.maxStackSize(1);
     }
     
     @Override
@@ -89,13 +88,13 @@ public abstract class CardSetItemBase extends Item
         return true;
     }
     
-    public void viewSetContents(World world, PlayerEntity player, Hand hand, ItemStack itemStack)
+    public void viewSetContents(World world, PlayerEntity player, ItemStack itemStack)
     {
         if(!world.isRemote)
         {
             CardSet set = this.getCardSet(itemStack);
             List<CardHolder> cards = set.getAllCardEntries();
-            HeldCIIContainer.openGui(player, hand, cards.size(), new INamedContainerProvider()
+            CIIContainer.openGui(player, cards.size(), new INamedContainerProvider()
             {
                 
                 @Override
@@ -108,7 +107,7 @@ public abstract class CardSetItemBase extends Item
                         itemHandler.insertItem(i, YdmItems.CARD.createItemForCardHolder(cards.get(i)), false);
                     }
                     
-                    return new CardSetContentsContainer(YdmContainerTypes.CARD_SET_CONTENTS, id, playerInv, itemHandler, hand);
+                    return new CardSetContentsContainer(YdmContainerTypes.CARD_SET_CONTENTS, id, playerInv, itemHandler);
                 }
                 
                 @Override
@@ -122,6 +121,6 @@ public abstract class CardSetItemBase extends Item
     
     public static Hand getActiveSetItem(PlayerEntity player)
     {
-        return YdmUtil.getActiveItem(player, (i) -> (i.getItem() instanceof CardSetItemBase));
+        return YdmUtil.getActiveItem(player, (i) -> (i.getItem() instanceof CardSetBaseItem));
     }
 }

@@ -8,10 +8,12 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
+import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fml.network.NetworkHooks;
 import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
@@ -238,5 +240,13 @@ public class CIIContainer extends Container
         }
         
         return itemstack;
+    }
+    
+    public static void openGui(PlayerEntity player, int itemHandlerSize, INamedContainerProvider p)
+    {
+        NetworkHooks.openGui((ServerPlayerEntity)player, p, (extraData) ->
+        {
+            extraData.writeInt(itemHandlerSize);
+        });
     }
 }

@@ -30,7 +30,7 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class OpenedCardSetItem extends CardSetItemBase implements INamedContainerProvider
+public class OpenedCardSetItem extends CardSetBaseItem implements INamedContainerProvider
 {
     public OpenedCardSetItem(Properties properties)
     {
