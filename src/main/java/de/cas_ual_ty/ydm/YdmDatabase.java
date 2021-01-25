@@ -213,6 +213,8 @@ public class YdmDatabase
         
         YdmDatabase.readDistributions(YDM.distributionsFolder);
         YdmDatabase.readSets(YDM.setsFolder);
+        
+        postDBInit();
     }
     
     public static void downloadDatabase() throws IOException
@@ -317,7 +319,7 @@ public class YdmDatabase
             fw.flush();
         }
         
-        YDM.log("Finished downloading cards database!");
+        YDM.log("Finished downloading database!");
     }
     
     private static void readCards(File cardsFolder)
@@ -469,6 +471,26 @@ public class YdmDatabase
         YdmDatabase.SETS_LIST.sort();
         
         YDM.log("Done reading set files!");
+    }
+    
+    private static void postDBInit()
+    {
+        YDM.log("Finalizing database!");
+        
+        for(Properties x : PROPERTIES_LIST)
+        {
+            x.postDBInit();
+        }
+        
+        for(Distribution x : DISTRIBUTIONS_LIST)
+        {
+            x.postDBInit();
+        }
+        
+        for(CardSet x : SETS_LIST)
+        {
+            x.postDBInit();
+        }
     }
     
     public static int getTotalCardsAndVariants()

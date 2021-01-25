@@ -12,7 +12,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
-public class CardHolder
+public class CardHolder implements Comparable<CardHolder>
 {
     public static final CardHolder DUMMY = new CardHolder(Properties.DUMMY, (byte)0, Rarity.CREATIVE.name, "DUM-MY");
     public Properties card;
@@ -202,6 +202,26 @@ public class CardHolder
     public String toString()
     {
         return this.getCard().getName() + " (" + this.getCode() + ")";
+    }
+    
+    @Override
+    public int compareTo(CardHolder o)
+    {
+        int c = this.code.compareTo(o.code);
+        
+        if(c != 0)
+        {
+            return c;
+        }
+        
+        c = this.rarity.compareTo(o.rarity);
+        
+        if(c != 0)
+        {
+            return c;
+        }
+        
+        return Byte.compare(this.imageIndex, o.imageIndex);
     }
     
     @Override

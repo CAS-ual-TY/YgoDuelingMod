@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.set;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -10,15 +9,17 @@ import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
+import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.SortedArraySet;
 
 public class CompositionCardPuller extends CardPuller
 {
     public final List<String> subSetCodes;
     protected List<CardSet> subSets;
     
-    @SuppressWarnings("unchecked")
     public CompositionCardPuller(JsonObject setJson, CardSet set) throws IllegalArgumentException
     {
         super(setJson, set);
@@ -35,11 +36,17 @@ public class CompositionCardPuller extends CardPuller
     }
     
     @Override
-    public List<CardHolder> open(Random random)
+    public void postDBInit()
+    {
+        super.postDBInit();
+        this.linkSubSets();
+    }
+    
+    public void linkSubSets()
     {
         if(this.subSets == null)
         {
-            this.subSets = new LinkedList<>();
+            this.subSets = new ArrayList<>(this.subSetCodes.size());
             
             CardSet subSet;
             for(String code : this.subSetCodes)
@@ -56,27 +63,34 @@ public class CompositionCardPuller extends CardPuller
                 }
             }
         }
-        
-        List<CardHolder> list = new ArrayList<>(0);
+    }
+    
+    @Override
+    public List<ItemStack> open(Random random)
+    {
+        List<ItemStack> list = new ArrayList<>(0);
         
         for(CardSet subSet : this.subSets)
         {
-            list.addAll(subSet.open(random));
+            if(subSet.isIndependentAndItem())
+            {
+                list.add(YdmItems.SET.createItemForSet(subSet));
+            }
+            else
+            {
+                list.addAll(subSet.open(random));
+            }
         }
         
         return list;
     }
     
     @Override
-    public List<CardHolder> getAllCardEntries()
+    public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
     {
-        List<CardHolder> list = new ArrayList<>();
-        
         for(CardSet subSet : this.subSets)
         {
-            list.addAll(subSet.getAllCardEntries());
+            subSet.addAllCardEntries(sortedSet);
         }
-        
-        return list;
     }
 }

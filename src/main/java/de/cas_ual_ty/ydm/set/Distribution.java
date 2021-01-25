@@ -71,6 +71,11 @@ public class Distribution
         this.totalWeight = totalWeight;
     }
     
+    public void postDBInit()
+    {
+        
+    }
+    
     public void addInformation(List<ITextComponent> tooltip, CardSet set)
     {
         for(Pull pull : this.pulls)

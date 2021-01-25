@@ -7,8 +7,6 @@ import javax.annotation.Nullable;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
-import de.cas_ual_ty.ydm.YdmItems;
-import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
@@ -106,19 +104,16 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
     
     public ItemStack createItemForSet(CardSet set)
     {
-        List<CardHolder> cards = set.open(new Random());
+        List<ItemStack> cards = set.open(new Random());
+        NonNullList<ItemStack> items;
         
         if(cards == null)
         {
-            return this.createItemForSet(set, NonNullList.withSize(0, ItemStack.EMPTY));
+            items = NonNullList.withSize(0, ItemStack.EMPTY);
         }
-        
-        NonNullList<ItemStack> items = NonNullList.withSize(cards.size(), ItemStack.EMPTY);
-        
-        int i = 0;
-        for(CardHolder c : cards)
+        else
         {
-            items.set(i++, YdmItems.CARD.createItemForCardHolder(c));
+            items = NonNullList.from(ItemStack.EMPTY, cards.toArray(new ItemStack[0]));
         }
         
         return this.createItemForSet(set, items);

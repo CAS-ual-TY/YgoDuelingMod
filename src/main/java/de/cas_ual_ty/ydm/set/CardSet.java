@@ -17,7 +17,9 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
@@ -51,6 +53,9 @@ public class CardSet
     // list of all contained rarities
     public List<String> rarityPool;
     
+    public boolean isSubSet;
+    public String shownCode;
+    
     public CardSet(String name, String code, String type, Date date, CardPuller pull, List<CardHolder> cards)
     {
         this.name = name;
@@ -59,6 +64,8 @@ public class CardSet
         this.date = date;
         this.pull = pull;
         this.cards = cards;
+        
+        this.init();
     }
     
     public CardSet(JsonObject j) throws IllegalArgumentException
@@ -150,16 +157,36 @@ public class CardSet
                 this.cards.add(new CardHolder(card, imageIndex, rarity, c.get(JsonKeys.CODE).getAsString()));
             }
         }
+        
+        this.init();
     }
     
-    public List<CardHolder> open(Random random)
+    protected void init()
+    {
+        this.isSubSet = this.type.equals("Sub-Set");
+        this.shownCode = this.code.split("_")[0];
+    }
+    
+    public void postDBInit()
+    {
+        this.pull.postDBInit();
+    }
+    
+    public List<ItemStack> open(Random random)
     {
         return this.pull.open(random);
     }
     
-    public List<CardHolder> getAllCardEntries()
+    public SortedArraySet<CardHolder> getAllCardEntries()
     {
-        return this.pull.getAllCardEntries();
+        SortedArraySet<CardHolder> sortedSet = SortedArraySet.newSet(0);
+        this.addAllCardEntries(sortedSet);
+        return sortedSet;
+    }
+    
+    public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
+    {
+        this.pull.addAllCardEntries(sortedSet);
     }
     
     public void addItemInformation(List<ITextComponent> tooltip)
@@ -173,14 +200,14 @@ public class CardSet
         tooltip.add(new StringTextComponent(this.name));
         tooltip.add(new StringTextComponent(this.type));
         tooltip.add(new StringTextComponent(YdmDatabase.SET_DATE_PARSER.format(this.date)));
-        tooltip.add(new StringTextComponent(this.code));
+        tooltip.add(new StringTextComponent(this.shownCode));
         tooltip.add(StringTextComponent.EMPTY);
         this.pull.addInformation(tooltip);
     }
     
     public boolean isIndependentAndItem()
     {
-        return this != CardSet.DUMMY && !this.type.equals("Sub-Set") && this.name != null && this.date != null;
+        return this != CardSet.DUMMY && !this.isSubSet && this.name != null && this.date != null;
     }
     
     public String getImageName()

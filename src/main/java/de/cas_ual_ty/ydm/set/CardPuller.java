@@ -6,6 +6,8 @@ import java.util.Random;
 import com.google.gson.JsonObject;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.text.ITextComponent;
 
 public abstract class CardPuller
@@ -17,15 +19,20 @@ public abstract class CardPuller
         this.set = set;
     }
     
-    public abstract List<CardHolder> open(Random random);
+    public void postDBInit()
+    {
+        
+    }
+    
+    public abstract List<ItemStack> open(Random random);
     
     public void addInformation(List<ITextComponent> tooltip)
     {
         
     }
     
-    public List<CardHolder> getAllCardEntries()
+    public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
     {
-        return this.set.cards;
+        this.set.cards.forEach(sortedSet::add);
     }
 }

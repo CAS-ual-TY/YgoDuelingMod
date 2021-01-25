@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
@@ -93,18 +94,19 @@ public abstract class CardSetBaseItem extends Item
         if(!world.isRemote)
         {
             CardSet set = this.getCardSet(itemStack);
-            List<CardHolder> cards = set.getAllCardEntries();
-            CIIContainer.openGui(player, cards.size(), new INamedContainerProvider()
+            SortedArraySet<CardHolder> cardsSet = set.getAllCardEntries();
+            CardHolder[] cards = cardsSet.toArray(new CardHolder[0]);
+            
+            CIIContainer.openGui(player, cards.length, new INamedContainerProvider()
             {
-                
                 @Override
                 public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity p_createMenu_3_)
                 {
-                    IItemHandler itemHandler = new ItemStackHandler(cards.size());
+                    IItemHandler itemHandler = new ItemStackHandler(cards.length);
                     
-                    for(int i = 0; i < cards.size(); ++i)
+                    for(int i = 0; i < cards.length; ++i)
                     {
-                        itemHandler.insertItem(i, YdmItems.CARD.createItemForCardHolder(cards.get(i)), false);
+                        itemHandler.insertItem(i, YdmItems.CARD.createItemForCardHolder(cards[i]), false);
                     }
                     
                     return new CardSetContentsContainer(YdmContainerTypes.CARD_SET_CONTENTS, id, playerInv, itemHandler);

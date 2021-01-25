@@ -79,6 +79,11 @@ public class Properties
         this.imageIndicesAmt = 1;
     }
     
+    public void postDBInit()
+    {
+        
+    }
+    
     public void readAllProperties(JsonObject j)
     {
         this.readProperties(j);
