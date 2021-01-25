@@ -80,7 +80,7 @@ public class Distribution
     {
         for(Pull pull : this.pulls)
         {
-            tooltip.add(new StringTextComponent("Odds:  " + Distribution.makeOddsString(pull.weight, this.totalWeight)));
+            tooltip.add(new StringTextComponent(Distribution.makeOddsString(pull.weight, this.totalWeight)));
             
             for(PullEntry pe : pull.pullEntries)
             {
@@ -102,15 +102,19 @@ public class Distribution
                     }
                 }
                 
-                if(rarityFound)
+                if(!rarityFound)
                 {
-                    s.delete(s.length() - 3, s.length());
-                }
-                else
-                {
-                    s.append(TextFormatting.RED.toString() + "NO MATCH");
+                    s.append(TextFormatting.RED.toString());
+                    
+                    for(String rarity : pe.rarities)
+                    {
+                        s.append(rarity + " / ");
+                    }
                 }
                 
+                if(pe.rarities.length > 0)
+                    s.delete(s.length() - 3, s.length());
+                    
                 tooltip.add(new StringTextComponent(s.toString()));
             }
             
