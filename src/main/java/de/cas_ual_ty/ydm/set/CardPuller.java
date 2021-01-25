@@ -31,6 +31,8 @@ public abstract class CardPuller
         
     }
     
+    public abstract boolean addInformationInComposition();
+    
     public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
     {
         this.set.cards.forEach(sortedSet::add);

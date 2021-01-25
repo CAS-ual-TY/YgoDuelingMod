@@ -14,6 +14,8 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SortedArraySet;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class CompositionCardPuller extends CardPuller
 {
@@ -83,6 +85,39 @@ public class CompositionCardPuller extends CardPuller
         }
         
         return list;
+    }
+    
+    @Override
+    public void addInformation(List<ITextComponent> tooltip)
+    {
+        if(this.addInformationInComposition())
+        {
+            for(CardSet subSet : this.subSets)
+            {
+                if(subSet.isIndependentAndItem())
+                {
+                    tooltip.add(new StringTextComponent(subSet.name));
+                }
+                else
+                {
+                    subSet.pull.addInformation(tooltip);
+                }
+            }
+        }
+    }
+    
+    @Override
+    public boolean addInformationInComposition()
+    {
+        for(CardSet subSet : this.subSets)
+        {
+            if(!subSet.pull.addInformationInComposition())
+            {
+                return false;
+            }
+        }
+        
+        return true;
     }
     
     @Override

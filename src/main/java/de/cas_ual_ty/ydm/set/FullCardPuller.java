@@ -29,4 +29,10 @@ public class FullCardPuller extends CardPuller
         
         return list;
     }
+    
+    @Override
+    public boolean addInformationInComposition()
+    {
+        return false;
+    }
 }

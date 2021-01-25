@@ -164,6 +164,12 @@ public class DistributionCardPuller extends CardPuller
         this.distribution.addInformation(tooltip, this.set);
     }
     
+    @Override
+    public boolean addInformationInComposition()
+    {
+        return this.distribution.pulls.length == 1;
+    }
+    
     public static int countUniqueCards(List<CardHolder> list)
     {
         int uniqueCards = 0;

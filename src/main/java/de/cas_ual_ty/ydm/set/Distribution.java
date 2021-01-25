@@ -78,53 +78,74 @@ public class Distribution
     
     public void addInformation(List<ITextComponent> tooltip, CardSet set)
     {
-        for(Pull pull : this.pulls)
+        if(this.pulls.length <= 0)
         {
-            tooltip.add(new StringTextComponent(Distribution.makeOddsString(pull.weight, this.totalWeight)));
+            return;
+        }
+        else if(this.pulls.length == 1)
+        {
+            Pull pull = this.pulls[0];
             
             for(PullEntry pe : pull.pullEntries)
             {
-                StringBuilder s = new StringBuilder();
-                s.append("    " + pe.count + "x: ");
+                tooltip.add(new StringTextComponent(makePullEntryString(set, pe)));
+            }
+        }
+        else
+        {
+            for(Pull pull : this.pulls)
+            {
+                tooltip.add(new StringTextComponent(Distribution.makeOddsString(pull.weight, this.totalWeight)));
                 
-                boolean rarityFound = false;
-                
-                for(String rarity : pe.rarities)
+                for(PullEntry pe : pull.pullEntries)
                 {
-                    if(set.rarityPool.contains(rarity))
-                    {
-                        s.append(rarity + " / ");
-                        
-                        if(!rarityFound)
-                        {
-                            rarityFound = true;
-                        }
-                    }
+                    tooltip.add(new StringTextComponent("  " + makePullEntryString(set, pe)));
                 }
+                
+                tooltip.add(StringTextComponent.EMPTY);
+            }
+            
+            tooltip.remove(tooltip.size() - 1);
+        }
+    }
+    
+    public static String makePullEntryString(CardSet set, PullEntry pe)
+    {
+        StringBuilder s = new StringBuilder();
+        
+        s.append(pe.count + "x: ");
+        
+        boolean rarityFound = false;
+        
+        for(String rarity : pe.rarities)
+        {
+            if(set.rarityPool.contains(rarity))
+            {
+                s.append(rarity + " / ");
                 
                 if(!rarityFound)
                 {
-                    s.append(TextFormatting.RED.toString());
-                    
-                    for(String rarity : pe.rarities)
-                    {
-                        s.append(rarity + " / ");
-                    }
+                    rarityFound = true;
                 }
-                
-                if(pe.rarities.length > 0)
-                    s.delete(s.length() - 3, s.length());
-                    
-                tooltip.add(new StringTextComponent(s.toString()));
             }
-            
-            tooltip.add(StringTextComponent.EMPTY);
         }
         
-        if(this.pulls.length > 0)
+        if(!rarityFound)
         {
-            tooltip.remove(tooltip.size() - 1);
+            s.append(TextFormatting.RED.toString());
+            
+            for(String rarity : pe.rarities)
+            {
+                s.append(rarity + " / ");
+            }
         }
+        
+        if(pe.rarities.length > 0)
+        {
+            s.delete(s.length() - 3, s.length());
+        }
+        
+        return s.toString();
     }
     
     public static String makeOddsString(int weight, int totalWeight)
