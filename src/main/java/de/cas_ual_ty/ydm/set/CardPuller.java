@@ -21,7 +21,7 @@ public abstract class CardPuller
     
     public void postDBInit()
     {
-        
+        this.logErrors();
     }
     
     public abstract List<ItemStack> open(Random random);
@@ -36,5 +36,10 @@ public abstract class CardPuller
     public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
     {
         this.set.cards.forEach(sortedSet::add);
+    }
+    
+    public void logErrors()
+    {
+        
     }
 }

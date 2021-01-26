@@ -1,10 +1,12 @@
 package de.cas_ual_ty.ydm.set;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.text.ITextComponent;
@@ -17,6 +19,7 @@ public class Distribution
     public final Pull[] pulls;
     
     public final int totalWeight;
+    public final List<String> pullableRarities;
     
     public Distribution(JsonObject j)
     {
@@ -69,11 +72,27 @@ public class Distribution
         }
         
         this.totalWeight = totalWeight;
+        
+        this.pullableRarities = new LinkedList<>();
+        
+        for(Pull pull : this.pulls)
+        {
+            for(PullEntry pe : pull.pullEntries)
+            {
+                for(String rarity : pe.rarities)
+                {
+                    if(!this.pullableRarities.contains(rarity))
+                    {
+                        this.pullableRarities.add(rarity);
+                    }
+                }
+            }
+        }
     }
     
     public void postDBInit()
     {
-        
+        this.logErrors();
     }
     
     public void addInformation(List<ITextComponent> tooltip, CardSet set)
@@ -106,6 +125,36 @@ public class Distribution
             }
             
             tooltip.remove(tooltip.size() - 1);
+        }
+    }
+    
+    public void logErrors()
+    {
+        int max = 1;
+        
+        int a, b, gcd;
+        
+        for(Pull pull : this.pulls)
+        {
+            a = pull.weight;
+            b = this.totalWeight;
+            gcd = -1;
+            
+            while((gcd = Distribution.gcd(a, b)) != 1)
+            {
+                a /= gcd;
+                b /= gcd;
+            }
+            
+            if(b > max)
+            {
+                max = b;
+            }
+        }
+        
+        if(max < this.totalWeight)
+        {
+            YDM.log("Distribution " + this.name + " can be reduced by total weight: " + this.totalWeight + " -> " + max);
         }
     }
     

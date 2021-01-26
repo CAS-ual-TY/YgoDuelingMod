@@ -6,6 +6,7 @@ import java.util.Random;
 
 import com.google.gson.JsonObject;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -35,12 +36,6 @@ public class DistributionCardPuller extends CardPuller
     }
     
     @Override
-    public void postDBInit()
-    {
-        super.postDBInit();
-    }
-    
-    @Override
     public List<ItemStack> open(Random random)
     {
         List<ItemStack> list = new ArrayList<>();
@@ -66,7 +61,7 @@ public class DistributionCardPuller extends CardPuller
             
             for(PullEntry pe : pull.pullEntries)
             {
-                cardPool = this.makeCardPool(random, pe);
+                cardPool = this.makeCardPool(pe);
                 
                 if(cardPool.size() <= 0)
                 {
@@ -100,7 +95,7 @@ public class DistributionCardPuller extends CardPuller
         return null;
     }
     
-    protected List<CardHolder> makeCardPool(Random random, PullEntry pe)
+    protected List<CardHolder> makeCardPool(PullEntry pe)
     {
         List<CardHolder> cardPool = new ArrayList<>(this.set.cards.size() * pe.rarities.length);
         
@@ -168,6 +163,54 @@ public class DistributionCardPuller extends CardPuller
     public boolean addInformationInComposition()
     {
         return this.distribution.pulls.length == 1;
+    }
+    
+    @Override
+    public void logErrors()
+    {
+        for(Pull pull : this.distribution.pulls)
+        {
+            List<CardHolder> cardPool;
+            
+            for(PullEntry pe : pull.pullEntries)
+            {
+                if(pe.rarities.length <= 0 || pe.count <= 0)
+                {
+                    YDM.log("Set " + this.set.code + ": One pull entry has no rarities or count = 0 and will not do anything.");
+                    continue;
+                }
+                
+                cardPool = this.makeCardPool(pe);
+                
+                StringBuilder s = new StringBuilder();
+                for(String rarity : pe.rarities)
+                {
+                    s.append(rarity + " / ");
+                }
+                s.delete(s.length() - 3, s.length());
+                
+                if(cardPool.size() < pe.count)
+                {
+                    YDM.log("Set " + this.set.code + ": Not enough cards for rarities: " + s.toString());
+                    continue;
+                }
+                
+                int uniqueCards = countUniqueCards(cardPool);
+                
+                if(uniqueCards < pe.count)
+                {
+                    YDM.log("Set " + this.set.code + ": Not enough unique cards for rarities (will contain duplicates): " + s.toString());
+                }
+            }
+        }
+        
+        for(String rarity : this.set.rarityPool)
+        {
+            if(!this.distribution.pullableRarities.contains(rarity))
+            {
+                YDM.log("Set " + this.set.code + ": Rarity and the cards using it can never be pulled: " + rarity);
+            }
+        }
     }
     
     public static int countUniqueCards(List<CardHolder> list)
