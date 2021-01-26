@@ -136,7 +136,7 @@ public class CardSet
                 
                 if(card == null)
                 {
-                    YDM.log("Can not parse card in: " + this.name + " card: " + card);
+                    YDM.log("Can not parse card in: " + this.code + " card: " + id);
                     continue;
                 }
                 
@@ -144,7 +144,7 @@ public class CardSet
                 
                 if(imageIndex >= card.getImageIndicesAmt())
                 {
-                    YDM.log("Bad image index for card in: " + this.name + " card: " + card);
+                    YDM.log("Bad image index for card in: " + this.code + " card: " + card);
                 }
                 
                 rarity = c.get(JsonKeys.RARITY).getAsString();
@@ -193,6 +193,7 @@ public class CardSet
     {
         tooltip.add(new StringTextComponent(this.name));
         tooltip.add(new StringTextComponent(this.type));
+        tooltip.add(new StringTextComponent(this.shownCode));
     }
     
     public void addInformation(List<ITextComponent> tooltip)

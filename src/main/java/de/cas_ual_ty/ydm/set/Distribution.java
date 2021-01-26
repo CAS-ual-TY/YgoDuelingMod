@@ -130,31 +130,27 @@ public class Distribution
     
     public void logErrors()
     {
-        int max = 1;
-        
-        int a, b, gcd;
+        int gcd = -1;
         
         for(Pull pull : this.pulls)
         {
-            a = pull.weight;
-            b = this.totalWeight;
-            gcd = -1;
-            
-            while((gcd = Distribution.gcd(a, b)) != 1)
+            if(gcd == -1)
             {
-                a /= gcd;
-                b /= gcd;
+                gcd = pull.weight;
+                continue;
             }
             
-            if(b > max)
+            gcd = gcd(gcd, pull.weight);
+            
+            if(gcd == 1)
             {
-                max = b;
+                return;
             }
         }
         
-        if(max < this.totalWeight)
+        if(gcd > 1)
         {
-            YDM.log("Distribution " + this.name + " can be reduced by total weight: " + this.totalWeight + " -> " + max);
+            YDM.log("Distribution " + this.name + ": Each weight can be reduced by factor: " + gcd + " (Total: " + this.totalWeight + " -> " + (this.totalWeight/gcd) + ")");
         }
     }
     
