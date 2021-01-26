@@ -9,6 +9,8 @@ import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.StringTextComponent;
 
 public class FullCardPuller extends CardPuller
 {
@@ -31,8 +33,17 @@ public class FullCardPuller extends CardPuller
     }
     
     @Override
+    public void addInformation(List<ITextComponent> tooltip)
+    {
+        for(CardHolder ch : this.set.cards)
+        {
+            tooltip.add(new StringTextComponent("\"" + ch.getCard().getName() + "\""));
+        }
+    }
+    
+    @Override
     public boolean addInformationInComposition()
     {
-        return false;
+        return this.set.cards.size() <= 20;
     }
 }
