@@ -150,7 +150,7 @@ public class Distribution
         
         if(gcd > 1)
         {
-            YDM.log("Distribution " + this.name + ": Each weight can be reduced by factor: " + gcd + " (Total: " + this.totalWeight + " -> " + (this.totalWeight/gcd) + ")");
+            YDM.log("Distribution " + this.name + ": Each weight can be reduced by factor: " + gcd + " (Total: " + this.totalWeight + " -> " + (this.totalWeight / gcd) + ")");
         }
     }
     

@@ -231,7 +231,7 @@ public class MonsterProperties extends Properties
             s.appendString("Pendulum" + " / ");
         }
         
-        if(this.getAbility() != null)
+        if(this.getAbility() != null && !this.getAbility().isEmpty())
         {
             s.appendString(this.getAbility() + " / ");
         }
