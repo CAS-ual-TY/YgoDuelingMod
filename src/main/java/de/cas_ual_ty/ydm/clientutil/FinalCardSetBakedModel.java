@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.clientutil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -8,6 +9,7 @@ import java.util.function.Function;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.set.CardSet;
 import net.minecraft.block.BlockState;
@@ -35,6 +37,8 @@ public class FinalCardSetBakedModel implements IBakedModel
     private List<BakedQuad> setList = null;
     private List<BakedQuad> openedList = null;
     
+    private HashMap<CardSet, List<BakedQuad>> quadsMap;
+    
     private final float distance = 0.002F;
     
     public FinalCardSetBakedModel(IBakedModel mainModel)
@@ -42,6 +46,7 @@ public class FinalCardSetBakedModel implements IBakedModel
         this.mainModel = mainModel;
         this.setActiveItemStack(ItemStack.EMPTY);
         this.textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+        this.quadsMap = new HashMap<>(YdmDatabase.SETS_LIST.size());
     }
     
     public FinalCardSetBakedModel setActiveItemStack(ItemStack itemStack)
@@ -70,8 +75,15 @@ public class FinalCardSetBakedModel implements IBakedModel
                 ResourceLocation front = set.getItemImageResourceLocation();
                 TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
                 
-                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
-                list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1));
+                if(!this.quadsMap.containsKey(set))
+                {
+                    List<BakedQuad> textureQuads = new ArrayList<>(0);
+                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
+                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1));
+                    this.quadsMap.put(set, textureQuads);
+                }
+                
+                list.addAll(this.quadsMap.get(set));
             }
         }
         

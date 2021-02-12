@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.clientutil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -8,8 +9,10 @@ import java.util.function.Function;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.model.BakedQuad;
@@ -36,11 +39,14 @@ public class FinalCardBakedModel implements IBakedModel
     private List<BakedQuad> partneredBackList = null;
     private List<BakedQuad> blancList = null;
     
+    private HashMap<Properties, List<BakedQuad>> quadsMap;
+    
     public FinalCardBakedModel(IBakedModel mainModel)
     {
         this.mainModel = mainModel;
         this.setActiveItemStack(ItemStack.EMPTY);
         this.textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
+        this.quadsMap = new HashMap<>(YdmDatabase.PROPERTIES_LIST.size());
     }
     
     public FinalCardBakedModel setActiveItemStack(ItemStack itemStack)
@@ -65,7 +71,15 @@ public class FinalCardBakedModel implements IBakedModel
                 {
                     ResourceLocation front = card.getItemImageResourceLocation();
                     TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
-                    list.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
+                    
+                    if(!this.quadsMap.containsKey(card.getCard()))
+                    {
+                        List<BakedQuad> textureQuads = new ArrayList<>(0);
+                        textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
+                        this.quadsMap.put(card.getCard(), textureQuads);
+                    }
+                    
+                    list.addAll(this.quadsMap.get(card.getCard()));
                 }
                 else
                 {
