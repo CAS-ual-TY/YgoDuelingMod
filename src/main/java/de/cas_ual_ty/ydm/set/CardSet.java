@@ -25,7 +25,26 @@ import net.minecraft.util.text.StringTextComponent;
 
 public class CardSet
 {
-    public static final CardSet DUMMY = new CardSet("Dummy", "DUM-MY", "DUMMY", new Date(0), new FullCardPuller(new JsonObject(), null), ImmutableList.of())
+    public static final CardSet DUMMY = new CardSet("Dummy", "DUM-MY", "DUMMY", new Date(0), new CardPuller(null, null)
+    {
+        @Override
+        public List<ItemStack> open(Random random)
+        {
+            return ImmutableList.of();
+        }
+        
+        @Override
+        public boolean addInformationInComposition()
+        {
+            return false;
+        }
+        
+        @Override
+        public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
+        {
+            
+        }
+    }, ImmutableList.of())
     {
         @Override
         public String getImageName()
