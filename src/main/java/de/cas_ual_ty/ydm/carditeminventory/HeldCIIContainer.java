@@ -16,11 +16,13 @@ import net.minecraftforge.items.ItemStackHandler;
 public abstract class HeldCIIContainer extends CIIContainer
 {
     protected final Hand hand;
+    protected final ItemStack itemStack;
     
     public HeldCIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler, Hand hand)
     {
         super(type, id, playerInventoryIn, itemHandler);
         this.hand = hand;
+        this.itemStack = this.player.getHeldItem(hand);
     }
     
     public HeldCIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
@@ -96,7 +98,7 @@ public abstract class HeldCIIContainer extends CIIContainer
         
         if(!playerIn.world.isRemote)
         {
-            this.saveItemHandler(this.player, playerIn.getHeldItem(this.hand), this.itemHandler);
+            this.saveItemHandler(this.player, this.itemStack, this.itemHandler);
         }
     }
     
