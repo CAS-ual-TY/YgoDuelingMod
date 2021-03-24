@@ -28,6 +28,11 @@ public interface ISidedProxy
         
     }
     
+    public default void initFolders()
+    {
+        
+    }
+    
     public default void initFiles()
     {
         

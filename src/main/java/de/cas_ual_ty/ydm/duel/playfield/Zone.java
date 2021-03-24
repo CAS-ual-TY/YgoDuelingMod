@@ -7,6 +7,7 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 
 public class Zone
@@ -45,6 +46,11 @@ public class Zone
         this.cardsList = new ArrayList<>(0);
         this.defaultCardPosition = this.type.defaultCardPosition;
         this.counters = 0;
+    }
+    
+    public CardSleevesType getSleeves()
+    {
+        return this.playField.getSleeves(this.getOwner());
     }
     
     public boolean isOwner(PlayerRole player)

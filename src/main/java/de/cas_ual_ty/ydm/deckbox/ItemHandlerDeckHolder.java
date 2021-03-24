@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.deckbox;
 
+import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import de.cas_ual_ty.ydm.card.ItemStackCardHolder;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
@@ -10,7 +11,7 @@ public class ItemHandlerDeckHolder extends DeckHolder
     protected int extraDeckSize;
     protected int sideDeckSize;
     
-    public ItemHandlerDeckHolder(IItemHandler itemHandler)
+    public ItemHandlerDeckHolder(IItemHandler itemHandler, ItemStack sleevesStack)
     {
         super();
         
@@ -64,6 +65,11 @@ public class ItemHandlerDeckHolder extends DeckHolder
             {
                 this.sideDeck.add(null);
             }
+        }
+        
+        if(sleevesStack.getItem() instanceof CardSleevesItem)
+        {
+            this.sleeves = ((CardSleevesItem)sleevesStack.getItem()).sleeves;
         }
     }
     

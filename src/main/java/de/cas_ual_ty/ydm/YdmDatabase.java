@@ -214,7 +214,7 @@ public class YdmDatabase
         YdmDatabase.readDistributions(YDM.distributionsFolder);
         YdmDatabase.readSets(YDM.setsFolder);
         
-        postDBInit();
+        YdmDatabase.postDBInit();
     }
     
     public static void downloadDatabase() throws IOException
@@ -477,17 +477,17 @@ public class YdmDatabase
     {
         YDM.log("Finalizing database!");
         
-        for(Properties x : PROPERTIES_LIST)
+        for(Properties x : YdmDatabase.PROPERTIES_LIST)
         {
             x.postDBInit();
         }
         
-        for(Distribution x : DISTRIBUTIONS_LIST)
+        for(Distribution x : YdmDatabase.DISTRIBUTIONS_LIST)
         {
             x.postDBInit();
         }
         
-        for(CardSet x : SETS_LIST)
+        for(CardSet x : YdmDatabase.SETS_LIST)
         {
             x.postDBInit();
         }

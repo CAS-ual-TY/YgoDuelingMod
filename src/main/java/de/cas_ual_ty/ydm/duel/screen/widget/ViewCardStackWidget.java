@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
@@ -187,7 +188,7 @@ public class ViewCardStackWidget extends Button
             DuelScreenDueling.renderSelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
         }
         
-        CardRenderUtil.renderDuelCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, this.forceFaceUp);
+        CardRenderUtil.renderDuelCardCentered(ms, this.context.getClickedZone() != null ? this.context.getClickedZone().getSleeves() : CardSleevesType.CARD_BACK, mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, this.forceFaceUp);
         
         if(this.isHovered() && mouseX >= renderX && mouseX < renderX + renderWidth && mouseY >= renderY && mouseY < renderY + renderHeight)
         {

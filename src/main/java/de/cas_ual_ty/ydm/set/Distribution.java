@@ -107,7 +107,7 @@ public class Distribution
             
             for(PullEntry pe : pull.pullEntries)
             {
-                tooltip.add(new StringTextComponent(makePullEntryString(set, pe)));
+                tooltip.add(new StringTextComponent(Distribution.makePullEntryString(set, pe)));
             }
         }
         else
@@ -118,7 +118,7 @@ public class Distribution
                 
                 for(PullEntry pe : pull.pullEntries)
                 {
-                    tooltip.add(new StringTextComponent("  " + makePullEntryString(set, pe)));
+                    tooltip.add(new StringTextComponent("  " + Distribution.makePullEntryString(set, pe)));
                 }
                 
                 tooltip.add(StringTextComponent.EMPTY);
@@ -140,7 +140,7 @@ public class Distribution
                 continue;
             }
             
-            gcd = gcd(gcd, pull.weight);
+            gcd = Distribution.gcd(gcd, pull.weight);
             
             if(gcd == 1)
             {

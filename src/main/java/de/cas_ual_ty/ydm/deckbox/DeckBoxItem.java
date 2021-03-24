@@ -4,12 +4,14 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -24,6 +26,7 @@ import net.minecraftforge.items.ItemStackHandler;
 public class DeckBoxItem extends Item implements INamedContainerProvider
 {
     public static final String ITEM_HANDLER_KEY = "cards";
+    public static final String CARD_SLEEVES_KEY = "sleeves";
     
     public DeckBoxItem(Properties properties)
     {
@@ -40,10 +43,30 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         //        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(YdmUtil.throwNullCapabilityException());
     }
     
+    public ItemStack getCardSleeves(ItemStack itemStack)
+    {
+        if(itemStack.getOrCreateTag().contains(DeckBoxItem.CARD_SLEEVES_KEY))
+        {
+            return ItemStack.read(itemStack.getOrCreateTag().getCompound(DeckBoxItem.CARD_SLEEVES_KEY));
+        }
+        else
+        {
+            return ItemStack.EMPTY;
+        }
+    }
+    
     public void saveItemHandlerToNBT(ItemStack itemStack, IItemHandler itemHandler)
     {
         itemStack.getOrCreateTag().put(DeckBoxItem.ITEM_HANDLER_KEY,
             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
+    }
+    
+    public void saveCardSleevesToNBT(ItemStack itemStack, ItemStack sleevesStack)
+    {
+        if(sleevesStack.getItem() instanceof CardSleevesItem && !((CardSleevesItem)sleevesStack.getItem()).sleeves.isCardBack())
+        {
+            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, sleevesStack.write(new CompoundNBT()));
+        }
     }
     
     @Override
@@ -74,7 +97,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     
     public ItemHandlerDeckHolder getDeckHolder(ItemStack itemStack)
     {
-        return new ItemHandlerDeckHolder(this.getItemHandler(itemStack));
+        return new ItemHandlerDeckHolder(this.getItemHandler(itemStack), this.getCardSleeves(itemStack));
     }
     
     public void setDeckHolder(ItemStack itemStack, DeckHolder holder)
@@ -129,6 +152,11 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         }
         
         this.saveItemHandlerToNBT(itemStack, itemHandler);
+        
+        if(!holder.getSleeves().isCardBack())
+        {
+            this.saveCardSleevesToNBT(itemStack, new ItemStack(holder.getSleeves().getItem()));
+        }
     }
     
     public static ItemStack getActiveDeckBox(PlayerEntity player)

@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.duel.screen.animation;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
@@ -80,14 +81,17 @@ public class MoveAnimation extends Animation
         posY += (this.destY - this.sourceY) * relativePositionRotation;
         
         CardPosition cardPosition;
+        CardSleevesType sleeves;
         
         if(this.tickTime >= this.maxTickTime / 2)
         {
             cardPosition = this.destinationPosition;
+            sleeves = this.destinationZone.zone.getSleeves();
         }
         else
         {
             cardPosition = this.sourcePosition;
+            sleeves = this.sourceZone.zone.getSleeves();
         }
         
         float sourceRotation = MoveAnimation.getRotationForPositionAndView(this.view == this.sourceZone.zone.getOwner() || !this.sourceZone.zone.hasOwner(), this.sourcePosition);
@@ -120,7 +124,7 @@ public class MoveAnimation extends Animation
         ms.rotate(new Quaternion(0, 0, rotation, true));
         
         // we always render the card position straight and manually rotate it, thats why we use fullBlit here
-        CardRenderUtil.renderDuelCardAdvanced(ms, -cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, this.duelCard, cardPosition, YdmBlitUtil::fullBlit);
+        CardRenderUtil.renderDuelCardAdvanced(ms, sleeves, mouseX, mouseY, -cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, this.duelCard, cardPosition, YdmBlitUtil::fullBlit);
         
         ms.pop();
     }

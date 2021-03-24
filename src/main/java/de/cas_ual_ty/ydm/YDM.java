@@ -135,6 +135,7 @@ public class YDM
         YDM.proxy.registerForgeEventListeners(bus);
         
         YDM.proxy.preInit();
+        this.initFolders();
     }
     
     private void init(FMLCommonSetupEvent event)
@@ -179,7 +180,7 @@ public class YDM
         WorkerManager.init();
     }
     
-    private void initFiles()
+    public void initFolders()
     {
         YDM.mainFolder = new File("ydm_db");
         YDM.cardsFolder = new File(YDM.mainFolder, "cards");
@@ -189,6 +190,11 @@ public class YDM
         YDM.bindersFolder = new File("ydm_binders");
         YdmIOUtil.createDirIfNonExistant(YDM.bindersFolder);
         
+        YDM.proxy.initFolders();
+    }
+    
+    private void initFiles()
+    {
         YDM.proxy.initFiles();
         YdmIOUtil.setAgent();
         YdmDatabase.initDatabase();
@@ -286,7 +292,7 @@ public class YDM
             
             if(itemStack.getItem() instanceof DeckBoxItem)
             {
-                dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack));
+                dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem)itemStack.getItem()).getCardSleeves(itemStack));
                 
                 if(!dh.isEmpty())
                 {
@@ -298,7 +304,7 @@ public class YDM
         itemStack = player.getHeldItemOffhand();
         if(itemStack.getItem() instanceof DeckBoxItem)
         {
-            dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack));
+            dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem)itemStack.getItem()).getCardSleeves(itemStack));
             
             if(!dh.isEmpty())
             {

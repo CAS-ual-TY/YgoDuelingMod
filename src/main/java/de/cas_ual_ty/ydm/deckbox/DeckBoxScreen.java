@@ -98,6 +98,8 @@ public class DeckBoxScreen extends ContainerScreen<DeckBoxContainer>
         //drawString
         this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.side").appendString(" " + amount + "/" + DeckHolder.SIDE_DECK_SIZE), 8F, 124F, 0x404040);
         
+        this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.sleeves"), 224F, (float)(this.ySize - 96 + 2), 0x404040);
+        
         this.font.func_243248_b(ms, this.playerInventory.getDisplayName(), 8F, (float)(this.ySize - 96 + 2), 0x404040);
     }
     

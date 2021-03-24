@@ -1,8 +1,10 @@
 package de.cas_ual_ty.ydm.deckbox;
 
 import de.cas_ual_ty.ydm.YdmItems;
+import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
@@ -13,6 +15,7 @@ public class DeckBoxContainer extends Container
 {
     public ItemStack itemStack;
     public IItemHandler itemHandler;
+    public Slot cardSleevesSlot;
     
     public DeckBoxContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
@@ -50,12 +53,28 @@ public class DeckBoxContainer extends Container
             this.addSlot(new DeckBoxSlot(this.itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
         
+        this.addSlot(this.cardSleevesSlot = new Slot(new Inventory(1), 0, 8 + 12 * 18, 168 + 0 * 18)
+        {
+            @Override
+            public boolean isItemValid(ItemStack stack)
+            {
+                return stack.getItem() instanceof CardSleevesItem;
+            }
+            
+            @Override
+            public int getSlotStackLimit()
+            {
+                return 1;
+            }
+        });
+        this.cardSleevesSlot.putStack(YdmItems.BLACK_DECK_BOX.getCardSleeves(itemStack));
+        
         // player inventory
         for(int y = 0; y < 3; ++y)
         {
             for(int x = 0; x < 9; ++x)
             {
-                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 62 + x * 18, 168 + y * 18));
+                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 168 + y * 18));
             }
         }
         
@@ -63,7 +82,7 @@ public class DeckBoxContainer extends Container
         Slot s;
         for(int x = 0; x < 9; ++x)
         {
-            s = new Slot(playerInventory, x, 62 + x * 18, 226);
+            s = new Slot(playerInventory, x, 8 + x * 18, 226);
             
             if(s.getStack() == this.itemStack)
             {
@@ -103,6 +122,7 @@ public class DeckBoxContainer extends Container
     {
         // TODO can be removed when capabilities work again
         ((DeckBoxItem)this.itemStack.getItem()).saveItemHandlerToNBT(this.itemStack, this.itemHandler);
+        ((DeckBoxItem)this.itemStack.getItem()).saveCardSleevesToNBT(this.itemStack, this.cardSleevesSlot.getStack());
         super.onContainerClosed(playerIn);
     }
 }

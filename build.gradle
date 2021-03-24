@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.16.4-2.6.0.22'
+version = '1.16.4-2.7.0.23'
 group = 'de.cas_ual_ty.ydm' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'ydm'
 
@@ -73,7 +73,7 @@ minecraft {
             property 'forge.logging.console.level', 'debug'
 
             mods {
-                examplemod {
+                ydm {
                     source sourceSets.main
                 }
             }
@@ -88,10 +88,10 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/')
+            args '--mod', 'ydm', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources')
 
             mods {
-                examplemod {
+                ydm {
                     source sourceSets.main
                 }
             }

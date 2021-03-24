@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 
 public class DeckHolder
 {
@@ -28,16 +29,24 @@ public class DeckHolder
     protected List<CardHolder> extraDeck;
     protected List<CardHolder> sideDeck;
     
-    public DeckHolder(List<CardHolder> mainDeck, List<CardHolder> extraDeck, List<CardHolder> sideDeck)
+    protected CardSleevesType sleeves;
+    
+    public DeckHolder(List<CardHolder> mainDeck, List<CardHolder> extraDeck, List<CardHolder> sideDeck, CardSleevesType sleeves)
     {
         this.mainDeck = mainDeck;
         this.extraDeck = extraDeck;
         this.sideDeck = sideDeck;
+        this.sleeves = sleeves;
+    }
+    
+    public DeckHolder(List<CardHolder> mainDeck, List<CardHolder> extraDeck, List<CardHolder> sideDeck)
+    {
+        this(mainDeck, extraDeck, sideDeck, CardSleevesType.CARD_BACK);
     }
     
     public DeckHolder()
     {
-        this(new ArrayList<>(DeckHolder.MAIN_DECK_SIZE), new ArrayList<>(DeckHolder.EXTRA_DECK_SIZE), new ArrayList<>(DeckHolder.SIDE_DECK_SIZE));
+        this(new ArrayList<>(DeckHolder.MAIN_DECK_SIZE), new ArrayList<>(DeckHolder.EXTRA_DECK_SIZE), new ArrayList<>(DeckHolder.SIDE_DECK_SIZE), CardSleevesType.CARD_BACK);
     }
     
     public List<CardHolder> getMainDeck()
@@ -53,6 +62,11 @@ public class DeckHolder
     public List<CardHolder> getSideDeck()
     {
         return this.sideDeck;
+    }
+    
+    public CardSleevesType getSleeves()
+    {
+        return this.sleeves;
     }
     
     public boolean isEmpty()

@@ -225,11 +225,11 @@ public class ZoneWidget extends Button
         
         if(!isOpponentView)
         {
-            CardRenderUtil.renderDuelCardCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            CardRenderUtil.renderDuelCardCentered(ms, this.zone.getSleeves(), mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         else
         {
-            CardRenderUtil.renderDuelCardReversedCentered(ms, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            CardRenderUtil.renderDuelCardReversedCentered(ms, this.zone.getSleeves(), mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         
         if(this.isHovered() && mouseX >= hoverX && mouseX < hoverX + hoverWidth && mouseY >= hoverY && mouseY < hoverY + hoverHeight)

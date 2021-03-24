@@ -129,7 +129,7 @@ public class DistributionCardPuller extends CardPuller
         // First we count the amount of unique cards
         // (so the same card but with different rarities only counts once)
         // The cardPool list is sorted by card IDs
-        int uniqueCards = countUniqueCards(cardPool);
+        int uniqueCards = DistributionCardPuller.countUniqueCards(cardPool);
         
         // Now we check if there enough unique cards
         if(uniqueCards >= pe.count)
@@ -195,7 +195,7 @@ public class DistributionCardPuller extends CardPuller
                     continue;
                 }
                 
-                int uniqueCards = countUniqueCards(cardPool);
+                int uniqueCards = DistributionCardPuller.countUniqueCards(cardPool);
                 
                 if(uniqueCards < pe.count)
                 {

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.DuelPhase;
 
@@ -31,6 +32,9 @@ public class PlayField
     
     public boolean player1Turn;
     public DuelPhase phase;
+    
+    public CardSleevesType player1Sleeves;
+    public CardSleevesType player2Sleeves;
     
     public PlayField(DuelManager duelManager, PlayFieldType type)
     {
@@ -130,6 +134,31 @@ public class PlayField
         
         this.player1Turn = true;
         this.phase = DuelPhase.DP;
+        
+        this.player1Sleeves = CardSleevesType.CARD_BACK;
+        this.player2Sleeves = CardSleevesType.CARD_BACK;
+    }
+    
+    public void initSleeves(CardSleevesType player1Sleeves, CardSleevesType player2Sleeves)
+    {
+        this.player1Sleeves = player1Sleeves;
+        this.player2Sleeves = player2Sleeves;
+    }
+    
+    public CardSleevesType getSleeves(ZoneOwner owner)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            return this.player1Sleeves;
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            return this.player2Sleeves;
+        }
+        else
+        {
+            return CardSleevesType.CARD_BACK;
+        }
     }
     
     public List<Zone> getZones()

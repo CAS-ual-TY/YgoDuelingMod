@@ -1,6 +1,8 @@
 package de.cas_ual_ty.ydm;
 
 import de.cas_ual_ty.ydm.card.CardItem;
+import de.cas_ual_ty.ydm.card.CardSleevesItem;
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderItem;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxItem;
 import de.cas_ual_ty.ydm.deckbox.PatreonDeckBoxItem;
@@ -66,6 +68,13 @@ public class YdmItems
     public static final DeckBoxItem EMERALD_DECK_BOX = null;
     public static final DeckBoxItem PATREON_DECK_BOX = null;
     
+    public static final Item SLEEVES_BRONZE = null;
+    public static final Item SLEEVES_SILVER = null;
+    public static final Item SLEEVES_GOLD = null;
+    public static final Item SLEEVES_PLATINUM = null;
+    public static final Item SLEEVES_RUBY = null;
+    public static final Item SLEEVES_VFD = null;
+    
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
@@ -121,5 +130,13 @@ public class YdmItems
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "diamond_deck_box"));
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "emerald_deck_box"));
         registry.register(new PatreonDeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "patreon_deck_box"));
+        
+        for(CardSleevesType sleeve : CardSleevesType.VALUES)
+        {
+            if(!sleeve.isCardBack())
+            {
+                registry.register(new CardSleevesItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1), sleeve).setRegistryName(YDM.MOD_ID, sleeve.getResourceName()));
+            }
+        }
     }
 }

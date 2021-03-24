@@ -20,6 +20,7 @@ import javax.imageio.ImageIO;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.set.CardSet;
 import de.cas_ual_ty.ydm.task.Task;
@@ -58,8 +59,32 @@ public class ImageHandler
             size = YdmUtil.getPow2(i);
             YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
             ImageHandler.adjustRawImage(
-                ImageHandler.getAdjustedCardImageFile(card.getImageName((byte)0), size),
-                ImageHandler.getRawCardImageFile(card.getImageName((byte)0)),
+                new File(parent, ImageHandler.getAdjustedCardImageFile(card.getImageName((byte)0), size).getName()),
+                new File(parent, ImageHandler.getRawCardImageFile(card.getImageName((byte)0)).getName()),
+                size);
+        }
+    }
+    
+    // only for dev workspace!
+    // put raw image in the raw images folder
+    // make sure all size folders (16, 32, 64... exist)
+    @Deprecated // so I get a warning
+    public static void createCustomSleevesImages(CardSleevesType sleeve, String rawType) throws IOException
+    {
+        YDM.log("creating sleeves card images!");
+        
+        File parent = new File(ClientProxy.cardImagesFolder, "custom");
+        YdmIOUtil.createDirIfNonExistant(parent);
+        
+        // size 16 to 1024
+        int size;
+        for(int i = 4; i <= 10; ++i)
+        {
+            size = YdmUtil.getPow2(i);
+            YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
+            ImageHandler.adjustRawImage(
+                new File(parent, size + "/" + sleeve.getResourceName() + ".png"),
+                new File(parent, "raw/" + sleeve.getResourceName() + "." + rawType),
                 size);
         }
     }

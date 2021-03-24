@@ -32,6 +32,7 @@ public class ActionTypes
     public static final ActionType REMOVE_TOKEN = null;
     public static final ActionType CHANGE_PHASE = null;
     public static final ActionType END_TURN = null;
+    public static final ActionType INIT_SLEEVES = null;
     
     @SubscribeEvent
     public static void registerActionTypes(RegistryEvent.Register<ActionType> event)
@@ -57,5 +58,6 @@ public class ActionTypes
         registry.register(new ActionType(RemoveTokenAction::new).setRegistryName(YDM.MOD_ID, "remove_token"));
         registry.register(new ActionType(ChangePhaseAction::new).setRegistryName(YDM.MOD_ID, "change_phase"));
         registry.register(new ActionType(EndTurnAction::new).setRegistryName(YDM.MOD_ID, "end_turn"));
+        registry.register(new ActionType(InitSleevesAction::new).setRegistryName(YDM.MOD_ID, "init_sleeves"));
     }
 }

@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.tuple.Pair;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
 
 import de.cas_ual_ty.ydm.YDM;
@@ -15,6 +16,8 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.CardSleevesItem;
+import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
@@ -38,6 +41,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.ModelBakeEvent;
@@ -118,7 +122,10 @@ public class ClientProxy implements ISidedProxy
         ClientProxy.clientConfigSpec = client.getRight();
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientProxy.clientConfigSpec);
         
-        ClientProxy.getMinecraft().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
+        if(ClientProxy.getMinecraft() != null)
+        {
+            ClientProxy.getMinecraft().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
+        }
     }
     
     @Override
@@ -190,7 +197,7 @@ public class ClientProxy implements ISidedProxy
     }
     
     @Override
-    public void initFiles() // done before #init
+    public void initFolders()
     {
         ClientProxy.imagesParentFolder = new File("ydm_db_images");
         ClientProxy.cardImagesFolder = new File(ClientProxy.imagesParentFolder, "cards");
@@ -198,6 +205,16 @@ public class ClientProxy implements ISidedProxy
         ClientProxy.rawCardImagesFolder = new File(ClientProxy.cardImagesFolder, "raw");
         ClientProxy.rawSetImagesFolder = new File(ClientProxy.setImagesFolder, "raw");
         
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.imagesParentFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.cardImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.setImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawCardImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawSetImagesFolder);
+    }
+    
+    @Override
+    public void initFiles() // done before #init
+    {
         // change this depending on resolution (64/128/256) and anime (yes/no) settings
         ClientProxy.cardInfoImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeCardInfoImageSize);
         ClientProxy.cardItemImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeCardItemImageSize);
@@ -207,11 +224,6 @@ public class ClientProxy implements ISidedProxy
         ClientProxy.setInfoImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetInfoImageSize);
         ClientProxy.setItemImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetItemImageSize);
         
-        YdmIOUtil.createDirIfNonExistant(ClientProxy.imagesParentFolder);
-        YdmIOUtil.createDirIfNonExistant(ClientProxy.cardImagesFolder);
-        YdmIOUtil.createDirIfNonExistant(ClientProxy.setImagesFolder);
-        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawCardImagesFolder);
-        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawSetImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardMainImagesFolder);
@@ -375,6 +387,14 @@ public class ClientProxy implements ISidedProxy
         {
             ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
             ModelLoader.addSpecialModel(new ModelResourceLocation(new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory"));
+            
+            for(CardSleevesType sleeves : CardSleevesType.VALUES)
+            {
+                if(!sleeves.isCardBack())
+                {
+                    ModelLoader.addSpecialModel(new ModelResourceLocation(sleeves.getItemModelRL(ClientProxy.activeCardItemImageSize), "inventory"));
+                }
+            }
         }
         
         YDM.log("Registering models (size: " + ClientProxy.activeSetItemImageSize + ") for " + YdmItems.BLANC_SET.getRegistryName().toString());
@@ -401,6 +421,17 @@ public class ClientProxy implements ISidedProxy
                 event.getModelRegistry().get(
                     new ModelResourceLocation(
                         new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
+            
+            for(CardSleevesType sleeves : CardSleevesType.VALUES)
+            {
+                if(!sleeves.isCardBack())
+                {
+                    event.getModelRegistry().put(new ModelResourceLocation(new ResourceLocation(YDM.MOD_ID, "sleeves_" + sleeves.name), "inventory"),
+                        event.getModelRegistry().get(
+                            new ModelResourceLocation(
+                                sleeves.getItemModelRL(ClientProxy.activeCardItemImageSize), "inventory")));
+                }
+            }
         }
         
         if(ClientProxy.activeSetItemImageSize != 16)
@@ -466,6 +497,10 @@ public class ClientProxy implements ISidedProxy
                 {
                     this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(itemStack), containerScreen.getGuiLeft());
                 }
+                else if(itemStack.getItem() instanceof CardSleevesItem)
+                {
+                    this.renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem)itemStack.getItem()).sleeves, containerScreen.getGuiLeft());
+                }
             }
         }
     }
@@ -493,6 +528,10 @@ public class ClientProxy implements ISidedProxy
             {
                 this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemMainhand()));
             }
+            else if(player.getHeldItemMainhand().getItem() instanceof CardSleevesItem)
+            {
+                this.renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem)player.getHeldItemMainhand().getItem()).sleeves);
+            }
             else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
             {
                 CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
@@ -504,6 +543,10 @@ public class ClientProxy implements ISidedProxy
             else if(player.getHeldItemOffhand().getItem() == YdmItems.OPENED_SET)
             {
                 this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemOffhand()));
+            }
+            else if(player.getHeldItemOffhand().getItem() instanceof CardSleevesItem)
+            {
+                this.renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem)player.getHeldItemMainhand().getItem()).sleeves);
             }
         }
     }
@@ -560,6 +603,60 @@ public class ClientProxy implements ISidedProxy
             set.addInformation(list);
             
             ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
+        }
+        
+        ms.pop();
+    }
+    
+    private void renderSleevesInfo(MatrixStack ms, CardSleevesType sleeves)
+    {
+        this.renderSleevesInfo(ms, sleeves, 150);
+    }
+    
+    private void renderSleevesInfo(MatrixStack ms, CardSleevesType sleeves, int width)
+    {
+        if(sleeves == null)
+        {
+            return;
+        }
+        
+        final float f = 0.5f;
+        final int imageSize = 64;
+        int margin = 2;
+        
+        int maxWidth = width - margin * 2;
+        
+        ms.push();
+        ScreenUtil.white();
+        
+        {
+            int x = margin;
+            
+            if(maxWidth < imageSize)
+            {
+                // draw it centered if the space we got is limited
+                // to make sure the image is NOT rendered more to the right of the center
+                x = (maxWidth - imageSize) / 2 + margin;
+            }
+            
+            // card texture
+            
+            Minecraft.getInstance().textureManager.bindTexture(sleeves.getMainRL(ClientProxy.activeCardInfoImageSize));
+            YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
+        }
+        
+        // need to multiply x2 because we are scaling the text to x0.5
+        maxWidth *= 2;
+        margin *= 2;
+        ms.scale(f, f, f);
+        
+        {
+            // card description text
+            
+            @SuppressWarnings("resource")
+            FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
+            
+            ScreenUtil.drawSplitString(ms, fontRenderer, ImmutableList.<ITextComponent>of(new TranslationTextComponent("item.ydm." + sleeves.getResourceName())), margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
         }
         
         ms.pop();

@@ -17,6 +17,7 @@ import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionTypes;
 import de.cas_ual_ty.ydm.duel.action.IAnnouncedAction;
+import de.cas_ual_ty.ydm.duel.action.InitSleevesAction;
 import de.cas_ual_ty.ydm.duel.action.PopulateAction;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
@@ -684,6 +685,8 @@ public class DuelManager
     
     protected void populatePlayField()
     {
+        this.doAction(new InitSleevesAction(ActionTypes.INIT_SLEEVES, this.player1Deck.getSleeves(), this.player2Deck.getSleeves()));
+        
         // send main decks
         this.doAction(new PopulateAction(ActionTypes.POPULATE, this.playField.player1Deck.index,
             this.player1Deck.getMainDeckNonNull().map((card) -> new DuelCard(card, false, CardPosition.FD, ZoneOwner.PLAYER1)).collect(Collectors.toList())));
