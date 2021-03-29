@@ -1,0 +1,6 @@
+{
+  "parent": "ydm:item/sleeves_red",
+  "textures": {
+    "layer0": "ydm:item/256/sleeves_red"
+  }
+}

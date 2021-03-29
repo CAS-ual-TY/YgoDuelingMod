@@ -1,6 +1,0 @@
-{
-  "parent": "ydm:item/sleeves_p_1",
-  "textures": {
-    "layer0": "ydm:item/128/sleeves_p_1"
-  }
-}

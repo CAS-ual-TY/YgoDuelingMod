@@ -7,7 +7,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 
 public enum CardSleevesType
 {
-    CARD_BACK("card_back"), BRONZE("bronze"), SILVER("silver"), GOLD("gold"), PLATINUM("platinum"), RUBY("ruby"), VFD("vfd"), OLD_ENTITY("old_entity"), MASTER_PEACE("master_peace"), HERO("hero"), DESTINY_HERO("destiny_hero"), P_1("p_1", "Lucifer");
+    CARD_BACK("card_back"), BRONZE("bronze"), SILVER("silver"), GOLD("gold"), PLATINUM("platinum"), RUBY("ruby"), BLACK("black"), BLUE("blue"), BROWN("brown"), CYAN("cyan"), GRAY("gray"), GREEN("green"), LIGHT_BLUE("light_blue"), LIGHT_GRAY("light_gray"), LIME("lime"), MAGENTA("magenta"), ORANGE("orange"), PINK("pink"), PURPLE("purple"), RED("red"), WHITE("white"), YELLOW("yellow"), VFD("vfd"), OLD_ENTITY("old_entity"), MASTER_PEACE("master_peace"), HERO("hero"), DESTINY_HERO("destiny_hero"), P_1("p_1", "Lucifer"), KINGDOMS_MC("kingdoms_mc");
     
     public static final CardSleevesType[] VALUES = CardSleevesType.values();
     
