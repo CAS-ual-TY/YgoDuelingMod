@@ -67,6 +67,10 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         {
             itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, sleevesStack.write(new CompoundNBT()));
         }
+        else
+        {
+            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, ItemStack.EMPTY.write(new CompoundNBT()));
+        }
     }
     
     @Override
