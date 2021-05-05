@@ -57,7 +57,7 @@ public class CompositionCardPuller extends CardPuller
                 
                 if(subSet == null)
                 {
-                    YDM.log("Can not find sub-set: " + code + " in set:" + this.set.code + " (" + this.set.name + ")");
+                    YDM.log("Can not find sub-set: " + code + " in set: " + this.set.code + " (" + this.set.name + ")");
                 }
                 else
                 {

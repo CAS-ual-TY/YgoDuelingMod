@@ -62,7 +62,6 @@ public class JsonKeys
     public static final String RARITY = "rarity";
     public static final String CARDS = "cards";
     public static final String DISTRIBUTION = "distribution";
-    public static final String AMOUNT = "amount";
     public static final String SUB_SETS = "sub_sets";
     
     // distribution
