@@ -16,6 +16,7 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.card.properties.SpellProperties;
 import de.cas_ual_ty.ydm.card.properties.TrapProperties;
 import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
+import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -114,6 +115,29 @@ public class YdmUtil
         else
         {
             return null;
+        }
+    }
+    
+    public static ZoneOwner getViewOwner(ZoneOwner owner, ZoneOwner view, ZoneOwner toMap)
+    {
+        if(!toMap.isPlayer())
+        {
+            return ZoneOwner.NONE;
+        }
+        else if(owner.isPlayer())
+        {
+            return owner;
+        }
+        else
+        {
+            if(view == toMap)
+            {
+                return view;
+            }
+            else
+            {
+                return view.opponent();
+            }
         }
     }
 }

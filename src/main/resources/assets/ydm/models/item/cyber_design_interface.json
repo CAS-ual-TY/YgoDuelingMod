@@ -1,7 +1,7 @@
 {
-	"texture_size": [64, 64],
+	"texture_size": [128, 128],
 	"textures": {
-		"0": "ydm:textures/item/cyber_design_interface"
+		"0": "ydm:item/cyber_design_interface"
 	},
 	"elements": [
 		{

@@ -7,7 +7,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
-import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
@@ -36,10 +35,7 @@ public class StackZoneWidget extends ZoneWidget
         RenderSystem.enableDepthTest();
         RenderSystem.color4f(1F, 1F, 1F, this.alpha);
         
-        if(this.context.getClickedZone() == this.zone && this.context.getClickedDuelCard() == null)
-        {
-            DuelScreenDueling.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
-        }
+        this.renderZoneSelectRect(ms, this.zone, this.x, this.y, this.width, this.height);
         
         this.hoverCard = this.renderCards(ms, mouseX, mouseY);
         

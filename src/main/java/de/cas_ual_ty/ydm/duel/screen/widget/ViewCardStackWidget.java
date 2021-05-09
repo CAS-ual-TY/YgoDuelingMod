@@ -183,9 +183,27 @@ public class ViewCardStackWidget extends Button
     
     protected boolean drawCard(MatrixStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY)
     {
-        if(duelCard == this.context.getClickedDuelCard())
+        if(this.context.getClickedCard() == duelCard)
         {
-            DuelScreenDueling.renderSelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
+            if(this.context.getOpponentClickedCard() == duelCard)
+            {
+                DuelScreenDueling.renderBothSelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
+            }
+            else
+            {
+                DuelScreenDueling.renderSelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
+            }
+        }
+        else
+        {
+            if(this.context.getOpponentClickedCard() == duelCard)
+            {
+                DuelScreenDueling.renderEnemySelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
+            }
+            else
+            {
+                //
+            }
         }
         
         CardRenderUtil.renderDuelCardCentered(ms, this.context.getClickedZone() != null ? this.context.getClickedZone().getSleeves() : CardSleevesType.CARD_BACK, mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, this.forceFaceUp);

@@ -30,6 +30,11 @@ public class PlayField
     public int player1LP;
     public int player2LP;
     
+    protected Zone player1ClickedZone;
+    protected DuelCard player1ClickedCard;
+    protected Zone player2ClickedZone;
+    protected DuelCard player2ClickedCard;
+    
     public boolean player1Turn;
     public DuelPhase phase;
     
@@ -131,6 +136,11 @@ public class PlayField
         
         this.player1LP = type.startingLifePoints;
         this.player2LP = type.startingLifePoints;
+        
+        this.player1ClickedCard = null;
+        this.player1ClickedZone = null;
+        this.player2ClickedCard = null;
+        this.player2ClickedZone = null;
         
         this.player1Turn = true;
         this.phase = DuelPhase.DP;
@@ -304,6 +314,64 @@ public class PlayField
         else
         {
             return this.isPlayer1Turn();
+        }
+    }
+    
+    public void setClickedForPlayer(ZoneOwner owner, @Nullable Zone zone, @Nullable DuelCard card)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            this.setPlayer1Clicked(zone, card);
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            this.setPlayer2Clicked(zone, card);
+        }
+    }
+    
+    public void setPlayer1Clicked(@Nullable Zone zone, @Nullable DuelCard card)
+    {
+        this.player1ClickedZone = zone;
+        this.player1ClickedCard = card;
+    }
+    
+    public void setPlayer2Clicked(@Nullable Zone zone, @Nullable DuelCard card)
+    {
+        this.player2ClickedZone = zone;
+        this.player2ClickedCard = card;
+    }
+    
+    @Nullable
+    public Zone getClickedZoneForPlayer(ZoneOwner owner)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            return this.player1ClickedZone;
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            return this.player2ClickedZone;
+        }
+        else
+        {
+            return null;
+        }
+    }
+    
+    @Nullable
+    public DuelCard getClickedCardForPlayer(ZoneOwner owner)
+    {
+        if(owner == ZoneOwner.PLAYER1)
+        {
+            return this.player1ClickedCard;
+        }
+        else if(owner == ZoneOwner.PLAYER2)
+        {
+            return this.player2ClickedCard;
+        }
+        else
+        {
+            return null;
         }
     }
 }

@@ -112,10 +112,7 @@ public class ZoneWidget extends Button
         RenderSystem.enableDepthTest();
         RenderSystem.color4f(1F, 1F, 1F, this.alpha);
         
-        if(this.context.getClickedZone() == this.zone && this.context.getClickedDuelCard() == null)
-        {
-            DuelScreenDueling.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
-        }
+        this.renderZoneSelectRect(ms, this.zone, this.x, this.y, this.width, this.height);
         
         this.hoverCard = this.renderCards(ms, mouseX, mouseY);
         
@@ -148,6 +145,58 @@ public class ZoneWidget extends Button
         else
         {
             ScreenUtil.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
+        }
+    }
+    
+    public void renderZoneSelectRect(MatrixStack ms, Zone zone, float x, float y, float width, float height)
+    {
+        if(this.context.getClickedZone() == zone && this.context.getClickedCard() == null)
+        {
+            if(this.context.getOpponentClickedZone() == zone && this.context.getOpponentClickedCard() == null)
+            {
+                DuelScreenDueling.renderBothSelectedRect(ms, x, y, width, height);
+            }
+            else
+            {
+                DuelScreenDueling.renderSelectedRect(ms, x, y, width, height);
+            }
+        }
+        else
+        {
+            if(this.context.getOpponentClickedZone() == zone && this.context.getOpponentClickedCard() == null)
+            {
+                DuelScreenDueling.renderEnemySelectedRect(ms, x, y, width, height);
+            }
+            else
+            {
+                //
+            }
+        }
+    }
+    
+    public void renderCardSelectRect(MatrixStack ms, DuelCard card, float x, float y, float width, float height)
+    {
+        if(this.context.getClickedCard() == card)
+        {
+            if(this.context.getOpponentClickedCard() == card)
+            {
+                DuelScreenDueling.renderBothSelectedRect(ms, x, y, width, height);
+            }
+            else
+            {
+                DuelScreenDueling.renderSelectedRect(ms, x, y, width, height);
+            }
+        }
+        else
+        {
+            if(this.context.getOpponentClickedCard() == card)
+            {
+                DuelScreenDueling.renderEnemySelectedRect(ms, x, y, width, height);
+            }
+            else
+            {
+                //
+            }
         }
     }
     
@@ -218,10 +267,7 @@ public class ZoneWidget extends Button
         boolean faceUp = this.zone.getType().getShowFaceDownCardsToOwner() && isOwner;
         boolean isOpponentView = this.zone.getOwner() != this.context.getView();
         
-        if(duelCard == this.context.getClickedDuelCard())
-        {
-            DuelScreenDueling.renderSelectedRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
-        }
+        this.renderCardSelectRect(ms, duelCard, hoverX, hoverY, hoverWidth, hoverHeight);
         
         if(!isOpponentView)
         {

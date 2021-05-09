@@ -32,7 +32,14 @@ public abstract class SingleCardAction extends SingleZoneAction
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.card = this.sourceZone.getCard(this.sourceCardIndex);
+        if(this.sourceCardIndex == -1 || this.sourceZone == null)
+        {
+            this.card = null;
+        }
+        else
+        {
+            this.card = this.sourceZone.getCard(this.sourceCardIndex);
+        }
     }
     
     public void removeCardFromZone()

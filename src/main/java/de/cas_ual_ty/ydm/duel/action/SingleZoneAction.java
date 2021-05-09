@@ -30,7 +30,14 @@ public abstract class SingleZoneAction extends Action
     @Override
     public void initServer(PlayField playField)
     {
-        this.sourceZone = playField.getZone(this.sourceZoneId);
+        if(this.sourceZoneId != -1)
+        {
+            this.sourceZone = playField.getZone(this.sourceZoneId);
+        }
+        else
+        {
+            this.sourceZone = null;
+        }
     }
     
     @Override

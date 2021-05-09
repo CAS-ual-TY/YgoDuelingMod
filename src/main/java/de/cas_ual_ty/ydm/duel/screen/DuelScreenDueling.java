@@ -38,6 +38,7 @@ import de.cas_ual_ty.ydm.duel.action.ListAction;
 import de.cas_ual_ty.ydm.duel.action.MoveAction;
 import de.cas_ual_ty.ydm.duel.action.MoveTopAction;
 import de.cas_ual_ty.ydm.duel.action.RemoveTokenAction;
+import de.cas_ual_ty.ydm.duel.action.SelectAction;
 import de.cas_ual_ty.ydm.duel.action.ShowCardAction;
 import de.cas_ual_ty.ydm.duel.action.ShowZoneAction;
 import de.cas_ual_ty.ydm.duel.action.ShuffleAction;
@@ -294,7 +295,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             {
                 if(match.zone == this.clickedZoneWidget.zone)
                 {
-                    this.clickedZoneWidget = match;
+                    this.setClickedZoneWidgetAndCard(match, this.clickedCard);
                     break;
                 }
             }
@@ -900,8 +901,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         if(owner != ZoneOwner.NONE)
         {
-            this.clickedZoneWidget = widget;
-            this.clickedCard = widget.hoverCard;
+            this.setClickedZoneWidgetAndCard(widget, widget.hoverCard);
             this.findAndPopulateInteractions(widget, false);
         }
         
@@ -933,7 +933,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void interactionClicked(InteractionWidget widget)
     {
-        this.requestDuelAction(widget.interaction.action);
+        Action action = widget.interaction.action;
         
         ZoneType interactorType = widget.interaction.interactor.getType();
         
@@ -951,6 +951,8 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             this.resetToNormalZoneWidgets();
         }
+        
+        this.requestDuelAction(action);
     }
     
     protected boolean shouldRepopulateInteractions(InteractionWidget clickedWidget)
@@ -1280,12 +1282,23 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void removeClickedZone()
     {
-        this.clickedZoneWidget = null;
-        this.clickedCard = null;
+        this.setClickedZoneWidgetAndCard(null, null);
         this.viewCardStackWidget.deactivate();
         this.nameShown = null;
         this.updateScrollButtonStatus();
         this.updateLeftButtonStatus();
+    }
+    
+    protected void setClickedZoneWidgetAndCard(ZoneWidget zone, DuelCard card)
+    {
+        this.clickedZoneWidget = zone;
+        this.clickedCard = card;
+        
+        if(this.getZoneOwner().isPlayer())
+        {
+            this.getPlayField().setClickedForPlayer(this.getZoneOwner(), zone != null ? zone.zone : null, card);
+            this.requestDuelAction(new SelectAction(ActionTypes.SELECT, this.getClickedZone(), this.getClickedCard(), this.getZoneOwner()));
+        }
     }
     
     protected IFormattableTextComponent getUnknownPlayerName()
@@ -1388,18 +1401,6 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     }
     
     @Override
-    public Zone getClickedZone()
-    {
-        return this.clickedZoneWidget != null ? this.clickedZoneWidget.zone : null;
-    }
-    
-    @Override
-    public DuelCard getClickedDuelCard()
-    {
-        return this.clickedCard;
-    }
-    
-    @Override
     public ZoneOwner getView()
     {
         return this.view;
@@ -1419,5 +1420,10 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     public static void renderEnemySelectedRect(MatrixStack ms, float x, float y, float w, float h)
     {
         ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 1F, 0, 0, 1F);
+    }
+    
+    public static void renderBothSelectedRect(MatrixStack ms, float x, float y, float w, float h)
+    {
+        ScreenUtil.drawLineRect(ms, x - 1, y - 1, w + 2, h + 2, 2, 1F, 0, 1F, 1F);
     }
 }
