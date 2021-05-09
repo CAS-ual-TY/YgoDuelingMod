@@ -33,7 +33,7 @@ public class ReadyCheckboxWidget extends Button
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float p_renderButton_3_)
+    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float p_renderButton_3_)
     {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.getTextureManager().bindTexture(Widget.WIDGETS_LOCATION);

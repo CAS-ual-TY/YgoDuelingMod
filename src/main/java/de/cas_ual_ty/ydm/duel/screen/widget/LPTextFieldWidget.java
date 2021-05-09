@@ -47,7 +47,7 @@ public class LPTextFieldWidget extends TextFieldWidget
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         this.x *= 2;
         this.y *= 2;
@@ -62,7 +62,7 @@ public class LPTextFieldWidget extends TextFieldWidget
         ms.push();
         ms.scale(0.5F, 0.5F, 1);
         
-        super.renderButton(ms, mouseX * 2, mouseY * 2, partialTicks);
+        super.renderWidget(ms, mouseX * 2, mouseY * 2, partialTicks);
         
         ms.pop();
         

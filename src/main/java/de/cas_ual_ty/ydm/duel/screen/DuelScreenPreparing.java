@@ -154,15 +154,15 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                 
                 // main deck
                 //drawString
-                this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.main").appendString(" " + d.getMainDeckSize() + "/" + DeckHolder.MAIN_DECK_SIZE), guiLeft + 8F, guiTop + 6F, 0x404040);
+                this.font.drawText(ms, new TranslationTextComponent("container.ydm.deck_box.main").appendString(" " + d.getMainDeckSize() + "/" + DeckHolder.MAIN_DECK_SIZE), guiLeft + 8F, guiTop + 6F, 0x404040);
                 
                 // extra deck
                 //drawString
-                this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.extra").appendString(" " + d.getExtraDeckSize() + "/" + DeckHolder.EXTRA_DECK_SIZE), guiLeft + 8F, guiTop + 92F, 0x404040);
+                this.font.drawText(ms, new TranslationTextComponent("container.ydm.deck_box.extra").appendString(" " + d.getExtraDeckSize() + "/" + DeckHolder.EXTRA_DECK_SIZE), guiLeft + 8F, guiTop + 92F, 0x404040);
                 
                 // side deck
                 //drawString
-                this.font.func_243248_b(ms, new TranslationTextComponent("container.ydm.deck_box.side").appendString(" " + d.getSideDeckSize() + "/" + DeckHolder.SIDE_DECK_SIZE), guiLeft + 8F, guiTop + 124F, 0x404040);
+                this.font.drawText(ms, new TranslationTextComponent("container.ydm.deck_box.side").appendString(" " + d.getSideDeckSize() + "/" + DeckHolder.SIDE_DECK_SIZE), guiLeft + 8F, guiTop + 124F, 0x404040);
                 
                 int size = 18;
                 CardHolder c;

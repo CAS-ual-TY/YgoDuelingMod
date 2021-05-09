@@ -122,8 +122,8 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
     @Override
     protected void drawGuiContainerForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
     {
-        this.font.func_243248_b(ms, this.title, 8.0F, 6.0F, 0x404040);
-        this.font.func_243248_b(ms, this.playerInventory.getDisplayName(), 8.0F, (float)(this.ySize - 96 + 2), 0x404040);
+        this.font.drawText(ms, this.title, 8.0F, 6.0F, 0x404040);
+        this.font.drawText(ms, this.playerInventory.getDisplayName(), 8.0F, (float)(this.ySize - 96 + 2), 0x404040);
     }
     
     @Override

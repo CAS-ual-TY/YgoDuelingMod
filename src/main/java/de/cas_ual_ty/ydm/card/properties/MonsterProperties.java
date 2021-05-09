@@ -181,7 +181,7 @@ public class MonsterProperties extends Properties
         IFormattableTextComponent leftArrow = new StringTextComponent("◀").setStyle(Style.EMPTY.applyFormatting(TextFormatting.BLUE));
         IFormattableTextComponent rightArrow = new StringTextComponent("▶").setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED));
         IFormattableTextComponent rightScale = new StringTextComponent("" + this.getPendulumScaleRightRed());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
-        list.add(leftScale.appendString(" ").append(leftArrow).appendString(" / ").append(rightArrow).appendString(" ").append(rightScale));
+        list.add(leftScale.appendString(" ").appendSibling(leftArrow).appendString(" / ").appendSibling(rightArrow).appendString(" ").appendSibling(rightScale));
     }
     
     @Override

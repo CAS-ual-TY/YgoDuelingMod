@@ -41,9 +41,8 @@ public class ItemStackWidget extends Widget
         return this;
     }
     
-    @SuppressWarnings("deprecation")
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partial)
+    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partial)
     {
         Minecraft minecraft = Minecraft.getInstance();
         ResourceLocation rl = this.replacement;

@@ -16,9 +16,9 @@ public class NonSecretStackZoneWidget extends StackZoneWidget
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        super.renderButton(ms, mouseX, mouseY, partialTicks);
+        super.renderWidget(ms, mouseX, mouseY, partialTicks);
         this.hoverCard = null; // dont select top card when clicking on it, ever
     }
 }

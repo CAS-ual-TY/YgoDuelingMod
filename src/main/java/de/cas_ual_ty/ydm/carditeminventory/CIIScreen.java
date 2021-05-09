@@ -56,8 +56,8 @@ public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
     protected void drawGuiContainerForegroundLayer(MatrixStack ms, int x, int y)
     {
         IFormattableTextComponent title = new StringTextComponent(this.title.getString());
-        title = title.appendString(" ").append(new StringTextComponent((this.container.getPage() + 1) + "/" + this.container.getMaxPage()));
-        this.font.func_243248_b(ms, title, 8.0F, 6.0F, 0x404040);
+        title = title.appendString(" ").appendSibling(new StringTextComponent((this.container.getPage() + 1) + "/" + this.container.getMaxPage()));
+        this.font.drawText(ms, title, 8.0F, 6.0F, 0x404040);
     }
     
     @Override

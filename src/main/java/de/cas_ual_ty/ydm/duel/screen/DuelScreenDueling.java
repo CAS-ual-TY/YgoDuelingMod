@@ -491,7 +491,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     
     protected void viewZone(ZoneWidget w, boolean forceFaceUp)
     {
-        IFormattableTextComponent t = new StringTextComponent("").append(w.getMessage());
+        IFormattableTextComponent t = new StringTextComponent("").appendSibling(w.getMessage());
         
         if(w.zone.getCardsAmount() > 0)
         {
@@ -657,7 +657,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             {
                 ZoneWidget w = this.getZoneWidget(action.destinationZone);
                 
-                int size = Math.max(w.getWidth(), w.getHeightRealms());
+                int size = Math.max(w.getWidth(), w.getHeight());
                 Animation ringAnimation = new SpecialSummonAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2);
                 
                 Queue<Animation> queue = new LinkedList<>();
@@ -728,7 +728,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
                     
                     ZoneWidget w = this.getZoneWidget(moveAction.destinationZone);
                     
-                    int size = Math.max(w.getWidth(), w.getHeightRealms());
+                    int size = Math.max(w.getWidth(), w.getHeight());
                     queue.add(new SpecialSummonOverlayAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2));
                     
                     return new QueueAnimation(queue);
@@ -751,7 +751,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             
             ZoneWidget w = this.getZoneWidget(action.destinationZone);
             
-            int size = Math.max(w.getWidth(), w.getHeightRealms());
+            int size = Math.max(w.getWidth(), w.getHeight());
             return new SpecialSummonTokenAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2)
                 .setOnStart(() ->
                 {
@@ -765,7 +765,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             
             ZoneWidget w = this.getZoneWidget(action.destinationZone);
             
-            int size = Math.max(w.getWidth(), w.getHeightRealms());
+            int size = Math.max(w.getWidth(), w.getHeight());
             return new RemoveTokenAnimation(w.getAnimationDestX(), w.getAnimationDestY(), size, size + size / 2)
                 .setOnEnd(() ->
                 {
@@ -1106,7 +1106,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         
         ZoneWidget w = (ZoneWidget)w0;
         
-        IFormattableTextComponent t = new StringTextComponent("").append(w.getMessage());
+        IFormattableTextComponent t = new StringTextComponent("").appendSibling(w.getMessage());
         
         if(w.zone.getCardsAmount() > 0)
         {
@@ -1240,7 +1240,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             if(!phase.isFirst())
             {
                 DuelPhase prevPhase = DuelPhase.getFromIndex((byte)(phase.getIndex() - 1));
-                this.renderTooltip(ms, (this.getPhaseTooltip(prevPhase).appendString(" ").append(new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"))), mouseX, mouseY);
+                this.renderTooltip(ms, (this.getPhaseTooltip(prevPhase).appendString(" ").appendSibling(new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"))), mouseX, mouseY);
             }
         }
         else if(w == this.nextPhaseButton)
@@ -1252,7 +1252,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             else
             {
                 DuelPhase nextPhase = DuelPhase.getFromIndex((byte)(phase.getIndex() + 1));
-                this.renderTooltip(ms, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow").appendString(" ").append(this.getPhaseTooltip(nextPhase)), mouseX, mouseY);
+                this.renderTooltip(ms, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow").appendString(" ").appendSibling(this.getPhaseTooltip(nextPhase)), mouseX, mouseY);
             }
         }
     }

@@ -42,6 +42,6 @@ public class CoinFlipAction extends RandomAction
     public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
     {
         return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": ")
-            .append(new TranslationTextComponent(this.getAnnouncementLocalKey() + "." + (this.heads ? "heads" : "tails")));
+            .appendSibling(new TranslationTextComponent(this.getAnnouncementLocalKey() + "." + (this.heads ? "heads" : "tails")));
     }
 }

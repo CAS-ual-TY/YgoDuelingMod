@@ -123,16 +123,16 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
         
         if(!this.getContainer().loaded)
         {
-            title = title.appendString(" ").append(new TranslationTextComponent("container.ydm.card_binder.loading"));
+            title = title.appendString(" ").appendSibling(new TranslationTextComponent("container.ydm.card_binder.loading"));
         }
         else
         {
-            title = title.appendString(" ").append(new StringTextComponent(this.container.page + "/" + this.container.clientMaxPage));
+            title = title.appendString(" ").appendSibling(new StringTextComponent(this.container.page + "/" + this.container.clientMaxPage));
         }
         
-        this.font.func_243248_b(ms, title, 8.0F, 6.0F, 0x404040);
+        this.font.drawText(ms, title, 8.0F, 6.0F, 0x404040);
         
-        this.font.func_243248_b(ms, this.playerInventory.getDisplayName(), 8.0F, (float)(this.ySize - 96 + 2), 0x404040);
+        this.font.drawText(ms, this.playerInventory.getDisplayName(), 8.0F, (float)(this.ySize - 96 + 2), 0x404040);
     }
     
     @Override

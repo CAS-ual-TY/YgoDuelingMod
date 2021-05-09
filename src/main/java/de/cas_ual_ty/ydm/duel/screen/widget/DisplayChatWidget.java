@@ -34,7 +34,7 @@ public class DisplayChatWidget extends Widget
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
         FontRenderer fontrenderer = minecraft.fontRenderer;
@@ -91,7 +91,7 @@ public class DisplayChatWidget extends Widget
                 for(j = ps.size() - 1; y >= minY && j >= 0; --j)
                 {
                     p = ps.get(j);
-                    fontRenderer.func_238407_a_(ms, p, x, y, color);
+                    fontRenderer.drawTextWithShadow(ms, p, x, y, color);
                     y -= fontRenderer.FONT_HEIGHT;
                 }
             }

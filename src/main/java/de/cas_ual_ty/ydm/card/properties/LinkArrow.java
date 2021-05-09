@@ -65,11 +65,11 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+                s.appendSibling(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
             }
             else
             {
-                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+                s.appendSibling(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
             }
             
             if(i < 2)
@@ -86,22 +86,22 @@ public enum LinkArrow
         
         if(arrows.contains(LEFT))
         {
-            s.append(new StringTextComponent(LEFT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+            s.appendSibling(new StringTextComponent(LEFT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
         }
         else
         {
-            s.append(new StringTextComponent(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+            s.appendSibling(new StringTextComponent(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
         }
         
         s.appendString(joiner + "" + joiner);
         
         if(arrows.contains(RIGHT))
         {
-            s.append(new StringTextComponent(RIGHT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+            s.appendSibling(new StringTextComponent(RIGHT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
         }
         else
         {
-            s.append(new StringTextComponent(RIGHT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+            s.appendSibling(new StringTextComponent(RIGHT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
         }
         
         list.add(s);
@@ -116,11 +116,11 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+                s.appendSibling(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
             }
             else
             {
-                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+                s.appendSibling(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
             }
             
             if(i > 4)

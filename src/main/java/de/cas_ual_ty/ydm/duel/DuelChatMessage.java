@@ -86,7 +86,7 @@ public class DuelChatMessage
             m.modifyStyle((style) -> style.applyFormatting(TextFormatting.ITALIC));
         }
         
-        IFormattableTextComponent t = new StringTextComponent("<").append(playerName).appendString("> ").append(m);
+        IFormattableTextComponent t = new StringTextComponent("<").appendSibling(playerName).appendString("> ").appendSibling(m);
         
         //        if(this.isAnnouncement)
         //        {

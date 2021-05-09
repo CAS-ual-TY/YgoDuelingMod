@@ -34,7 +34,7 @@ public class InteractionWidget extends Button
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         ms.push();
         ms.translate(0, 0, 5);

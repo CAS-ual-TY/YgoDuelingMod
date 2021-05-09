@@ -66,7 +66,7 @@ public class ScreenUtil
             {
                 for(IReorderingProcessor p : fontRenderer.trimStringToWidth(t, maxWidth))
                 {
-                    fontRenderer.func_238407_a_(ms, p, x, y, color);
+                    fontRenderer.drawTextWithShadow(ms, p, x, y, color);
                     y += fontRenderer.FONT_HEIGHT;
                 }
             }

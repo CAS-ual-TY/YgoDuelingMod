@@ -17,7 +17,7 @@ public interface IAnnouncedAction
         }
         else
         {
-            return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": ").append(this.getFieldAnnouncementZone().getType().getLocal());
+            return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": ").appendSibling(this.getFieldAnnouncementZone().getType().getLocal());
         }
     }
     

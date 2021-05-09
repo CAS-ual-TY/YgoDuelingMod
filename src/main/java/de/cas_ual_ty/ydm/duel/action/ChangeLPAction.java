@@ -77,9 +77,9 @@ public class ChangeLPAction extends Action implements IAnnouncedAction
         
         if(this.trueChange > 0)
         {
-            t = new StringTextComponent("+").append(t);
+            t = new StringTextComponent("+").appendSibling(t);
         }
         
-        return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": ").append(t);
+        return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": ").appendSibling(t);
     }
 }

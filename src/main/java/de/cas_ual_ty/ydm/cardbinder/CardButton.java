@@ -28,7 +28,7 @@ public class CardButton extends AbstractButton
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTick)
+    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTick)
     {
         CardHolder card = this.getCard();
         if(card != null)
