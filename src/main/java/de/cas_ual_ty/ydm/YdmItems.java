@@ -114,7 +114,7 @@ public class YdmItems
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "trueman_disk"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "jewel_disk"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "kaibaman_disk"));
-        registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "cyber_design_interface"));
+        //        registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "cyber_design_interface"));
         
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "black_deck_box"));
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "red_deck_box"));

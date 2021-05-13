@@ -35,15 +35,22 @@ public class FullCardPuller extends CardPuller
     @Override
     public void addInformation(List<ITextComponent> tooltip)
     {
-        for(CardHolder ch : this.set.cards)
+        if(this.set.cards.size() <= 10)
         {
-            tooltip.add(new StringTextComponent("\"" + ch.getCard().getName() + "\""));
+            for(CardHolder ch : this.set.cards)
+            {
+                tooltip.add(new StringTextComponent("\"" + ch.getCard().getName() + "\""));
+            }
+        }
+        else if(this.set.name != null)
+        {
+            tooltip.add(new StringTextComponent("1x \"" + this.set.name + "\""));
         }
     }
     
     @Override
     public boolean addInformationInComposition()
     {
-        return this.set.cards.size() <= 20;
+        return this.set.cards.size() <= 10 || this.set.name != null;
     }
 }
