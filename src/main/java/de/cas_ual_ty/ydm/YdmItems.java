@@ -70,13 +70,6 @@ public class YdmItems
     public static final DeckBoxItem EMERALD_DECK_BOX = null;
     public static final DeckBoxItem PATREON_DECK_BOX = null;
     
-    public static final Item SLEEVES_BRONZE = null;
-    public static final Item SLEEVES_SILVER = null;
-    public static final Item SLEEVES_GOLD = null;
-    public static final Item SLEEVES_PLATINUM = null;
-    public static final Item SLEEVES_RUBY = null;
-    public static final Item SLEEVES_VFD = null;
-    
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<Item> event)
     {
