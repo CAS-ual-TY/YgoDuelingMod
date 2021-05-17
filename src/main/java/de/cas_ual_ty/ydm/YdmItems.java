@@ -46,7 +46,7 @@ public class YdmItems
     public static final Item ACADEMIA_DISK_BLUE = null;
     public static final Item ACADEMIA_DISK_YELLOW = null;
     public static final Item ROCK_SPIRIT_DISK = null;
-    public static final Item CYBER_DISK = null;
+    public static final Item CYBER_DESIGN_INTERFACE = null;
     
     public static final DeckBoxItem BLACK_DECK_BOX = null;
     public static final DeckBoxItem RED_DECK_BOX = null;
@@ -114,7 +114,7 @@ public class YdmItems
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "trueman_disk"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "jewel_disk"));
         registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "kaibaman_disk"));
-        //        registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "cyber_design_interface"));
+        registry.register(new DuelDiskItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "cyber_design_interface"));
         
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "black_deck_box"));
         registry.register(new DeckBoxItem(new Properties().group(YDM.ydmItemGroup).maxStackSize(1)).setRegistryName(YDM.MOD_ID, "red_deck_box"));
