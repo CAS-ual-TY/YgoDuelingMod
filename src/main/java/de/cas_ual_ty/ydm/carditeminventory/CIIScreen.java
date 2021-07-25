@@ -82,4 +82,15 @@ public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CIIMessages.ChangePage(true));
         }
     }
+    
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers)
+    {
+        if(keyCode <= 57 && keyCode >= 49)
+        {
+            return false;
+        }
+        
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
 }
