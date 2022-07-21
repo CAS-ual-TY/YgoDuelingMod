@@ -18,7 +18,7 @@ public class YDMDataGen
     {
         try
         {
-            ImageHandler.createCustomSleevesImages(CardSleevesType.DUELIST_ACADEMY_NETWORK, "png");
+            ImageHandler.createCustomSleevesImages(CardSleevesType.P_2, "jpg");
         }
         catch (IOException e)
         {

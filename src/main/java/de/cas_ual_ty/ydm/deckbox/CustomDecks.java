@@ -93,6 +93,7 @@ public class CustomDecks
         .name("Rescue Cat")
         
         .build();
+    
     public static final Supplier<DeckHolder> KING_SCRUBBY_DECK_1 = new DeckBuilder()
         
         .startMainDeck()
@@ -161,6 +162,7 @@ public class CustomDecks
         .id(73616671L)
         
         .build();
+    
     public static final Supplier<DeckHolder> BLESS_DECK_1 = new DeckBuilder()
         
         .startMainDeck()
@@ -286,7 +288,7 @@ public class CustomDecks
         
         .build();
     
-    public static final Supplier<DeckHolder> TIME_BLAZING_GAMING_1 = new DeckBuilder()
+    public static final Supplier<DeckHolder> TIME_BLAZING_GAMING_DECK_1 = new DeckBuilder()
         
         .startMainDeck()
         .id(24154052L)
@@ -349,6 +351,69 @@ public class CustomDecks
         
         .build();
     
+    public static final Supplier<DeckHolder> LUIS_RAVEN_FLAME_DECK_1 = new DeckBuilder()
+        .startMainDeck()
+        .id(10000040L)
+        .id(10000000L)
+        .id(10000000L)
+        .id(15771991L)
+        .id(15771991L)
+        .id(15771991L)
+        .id(10000010L)
+        .id(10000010L)
+        .id(10000020L, (byte)1)
+        .id(10000080L)
+        .id(10000080L)
+        .id(74875003L)
+        .id(74875003L)
+        .id(74875003L)
+        .id(79387392L)
+        .id(79387392L)
+        .id(79387392L)
+        .id(39913299L)
+        .id(39913299L)
+        .id(39913299L)
+        .id(52112003L)
+        .id(52112003L)
+        .id(52112003L)
+        .id(73628505L)
+        .id(78665705L)
+        .id(78665705L)
+        .id(78665705L)
+        .id(84211599L)
+        .id(84211599L)
+        .id(84211599L)
+        .id(5253985L)
+        .id(5253985L)
+        .id(5253985L)
+        .id(73468603L)
+        .id(269012L)
+        .id(269012L)
+        .id(269012L)
+        .id(89208725L)
+        .id(26905245L)
+        .id(26905245L)
+        .startExtraDeck()
+        .id(42166000L)
+        .id(42166000L)
+        .id(42166000L)
+        .id(65330383L)
+        .id(65330383L)
+        .id(65330383L)
+        .id(38342335L)
+        .id(38342335L)
+        .id(38342335L)
+        .id(2857636L)
+        .id(2857636L)
+        .id(2857636L)
+        .id(75452921L)
+        .id(75452921L)
+        .id(75452921L)
+        .startSideDeck()
+        .id(76375976L)
+        
+        .build();
+    
     public static DeckSource getOjamaDeck()
     {
         return CustomDecks.makeDeckSource(CustomDecks.OJAMA_DECK_MAKER, new StringTextComponent("CAS_ual_TY's Ojarampage"), (c) -> c.getName().equals("Ojama Delta Hurricane!!"));
@@ -361,7 +426,8 @@ public class CustomDecks
         list.add(CustomDecks.makeDeckSource(CustomDecks.KING_SCRUBBY_DECK_1, new StringTextComponent("King's Soul"), (c) -> c.getName().equals("Dark Magical Circle")));
         list.add(CustomDecks.makeDeckSource(CustomDecks.BLESS_DECK_1, new StringTextComponent("\"Why did we make this?\""), (c) -> c.getName().equals("Duza the Meteor Cubic Vessel")));
         list.add(CustomDecks.makeDeckSource(CustomDecks.KING_SCRUBBY_DECK_2, new StringTextComponent("King's Stardust Deck"), (c) -> c.getName().equals("Stardust Dragon")));
-        list.add(CustomDecks.makeDeckSource(CustomDecks.TIME_BLAZING_GAMING_1, new StringTextComponent("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker")));
+        list.add(CustomDecks.makeDeckSource(CustomDecks.TIME_BLAZING_GAMING_DECK_1, new StringTextComponent("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker")));
+        list.add(CustomDecks.makeDeckSource(CustomDecks.LUIS_RAVEN_FLAME_DECK_1, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light")));
         
         return list;
     }
