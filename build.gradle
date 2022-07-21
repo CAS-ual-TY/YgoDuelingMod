@@ -11,8 +11,11 @@ apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 
-version = '1.16.5-2.8.3.31'
+compileJava.options.encoding = 'UTF-8'
+
+version = '1.16.5-2.9.0.40'
 group = 'de.cas_ual_ty.ydm' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'ydm'
 
@@ -54,25 +57,11 @@ minecraft {
             // Please read: https://stackoverflow.com/questions/2031163/when-to-use-the-different-log-levels
             property 'forge.logging.console.level', 'debug'
 
-            args '--username', 'Dev'
-
             mods {
                 ydm {
                     source sourceSets.main
                 }
             }
-        }
-
-        client2 {
-            parent runs.client
-
-            args '--username', 'Dev2'
-        }
-
-        client3 {
-            parent runs.client
-
-            args '--username', 'Dev3'
         }
 
         server {
@@ -131,7 +120,7 @@ dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
-    minecraft 'net.minecraftforge:forge:1.16.5-36.2.2'
+    minecraft 'net.minecraftforge:forge:1.16.5-36.2.39'
 
     // You may put jars on which you depend on in ./libs or you may define them like so..
     // compile "some.group:artifact:version:classifier"
