@@ -1,9 +1,9 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
+import com.mojang.blaze3d.matrix.MatrixStack;
+
 import java.util.LinkedList;
 import java.util.List;
-
-import com.mojang.blaze3d.matrix.MatrixStack;
 
 public class ParallelListAnimation extends Animation
 {
@@ -17,10 +17,10 @@ public class ParallelListAnimation extends Animation
         
         this.animations = animations;
         
-        this.runnablesOnStart = new LinkedList<>();
-        this.runnablesOnEnd = new LinkedList<>();
+        runnablesOnStart = new LinkedList<>();
+        runnablesOnEnd = new LinkedList<>();
         
-        this.maxTickTime = 1;
+        maxTickTime = 1;
         
         for(Animation a : this.animations)
         {
@@ -29,32 +29,32 @@ public class ParallelListAnimation extends Animation
                 throw new IllegalArgumentException("ParallelListAnimation cannot accept the following animation: " + a.getClass() + " " + a.toString());
             }
             
-            this.maxTickTime = Math.max(this.maxTickTime, a.maxTickTime);
+            maxTickTime = Math.max(maxTickTime, a.maxTickTime);
             
             if(a.onStart != null)
             {
-                this.runnablesOnStart.add(a.onStart);
+                runnablesOnStart.add(a.onStart);
                 a.onStart = null;
             }
             
             if(a.onEnd != null)
             {
-                this.runnablesOnEnd.add(a.onEnd);
+                runnablesOnEnd.add(a.onEnd);
                 a.onEnd = null;
             }
         }
         
-        this.onStart = () ->
+        onStart = () ->
         {
-            for(Runnable r : this.runnablesOnStart)
+            for(Runnable r : runnablesOnStart)
             {
                 r.run();
             }
         };
         
-        this.onEnd = () ->
+        onEnd = () ->
         {
-            for(Runnable r : this.runnablesOnEnd)
+            for(Runnable r : runnablesOnEnd)
             {
                 r.run();
             }
@@ -64,21 +64,21 @@ public class ParallelListAnimation extends Animation
     @Override
     public Animation setOnStart(Runnable onStart)
     {
-        this.runnablesOnStart.add(onStart);
+        runnablesOnStart.add(onStart);
         return this;
     }
     
     @Override
     public Animation setOnEnd(Runnable onEnd)
     {
-        this.runnablesOnEnd.add(onEnd);
+        runnablesOnEnd.add(onEnd);
         return this;
     }
     
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        for(Animation a : this.animations)
+        for(Animation a : animations)
         {
             if(!a.ended())
             {
@@ -92,7 +92,7 @@ public class ParallelListAnimation extends Animation
     {
         super.tick();
         
-        for(Animation a : this.animations)
+        for(Animation a : animations)
         {
             a.tick();
         }

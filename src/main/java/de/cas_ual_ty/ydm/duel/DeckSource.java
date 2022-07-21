@@ -1,12 +1,12 @@
 package de.cas_ual_ty.ydm.duel;
 
-import java.util.function.Supplier;
-
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.function.Supplier;
 
 public class DeckSource
 {
@@ -25,6 +25,6 @@ public class DeckSource
     
     public DeckSource(DeckHolder deck, ItemStack source)
     {
-        this(deck, source, source.getDisplayName());
+        this(deck, source, source.getHoverName());
     }
 }

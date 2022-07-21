@@ -30,19 +30,19 @@ public enum CardSleevesType
     public final String patronName;
     private byte index;
     
-    private CardSleevesType(String name, boolean isPatreonReward, String patron)
+    CardSleevesType(String name, boolean isPatreonReward, String patron)
     {
         this.name = name;
         this.isPatreonReward = isPatreonReward;
-        this.patronName = patron;
+        patronName = patron;
     }
     
-    private CardSleevesType(String name)
+    CardSleevesType(String name)
     {
         this(name, false, null);
     }
     
-    private CardSleevesType(String name, String patron)
+    CardSleevesType(String name, String patron)
     {
         this(name, true, patron);
     }
@@ -54,40 +54,40 @@ public enum CardSleevesType
     
     public ResourceLocation getMainRL(int size)
     {
-        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + size + "/" + this.getResourceName() + ".png");
+        return new ResourceLocation(YDM.MOD_ID, "textures/item/" + size + "/" + getResourceName() + ".png");
     }
     
     public ResourceLocation getItemModelRL(int size)
     {
-        if(this.isCardBack())
+        if(isCardBack())
         {
             return null;
         }
         else
         {
-            return new ResourceLocation(YDM.MOD_ID, this.getResourceName() + "_" + size);
+            return new ResourceLocation(YDM.MOD_ID, getResourceName() + "_" + size);
         }
     }
     
     public String getResourceName()
     {
-        if(this.isCardBack())
+        if(isCardBack())
         {
-            return this.name;
+            return name;
         }
         else
         {
-            return "sleeves_" + this.name;
+            return "sleeves_" + name;
         }
     }
     
     public Item getItem()
     {
-        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(YDM.MOD_ID, this.getResourceName()));
+        return ForgeRegistries.ITEMS.getValue(new ResourceLocation(YDM.MOD_ID, getResourceName()));
     }
     
     public byte getIndex()
     {
-        return this.index;
+        return index;
     }
 }

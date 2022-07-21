@@ -1,10 +1,5 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.List;
-import java.util.Random;
-
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
@@ -28,6 +23,10 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Random;
+
 public class OpenedCardSetItem extends CardSetBaseItem implements INamedContainerProvider
 {
     public OpenedCardSetItem(Properties properties)
@@ -36,43 +35,44 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
     }
     
     @Override
-    public void addInformation(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
     {
-        super.addInformation(itemStack, worldIn, tooltip, flagIn);
-        tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".desc").modifyStyle((s) -> s.applyFormatting(TextFormatting.RED)));
+        super.appendHoverText(itemStack, worldIn, tooltip, flagIn);
+        tooltip.add(new TranslationTextComponent(getDescriptionId() + ".desc").withStyle((s) -> s.applyFormat(TextFormatting.RED)));
     }
     
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
     {
-        if(!world.isRemote && hand == YdmUtil.getActiveItem(player, this))
+        if(!world.isClientSide && hand == YdmUtil.getActiveItem(player, this))
         {
-            ItemStack itemStack = player.getHeldItem(hand);
+            ItemStack itemStack = player.getItemInHand(hand);
             
-            if(this.hasItemHandler(itemStack))
+            if(hasItemHandler(itemStack))
             {
-                HeldCIIContainer.openGui(player, hand, this.getSize(itemStack), this);
+                HeldCIIContainer.openGui(player, hand, getSize(itemStack), this);
             }
             
-            return ActionResult.resultSuccess(itemStack);
+            return ActionResult.success(itemStack);
         }
         
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
     
     public int getSize(ItemStack itemStack)
     {
-        return this.getNBT(itemStack).getInt("size");
+        return getNBT(itemStack).getInt("size");
     }
     
     public boolean hasItemHandler(ItemStack itemStack)
     {
-        return this.getNBT(itemStack).contains("itemHandler");
+        return getNBT(itemStack).contains("itemHandler");
     }
     
-    public @Nullable IItemHandler getItemHandler(ItemStack itemStack)
+    @Nullable
+    public IItemHandler getItemHandler(ItemStack itemStack)
     {
-        CompoundNBT nbt = this.getNBT(itemStack);
+        CompoundNBT nbt = getNBT(itemStack);
         
         if(!nbt.contains("itemHandler") || !nbt.contains("size"))
         {
@@ -89,7 +89,7 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
     
     public void setItemHandler(ItemStack itemStack, IItemHandler itemHandler)
     {
-        CompoundNBT nbt = this.getNBT(itemStack);
+        CompoundNBT nbt = getNBT(itemStack);
         nbt.putInt("size", itemHandler.getSlots());
         nbt.put("itemHandler", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
     }
@@ -97,8 +97,8 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
     public ItemStack createItemForSet(CardSet set, IItemHandler itemHandler)
     {
         ItemStack itemStack = new ItemStack(this);
-        this.setCardSet(itemStack, set);
-        this.setItemHandler(itemStack, itemHandler);
+        setCardSet(itemStack, set);
+        setItemHandler(itemStack, itemHandler);
         return itemStack;
     }
     
@@ -113,19 +113,19 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
         }
         else
         {
-            items = NonNullList.from(ItemStack.EMPTY, cards.toArray(new ItemStack[0]));
+            items = NonNullList.of(ItemStack.EMPTY, cards.toArray(new ItemStack[0]));
         }
         
-        return this.createItemForSet(set, items);
+        return createItemForSet(set, items);
     }
     
     public ItemStack createItemForSet(CardSet set, NonNullList<ItemStack> items)
     {
-        return this.createItemForSet(set, new ItemStackHandler(items));
+        return createItemForSet(set, new ItemStackHandler(items));
     }
     
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
     {
         return;
     }
@@ -134,8 +134,8 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
     public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
     {
         Hand hand = YdmUtil.getActiveItem(player, this);
-        ItemStack itemStack = player.getHeldItem(hand);
-        IItemHandler itemHandler = this.getItemHandler(itemStack);
+        ItemStack itemStack = player.getItemInHand(hand);
+        IItemHandler itemHandler = getItemHandler(itemStack);
         return new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInventory, itemHandler, hand);
     }
     

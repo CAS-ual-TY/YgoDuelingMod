@@ -26,12 +26,12 @@ public class YdmBlocks
     public static void registerItems(RegistryEvent.Register<Block> event)
     {
         IForgeRegistry<Block> registry = event.getRegistry();
-        registry.register(new DuelBlock(Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL), Block.makeCuboidShape(2D, 0, 2D, 14D, 1D, 14D)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
-        registry.register(new DuelBlock(Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL), VoxelShapes.or(
-            Block.makeCuboidShape(4, 3, 4, 12, 12.5, 12),
-            Block.makeCuboidShape(1, 0, 1, 15, 3, 15),
-            Block.makeCuboidShape(0, 13, 0, 16, 15, 16),
-            Block.makeCuboidShape(1, 12.5, 1, 15, 15.5, 15))).setRegistryName(YDM.MOD_ID, "duel_table"));
-        registry.register(new CardSupplyBlock(Block.Properties.create(Material.IRON, MaterialColor.IRON).hardnessAndResistance(5.0F, 6.0F).sound(SoundType.METAL)).setRegistryName(YDM.MOD_ID, "card_supply"));
+        registry.register(new DuelBlock(Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL), Block.box(2D, 0, 2D, 14D, 1D, 14D)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
+        registry.register(new DuelBlock(Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL), VoxelShapes.or(
+                Block.box(4, 3, 4, 12, 12.5, 12),
+                Block.box(1, 0, 1, 15, 3, 15),
+                Block.box(0, 13, 0, 16, 15, 16),
+                Block.box(1, 12.5, 1, 15, 15.5, 15))).setRegistryName(YDM.MOD_ID, "duel_table"));
+        registry.register(new CardSupplyBlock(Block.Properties.of(Material.METAL, MaterialColor.METAL).strength(5.0F, 6.0F).sound(SoundType.METAL)).setRegistryName(YDM.MOD_ID, "card_supply"));
     }
 }

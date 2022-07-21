@@ -24,14 +24,14 @@ public class InitSleevesAction extends Action
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        buf.writeByte(this.player1Sleeves.getIndex());
-        buf.writeByte(this.player2Sleeves.getIndex());
+        buf.writeByte(player1Sleeves.getIndex());
+        buf.writeByte(player2Sleeves.getIndex());
     }
     
     @Override
     public void initClient(PlayField playField)
     {
-        playField.initSleeves(this.player1Sleeves, this.player2Sleeves);
+        playField.initSleeves(player1Sleeves, player2Sleeves);
     }
     
     @Override

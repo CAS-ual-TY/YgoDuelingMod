@@ -19,6 +19,6 @@ public class YdmTileEntityTypes
     public static void registerItems(RegistryEvent.Register<TileEntityType<?>> event)
     {
         IForgeRegistry<TileEntityType<?>> registry = event.getRegistry();
-        registry.register(TileEntityType.Builder.create(() -> new DuelTileEntity(YdmTileEntityTypes.DUEL), YdmBlocks.DUEL_PLAYMAT, YdmBlocks.DUEL_TABLE).build(null).setRegistryName(YDM.MOD_ID, "duel"));
+        registry.register(TileEntityType.Builder.of(() -> new DuelTileEntity(YdmTileEntityTypes.DUEL), YdmBlocks.DUEL_PLAYMAT, YdmBlocks.DUEL_TABLE).build(null).setRegistryName(YDM.MOD_ID, "duel"));
     }
 }

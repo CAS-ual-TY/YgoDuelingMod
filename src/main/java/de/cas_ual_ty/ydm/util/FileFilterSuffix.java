@@ -5,11 +5,11 @@ import java.io.FileFilter;
 
 public interface FileFilterSuffix extends FileFilter
 {
-    public String getRequiredSuffix();
+    String getRequiredSuffix();
     
     @Override
     default boolean accept(File f)
     {
-        return f.isFile() && f.getName().toLowerCase().endsWith(this.getRequiredSuffix());
+        return f.isFile() && f.getName().toLowerCase().endsWith(getRequiredSuffix());
     }
 }

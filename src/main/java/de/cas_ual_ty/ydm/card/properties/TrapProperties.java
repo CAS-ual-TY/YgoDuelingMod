@@ -1,12 +1,11 @@
 package de.cas_ual_ty.ydm.card.properties;
 
-import java.util.List;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.List;
 
 public class TrapProperties extends Properties
 {
@@ -15,7 +14,7 @@ public class TrapProperties extends Properties
     public TrapProperties(Properties p0, JsonObject j)
     {
         super(p0);
-        this.readTrapProperties(j);
+        readTrapProperties(j);
     }
     
     public TrapProperties(Properties p0)
@@ -24,8 +23,8 @@ public class TrapProperties extends Properties
         
         if(p0 instanceof TrapProperties)
         {
-            TrapProperties p1 = (TrapProperties)p0;
-            this.trapType = p1.trapType;
+            TrapProperties p1 = (TrapProperties) p0;
+            trapType = p1.trapType;
         }
     }
     
@@ -37,24 +36,24 @@ public class TrapProperties extends Properties
     public void readAllProperties(JsonObject j)
     {
         super.readAllProperties(j);
-        this.readTrapProperties(j);
+        readTrapProperties(j);
     }
     
     public void readTrapProperties(JsonObject j)
     {
-        this.trapType = TrapType.fromString(j.get(JsonKeys.TRAP_TYPE).getAsString());
+        trapType = TrapType.fromString(j.get(JsonKeys.TRAP_TYPE).getAsString());
     }
     
     @Override
     public void addCardType(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getTrapType().name + " " + this.getType().name));
+        list.add(new StringTextComponent(getTrapType().name + " " + getType().name));
     }
     
     // --- Getters ---
     
     public TrapType getTrapType()
     {
-        return this.trapType;
+        return trapType;
     }
 }

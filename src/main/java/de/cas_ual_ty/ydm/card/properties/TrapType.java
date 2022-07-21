@@ -6,7 +6,7 @@ public enum TrapType
     
     public final String name;
     
-    private TrapType(String name)
+    TrapType(String name)
     {
         this.name = name;
     }

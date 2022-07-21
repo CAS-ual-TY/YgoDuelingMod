@@ -1,14 +1,13 @@
 package de.cas_ual_ty.ydm.duel.playfield;
 
+import de.cas_ual_ty.ydm.card.CardSleevesType;
+import de.cas_ual_ty.ydm.duel.PlayerRole;
+
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-
-import javax.annotation.Nullable;
-
-import de.cas_ual_ty.ydm.card.CardSleevesType;
-import de.cas_ual_ty.ydm.duel.PlayerRole;
 
 public class Zone
 {
@@ -42,39 +41,39 @@ public class Zone
         this.width = width;
         this.height = height;
         this.owner = owner;
-        this.isOwnerTemporary = !this.hasOwner();
-        this.cardsList = new ArrayList<>(0);
-        this.defaultCardPosition = this.type.defaultCardPosition;
-        this.counters = 0;
+        isOwnerTemporary = !hasOwner();
+        cardsList = new ArrayList<>(0);
+        defaultCardPosition = this.type.defaultCardPosition;
+        counters = 0;
     }
     
     public CardSleevesType getSleeves()
     {
-        return this.playField.getSleeves(this.getOwner());
+        return playField.getSleeves(getOwner());
     }
     
     public boolean isOwner(PlayerRole player)
     {
-        return this.getOwner().getPlayer() == player;
+        return getOwner().getPlayer() == player;
     }
     
     public boolean hasOwner()
     {
-        return this.getOwner() != ZoneOwner.NONE;
+        return getOwner() != ZoneOwner.NONE;
     }
     
     // unsafe: error if empty
     public DuelCard getTopCard()
     {
-        return this.cardsList.get(0);
+        return cardsList.get(0);
     }
     
     @Nullable
     public DuelCard getTopCardSafely()
     {
-        if(this.getCardsAmount() > 0)
+        if(getCardsAmount() > 0)
         {
-            return this.getTopCard();
+            return getTopCard();
         }
         else
         {
@@ -84,85 +83,85 @@ public class Zone
     
     public DuelCard getCardUnsafe(int index)
     {
-        return this.getCardsList().get(index);
+        return getCardsList().get(index);
     }
     
     public DuelCard getCard(short index)
     {
-        return this.getCardsList().get(index);
+        return getCardsList().get(index);
     }
     
     public short getCardIndexShort(DuelCard card)
     {
-        return (short)this.getCardIndex(card);
+        return (short) getCardIndex(card);
     }
     
     public int getCardIndex(DuelCard card)
     {
-        return this.getCardsList().indexOf(card);
+        return getCardsList().indexOf(card);
     }
     
     public boolean containsCard(DuelCard card)
     {
-        return this.getCardsList().contains(card);
+        return getCardsList().contains(card);
     }
     
     public void addCard(ZoneOwner source, DuelCard card, int index)
     {
-        this.trySetOwner(source);
-        this.getCardsList().add(index, card);
+        trySetOwner(source);
+        getCardsList().add(index, card);
     }
     
     public void addTopCard(ZoneOwner source, DuelCard card)
     {
-        this.addCard(source, card, 0);
+        addCard(source, card, 0);
     }
     
     public void addBottomCard(ZoneOwner source, DuelCard card)
     {
-        this.addCard(source, card, this.getCardsAmount());
+        addCard(source, card, getCardsAmount());
     }
     
     public boolean removeCard(DuelCard card)
     {
-        boolean b = this.getCardsList().remove(card);
-        this.onCardsRemoval();
+        boolean b = getCardsList().remove(card);
+        onCardsRemoval();
         return b;
     }
     
     public DuelCard removeCard(int index)
     {
-        DuelCard c = this.removeCardKeepCounters(index);
-        this.onCardsRemoval();
+        DuelCard c = removeCardKeepCounters(index);
+        onCardsRemoval();
         return c;
     }
     
     public DuelCard removeCardKeepCounters(int index)
     {
-        return this.getCardsList().remove(index);
+        return getCardsList().remove(index);
     }
     
     public DuelCard removeTopCard()
     {
-        return this.removeCard(0);
+        return removeCard(0);
     }
     
     protected void onCardsRemoval()
     {
-        if(this.getCardsAmount() <= 0)
+        if(getCardsAmount() <= 0)
         {
-            this.removeAllCounters();
+            removeAllCounters();
         }
     }
     
     public int getCardsAmount()
     {
-        return this.getCardsList().size();
+        return getCardsList().size();
     }
     
     public void trySetOwner(ZoneOwner owner)
     {
-        if(this.getCardsList().isEmpty() && this.getIsOwnerTemporary())
+        if(getCardsList().isEmpty() && getIsOwnerTemporary())
         {
             this.owner = owner;
         }
@@ -170,55 +169,55 @@ public class Zone
     
     public void shuffle(Random random)
     {
-        Collections.shuffle(this.cardsList, random);
+        Collections.shuffle(cardsList, random);
     }
     
     public void setCardsList(List<DuelCard> list)
     {
-        this.cardsList.clear();
-        this.cardsList.addAll(list);
+        cardsList.clear();
+        cardsList.addAll(list);
     }
     
     // --- Getters ---
     
     public ZoneType getType()
     {
-        return this.type;
+        return type;
     }
     
     public ZoneOwner getOwner()
     {
-        return this.owner;
+        return owner;
     }
     
     public boolean getIsOwnerTemporary()
     {
-        return this.isOwnerTemporary;
+        return isOwnerTemporary;
     }
     
     public List<DuelCard> getCardsList()
     {
-        return this.cardsList;
+        return cardsList;
     }
     
     // this is for when you have to flip the main deck, to make sure all new cards go in the right way
     @Nullable
     public CardPosition getDefaultCardPosition()
     {
-        return this.defaultCardPosition;
+        return defaultCardPosition;
     }
     
     public void flipDefaultCardPosition()
     {
-        if(this.defaultCardPosition != null)
+        if(defaultCardPosition != null)
         {
-            this.defaultCardPosition = this.defaultCardPosition.flip();
+            defaultCardPosition = defaultCardPosition.flip();
         }
     }
     
     public int getCounters()
     {
-        return this.counters;
+        return counters;
     }
     
     public void setCounters(int counters)
@@ -228,11 +227,11 @@ public class Zone
     
     public void changeCounters(int change)
     {
-        this.counters = Math.max(0, Math.min(99, this.counters + change));
+        counters = Math.max(0, Math.min(99, counters + change));
     }
     
     public void removeAllCounters()
     {
-        this.counters = 0;
+        counters = 0;
     }
 }

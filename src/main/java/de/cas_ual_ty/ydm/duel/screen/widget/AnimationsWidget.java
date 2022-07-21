@@ -1,14 +1,13 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import de.cas_ual_ty.ydm.duel.screen.animation.Animation;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class AnimationsWidget extends Widget
 {
@@ -17,20 +16,20 @@ public class AnimationsWidget extends Widget
     public AnimationsWidget(int x, int y, int width, int height)
     {
         super(x, y, width, height, StringTextComponent.EMPTY);
-        this.animations = new LinkedList<>();
+        animations = new LinkedList<>();
     }
     
     public void addAnimation(Animation animation)
     {
-        this.animations.add(animation);
+        animations.add(animation);
     }
     
     public void forceFinish()
     {
         Animation a;
-        while(!this.animations.isEmpty())
+        while(!animations.isEmpty())
         {
-            a = this.animations.poll();
+            a = animations.poll();
             
             while(!a.ended())
             {
@@ -42,11 +41,11 @@ public class AnimationsWidget extends Widget
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        RenderSystem.color4f(1F, 1F, 1F, alpha);
         
-        if(this.visible)
+        if(visible)
         {
-            for(Animation a : this.animations)
+            for(Animation a : animations)
             {
                 a.render(ms, mouseX, mouseY, partialTicks);
             }
@@ -55,15 +54,15 @@ public class AnimationsWidget extends Widget
     
     public void tick()
     {
-        if(!this.animations.isEmpty())
+        if(!animations.isEmpty())
         {
-            Animation a = this.animations.element();
+            Animation a = animations.element();
             
             a.tick();
             
             if(a.ended())
             {
-                this.animations.poll();
+                animations.poll();
             }
         }
     }
@@ -72,9 +71,9 @@ public class AnimationsWidget extends Widget
     {
         Animation a;
         
-        while(this.animations.size() > 0)
+        while(animations.size() > 0)
         {
-            a = this.animations.poll();
+            a = animations.poll();
             
             while(!a.ended())
             {

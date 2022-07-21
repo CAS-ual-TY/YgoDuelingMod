@@ -15,19 +15,19 @@ public class PatreonDeckBoxItem extends DeckBoxItem
     }
     
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
     {
-        if(this.isInGroup(group))
+        if(allowdedIn(group))
         {
-            super.fillItemGroup(group, items);
+            super.fillItemCategory(group, items);
             
             if(YdmDatabase.databaseReady)
             {
-                items.add(this.makeItemStackFromDeckSource(CustomDecks.getOjamaDeck()));
+                items.add(makeItemStackFromDeckSource(CustomDecks.getOjamaDeck()));
                 
                 for(DeckSource s : CustomDecks.getAllPatreonDeckSources())
                 {
-                    items.add(this.makeItemStackFromDeckSource(s));
+                    items.add(makeItemStackFromDeckSource(s));
                 }
             }
         }
@@ -36,8 +36,8 @@ public class PatreonDeckBoxItem extends DeckBoxItem
     public ItemStack makeItemStackFromDeckSource(DeckSource s)
     {
         ItemStack itemStack = new ItemStack(YdmItems.PATREON_DECK_BOX);
-        this.setDeckHolder(itemStack, s.deck);
-        itemStack.setDisplayName(s.name);
+        setDeckHolder(itemStack, s.deck);
+        itemStack.setHoverName(s.name);
         return itemStack;
     }
 }

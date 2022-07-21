@@ -1,13 +1,12 @@
 package de.cas_ual_ty.ydm.duel.playfield;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.DuelPhase;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PlayField
 {
@@ -49,34 +48,34 @@ public class PlayField
         }
         
         this.duelManager = duelManager;
-        this.playFieldType = type;
-        this.zones = new ArrayList<>(type.zoneEntries.size());
+        playFieldType = type;
+        zones = new ArrayList<>(type.zoneEntries.size());
         
         byte index = 0;
         Zone z;
         for(PlayFieldType.ZoneEntry e : type.zoneEntries)
         {
-            this.zones.add(z = new Zone(this, e.type, index++, e.owner, e.x, e.y, e.width, e.height));
+            zones.add(z = new Zone(this, e.type, index++, e.owner, e.x, e.y, e.width, e.height));
             
             if(e == type.player1Deck)
             {
-                this.player1Deck = z;
+                player1Deck = z;
             }
             else if(e == type.player1ExtraDeck)
             {
-                this.player1ExtraDeck = z;
+                player1ExtraDeck = z;
             }
             else if(e == type.player2Deck)
             {
-                this.player2Deck = z;
+                player2Deck = z;
             }
             else if(e == type.player2ExtraDeck)
             {
-                this.player2ExtraDeck = z;
+                player2ExtraDeck = z;
             }
         }
         
-        this.zones.sort((z1, z2) ->
+        zones.sort((z1, z2) ->
         {
             int x1;
             int x2;
@@ -110,43 +109,43 @@ public class PlayField
             return x1 - x2;
         });
         
-        this.player1Offset = 0;
-        this.player2Offset = 0;
-        this.extraOffset = 0;
+        player1Offset = 0;
+        player2Offset = 0;
+        extraOffset = 0;
         
-        for(Zone zone : this.zones)
+        for(Zone zone : zones)
         {
             if(zone.getOwner() == ZoneOwner.PLAYER2)
             {
                 break;
             }
             
-            ++this.player2Offset;
+            ++player2Offset;
         }
         
-        for(Zone zone : this.zones)
+        for(Zone zone : zones)
         {
             if(zone.getOwner() == ZoneOwner.NONE)
             {
                 break;
             }
             
-            ++this.extraOffset;
+            ++extraOffset;
         }
         
-        this.player1LP = type.startingLifePoints;
-        this.player2LP = type.startingLifePoints;
+        player1LP = type.startingLifePoints;
+        player2LP = type.startingLifePoints;
         
-        this.player1ClickedCard = null;
-        this.player1ClickedZone = null;
-        this.player2ClickedCard = null;
-        this.player2ClickedZone = null;
+        player1ClickedCard = null;
+        player1ClickedZone = null;
+        player2ClickedCard = null;
+        player2ClickedZone = null;
         
-        this.player1Turn = true;
-        this.phase = DuelPhase.DP;
+        player1Turn = true;
+        phase = DuelPhase.DP;
         
-        this.player1Sleeves = CardSleevesType.CARD_BACK;
-        this.player2Sleeves = CardSleevesType.CARD_BACK;
+        player1Sleeves = CardSleevesType.CARD_BACK;
+        player2Sleeves = CardSleevesType.CARD_BACK;
     }
     
     public void initSleeves(CardSleevesType player1Sleeves, CardSleevesType player2Sleeves)
@@ -159,11 +158,11 @@ public class PlayField
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            return this.player1Sleeves;
+            return player1Sleeves;
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            return this.player2Sleeves;
+            return player2Sleeves;
         }
         else
         {
@@ -173,17 +172,17 @@ public class PlayField
     
     public List<Zone> getZones()
     {
-        return this.zones;
+        return zones;
     }
     
     public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
     {
-        return this.playFieldType.getActionsFor(player, interactor, interactorCard, interactee);
+        return playFieldType.getActionsFor(player, interactor, interactorCard, interactee);
     }
     
     public List<ZoneInteraction> getAdvancedActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
     {
-        return this.playFieldType.getAdvancedActionsFor(player, interactor, interactorCard, interactee);
+        return playFieldType.getAdvancedActionsFor(player, interactor, interactorCard, interactee);
     }
     
     public Zone getReplacementZoneForCard(Zone zone, DuelCard card)
@@ -208,13 +207,14 @@ public class PlayField
                 return this.zones[ZoneOwner.convertIndex(zone.getIndex())];
             }
         }
-        */ return null;
+        */
+        return null;
     }
     
     @Nullable
     public Zone getZoneByTypeAndPlayer(ZoneType type, ZoneOwner owner)
     {
-        for(Zone zone : this.zones)
+        for(Zone zone : zones)
         {
             if(zone.type == type && zone.getOwner() == owner && !zone.getIsOwnerTemporary())
             {
@@ -227,23 +227,23 @@ public class PlayField
     
     public DuelManager getDuelManager()
     {
-        return this.duelManager;
+        return duelManager;
     }
     
     public Zone getZone(byte zoneId)
     {
-        return this.zones.get(zoneId);
+        return zones.get(zoneId);
     }
     
     public int changeLifePoints(int amount, ZoneOwner owner)
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            return (this.player1LP = Math.min(PlayField.MAX_LP, Math.max(PlayField.MIN_LP, this.player1LP + amount)));
+            return (player1LP = Math.min(PlayField.MAX_LP, Math.max(PlayField.MIN_LP, player1LP + amount)));
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            return (this.player2LP = Math.min(PlayField.MAX_LP, Math.max(PlayField.MIN_LP, this.player2LP + amount)));
+            return (player2LP = Math.min(PlayField.MAX_LP, Math.max(PlayField.MIN_LP, player2LP + amount)));
         }
         else
         {
@@ -255,11 +255,11 @@ public class PlayField
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            return this.player1LP;
+            return player1LP;
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            return this.player2LP;
+            return player2LP;
         }
         else
         {
@@ -271,11 +271,11 @@ public class PlayField
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            this.player1LP = amount;
+            player1LP = amount;
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            this.player2LP = amount;
+            player2LP = amount;
         }
     }
     
@@ -286,34 +286,34 @@ public class PlayField
     
     public DuelPhase getPhase()
     {
-        return this.phase;
+        return phase;
     }
     
     public void endTurn()
     {
-        this.phase = DuelPhase.getFromIndex(DuelPhase.FIRST_INDEX);
-        this.player1Turn = !this.player1Turn;
+        phase = DuelPhase.getFromIndex(DuelPhase.FIRST_INDEX);
+        player1Turn = !player1Turn;
     }
     
     public boolean isPlayer1Turn()
     {
-        return this.player1Turn;
+        return player1Turn;
     }
     
     public boolean isPlayer2Turn()
     {
-        return !this.player1Turn;
+        return !player1Turn;
     }
     
     public boolean isPlayerTurn(ZoneOwner player)
     {
         if(player == ZoneOwner.PLAYER2)
         {
-            return this.isPlayer2Turn();
+            return isPlayer2Turn();
         }
         else
         {
-            return this.isPlayer1Turn();
+            return isPlayer1Turn();
         }
     }
     
@@ -321,24 +321,24 @@ public class PlayField
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            this.setPlayer1Clicked(zone, card);
+            setPlayer1Clicked(zone, card);
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            this.setPlayer2Clicked(zone, card);
+            setPlayer2Clicked(zone, card);
         }
     }
     
     public void setPlayer1Clicked(@Nullable Zone zone, @Nullable DuelCard card)
     {
-        this.player1ClickedZone = zone;
-        this.player1ClickedCard = card;
+        player1ClickedZone = zone;
+        player1ClickedCard = card;
     }
     
     public void setPlayer2Clicked(@Nullable Zone zone, @Nullable DuelCard card)
     {
-        this.player2ClickedZone = zone;
-        this.player2ClickedCard = card;
+        player2ClickedZone = zone;
+        player2ClickedCard = card;
     }
     
     @Nullable
@@ -346,11 +346,11 @@ public class PlayField
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            return this.player1ClickedZone;
+            return player1ClickedZone;
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            return this.player2ClickedZone;
+            return player2ClickedZone;
         }
         else
         {
@@ -363,11 +363,11 @@ public class PlayField
     {
         if(owner == ZoneOwner.PLAYER1)
         {
-            return this.player1ClickedCard;
+            return player1ClickedCard;
         }
         else if(owner == ZoneOwner.PLAYER2)
         {
-            return this.player2ClickedCard;
+            return player2ClickedCard;
         }
         else
         {

@@ -1,13 +1,8 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.util.List;
-
-import org.lwjgl.opengl.GL11;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -15,6 +10,9 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.IReorderingProcessor;
 import net.minecraft.util.math.vector.Matrix4f;
 import net.minecraft.util.text.ITextComponent;
+import org.lwjgl.opengl.GL11;
+
+import java.util.List;
 
 public class ScreenUtil
 {
@@ -29,10 +27,10 @@ public class ScreenUtil
     public static void drawRect(MatrixStack ms, float x, float y, float w, float h, float r, float g, float b, float a)
     {
         Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder bufferbuilder = tessellator.getBuffer();
+        BufferBuilder bufferbuilder = tessellator.getBuilder();
         
-        GlStateManager.enableBlend();
-        GlStateManager.disableTexture();
+        GlStateManager._enableBlend();
+        GlStateManager._disableTexture();
         
         // Use src_color * src_alpha
         // and dest_color * (1 - src_alpha) for colors
@@ -40,17 +38,17 @@ public class ScreenUtil
         
         RenderSystem.color4f(r, g, b, a);
         
-        Matrix4f m = ms.getLast().getMatrix();
+        Matrix4f m = ms.last().pose();
         
         bufferbuilder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION);
-        bufferbuilder.pos(m, x, y + h, 0F).endVertex(); // BL
-        bufferbuilder.pos(m, x + w, y + h, 0F).endVertex(); // BR
-        bufferbuilder.pos(m, x + w, y, 0F).endVertex(); // TR
-        bufferbuilder.pos(m, x, y, 0F).endVertex(); // TL
-        tessellator.draw();
+        bufferbuilder.vertex(m, x, y + h, 0F).endVertex(); // BL
+        bufferbuilder.vertex(m, x + w, y + h, 0F).endVertex(); // BR
+        bufferbuilder.vertex(m, x + w, y, 0F).endVertex(); // TR
+        bufferbuilder.vertex(m, x, y, 0F).endVertex(); // TL
+        tessellator.end();
         
-        GlStateManager.enableTexture();
-        GlStateManager.disableBlend();
+        GlStateManager._enableTexture();
+        GlStateManager._disableBlend();
         ScreenUtil.white();
     }
     
@@ -60,14 +58,14 @@ public class ScreenUtil
         {
             if(t.getString().isEmpty() && t.getSiblings().isEmpty())
             {
-                y += fontRenderer.FONT_HEIGHT;
+                y += fontRenderer.lineHeight;
             }
             else
             {
-                for(IReorderingProcessor p : fontRenderer.trimStringToWidth(t, maxWidth))
+                for(IReorderingProcessor p : fontRenderer.split(t, maxWidth))
                 {
-                    fontRenderer.drawTextWithShadow(ms, p, x, y, color);
-                    y += fontRenderer.FONT_HEIGHT;
+                    fontRenderer.drawShadow(ms, p, x, y, color);
+                    y += fontRenderer.lineHeight;
                 }
             }
         }

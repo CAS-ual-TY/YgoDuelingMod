@@ -1,10 +1,7 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.function.Consumer;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
@@ -14,6 +11,8 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.function.Consumer;
 
 public class StackZoneWidget extends ZoneWidget
 {
@@ -25,55 +24,55 @@ public class StackZoneWidget extends ZoneWidget
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
+        FontRenderer fontrenderer = minecraft.font;
         
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        RenderSystem.color4f(1F, 1F, 1F, alpha);
         
-        this.renderZoneSelectRect(ms, this.zone, this.x, this.y, this.width, this.height);
+        renderZoneSelectRect(ms, zone, x, y, width, height);
         
-        this.hoverCard = this.renderCards(ms, mouseX, mouseY);
+        hoverCard = renderCards(ms, mouseX, mouseY);
         
-        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        RenderSystem.color4f(1F, 1F, 1F, alpha);
         
-        if(this.zone.getCardsAmount() > 0)
+        if(zone.getCardsAmount() > 0)
         {
             // see font renderer, top static Vector3f
             // white is translated in front by that
-            ms.push();
+            ms.pushPose();
             ms.translate(0, 0, 0.03F);
-            AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent(String.valueOf(this.zone.getCardsAmount())),
-                this.x + this.width / 2, this.y + this.height / 2 - fontrenderer.FONT_HEIGHT / 2,
-                16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
-            ms.pop();
+            AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent(String.valueOf(zone.getCardsAmount())),
+                    x + width / 2, y + height / 2 - fontrenderer.lineHeight / 2,
+                    16777215 | MathHelper.ceil(alpha * 255.0F) << 24);
+            ms.popPose();
         }
         
-        if(this.active)
+        if(active)
         {
-            if(this.isHovered())
+            if(isHovered())
             {
-                if(this.zone.getCardsAmount() == 0)
+                if(zone.getCardsAmount() == 0)
                 {
-                    ScreenUtil.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    ScreenUtil.renderHoverRect(ms, x, y, width, height);
                 }
                 
-                this.renderToolTip(ms, mouseX, mouseY);
+                renderToolTip(ms, mouseX, mouseY);
             }
         }
         else
         {
-            ScreenUtil.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
+            ScreenUtil.renderDisabledRect(ms, x, y, width, height);
         }
     }
     
     @Override
     public boolean openAdvancedZoneView()
     {
-        return !this.zone.getType().getIsSecret() && this.zone.getCardsAmount() > 0;
+        return !zone.getType().getIsSecret() && zone.getCardsAmount() > 0;
     }
 }

@@ -1,12 +1,12 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import java.util.List;
-import java.util.Random;
-
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import net.minecraft.network.PacketBuffer;
+
+import java.util.List;
+import java.util.Random;
 
 public class ShuffleAction extends SingleZoneAction implements IAnnouncedAction
 {
@@ -39,14 +39,14 @@ public class ShuffleAction extends SingleZoneAction implements IAnnouncedAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeLong(this.randomSeed);
+        buf.writeLong(randomSeed);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.randomSeed = playField.getDuelManager().getRandom().nextLong();
+        randomSeed = playField.getDuelManager().getRandom().nextLong();
     }
     
     @Override
@@ -58,26 +58,26 @@ public class ShuffleAction extends SingleZoneAction implements IAnnouncedAction
     @Override
     public void doAction()
     {
-        this.before = this.sourceZone.getCardsList();
-        this.sourceZone.shuffle(new Random(this.randomSeed));
-        this.after = this.sourceZone.getCardsList();
+        before = sourceZone.getCardsList();
+        sourceZone.shuffle(new Random(randomSeed));
+        after = sourceZone.getCardsList();
     }
     
     @Override
     public void undoAction()
     {
-        this.sourceZone.setCardsList(this.before);
+        sourceZone.setCardsList(before);
     }
     
     @Override
     public String getAnnouncementLocalKey()
     {
-        return this.actionType.getLocalKey();
+        return actionType.getLocalKey();
     }
     
     @Override
     public Zone getFieldAnnouncementZone()
     {
-        return this.sourceZone;
+        return sourceZone;
     }
 }

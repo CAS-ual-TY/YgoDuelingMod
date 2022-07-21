@@ -1,11 +1,6 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
@@ -17,6 +12,10 @@ import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class DistributionCardPuller extends CardPuller
 {
     public final Distribution distribution;
@@ -27,9 +26,9 @@ public class DistributionCardPuller extends CardPuller
         
         String distributionName = setJson.get(JsonKeys.DISTRIBUTION).getAsString();
         
-        this.distribution = YdmDatabase.DISTRIBUTIONS_LIST.get(distributionName);
+        distribution = YdmDatabase.DISTRIBUTIONS_LIST.get(distributionName);
         
-        if(this.distribution == null)
+        if(distribution == null)
         {
             throw new IllegalArgumentException("Cannot find distribution: " + distributionName);
         }
@@ -39,7 +38,7 @@ public class DistributionCardPuller extends CardPuller
     public List<ItemStack> open(Random random)
     {
         List<ItemStack> list = new ArrayList<>();
-        List<CardHolder> cards = this.openDistribution(random);
+        List<CardHolder> cards = openDistribution(random);
         
         for(CardHolder c : cards)
         {
@@ -51,7 +50,7 @@ public class DistributionCardPuller extends CardPuller
     
     public List<CardHolder> openDistribution(Random random)
     {
-        Pull pull = this.choosePull(random);
+        Pull pull = choosePull(random);
         
         if(pull != null)
         {
@@ -61,14 +60,14 @@ public class DistributionCardPuller extends CardPuller
             
             for(PullEntry pe : pull.pullEntries)
             {
-                cardPool = this.makeCardPool(pe);
+                cardPool = makeCardPool(pe);
                 
                 if(cardPool.size() <= 0)
                 {
                     continue;
                 }
                 
-                this.chooseCardsFromPool(random, cardPool, pe, cards);
+                chooseCardsFromPool(random, cardPool, pe, cards);
             }
             
             return cards;
@@ -80,9 +79,9 @@ public class DistributionCardPuller extends CardPuller
     protected Pull choosePull(Random random)
     {
         int weightViewed = 0;
-        int x = random.nextInt(this.distribution.totalWeight);
+        int x = random.nextInt(distribution.totalWeight);
         
-        for(Pull p : this.distribution.pulls)
+        for(Pull p : distribution.pulls)
         {
             if(weightViewed + p.weight > x)
             {
@@ -97,11 +96,11 @@ public class DistributionCardPuller extends CardPuller
     
     protected List<CardHolder> makeCardPool(PullEntry pe)
     {
-        List<CardHolder> cardPool = new ArrayList<>(this.set.cards.size() * pe.rarities.length);
+        List<CardHolder> cardPool = new ArrayList<>(set.cards.size() * pe.rarities.length);
         
         for(String rarity : pe.rarities)
         {
-            for(CardHolder c : this.set.cards)
+            for(CardHolder c : set.cards)
             {
                 if(c.getRarity().equals(rarity))
                 {
@@ -156,19 +155,19 @@ public class DistributionCardPuller extends CardPuller
     @Override
     public void addInformation(List<ITextComponent> tooltip)
     {
-        this.distribution.addInformation(tooltip, this.set);
+        distribution.addInformation(tooltip, set);
     }
     
     @Override
     public boolean addInformationInComposition()
     {
-        return this.distribution.pulls.length == 1;
+        return distribution.pulls.length == 1;
     }
     
     @Override
     public void logErrors()
     {
-        for(Pull pull : this.distribution.pulls)
+        for(Pull pull : distribution.pulls)
         {
             List<CardHolder> cardPool;
             
@@ -176,11 +175,11 @@ public class DistributionCardPuller extends CardPuller
             {
                 if(pe.rarities.length <= 0 || pe.count <= 0)
                 {
-                    YDM.log("Set " + this.set.code + ": One pull entry has no rarities or count = 0 and will not do anything.");
+                    YDM.log("Set " + set.code + ": One pull entry has no rarities or count = 0 and will not do anything.");
                     continue;
                 }
                 
-                cardPool = this.makeCardPool(pe);
+                cardPool = makeCardPool(pe);
                 
                 StringBuilder s = new StringBuilder();
                 for(String rarity : pe.rarities)
@@ -191,7 +190,7 @@ public class DistributionCardPuller extends CardPuller
                 
                 if(cardPool.size() < pe.count)
                 {
-                    YDM.log("Set " + this.set.code + ": Not enough cards for rarities: " + s.toString());
+                    YDM.log("Set " + set.code + ": Not enough cards for rarities: " + s.toString());
                     continue;
                 }
                 
@@ -199,16 +198,16 @@ public class DistributionCardPuller extends CardPuller
                 
                 if(uniqueCards < pe.count)
                 {
-                    YDM.log("Set " + this.set.code + ": Not enough unique cards for rarities (will contain duplicates): " + s.toString());
+                    YDM.log("Set " + set.code + ": Not enough unique cards for rarities (will contain duplicates): " + s.toString());
                 }
             }
         }
         
-        for(String rarity : this.set.rarityPool)
+        for(String rarity : set.rarityPool)
         {
-            if(!this.distribution.pullableRarities.contains(rarity))
+            if(!distribution.pullableRarities.contains(rarity))
             {
-                YDM.log("Set " + this.set.code + ": Rarity and the cards using it can never be pulled: " + rarity);
+                YDM.log("Set " + set.code + ": Rarity and the cards using it can never be pulled: " + rarity);
             }
         }
     }

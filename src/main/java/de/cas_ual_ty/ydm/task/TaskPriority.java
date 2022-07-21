@@ -7,7 +7,7 @@ public enum TaskPriority
     public final String name;
     public final int priority;
     
-    private TaskPriority(String name, int priority)
+    TaskPriority(String name, int priority)
     {
         this.name = name;
         this.priority = priority;

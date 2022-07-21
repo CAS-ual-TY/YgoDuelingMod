@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.task;
 
-import java.util.concurrent.TimeUnit;
-
 import de.cas_ual_ty.ydm.YDM;
+
+import java.util.concurrent.TimeUnit;
 
 public class WorkerManager
 {
@@ -24,7 +24,7 @@ public class WorkerManager
         {
             int everythingDone = 0;
             
-            for(;;)
+            for(; ; )
             {
                 everythingDone++;
                 
@@ -49,7 +49,7 @@ public class WorkerManager
                     {
                         TimeUnit.MILLISECONDS.sleep(WorkerManager.sleepMillis * 2);
                     }
-                    catch (InterruptedException e)
+                    catch(InterruptedException e)
                     {
                     }
                 }
@@ -65,13 +65,13 @@ public class WorkerManager
                     {
                         w.join();
                     }
-                    catch (InterruptedException e)
+                    catch(InterruptedException e)
                     {
                     }
                 }
             }
         },
-            YDM.MOD_ID_UP + " shutdown hook");
+                YDM.MOD_ID_UP + " shutdown hook");
         
         Runtime.getRuntime().addShutdownHook(shutdownListener);
     }

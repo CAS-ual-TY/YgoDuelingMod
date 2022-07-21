@@ -7,7 +7,8 @@ public class Task implements Runnable
     private static final Supplier<Boolean> DEFAULT_IS_READY = () -> true;
     private static final Supplier<Boolean> DEFAULT_IS_CANCELED = () -> false;
     private static final Runnable DEFAULT_ON_CANCEL = () ->
-    {};
+    {
+    };
     
     public final String name;
     public final int priority;
@@ -21,9 +22,9 @@ public class Task implements Runnable
         this.name = name;
         this.priority = priority;
         this.task = task;
-        this.isReady = Task.DEFAULT_IS_READY;
-        this.isCanceled = Task.DEFAULT_IS_CANCELED;
-        this.onCancel = Task.DEFAULT_ON_CANCEL;
+        isReady = Task.DEFAULT_IS_READY;
+        isCanceled = Task.DEFAULT_IS_CANCELED;
+        onCancel = Task.DEFAULT_ON_CANCEL;
     }
     
     public Task(TaskPriority priority, Runnable task)
@@ -49,22 +50,22 @@ public class Task implements Runnable
     
     public boolean isReady()
     {
-        return this.isReady.get();
+        return isReady.get();
     }
     
     public boolean isCanceled()
     {
-        return this.isCanceled.get();
+        return isCanceled.get();
     }
     
     public void onCancel()
     {
-        this.onCancel.run();
+        onCancel.run();
     }
     
     @Override
     public void run()
     {
-        this.task.run();
+        task.run();
     }
 }

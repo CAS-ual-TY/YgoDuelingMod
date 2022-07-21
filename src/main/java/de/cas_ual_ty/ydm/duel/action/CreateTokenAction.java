@@ -35,20 +35,20 @@ public class CreateTokenAction extends DualZoneAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        DuelMessageUtility.encodeCardPosition(this.destinationCardPosition, buf);
-        DuelMessageUtility.encodeZoneOwner(this.player, buf);
+        DuelMessageUtility.encodeCardPosition(destinationCardPosition, buf);
+        DuelMessageUtility.encodeZoneOwner(player, buf);
     }
     
     @Override
     public void doAction()
     {
-        this.token = new DuelCard(this.card.getCardHolder(), true, this.destinationCardPosition, this.card.getOwner());
-        this.destinationZone.addTopCard(this.player, this.token);
+        token = new DuelCard(card.getCardHolder(), true, destinationCardPosition, card.getOwner());
+        destinationZone.addTopCard(player, token);
     }
     
     @Override
     public void undoAction()
     {
-        this.destinationZone.removeCard(this.token);
+        destinationZone.removeCard(token);
     }
 }

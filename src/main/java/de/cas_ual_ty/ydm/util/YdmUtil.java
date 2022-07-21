@@ -1,21 +1,8 @@
 package de.cas_ual_ty.ydm.util;
 
-import java.util.UUID;
-import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.card.properties.DefMonsterProperties;
-import de.cas_ual_ty.ydm.card.properties.LevelMonsterProperties;
-import de.cas_ual_ty.ydm.card.properties.LinkMonsterProperties;
-import de.cas_ual_ty.ydm.card.properties.MonsterProperties;
-import de.cas_ual_ty.ydm.card.properties.Properties;
-import de.cas_ual_ty.ydm.card.properties.SpellProperties;
-import de.cas_ual_ty.ydm.card.properties.TrapProperties;
-import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
+import de.cas_ual_ty.ydm.card.properties.*;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -24,9 +11,13 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.util.NonNullSupplier;
 
+import javax.annotation.Nullable;
+import java.util.UUID;
+import java.util.function.Predicate;
+
 public class YdmUtil
 {
-    private static final int[] POW_2 = { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024 };
+    private static final int[] POW_2 = {1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024};
     
     public static Properties buildProperties(JsonObject j)
     {
@@ -79,7 +70,7 @@ public class YdmUtil
     
     public static UUID createRandomUUID()
     {
-        return MathHelper.getRandomUUID();
+        return MathHelper.createInsecureUUID();
     }
     
     public static NonNullSupplier<IllegalArgumentException> throwNullCapabilityException()
@@ -97,18 +88,20 @@ public class YdmUtil
         return Math.max(min, Math.min(max, i));
     }
     
-    public static @Nullable Hand getActiveItem(PlayerEntity player, Item item)
+    @Nullable
+    public static Hand getActiveItem(PlayerEntity player, Item item)
     {
         return YdmUtil.getActiveItem(player, (itemStack) -> itemStack.getItem() == item);
     }
     
-    public static @Nullable Hand getActiveItem(PlayerEntity player, Predicate<ItemStack> item)
+    @Nullable
+    public static Hand getActiveItem(PlayerEntity player, Predicate<ItemStack> item)
     {
-        if(item.test(player.getHeldItemMainhand()))
+        if(item.test(player.getMainHandItem()))
         {
             return Hand.MAIN_HAND;
         }
-        else if(item.test(player.getHeldItemOffhand()))
+        else if(item.test(player.getOffhandItem()))
         {
             return Hand.OFF_HAND;
         }

@@ -28,12 +28,12 @@ public class ShowZoneAction extends SingleZoneAction implements IAnnouncedAction
     @Override
     public String getAnnouncementLocalKey()
     {
-        return this.actionType.getLocalKey();
+        return actionType.getLocalKey();
     }
     
     @Override
     public Zone getFieldAnnouncementZone()
     {
-        return this.sourceZone;
+        return sourceZone;
     }
 }

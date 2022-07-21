@@ -1,15 +1,10 @@
 package de.cas_ual_ty.ydm.card.properties;
 
-import java.util.List;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
+
+import java.util.List;
 
 public class MonsterProperties extends Properties
 {
@@ -29,7 +24,7 @@ public class MonsterProperties extends Properties
     public MonsterProperties(Properties p0, JsonObject j)
     {
         super(p0);
-        this.readMonsterProperties(j);
+        readMonsterProperties(j);
     }
     
     public MonsterProperties(Properties p0)
@@ -38,20 +33,20 @@ public class MonsterProperties extends Properties
         
         if(p0 instanceof MonsterProperties)
         {
-            MonsterProperties p1 = (MonsterProperties)p0;
-            this.attribute = p1.attribute;
-            this.atk = p1.atk;
-            this.species = p1.species;
-            this.monsterType = p1.monsterType;
-            this.isPendulum = p1.isPendulum;
-            this.ability = p1.ability;
-            this.hasEffect = p1.hasEffect;
+            MonsterProperties p1 = (MonsterProperties) p0;
+            attribute = p1.attribute;
+            atk = p1.atk;
+            species = p1.species;
+            monsterType = p1.monsterType;
+            isPendulum = p1.isPendulum;
+            ability = p1.ability;
+            hasEffect = p1.hasEffect;
             
             if(p1.isPendulum)
             {
-                this.pendulumText = p1.pendulumText;
-                this.pendulumScaleLeftBlue = p1.pendulumScaleLeftBlue;
-                this.pendulumScaleRightRed = p1.pendulumScaleRightRed;
+                pendulumText = p1.pendulumText;
+                pendulumScaleLeftBlue = p1.pendulumScaleLeftBlue;
+                pendulumScaleRightRed = p1.pendulumScaleRightRed;
             }
         }
     }
@@ -64,185 +59,185 @@ public class MonsterProperties extends Properties
     public void readAllProperties(JsonObject j)
     {
         super.readAllProperties(j);
-        this.readMonsterProperties(j);
+        readMonsterProperties(j);
     }
     
     @Override
     public void writeAllProperties(JsonObject j)
     {
         super.writeAllProperties(j);
-        this.writeMonsterProperties(j);
+        writeMonsterProperties(j);
     }
     
     public void readMonsterProperties(JsonObject j)
     {
-        this.attribute = j.get(JsonKeys.ATTRIBUTE).getAsString();
-        this.atk = j.get(JsonKeys.ATK).getAsInt();
-        this.species = j.get(JsonKeys.SPECIES).getAsString();
-        this.monsterType = MonsterType.fromString(j.get(JsonKeys.MONSTER_TYPE).getAsString());
-        this.isPendulum = j.get(JsonKeys.IS_PENDULUM).getAsBoolean();
-        this.ability = j.get(JsonKeys.ABILITY).getAsString();
-        this.hasEffect = j.get(JsonKeys.HAS_EFFECT).getAsBoolean();
+        attribute = j.get(JsonKeys.ATTRIBUTE).getAsString();
+        atk = j.get(JsonKeys.ATK).getAsInt();
+        species = j.get(JsonKeys.SPECIES).getAsString();
+        monsterType = MonsterType.fromString(j.get(JsonKeys.MONSTER_TYPE).getAsString());
+        isPendulum = j.get(JsonKeys.IS_PENDULUM).getAsBoolean();
+        ability = j.get(JsonKeys.ABILITY).getAsString();
+        hasEffect = j.get(JsonKeys.HAS_EFFECT).getAsBoolean();
         
-        if(this.getIsPendulum())
+        if(getIsPendulum())
         {
-            this.pendulumText = j.get(JsonKeys.PENDULUM_TEXT).getAsString();
-            this.pendulumScaleLeftBlue = j.get(JsonKeys.PENDULUM_SCALE_LEFT_BLUE).getAsByte();
-            this.pendulumScaleRightRed = j.get(JsonKeys.PENDULUM_SCALE_RIGHT_RED).getAsByte();
+            pendulumText = j.get(JsonKeys.PENDULUM_TEXT).getAsString();
+            pendulumScaleLeftBlue = j.get(JsonKeys.PENDULUM_SCALE_LEFT_BLUE).getAsByte();
+            pendulumScaleRightRed = j.get(JsonKeys.PENDULUM_SCALE_RIGHT_RED).getAsByte();
         }
     }
     
     public void writeMonsterProperties(JsonObject j)
     {
-        j.addProperty(JsonKeys.ATTRIBUTE, this.attribute);
-        j.addProperty(JsonKeys.ATK, this.atk);
-        j.addProperty(JsonKeys.SPECIES, this.species);
-        j.addProperty(JsonKeys.MONSTER_TYPE, this.monsterType.name);
-        j.addProperty(JsonKeys.IS_PENDULUM, this.isPendulum);
-        j.addProperty(JsonKeys.ABILITY, this.ability);
-        j.addProperty(JsonKeys.HAS_EFFECT, this.hasEffect);
+        j.addProperty(JsonKeys.ATTRIBUTE, attribute);
+        j.addProperty(JsonKeys.ATK, atk);
+        j.addProperty(JsonKeys.SPECIES, species);
+        j.addProperty(JsonKeys.MONSTER_TYPE, monsterType.name);
+        j.addProperty(JsonKeys.IS_PENDULUM, isPendulum);
+        j.addProperty(JsonKeys.ABILITY, ability);
+        j.addProperty(JsonKeys.HAS_EFFECT, hasEffect);
         
-        if(this.getIsPendulum())
+        if(getIsPendulum())
         {
-            j.addProperty(JsonKeys.PENDULUM_TEXT, this.pendulumText);
-            j.addProperty(JsonKeys.PENDULUM_SCALE_LEFT_BLUE, this.pendulumScaleLeftBlue);
-            j.addProperty(JsonKeys.PENDULUM_SCALE_RIGHT_RED, this.pendulumScaleRightRed);
+            j.addProperty(JsonKeys.PENDULUM_TEXT, pendulumText);
+            j.addProperty(JsonKeys.PENDULUM_SCALE_LEFT_BLUE, pendulumScaleLeftBlue);
+            j.addProperty(JsonKeys.PENDULUM_SCALE_RIGHT_RED, pendulumScaleRightRed);
         }
     }
     
     public boolean getIsNormal()
     {
-        return this.getMonsterType() == null && !this.getHasEffect();
+        return getMonsterType() == null && !getHasEffect();
     }
     
     public boolean getIsEffect()
     {
-        return this.getMonsterType() == null && this.getHasEffect();
+        return getMonsterType() == null && getHasEffect();
     }
     
     public boolean getIsFusion()
     {
-        return this.getMonsterType() == MonsterType.FUSION;
+        return getMonsterType() == MonsterType.FUSION;
     }
     
     public boolean getIsLink()
     {
-        return this.getMonsterType() == MonsterType.LINK;
+        return getMonsterType() == MonsterType.LINK;
     }
     
     public boolean getIsRitual()
     {
-        return this.getMonsterType() == MonsterType.RITUAL;
+        return getMonsterType() == MonsterType.RITUAL;
     }
     
     public boolean getIsSynchro()
     {
-        return this.getMonsterType() == MonsterType.SYNCHRO;
+        return getMonsterType() == MonsterType.SYNCHRO;
     }
     
     public boolean getIsXyz()
     {
-        return this.getMonsterType() == MonsterType.XYZ;
+        return getMonsterType() == MonsterType.XYZ;
     }
     
     public boolean getHasLevel()
     {
-        return this.getMonsterType() == null || this.getIsFusion() || this.getIsRitual() || this.getIsSynchro();
+        return getMonsterType() == null || getIsFusion() || getIsRitual() || getIsSynchro();
     }
     
     public boolean getHasDef()
     {
-        return this.getMonsterType() == null || this.getIsFusion() || this.getIsRitual() || this.getIsSynchro() || this.getIsXyz();
+        return getMonsterType() == null || getIsFusion() || getIsRitual() || getIsSynchro() || getIsXyz();
     }
     
     @Override
     public void addHeader(List<ITextComponent> list)
     {
         super.addHeader(list);
-        this.addMonsterHeader(list);
+        addMonsterHeader(list);
     }
     
     @Override
     public void addText(List<ITextComponent> list)
     {
-        if(this.getIsPendulum())
+        if(getIsPendulum())
         {
-            this.addPendulumTextHeader(list);
-            list.add(new StringTextComponent(this.getPendulumText()));
+            addPendulumTextHeader(list);
+            list.add(new StringTextComponent(getPendulumText()));
             list.add(StringTextComponent.EMPTY);
         }
-        this.addMonsterTextHeader(list);
+        addMonsterTextHeader(list);
         super.addText(list);
     }
     
     public void addPendulumTextHeader(List<ITextComponent> list)
     {
-        IFormattableTextComponent leftScale = new StringTextComponent("" + this.getPendulumScaleLeftBlue());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
-        IFormattableTextComponent leftArrow = new StringTextComponent("◀").setStyle(Style.EMPTY.applyFormatting(TextFormatting.BLUE));
-        IFormattableTextComponent rightArrow = new StringTextComponent("▶").setStyle(Style.EMPTY.applyFormatting(TextFormatting.RED));
-        IFormattableTextComponent rightScale = new StringTextComponent("" + this.getPendulumScaleRightRed());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
-        list.add(leftScale.appendString(" ").appendSibling(leftArrow).appendString(" / ").appendSibling(rightArrow).appendString(" ").appendSibling(rightScale));
+        IFormattableTextComponent leftScale = new StringTextComponent("" + getPendulumScaleLeftBlue());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
+        IFormattableTextComponent leftArrow = new StringTextComponent("◀").setStyle(Style.EMPTY.applyFormat(TextFormatting.BLUE));
+        IFormattableTextComponent rightArrow = new StringTextComponent("▶").setStyle(Style.EMPTY.applyFormat(TextFormatting.RED));
+        IFormattableTextComponent rightScale = new StringTextComponent("" + getPendulumScaleRightRed());//.setStyle(Style.EMPTY.applyFormatting(TextFormatting.WHITE));
+        list.add(leftScale.append(" ").append(leftArrow).append(" / ").append(rightArrow).append(" ").append(rightScale));
     }
     
     @Override
     public void addCardType(List<ITextComponent> list)
     {
-        if(this.getMonsterType() != null)
+        if(getMonsterType() != null)
         {
-            list.add(new StringTextComponent(this.getMonsterType().name + " " + this.getType().name));
+            list.add(new StringTextComponent(getMonsterType().name + " " + getType().name));
         }
-        else if(this.getHasEffect())
+        else if(getHasEffect())
         {
-            list.add(new StringTextComponent("Effect " + this.getType().name));
+            list.add(new StringTextComponent("Effect " + getType().name));
         }
         else
         {
-            list.add(new StringTextComponent("Normal " + this.getType().name));
+            list.add(new StringTextComponent("Normal " + getType().name));
         }
     }
     
     public void addMonsterHeader(List<ITextComponent> list)
     {
-        this.addMonsterHeader1(list);
-        this.addMonsterHeader2(list);
+        addMonsterHeader1(list);
+        addMonsterHeader2(list);
     }
     
     public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getAttribute()));
+        list.add(new StringTextComponent(getAttribute()));
     }
     
     public void addMonsterHeader2(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getAtk() + " ATK"));
+        list.add(new StringTextComponent(getAtk() + " ATK"));
     }
     
     public void addMonsterTextHeader(List<ITextComponent> list)
     {
-        IFormattableTextComponent s = new StringTextComponent(this.getSpecies() + " / ");
+        IFormattableTextComponent s = new StringTextComponent(getSpecies() + " / ");
         
-        if(this.getMonsterType() != null)
+        if(getMonsterType() != null)
         {
-            s.appendString(this.getMonsterType().name + " / ");
+            s.append(getMonsterType().name + " / ");
         }
         
-        if(this.getIsPendulum())
+        if(getIsPendulum())
         {
-            s.appendString("Pendulum" + " / ");
+            s.append("Pendulum" + " / ");
         }
         
-        if(this.getAbility() != null && !this.getAbility().isEmpty())
+        if(getAbility() != null && !getAbility().isEmpty())
         {
-            s.appendString(this.getAbility() + " / ");
+            s.append(getAbility() + " / ");
         }
         
-        if(this.getHasEffect())
+        if(getHasEffect())
         {
-            s.appendString("Effect");
+            s.append("Effect");
         }
         else
         {
-            s.appendString("Normal");
+            s.append("Normal");
         }
         
         list.add(s);
@@ -252,51 +247,51 @@ public class MonsterProperties extends Properties
     
     public String getAttribute()
     {
-        return this.attribute;
+        return attribute;
     }
     
     public int getAtk()
     {
-        return this.atk;
+        return atk;
     }
     
     public String getSpecies()
     {
-        return this.species;
+        return species;
     }
     
     public MonsterType getMonsterType()
     {
-        return this.monsterType;
+        return monsterType;
     }
     
     public boolean getIsPendulum()
     {
-        return this.isPendulum;
+        return isPendulum;
     }
     
     public String getAbility()
     {
-        return this.ability;
+        return ability;
     }
     
     public boolean getHasEffect()
     {
-        return this.hasEffect;
+        return hasEffect;
     }
     
     public String getPendulumText()
     {
-        return this.pendulumText;
+        return pendulumText;
     }
     
     public byte getPendulumScaleLeftBlue()
     {
-        return this.pendulumScaleLeftBlue;
+        return pendulumScaleLeftBlue;
     }
     
     public byte getPendulumScaleRightRed()
     {
-        return this.pendulumScaleRightRed;
+        return pendulumScaleRightRed;
     }
 }

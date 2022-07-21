@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+
+import java.util.Iterator;
+import java.util.LinkedList;
 
 public class LimitedTextureBinder
 {
@@ -14,21 +14,21 @@ public class LimitedTextureBinder
     
     public LimitedTextureBinder(Minecraft minecraft, int size)
     {
-        this.mc = minecraft;
+        mc = minecraft;
         this.size = size;
-        this.list = new LinkedList<>();
+        list = new LinkedList<>();
     }
     
     public void bind(ResourceLocation rl)
     {
         // if the list isnt full, just add the new rl
-        if(this.list.size() >= this.size)
+        if(list.size() >= size)
         {
             // list is already full
             // if its already in, remove it (itll be re-added in front)
             // else remove the last one
             
-            Iterator<ResourceLocation> it = this.list.iterator();
+            Iterator<ResourceLocation> it = list.iterator();
             boolean found = false;
             
             while(it.hasNext())
@@ -46,22 +46,22 @@ public class LimitedTextureBinder
             if(!found)
             {
                 // size must be >= 1, so this can only be called if the list size is >= size >= 1
-                this.unbindTexture(this.list.removeLast());
+                unbindTexture(list.removeLast());
             }
         }
         
         // (re-)add it in front
-        this.list.addFirst(rl);
-        this.bindTexture(rl);
+        list.addFirst(rl);
+        bindTexture(rl);
     }
     
     private void bindTexture(ResourceLocation rl)
     {
-        this.mc.getTextureManager().bindTexture(rl);
+        mc.getTextureManager().bind(rl);
     }
     
     private void unbindTexture(ResourceLocation rl)
     {
-        this.mc.getTextureManager().deleteTexture(rl);
+        mc.getTextureManager().release(rl);
     }
 }

@@ -6,12 +6,12 @@ public enum Species
     
     public final String name;
     
-    private Species(String name)
+    Species(String name)
     {
         this.name = name;
     }
     
-    private Species(String name, boolean custom)
+    Species(String name, boolean custom)
     {
         this(name);
         // not sure if I am going to use the custom parameter

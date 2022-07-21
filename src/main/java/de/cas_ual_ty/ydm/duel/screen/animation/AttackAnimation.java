@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
@@ -29,26 +28,26 @@ public class AttackAnimation extends Animation
         this.sourceZone = sourceZone;
         this.destinationZone = destinationZone;
         
-        this.sourceX = this.sourceZone.getAnimationSourceX();
-        this.sourceY = this.sourceZone.getAnimationSourceY();
-        this.destX = this.destinationZone.getAnimationDestX();
-        this.destY = this.destinationZone.getAnimationDestY();
+        sourceX = this.sourceZone.getAnimationSourceX();
+        sourceY = this.sourceZone.getAnimationSourceY();
+        destX = this.destinationZone.getAnimationDestX();
+        destY = this.destinationZone.getAnimationDestY();
     }
     
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        int halfTime = this.maxTickTime / 2;
+        int halfTime = maxTickTime / 2;
         
-        double relativeTickTime = (double)((this.tickTime % halfTime) + partialTicks) / halfTime;
+        double relativeTickTime = (double) ((tickTime % halfTime) + partialTicks) / halfTime;
         
         // [1pi, 2pi]
         double cosTime1 = Math.PI * relativeTickTime + Math.PI;
         // [0, 1]
-        float relativePositionRotation = (float)((Math.cos(cosTime1) + 1) * 0.5D);
+        float relativePositionRotation = (float) ((Math.cos(cosTime1) + 1) * 0.5D);
         
-        float deltaX = this.destX - this.sourceX;
-        float deltaY = this.destY - this.sourceY;
+        float deltaX = destX - sourceX;
+        float deltaY = destY - sourceY;
         
         float maxSize = MathHelper.sqrt(deltaX * deltaX + deltaY * deltaY);
         
@@ -56,7 +55,7 @@ public class AttackAnimation extends Animation
         
         if(deltaX != 0)
         {
-            rotation = (float)(Math.atan(deltaY / deltaX) + 0.5D * Math.PI);
+            rotation = (float) (Math.atan(deltaY / deltaX) + 0.5D * Math.PI);
         }
         else
         {
@@ -66,7 +65,7 @@ public class AttackAnimation extends Animation
             }
             else
             {
-                rotation = (float)Math.PI;
+                rotation = (float) Math.PI;
             }
         }
         
@@ -78,27 +77,27 @@ public class AttackAnimation extends Animation
         float posX;
         float posY;
         
-        if(this.tickTime < halfTime)
+        if(tickTime < halfTime)
         {
-            posX = this.sourceX;
-            posY = this.sourceY;
+            posX = sourceX;
+            posY = sourceY;
         }
         else
         {
-            posX = this.destX;
-            posY = this.destY;
+            posX = destX;
+            posY = destY;
             rotation += Math.PI;
             relativePositionRotation = 1 - relativePositionRotation;
         }
         
-        ms.push();
+        ms.pushPose();
         
         ms.translate(posX, posY, 0);
-        ms.rotate(new Quaternion(0, 0, rotation, false));
+        ms.mulPose(new Quaternion(0, 0, rotation, false));
         
         ScreenUtil.drawRect(ms, -2, 0, 4, maxSize * relativePositionRotation, 1F, 0, 0, 0.5F);
         
-        ms.pop();
+        ms.popPose();
     }
     
     public static float getRotationForPositionAndView(boolean isOpponentView, CardPosition position)

@@ -6,7 +6,7 @@ public enum MonsterType
     
     public final String name;
     
-    private MonsterType(String name)
+    MonsterType(String name)
     {
         this.name = name;
     }

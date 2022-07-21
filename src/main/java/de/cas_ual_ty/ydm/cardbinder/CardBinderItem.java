@@ -1,9 +1,5 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import net.minecraft.client.util.ITooltipFlag;
@@ -19,6 +15,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class CardBinderItem extends Item implements INamedContainerProvider
 {
@@ -37,7 +37,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
         
         if(itemStack.getOrCreateTag().contains(CardBinderItem.MANAGER_UUID_KEY))
         {
-            uuid = itemStack.getTag().getUniqueId(CardBinderItem.MANAGER_UUID_KEY);
+            uuid = itemStack.getTag().getUUID(CardBinderItem.MANAGER_UUID_KEY);
         }
         else
         {
@@ -49,7 +49,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
             manager = new CardBinderCardsManager();
             manager.generateUUIDIfNull();
             uuid = manager.getUUID();
-            itemStack.getTag().putUniqueId(CardBinderItem.MANAGER_UUID_KEY, uuid);
+            itemStack.getTag().putUUID(CardBinderItem.MANAGER_UUID_KEY, uuid);
             CardBinderItem.MANAGER_MAP.put(uuid, manager);
         }
         else
@@ -61,19 +61,19 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     }
     
     @Override
-    public void addInformation(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
     {
-        super.addInformation(stack, worldIn, tooltip, flagIn);
+        super.appendHoverText(stack, worldIn, tooltip, flagIn);
         
-        tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".uuid"));
+        tooltip.add(new TranslationTextComponent(getDescriptionId() + ".uuid"));
         
-        if(stack.getOrCreateTag().hasUniqueId(CardBinderItem.MANAGER_UUID_KEY))
+        if(stack.getOrCreateTag().hasUUID(CardBinderItem.MANAGER_UUID_KEY))
         {
-            tooltip.add(new StringTextComponent(stack.getTag().getUniqueId(CardBinderItem.MANAGER_UUID_KEY).toString()));
+            tooltip.add(new StringTextComponent(stack.getTag().getUUID(CardBinderItem.MANAGER_UUID_KEY).toString()));
         }
         else
         {
-            tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".uuid.empty"));
+            tooltip.add(new TranslationTextComponent(getDescriptionId() + ".uuid.empty"));
         }
         
         /*// used this when capability was still used
@@ -105,24 +105,24 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     }
     
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
     {
-        ItemStack stack = this.getActiveBinder(player);
+        ItemStack stack = getActiveBinder(player);
         
-        if(player.getHeldItem(hand) == stack)
+        if(player.getItemInHand(hand) == stack)
         {
-            player.openContainer(this);
-            return ActionResult.resultSuccess(stack);
+            player.openMenu(this);
+            return ActionResult.success(stack);
         }
         
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
     
     @Override
     public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
     {
-        ItemStack s = this.getActiveBinder(player);
-        return new CardBinderContainer(YdmContainerTypes.CARD_BINDER, id, playerInv, this.getInventoryManager(s), s);
+        ItemStack s = getActiveBinder(player);
+        return new CardBinderContainer(YdmContainerTypes.CARD_BINDER, id, playerInv, getInventoryManager(s), s);
     }
     
     @Override
@@ -133,13 +133,13 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     
     public ItemStack getActiveBinder(PlayerEntity player)
     {
-        if(player.getHeldItemMainhand().getItem() == this)
+        if(player.getMainHandItem().getItem() == this)
         {
-            return player.getHeldItemMainhand();
+            return player.getMainHandItem();
         }
-        else if(player.getHeldItemOffhand().getItem() == this)
+        else if(player.getOffhandItem().getItem() == this)
         {
-            return player.getHeldItemOffhand();
+            return player.getOffhandItem();
         }
         else
         {

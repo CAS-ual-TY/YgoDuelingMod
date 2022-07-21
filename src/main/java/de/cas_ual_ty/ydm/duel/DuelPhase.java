@@ -23,29 +23,29 @@ public enum DuelPhase
         }
         
         FIRST_INDEX = 0;
-        LAST_INDEX = (byte)(DuelPhase.VALUES.length - 1);
+        LAST_INDEX = (byte) (DuelPhase.VALUES.length - 1);
     }
     
     private byte index;
     public final String local;
     
-    private DuelPhase(String local)
+    DuelPhase(String local)
     {
         this.local = local;
     }
     
     public byte getIndex()
     {
-        return this.index;
+        return index;
     }
     
     public boolean isFirst()
     {
-        return this.index == DuelPhase.FIRST_INDEX;
+        return index == DuelPhase.FIRST_INDEX;
     }
     
     public boolean isLast()
     {
-        return this.index == DuelPhase.LAST_INDEX;
+        return index == DuelPhase.LAST_INDEX;
     }
 }

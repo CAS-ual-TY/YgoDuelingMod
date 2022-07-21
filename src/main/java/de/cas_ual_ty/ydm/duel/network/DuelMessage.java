@@ -1,8 +1,5 @@
 package de.cas_ual_ty.ydm.duel.network;
 
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
@@ -10,10 +7,13 @@ import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 
+import java.util.function.Function;
+import java.util.function.Supplier;
+
 public abstract class DuelMessage
 {
     // Server -> Client
-    public static abstract class ClientBaseMessage extends DuelMessage
+    public abstract static class ClientBaseMessage extends DuelMessage
     {
         public ClientBaseMessage(DuelMessageHeader header)
         {
@@ -33,7 +33,7 @@ public abstract class DuelMessage
     }
     
     // Client -> Server
-    public static abstract class ServerBaseMessage extends DuelMessage
+    public abstract static class ServerBaseMessage extends DuelMessage
     {
         public ServerBaseMessage(DuelMessageHeader header)
         {
@@ -62,14 +62,14 @@ public abstract class DuelMessage
     
     public DuelMessage(PacketBuffer buf)
     {
-        this.decodedHeader = DuelMessageUtility.decodeHeader(buf);
-        this.decodeMessage(buf);
+        decodedHeader = DuelMessageUtility.decodeHeader(buf);
+        decodeMessage(buf);
     }
     
     public void encode(PacketBuffer buf)
     {
-        DuelMessageUtility.encodeHeader(this.header, buf);
-        this.encodeMessage(buf);
+        DuelMessageUtility.encodeHeader(header, buf);
+        encodeMessage(buf);
     }
     
     public abstract void encodeMessage(PacketBuffer buf);
@@ -83,11 +83,11 @@ public abstract class DuelMessage
     public void handle(Supplier<NetworkEvent.Context> ctx)
     {
         NetworkEvent.Context context = ctx.get();
-        PlayerEntity player = this.getPlayer(context);
+        PlayerEntity player = getPlayer(context);
         
         context.enqueueWork(() ->
         {
-            this.handleMessage(player, this.decodedHeader.getDuelManager(player));
+            handleMessage(player, decodedHeader.getDuelManager(player));
         });
         
         context.setPacketHandled(true);

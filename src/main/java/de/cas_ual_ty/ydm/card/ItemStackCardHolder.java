@@ -12,51 +12,51 @@ public class ItemStackCardHolder extends CardHolder
     {
         super();
         this.itemStack = itemStack;
-        this.readCardHolderFromNBT(this.getNBT());
+        readCardHolderFromNBT(getNBT());
     }
     
     private void saveToItemStack()
     {
-        this.writeCardHolderToNBT(this.getNBT());
+        writeCardHolderToNBT(getNBT());
     }
     
     private CompoundNBT getNBT()
     {
-        return this.itemStack.getOrCreateTag();
+        return itemStack.getOrCreateTag();
     }
     
     @Override
     public void setCard(Properties card)
     {
         super.setCard(card);
-        this.saveToItemStack();
+        saveToItemStack();
     }
     
     @Override
     public void setImageIndex(byte imageIndex)
     {
         super.setImageIndex(imageIndex);
-        this.saveToItemStack();
+        saveToItemStack();
     }
     
     @Override
     public void setRarity(String rarity)
     {
         super.setRarity(rarity);
-        this.saveToItemStack();
+        saveToItemStack();
     }
     
     @Override
     public void setCode(String code)
     {
         super.setCode(code);
-        this.saveToItemStack();
+        saveToItemStack();
     }
     
     @Override
     public void override(CardHolder cardHolder)
     {
         super.override(cardHolder);
-        this.saveToItemStack();
+        saveToItemStack();
     }
 }

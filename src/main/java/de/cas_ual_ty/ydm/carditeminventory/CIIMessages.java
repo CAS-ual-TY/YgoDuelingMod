@@ -1,21 +1,21 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public class CIIMessages
 {
     public static void doForContainer(PlayerEntity player, Consumer<CIIContainer> consumer)
     {
-        if(player != null && player.openContainer instanceof CIIContainer)
+        if(player != null && player.containerMenu instanceof CIIContainer)
         {
-            consumer.accept((CIIContainer)player.openContainer);
+            consumer.accept((CIIContainer) player.containerMenu);
         }
     }
     

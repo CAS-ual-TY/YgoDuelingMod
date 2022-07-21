@@ -34,52 +34,52 @@ public class ChangeLPAction extends Action implements IAnnouncedAction
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        buf.writeInt(this.changeAmount);
-        DuelMessageUtility.encodeZoneOwner(this.owner, buf);
+        buf.writeInt(changeAmount);
+        DuelMessageUtility.encodeZoneOwner(owner, buf);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
         this.playField = playField;
-        this.prevLP = this.playField.getLifePoints(this.owner);
+        prevLP = this.playField.getLifePoints(owner);
     }
     
     @Override
     public void doAction()
     {
-        this.newLP = this.playField.changeLifePoints(this.changeAmount, this.owner);
-        this.trueChange = this.newLP - this.prevLP;
+        newLP = playField.changeLifePoints(changeAmount, owner);
+        trueChange = newLP - prevLP;
     }
     
     @Override
     public void undoAction()
     {
-        this.playField.setLifePoints(this.prevLP, this.owner);
+        playField.setLifePoints(prevLP, owner);
     }
     
     @Override
     public void redoAction()
     {
-        this.playField.setLifePoints(this.newLP, this.owner);
+        playField.setLifePoints(newLP, owner);
     }
     
     @Override
     public String getAnnouncementLocalKey()
     {
-        return this.actionType.getLocalKey();
+        return actionType.getLocalKey();
     }
     
     @Override
     public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
     {
-        IFormattableTextComponent t = new StringTextComponent(String.valueOf(this.trueChange));
+        IFormattableTextComponent t = new StringTextComponent(String.valueOf(trueChange));
         
-        if(this.trueChange > 0)
+        if(trueChange > 0)
         {
-            t = new StringTextComponent("+").appendSibling(t);
+            t = new StringTextComponent("+").append(t);
         }
         
-        return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": ").appendSibling(t);
+        return new TranslationTextComponent(getAnnouncementLocalKey()).append(": ").append(t);
     }
 }

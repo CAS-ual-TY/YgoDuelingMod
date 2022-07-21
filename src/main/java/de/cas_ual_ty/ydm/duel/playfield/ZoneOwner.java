@@ -6,7 +6,7 @@ public enum ZoneOwner
 {
     PLAYER1(PlayerRole.PLAYER1), PLAYER2(PlayerRole.PLAYER2), NONE(null);
     
-    public static final ZoneOwner[] PLAYERS = { PLAYER1, PLAYER2 };
+    public static final ZoneOwner[] PLAYERS = {PLAYER1, PLAYER2};
     public static final ZoneOwner[] VALUES = ZoneOwner.values();
     
     public static ZoneOwner getFromIndex(byte index)
@@ -27,14 +27,14 @@ public enum ZoneOwner
     
     public final PlayerRole player;
     
-    private ZoneOwner(PlayerRole player)
+    ZoneOwner(PlayerRole player)
     {
         this.player = player;
     }
     
     public PlayerRole getPlayer()
     {
-        return this.player;
+        return player;
     }
     
     public boolean isPlayer()
@@ -44,12 +44,12 @@ public enum ZoneOwner
     
     public boolean hasAccess(PlayerRole player)
     {
-        return this.getPlayer() == null || player == this.getPlayer();
+        return getPlayer() == null || player == getPlayer();
     }
     
     public byte getIndex()
     {
-        return this.index;
+        return index;
     }
     
     public ZoneOwner opponent()

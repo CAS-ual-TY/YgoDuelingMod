@@ -26,6 +26,6 @@ public class MoveBottomAction extends MoveAction
     @Override
     public void addCard()
     {
-        this.destinationZone.addBottomCard(this.player, this.card);
+        destinationZone.addBottomCard(player, card);
     }
 }

@@ -1,12 +1,11 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.function.Consumer;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.function.Consumer;
 
 public class NonSecretStackZoneWidget extends StackZoneWidget
 {
@@ -16,9 +15,9 @@ public class NonSecretStackZoneWidget extends StackZoneWidget
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        super.renderWidget(ms, mouseX, mouseY, partialTicks);
-        this.hoverCard = null; // dont select top card when clicking on it, ever
+        super.renderButton(ms, mouseX, mouseY, partialTicks);
+        hoverCard = null; // dont select top card when clicking on it, ever
     }
 }

@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.cardinventory;
 
-import java.util.UUID;
-
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.nbt.CompoundNBT;
+
+import java.util.UUID;
 
 public abstract class UUIDCardsManager extends JsonCardsManager
 {
@@ -12,12 +12,12 @@ public abstract class UUIDCardsManager extends JsonCardsManager
     
     public UUIDCardsManager()
     {
-        this.uuid = null;
+        uuid = null;
     }
     
     public UUID getUUID()
     {
-        return this.uuid;
+        return uuid;
     }
     
     public void setUUID(UUID uuid)
@@ -27,27 +27,27 @@ public abstract class UUIDCardsManager extends JsonCardsManager
     
     public void generateUUIDIfNull()
     {
-        if(this.uuid == null)
+        if(uuid == null)
         {
-            this.uuid = YdmUtil.createRandomUUID();
+            uuid = YdmUtil.createRandomUUID();
         }
     }
     
     @Override
     public void readFromNBT(CompoundNBT nbt)
     {
-        if(nbt.hasUniqueId(JsonKeys.UUID))
+        if(nbt.hasUUID(JsonKeys.UUID))
         {
-            this.uuid = nbt.getUniqueId(JsonKeys.UUID);
+            uuid = nbt.getUUID(JsonKeys.UUID);
         }
     }
     
     @Override
     public void writeToNBT(CompoundNBT nbt)
     {
-        if(this.getUUID() != null)
+        if(getUUID() != null)
         {
-            nbt.putUniqueId(JsonKeys.UUID, this.getUUID());
+            nbt.putUUID(JsonKeys.UUID, getUUID());
         }
     }
 }

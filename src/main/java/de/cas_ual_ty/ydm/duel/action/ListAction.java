@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import java.util.List;
-
 import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import net.minecraft.network.PacketBuffer;
+
+import java.util.List;
 
 public class ListAction extends Action
 {
@@ -24,13 +24,13 @@ public class ListAction extends Action
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        DuelMessageUtility.encodeList(this.actions, buf, DuelMessageUtility::encodeAction);
+        DuelMessageUtility.encodeList(actions, buf, DuelMessageUtility::encodeAction);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
-        for(Action action : this.actions)
+        for(Action action : actions)
         {
             action.initServer(playField);
         }
@@ -39,7 +39,7 @@ public class ListAction extends Action
     @Override
     public void initClient(PlayField playField)
     {
-        for(Action action : this.actions)
+        for(Action action : actions)
         {
             action.initClient(playField);
         }
@@ -48,7 +48,7 @@ public class ListAction extends Action
     @Override
     public void doAction()
     {
-        for(Action action : this.actions)
+        for(Action action : actions)
         {
             action.doAction();
         }
@@ -57,16 +57,16 @@ public class ListAction extends Action
     @Override
     public void undoAction()
     {
-        for(int i = this.actions.size() - 1; i >= 0; --i)
+        for(int i = actions.size() - 1; i >= 0; --i)
         {
-            this.actions.get(i).undoAction();
+            actions.get(i).undoAction();
         }
     }
     
     @Override
     public void redoAction()
     {
-        for(Action action : this.actions)
+        for(Action action : actions)
         {
             action.redoAction();
         }

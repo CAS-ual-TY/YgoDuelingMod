@@ -24,6 +24,6 @@ public enum PlayerRole
     
     public byte getIndex()
     {
-        return this.index;
+        return index;
     }
 }

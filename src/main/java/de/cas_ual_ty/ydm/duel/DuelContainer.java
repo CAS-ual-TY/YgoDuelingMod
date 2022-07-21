@@ -15,40 +15,40 @@ public abstract class DuelContainer extends Container
     {
         super(type, id);
         this.duelManager = duelManager;
-        this.onContainerOpened(player);
+        onContainerOpened(player);
     }
     
     @Override
-    public abstract boolean canInteractWith(PlayerEntity player);
+    public abstract boolean stillValid(PlayerEntity player);
     
     public DuelManager getDuelManager()
     {
-        return this.duelManager;
+        return duelManager;
     }
     
     public void onContainerOpened(PlayerEntity player)
     {
-        if(player.world.isRemote)
+        if(player.level.isClientSide)
         {
-            this.requestFullUpdate();
+            requestFullUpdate();
         }
         else
         {
-            this.getDuelManager().playerOpenContainer(player);
+            getDuelManager().playerOpenContainer(player);
         }
     }
     
     // make sure to only call this on client
     public void requestFullUpdate()
     {
-        this.getDuelManager().reset();
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestFullUpdate(this.getDuelManager().getHeader()));
+        getDuelManager().reset();
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestFullUpdate(getDuelManager().getHeader()));
     }
     
     @Override
-    public void onContainerClosed(PlayerEntity player)
+    public void removed(PlayerEntity player)
     {
-        this.getDuelManager().playerCloseContainer(player);
-        super.onContainerClosed(player);
+        getDuelManager().playerCloseContainer(player);
+        super.removed(player);
     }
 }

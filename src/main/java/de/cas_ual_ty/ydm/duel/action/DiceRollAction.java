@@ -29,18 +29,18 @@ public class DiceRollAction extends RandomAction
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        buf.writeInt(this.result);
+        buf.writeInt(result);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
-        this.result = playField.getDuelManager().getRandom().nextInt(6) + 1;
+        result = playField.getDuelManager().getRandom().nextInt(6) + 1;
     }
     
     @Override
     public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
     {
-        return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": " + this.result);
+        return new TranslationTextComponent(getAnnouncementLocalKey()).append(": " + result);
     }
 }

@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.cardinventory;
 
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 
@@ -13,47 +12,47 @@ public class CardHolderStack
     public CardHolderStack(CardHolder cardHolder)
     {
         this.cardHolder = cardHolder;
-        this.count = 1;
+        count = 1;
     }
     
     public CardHolderStack(JsonObject json)
     {
-        this.readFromJson(json);
+        readFromJson(json);
     }
     
     public CardHolderStack merge(CardHolderStack wrapper)
     {
-        this.count += wrapper.count;
+        count += wrapper.count;
         return this;
     }
     
     public int getCount()
     {
-        return this.count;
+        return count;
     }
     
     public CardHolder getCardHolder()
     {
         JsonObject json = new JsonObject();
-        this.cardHolder.writeToJson(json);
+        cardHolder.writeToJson(json);
         return new CardHolder(json);
     }
     
     public CardHolder getKey()
     {
-        return this.cardHolder;
+        return cardHolder;
     }
     
     public void writeToJson(JsonObject json)
     {
-        this.cardHolder.writeToJson(json);
-        json.addProperty(JsonKeys.COUNT, this.count);
+        cardHolder.writeToJson(json);
+        json.addProperty(JsonKeys.COUNT, count);
     }
     
     public void readFromJson(JsonObject json)
     {
-        this.cardHolder = new CardHolder(json);
-        this.count = json.get(JsonKeys.COUNT).getAsInt();
+        cardHolder = new CardHolder(json);
+        count = json.get(JsonKeys.COUNT).getAsInt();
     }
     
     public static int compareCardHolders(CardHolder h1, CardHolder h2)

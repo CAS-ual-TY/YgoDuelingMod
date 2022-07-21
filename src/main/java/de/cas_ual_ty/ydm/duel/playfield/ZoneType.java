@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.duel.playfield;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.registries.ForgeRegistryEntry;
+
+import javax.annotation.Nullable;
 
 public class ZoneType extends ForgeRegistryEntry<ZoneType>
 {
@@ -24,65 +24,65 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
     
     public ZoneType()
     {
-        this.straightOnly = true;
-        this.isStrict = false;
-        this.isSecret = false;
-        this.showFaceDownCardsToOwner = false;
-        this.keepFocusedAfterInteraction = false;
-        this.canHaveCounters = false;
+        straightOnly = true;
+        isStrict = false;
+        isSecret = false;
+        showFaceDownCardsToOwner = false;
+        keepFocusedAfterInteraction = false;
+        canHaveCounters = false;
         
-        this.defaultCardPosition = null;
+        defaultCardPosition = null;
         
-        this.noOwner = false;
+        noOwner = false;
     }
     
     public String getLocalKey()
     {
-        return "zone." + this.getRegistryName().getNamespace() + "." + this.getRegistryName().getPath();
+        return "zone." + getRegistryName().getNamespace() + "." + getRegistryName().getPath();
     }
     
     public ITextComponent getLocal()
     {
-        return new TranslationTextComponent(this.getLocalKey());
+        return new TranslationTextComponent(getLocalKey());
     }
     
     // allow SET and DEF position
     public ZoneType allowSideways()
     {
-        this.straightOnly = false;
+        straightOnly = false;
         return this;
     }
     
     // disallow viewing of cards inside without opponent noticing (deck)
     public ZoneType secret()
     {
-        this.isSecret = true;
+        isSecret = true;
         return this;
     }
     
     // dont allow enemy cards in zone (GY, banished)
     public ZoneType strict()
     {
-        this.isStrict = true;
+        isStrict = true;
         return this;
     }
     
     // cards which are face down are shown to the owner
     public ZoneType showFaceDownCardsToOwner()
     {
-        this.showFaceDownCardsToOwner = true;
+        showFaceDownCardsToOwner = true;
         return this;
     }
     
     public ZoneType keepFocusedAfterInteraction()
     {
-        this.keepFocusedAfterInteraction = true;
+        keepFocusedAfterInteraction = true;
         return this;
     }
     
     public ZoneType canHaveCounters()
     {
-        this.canHaveCounters = true;
+        canHaveCounters = true;
         return this;
     }
     
@@ -96,48 +96,48 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
     // for the link zones; does not create this zone once for each side
     public ZoneType noOwner()
     {
-        this.noOwner = true;
+        noOwner = true;
         return this;
     }
     
     public boolean getStraightOnly()
     {
-        return this.straightOnly;
+        return straightOnly;
     }
     
     public boolean getIsStrict()
     {
-        return this.isStrict;
+        return isStrict;
     }
     
     public boolean getIsSecret()
     {
-        return this.isSecret;
+        return isSecret;
     }
     
     public boolean getKeepFocusedAfterInteraction()
     {
-        return this.keepFocusedAfterInteraction;
+        return keepFocusedAfterInteraction;
     }
     
     public boolean getShowFaceDownCardsToOwner()
     {
-        return this.showFaceDownCardsToOwner;
+        return showFaceDownCardsToOwner;
     }
     
     public boolean getCanHaveCounters()
     {
-        return this.canHaveCounters;
+        return canHaveCounters;
     }
     
     @Nullable
     public CardPosition getDefaultCardPosition()
     {
-        return this.defaultCardPosition;
+        return defaultCardPosition;
     }
     
     public boolean getNoOwner()
     {
-        return this.noOwner;
+        return noOwner;
     }
 }

@@ -1,13 +1,6 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Function;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
@@ -27,6 +20,12 @@ import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraftforge.client.model.ItemTextureQuadConverter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
+
 @SuppressWarnings("deprecation")
 public class FinalCardSetBakedModel implements IBakedModel
 {
@@ -44,14 +43,14 @@ public class FinalCardSetBakedModel implements IBakedModel
     public FinalCardSetBakedModel(IBakedModel mainModel)
     {
         this.mainModel = mainModel;
-        this.setActiveItemStack(ItemStack.EMPTY);
-        this.textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-        this.quadsMap = new HashMap<>(YdmDatabase.SETS_LIST.size());
+        setActiveItemStack(ItemStack.EMPTY);
+        textureGetter = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS);
+        quadsMap = new HashMap<>(YdmDatabase.SETS_LIST.size());
     }
     
     public FinalCardSetBakedModel setActiveItemStack(ItemStack itemStack)
     {
-        this.activeItemStack = itemStack;
+        activeItemStack = itemStack;
         return this;
     }
     
@@ -59,31 +58,31 @@ public class FinalCardSetBakedModel implements IBakedModel
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
     {
         List<BakedQuad> list = new ArrayList<>(0);
-        list.addAll(this.getSetList());
+        list.addAll(getSetList());
         
-        if(this.activeItemStack.getItem() == YdmItems.OPENED_SET)
+        if(activeItemStack.getItem() == YdmItems.OPENED_SET)
         {
-            list.addAll(this.getOpenedList());
+            list.addAll(getOpenedList());
         }
         
         if(ClientProxy.itemsUseSetImagesActive)
         {
-            CardSet set = YdmItems.SET.getCardSet(this.activeItemStack);
+            CardSet set = YdmItems.SET.getCardSet(activeItemStack);
             
             if(set != CardSet.DUMMY)
             {
                 ResourceLocation front = set.getItemImageResourceLocation();
-                TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
+                TextureAtlasSprite spriteFront = textureGetter.apply(front);
                 
-                if(!this.quadsMap.containsKey(set))
+                if(!quadsMap.containsKey(set))
                 {
                     List<BakedQuad> textureQuads = new ArrayList<>(0);
-                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
-                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F - this.distance, Direction.NORTH, 0xFFFFFFFF, 1));
-                    this.quadsMap.put(set, textureQuads);
+                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + distance, Direction.SOUTH, 0xFFFFFFFF, 1));
+                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F - distance, Direction.NORTH, 0xFFFFFFFF, 1));
+                    quadsMap.put(set, textureQuads);
                 }
                 
-                list.addAll(this.quadsMap.get(set));
+                list.addAll(quadsMap.get(set));
             }
         }
         
@@ -91,45 +90,45 @@ public class FinalCardSetBakedModel implements IBakedModel
     }
     
     @Override
-    public boolean isAmbientOcclusion()
+    public boolean useAmbientOcclusion()
     {
-        return this.mainModel.isAmbientOcclusion();
+        return mainModel.useAmbientOcclusion();
     }
     
     @Override
     public boolean isGui3d()
     {
-        return this.mainModel.isGui3d();
+        return mainModel.isGui3d();
     }
     
     @Override
-    public boolean isSideLit()
+    public boolean usesBlockLight()
     {
-        return this.mainModel.isSideLit();
+        return mainModel.usesBlockLight();
     }
     
     @Override
-    public boolean isBuiltInRenderer()
+    public boolean isCustomRenderer()
     {
-        return this.mainModel.isBuiltInRenderer();
+        return mainModel.isCustomRenderer();
     }
     
     @Override
-    public TextureAtlasSprite getParticleTexture()
+    public TextureAtlasSprite getParticleIcon()
     {
-        return this.mainModel.getParticleTexture();
+        return mainModel.getParticleIcon();
     }
     
     @Override
     public ItemOverrideList getOverrides()
     {
-        return this.mainModel.getOverrides();
+        return mainModel.getOverrides();
     }
     
     @Override
     public IBakedModel handlePerspective(TransformType t, MatrixStack mat)
     {
-        mat.push();
+        mat.pushPose();
         
         switch(t)
         {
@@ -148,7 +147,7 @@ public class FinalCardSetBakedModel implements IBakedModel
                 mat.scale(0.5F, 0.5F, 0.5F);
                 break;
             case FIXED:
-                mat.rotate(new Quaternion(Direction.UP.toVector3f(), 180F, true));
+                mat.mulPose(new Quaternion(Direction.UP.step(), 180F, true));
                 break;
             default:
                 break;
@@ -159,29 +158,29 @@ public class FinalCardSetBakedModel implements IBakedModel
     
     private List<BakedQuad> getSetList()
     {
-        if(this.setList == null)
+        if(setList == null)
         {
             ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addSetItemTag("blanc_set"));
-            TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.setList = new ArrayList<>(0);
-            this.setList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
-            this.setList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1));
+            TextureAtlasSprite sprite = textureGetter.apply(rl);
+            setList = new ArrayList<>(0);
+            setList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
+            setList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1));
         }
         
-        return this.setList;
+        return setList;
     }
     
     private List<BakedQuad> getOpenedList()
     {
-        if(this.openedList == null)
+        if(openedList == null)
         {
             ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YdmItems.OPENED_SET.getRegistryName().getPath());
-            TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.openedList = new ArrayList<>(0);
-            this.openedList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F + 2 * this.distance, Direction.SOUTH, 0xFFFFFFFF, 1));
-            this.openedList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - 2 * this.distance, Direction.NORTH, 0xFFFFFFFF, 1));
+            TextureAtlasSprite sprite = textureGetter.apply(rl);
+            openedList = new ArrayList<>(0);
+            openedList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F + 2 * distance, Direction.SOUTH, 0xFFFFFFFF, 1));
+            openedList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - 2 * distance, Direction.NORTH, 0xFFFFFFFF, 1));
         }
         
-        return this.openedList;
+        return openedList;
     }
 }

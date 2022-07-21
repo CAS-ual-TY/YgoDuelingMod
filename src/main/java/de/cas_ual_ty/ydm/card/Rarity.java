@@ -6,7 +6,7 @@ public enum Rarity
     
     public final String name;
     
-    private Rarity(String name)
+    Rarity(String name)
     {
         this.name = name;
     }

@@ -1,9 +1,5 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
@@ -12,13 +8,17 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public class CardBinderMessages
 {
     public static void doForBinderContainer(PlayerEntity player, Consumer<CardBinderContainer> consumer)
     {
-        if(player != null && player.openContainer instanceof CardBinderContainer)
+        if(player != null && player.containerMenu instanceof CardBinderContainer)
         {
-            consumer.accept((CardBinderContainer)player.openContainer);
+            consumer.accept((CardBinderContainer) player.containerMenu);
         }
     }
     

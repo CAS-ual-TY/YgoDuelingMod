@@ -1,13 +1,13 @@
 package de.cas_ual_ty.ydm.deckbox;
 
-import java.util.LinkedList;
-import java.util.function.Supplier;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+
+import java.util.LinkedList;
+import java.util.function.Supplier;
 
 public class DeckBuilder
 {
@@ -22,22 +22,22 @@ public class DeckBuilder
     
     public DeckBuilder()
     {
-        this.main = new LinkedList<>();
-        this.extra = new LinkedList<>();
-        this.side = new LinkedList<>();
-        this.mode = 0;
+        main = new LinkedList<>();
+        extra = new LinkedList<>();
+        side = new LinkedList<>();
+        mode = 0;
     }
     
     private LinkedList<Entry> getList()
     {
-        switch(this.mode)
+        switch(mode)
         {
             case MAIN_MODE:
-                return this.main;
+                return main;
             case EXTRA_MODE:
-                return this.extra;
+                return extra;
             case SIDE_MODE:
-                return this.side;
+                return side;
         }
         
         return null;
@@ -45,7 +45,7 @@ public class DeckBuilder
     
     private void addEntry(Entry entry)
     {
-        LinkedList<Entry> list = this.getList();
+        LinkedList<Entry> list = getList();
         
         if(list != null)
         {
@@ -63,53 +63,53 @@ public class DeckBuilder
     
     public DeckBuilder startMainDeck()
     {
-        this.setMode(DeckBuilder.MAIN_MODE);
+        setMode(DeckBuilder.MAIN_MODE);
         return this;
     }
     
     public DeckBuilder startExtraDeck()
     {
-        this.setMode(DeckBuilder.EXTRA_MODE);
+        setMode(DeckBuilder.EXTRA_MODE);
         return this;
     }
     
     public DeckBuilder startSideDeck()
     {
-        this.setMode(DeckBuilder.SIDE_MODE);
+        setMode(DeckBuilder.SIDE_MODE);
         return this;
     }
     
     public DeckBuilder end()
     {
-        this.setMode(-1);
+        setMode(-1);
         return this;
     }
     
     public DeckBuilder id(long id)
     {
-        return this.id(id, (byte)0);
+        return id(id, (byte) 0);
     }
     
     public DeckBuilder id(long id, byte imageIndex)
     {
-        this.addEntry(new IdEntry(id, imageIndex));
+        addEntry(new IdEntry(id, imageIndex));
         return this;
     }
     
     public DeckBuilder name(String name)
     {
-        return this.name(name, (byte)0);
+        return name(name, (byte) 0);
     }
     
     public DeckBuilder name(String name, byte imageIndex)
     {
-        this.addEntry(new NameEntry(name, imageIndex));
+        addEntry(new NameEntry(name, imageIndex));
         return this;
     }
     
     public DeckBuilder repeat()
     {
-        LinkedList<Entry> list = this.getList();
+        LinkedList<Entry> list = getList();
         
         if(list != null)
         {
@@ -121,9 +121,9 @@ public class DeckBuilder
     
     public Supplier<DeckHolder> build()
     {
-        if(this.mode >= 0)
+        if(mode >= 0)
         {
-            this.end();
+            end();
         }
         
         return () ->
@@ -132,7 +132,7 @@ public class DeckBuilder
             
             CardHolder card;
             
-            for(Entry s : this.main)
+            for(Entry s : main)
             {
                 card = s.get();
                 
@@ -147,7 +147,7 @@ public class DeckBuilder
                 }
             }
             
-            for(Entry s : this.extra)
+            for(Entry s : extra)
             {
                 card = s.get();
                 
@@ -162,7 +162,7 @@ public class DeckBuilder
                 }
             }
             
-            for(Entry s : this.side)
+            for(Entry s : side)
             {
                 card = s.get();
                 
@@ -181,7 +181,7 @@ public class DeckBuilder
         };
     }
     
-    private static abstract class Entry implements Supplier<CardHolder>
+    private abstract static class Entry implements Supplier<CardHolder>
     {
         public abstract String getErrorString();
     }
@@ -199,26 +199,26 @@ public class DeckBuilder
         
         public IdEntry(long id)
         {
-            this(id, (byte)0);
+            this(id, (byte) 0);
         }
         
         @Override
         public CardHolder get()
         {
-            Properties p = YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getId() == this.id);
+            Properties p = YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getId() == id);
             
             if(p == null)
             {
                 return null;
             }
             
-            return new CardHolder(p, this.imageIndex, Rarity.CREATIVE.name);
+            return new CardHolder(p, imageIndex, Rarity.CREATIVE.name);
         }
         
         @Override
         public String getErrorString()
         {
-            return "Id Entry (id, image index): " + this.id + " " + this.imageIndex;
+            return "Id Entry (id, image index): " + id + " " + imageIndex;
         }
     }
     
@@ -236,20 +236,20 @@ public class DeckBuilder
         @Override
         public CardHolder get()
         {
-            Properties p = YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getName().equals(this.name));
+            Properties p = YdmDatabase.PROPERTIES_LIST.getFirst((c) -> c.getName().equals(name));
             
             if(p == null)
             {
                 return null;
             }
             
-            return new CardHolder(p, this.imageIndex, Rarity.CREATIVE.name);
+            return new CardHolder(p, imageIndex, Rarity.CREATIVE.name);
         }
         
         @Override
         public String getErrorString()
         {
-            return "Name Entry (name, image index): " + this.name + " " + this.imageIndex;
+            return "Name Entry (name, image index): " + name + " " + imageIndex;
         }
     }
 }

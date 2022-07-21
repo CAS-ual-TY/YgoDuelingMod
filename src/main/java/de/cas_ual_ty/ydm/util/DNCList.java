@@ -1,13 +1,8 @@
 package de.cas_ual_ty.ydm.util;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.function.Predicate;
-
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.function.Predicate;
 
 // Divide and Conquer list
 // V is element type (value)
@@ -29,33 +24,33 @@ public class DNCList<K, V> implements Iterable<V>
         this.keyExtractor = keyExtractor;
         this.keyComparator = keyComparator;
         
-        this.sortingComparator = (v1, v2) -> this.keyComparator.compare(this.keyExtractor.getKeyFrom(v1), this.keyExtractor.getKeyFrom(v2));
-        this.dncComparator = (k, v) -> this.keyComparator.compare(k, this.keyExtractor.getKeyFrom(v));
+        sortingComparator = (v1, v2) -> this.keyComparator.compare(this.keyExtractor.getKeyFrom(v1), this.keyExtractor.getKeyFrom(v2));
+        dncComparator = (k, v) -> this.keyComparator.compare(k, this.keyExtractor.getKeyFrom(v));
         
-        this.isSorted = true;
-        this.clear();
+        isSorted = true;
+        clear();
     }
     
     public int getIndexOfSameKey(V value)
     {
-        return this.getIndex(this.keyExtractor.getKeyFrom(value));
+        return getIndex(keyExtractor.getKeyFrom(value));
     }
     
     public int getIndex(K key)
     {
-        return this.getIndex(key, false);
+        return getIndex(key, false);
     }
     
     public int getIndex(K key, boolean forceReturn)
     {
-        if(this.list.isEmpty() && !forceReturn)
+        if(list.isEmpty() && !forceReturn)
         {
             return -1;
         }
         
-        if(!this.isSorted)
+        if(!isSorted)
         {
-            this.sort();
+            sort();
         }
         
         V p;
@@ -65,15 +60,15 @@ public class DNCList<K, V> implements Iterable<V>
         int left = 0;
         
         // right excluded
-        int right = this.list.size();
+        int right = list.size();
         
         // current index
-        int index = this.list.size() / 2;
+        int index = list.size() / 2;
         
         while(left < right)
         {
-            p = this.list.get(index);
-            result = this.dncComparator.compare(key, p);
+            p = list.get(index);
+            result = dncComparator.compare(key, p);
             
             if(result <= -1) // id comes before currently viewed p
             {
@@ -96,39 +91,39 @@ public class DNCList<K, V> implements Iterable<V>
          * - list: [0, 1, 2, 3, 4] (size: 5)
          * - search for: 3
          * - compare method ~: > (greater than)
-         * 
+         *
          * Iteration 1:
          * - left = 0
          * - right = 5
          * - index = 2
          * - result = 1 (3~2 -> 1)
-         * 
+         *
          * Iteration 2:
          * - left = 3
          * - right = 5
          * - index = 4
          * - result = -1 (3~4 -> -1)
-         * 
+         *
          * Iteration 3:
          * - left = 3
          * - right = 4
          * - index = 3
          * - result = 0 (3~3 -> 0)
-         * 
+         *
          * Otherwise, if this would not have been a match and we would search for 2.5:
          * ...
          * - result = -1 (2.5~3 -> -1)
-         * 
+         *
          * Iteration 4:
          * - left = 3
          * - right = 3
          * - index = 3
          * - loop end (left<right does not hold anymore)
-         * 
+         *
          * And finally, if we would have instead searched for 3.5:
          * ...
          * - result = 1 (3.5~3 -> 1)
-         * 
+         *
          * Iteration 4:
          * - left = 4
          * - right = 4
@@ -148,16 +143,16 @@ public class DNCList<K, V> implements Iterable<V>
     
     public V getByIndex(int index)
     {
-        return this.list.get(index);
+        return list.get(index);
     }
     
     public V get(K key)
     {
-        int index = this.getIndex(key);
+        int index = getIndex(key);
         
         if(index != -1)
         {
-            return this.getByIndex(index);
+            return getByIndex(index);
         }
         else
         {
@@ -167,29 +162,29 @@ public class DNCList<K, V> implements Iterable<V>
     
     public void add(V value)
     {
-        if(this.isSorted)
+        if(isSorted)
         {
-            this.isSorted = false;
+            isSorted = false;
         }
         
-        this.list.add(value);
+        list.add(value);
     }
     
     public void addAll(Collection<V> collection)
     {
-        if(this.isSorted)
+        if(isSorted)
         {
-            this.isSorted = false;
+            isSorted = false;
         }
         
-        this.list.addAll(collection);
+        list.addAll(collection);
     }
     
     public void addAll(DNCList<K, V> list)
     {
-        if(this.isSorted)
+        if(isSorted)
         {
-            this.isSorted = false;
+            isSorted = false;
         }
         
         this.list.addAll(list.list);
@@ -197,83 +192,83 @@ public class DNCList<K, V> implements Iterable<V>
     
     public void addKeepSorted(V value)
     {
-        K key = this.keyExtractor.getKeyFrom(value);
-        int index = this.getIndex(key, true);
+        K key = keyExtractor.getKeyFrom(value);
+        int index = getIndex(key, true);
         
-        if(index >= this.list.size())
+        if(index >= list.size())
         {
-            this.list.add(value);
+            list.add(value);
             return;
         }
         
-        V current = this.getByIndex(index);
-        int comparison = this.dncComparator.compare(key, current);
+        V current = getByIndex(index);
+        int comparison = dncComparator.compare(key, current);
         
         if(comparison < 1)
         {
-            this.list.add(index, value);
+            list.add(index, value);
         }
         else
         {
-            this.list.add(index + 1, value);
+            list.add(index + 1, value);
         }
     }
     
     public V remove(K key)
     {
-        return this.removeIndex(this.getIndex(key));
+        return removeIndex(getIndex(key));
     }
     
     public V removeIndex(int index)
     {
-        return this.list.remove(index);
+        return list.remove(index);
     }
     
     public boolean contains(K key)
     {
-        return this.get(key) != null;
+        return get(key) != null;
     }
     
     public int size()
     {
-        return this.list.size();
+        return list.size();
     }
     
     public void sort()
     {
-        this.list.sort(this.sortingComparator);
-        this.isSorted = true;
+        list.sort(sortingComparator);
+        isSorted = true;
     }
     
     public boolean isSorted()
     {
-        return this.isSorted;
+        return isSorted;
     }
     
     public void ensureExtraCapacity(int size)
     {
-        this.list.ensureCapacity(this.list.size() + size);
+        list.ensureCapacity(list.size() + size);
     }
     
     public List<V> getList()
     {
-        return this.list;
+        return list;
     }
     
     public List<V> getSubList(int min, int max)
     {
-        return this.list.subList(min, max);
+        return list.subList(min, max);
     }
     
     public void clear()
     {
-        this.list = new ArrayList<>(0);
+        list = new ArrayList<>(0);
     }
     
     @Nullable
     public V getFirst(Predicate<V> predicate)
     {
-        for(V v : this.list)
+        for(V v : list)
         {
             if(predicate.test(v))
             {
@@ -287,21 +282,21 @@ public class DNCList<K, V> implements Iterable<V>
     @Override
     public Iterator<V> iterator()
     {
-        return this.list.iterator();
+        return list.iterator();
     }
     
     @Override
     public String toString()
     {
-        return this.list.toString();
+        return list.toString();
     }
     
-    private static interface DNCComparator<K, V>
+    private interface DNCComparator<K, V>
     {
         int compare(K k, V v);
     }
     
-    public static interface KeyExtractor<K, V>
+    public interface KeyExtractor<K, V>
     {
         K getKeyFrom(V v);
     }

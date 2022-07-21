@@ -1,10 +1,6 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -17,6 +13,9 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class CardRenderUtil
 {
@@ -58,29 +57,27 @@ public class CardRenderUtil
         
         int maxWidth = width - margin * 2;
         
-        ms.push();
+        ms.pushPose();
         ScreenUtil.white();
         
+        int x = margin;
+        
+        if(maxWidth < imageSize)
         {
-            int x = margin;
-            
-            if(maxWidth < imageSize)
-            {
-                // draw it centered if the space we got is limited
-                // to make sure the image is NOT rendered more to the right of the center
-                x = (maxWidth - imageSize) / 2 + margin;
-            }
-            
-            // card texture
-            
-            CardRenderUtil.bindInfoResourceLocation(card);
+            // draw it centered if the space we got is limited
+            // to make sure the image is NOT rendered more to the right of the center
+            x = (maxWidth - imageSize) / 2 + margin;
+        }
+        
+        // card texture
+        
+        CardRenderUtil.bindInfoResourceLocation(card);
+        YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
+        
+        if(token)
+        {
+            ClientProxy.getMinecraft().textureManager.bind(CardRenderUtil.getInfoTokenOverlay());
             YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
-            
-            if(token)
-            {
-                ClientProxy.getMinecraft().textureManager.bindTexture(CardRenderUtil.getInfoTokenOverlay());
-                YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
-            }
         }
         
         // need to multiply x2 because we are scaling the text to x0.5
@@ -88,19 +85,17 @@ public class CardRenderUtil
         margin *= 2;
         ms.scale(f, f, f);
         
-        {
-            // card description text
-            
-            @SuppressWarnings("resource")
-            FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
-            
-            List<ITextComponent> list = new LinkedList<>();
-            card.getCard().addInformation(list);
-            
-            ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
-        }
+        // card description text
         
-        ms.pop();
+        @SuppressWarnings("resource")
+        FontRenderer fontRenderer = ClientProxy.getMinecraft().font;
+        
+        List<ITextComponent> list = new LinkedList<>();
+        card.getCard().addInformation(list);
+        
+        ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
+        
+        ms.popPose();
     }
     
     public static void bindInfoResourceLocation(CardHolder c)
@@ -135,7 +130,7 @@ public class CardRenderUtil
     
     public static void bindSleeves(CardSleevesType s)
     {
-        ClientProxy.getMinecraft().textureManager.bindTexture(s.getMainRL(ClientProxy.activeCardMainImageSize));
+        ClientProxy.getMinecraft().textureManager.bind(s.getMainRL(ClientProxy.activeCardMainImageSize));
     }
     
     public static ResourceLocation getInfoCardBack()
@@ -182,14 +177,14 @@ public class CardRenderUtil
         }
         else
         {
-            mc.getTextureManager().bindTexture(back.getMainRL(ClientProxy.activeCardMainImageSize));
+            mc.getTextureManager().bind(back.getMainRL(ClientProxy.activeCardMainImageSize));
         }
         
         blitMethod.fullBlit(ms, x, y, width, height);
         
         if(card.getIsToken())
         {
-            mc.getTextureManager().bindTexture(CardRenderUtil.getMainTokenOverlay());
+            mc.getTextureManager().bind(CardRenderUtil.getMainTokenOverlay());
             blitMethod.fullBlit(ms, x, y, width, height);
         }
     }
@@ -197,17 +192,17 @@ public class CardRenderUtil
     public static void renderDuelCard(MatrixStack ms, CardSleevesType back, int mouseX, int mouseY, float x, float y, float width, float height, DuelCard card, boolean forceFaceUp)
     {
         CardRenderUtil.renderDuelCardAdvanced(ms, back, mouseX, mouseY, x, y, width, height, card,
-            card.getCardPosition().isStraight
-                ? YdmBlitUtil::fullBlit
-                : YdmBlitUtil::fullBlit90Degree, forceFaceUp);
+                card.getCardPosition().isStraight
+                        ? YdmBlitUtil::fullBlit
+                        : YdmBlitUtil::fullBlit90Degree, forceFaceUp);
     }
     
     public static void renderDuelCardReversed(MatrixStack ms, CardSleevesType back, int mouseX, int mouseY, float x, float y, float width, float height, DuelCard card, boolean forceFaceUp)
     {
         CardRenderUtil.renderDuelCardAdvanced(ms, back, mouseX, mouseY, x, y, width, height, card,
-            card.getCardPosition().isStraight
-                ? YdmBlitUtil::fullBlit180Degree
-                : YdmBlitUtil::fullBlit270Degree, forceFaceUp);
+                card.getCardPosition().isStraight
+                        ? YdmBlitUtil::fullBlit180Degree
+                        : YdmBlitUtil::fullBlit270Degree, forceFaceUp);
     }
     
     public static void renderDuelCardCentered(MatrixStack ms, CardSleevesType back, int mouseX, int mouseY, float x, float y, float width, float height, DuelCard card, boolean forceFaceUp)

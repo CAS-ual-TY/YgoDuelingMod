@@ -1,95 +1,95 @@
 package de.cas_ual_ty.ydm.util;
 
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.set.CardSet;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraftforge.eventbus.api.IEventBus;
 
+import javax.annotation.Nullable;
+
 public interface ISidedProxy
 {
-    public default void registerModEventListeners(IEventBus bus)
+    default void registerModEventListeners(IEventBus bus)
     {
     }
     
-    public default void registerForgeEventListeners(IEventBus bus)
+    default void registerForgeEventListeners(IEventBus bus)
     {
     }
     
-    public default void preInit()
-    {
-        
-    }
-    
-    public default void init()
+    default void preInit()
     {
         
     }
     
-    public default void initFolders()
+    default void init()
     {
         
     }
     
-    public default void initFiles()
+    default void initFolders()
+    {
+        
+    }
+    
+    default void initFiles()
     {
         
     }
     
     @Nullable
-    public default PlayerEntity getClientPlayer()
+    default PlayerEntity getClientPlayer()
     {
         return null;
     }
     
-    public default String addCardInfoTag(String imageName)
+    default String addCardInfoTag(String imageName)
     {
         return null;
     }
     
-    public default String addCardItemTag(String imageName)
+    default String addCardItemTag(String imageName)
     {
         return null;
     }
     
-    public default String addCardMainTag(String imageName)
+    default String addCardMainTag(String imageName)
     {
         return null;
     }
     
-    public default String addSetInfoTag(String imageName)
+    default String addSetInfoTag(String imageName)
     {
         return null;
     }
     
-    public default String addSetItemTag(String imageName)
+    default String addSetItemTag(String imageName)
     {
         return null;
     }
     
-    public default String getCardInfoReplacementImage(Properties properties, byte imageIndex)
+    default String getCardInfoReplacementImage(Properties properties, byte imageIndex)
     {
         return null;
     }
     
-    public default String getCardMainReplacementImage(Properties properties, byte imageIndex)
+    default String getCardMainReplacementImage(Properties properties, byte imageIndex)
     {
         return null;
     }
     
-    public default String getSetInfoReplacementImage(CardSet set)
+    default String getSetInfoReplacementImage(CardSet set)
     {
         return null;
     }
     
-    public default boolean continueTasks()
+    default boolean continueTasks()
     {
         return YDM.continueTasks;
     }
     
-    public default boolean forceTaskStop()
+    default boolean forceTaskStop()
     {
         return YDM.forceTaskStop;
     }

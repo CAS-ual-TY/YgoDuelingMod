@@ -1,9 +1,5 @@
 package de.cas_ual_ty.ydm.simplebinder;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
@@ -26,6 +22,9 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nullable;
+import java.util.List;
+
 public class SimpleBinderItem extends Item implements INamedContainerProvider
 {
     public final int binderSize;
@@ -37,29 +36,30 @@ public class SimpleBinderItem extends Item implements INamedContainerProvider
     }
     
     @Override
-    public void addInformation(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
     {
-        super.addInformation(itemStack, worldIn, tooltip, flagIn);
+        super.appendHoverText(itemStack, worldIn, tooltip, flagIn);
         //        tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".desc").modifyStyle((s) -> s.applyFormatting(TextFormatting.RED)));
     }
     
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
     {
-        if(!world.isRemote && hand == YdmUtil.getActiveItem(player, this))
+        if(!world.isClientSide && hand == YdmUtil.getActiveItem(player, this))
         {
-            ItemStack itemStack = player.getHeldItem(hand);
-            HeldCIIContainer.openGui(player, hand, this.binderSize, this);
-            return ActionResult.resultSuccess(itemStack);
+            ItemStack itemStack = player.getItemInHand(hand);
+            HeldCIIContainer.openGui(player, hand, binderSize, this);
+            return ActionResult.success(itemStack);
         }
         
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
     
-    public @Nullable IItemHandler getItemHandler(ItemStack itemStack)
+    @Nullable
+    public IItemHandler getItemHandler(ItemStack itemStack)
     {
-        CompoundNBT nbt = this.getNBT(itemStack);
-        IItemHandler itemHandler = new ItemStackHandler(this.binderSize);
+        CompoundNBT nbt = getNBT(itemStack);
+        IItemHandler itemHandler = new ItemStackHandler(binderSize);
         
         if(nbt.contains("itemHandler"))
         {
@@ -71,15 +71,15 @@ public class SimpleBinderItem extends Item implements INamedContainerProvider
     
     public void setItemHandler(ItemStack itemStack, IItemHandler itemHandler)
     {
-        this.getNBT(itemStack).put("itemHandler", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
+        getNBT(itemStack).put("itemHandler", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
     }
     
     @Override
     public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
     {
         Hand hand = YdmUtil.getActiveItem(player, this);
-        ItemStack itemStack = player.getHeldItem(hand);
-        IItemHandler itemHandler = this.getItemHandler(itemStack);
+        ItemStack itemStack = player.getItemInHand(hand);
+        IItemHandler itemHandler = getItemHandler(itemStack);
         return new SimpleBinderContainer(YdmContainerTypes.SIMPLE_BINDER, id, playerInventory, itemHandler, hand);
     }
     
@@ -98,17 +98,17 @@ public class SimpleBinderItem extends Item implements INamedContainerProvider
     {
         if(itemStack.getItem() instanceof SimpleBinderItem)
         {
-            ((SimpleBinderItem)itemStack.getItem()).setItemHandler(itemStack, itemHandler);
+            ((SimpleBinderItem) itemStack.getItem()).setItemHandler(itemStack, itemHandler);
         }
     }
     
     public static Item makeItem(String modId, ItemGroup itemGroup, int pagesAmt)
     {
-        return new SimpleBinderItem(new Properties().group(itemGroup).maxStackSize(1), 6 * 9 * pagesAmt).setRegistryName(modId, "simple_binder_" + pagesAmt);
+        return new SimpleBinderItem(new Properties().tab(itemGroup).stacksTo(1), 6 * 9 * pagesAmt).setRegistryName(modId, "simple_binder_" + pagesAmt);
     }
     
     @Override
-    public boolean shouldSyncTag()
+    public boolean shouldOverrideMultiplayerNbt()
     {
         return true;
     }

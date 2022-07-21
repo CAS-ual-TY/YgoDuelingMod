@@ -30,14 +30,14 @@ public class AttackAction extends SingleZoneAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeByte(this.attackedZoneId);
+        buf.writeByte(attackedZoneId);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.attackedZone = playField.getZone(this.attackedZoneId);
+        attackedZone = playField.getZone(attackedZoneId);
     }
     
     @Override

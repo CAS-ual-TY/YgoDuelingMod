@@ -1,12 +1,5 @@
 package de.cas_ual_ty.ydm;
 
-import java.io.File;
-import java.util.Random;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
@@ -49,6 +42,12 @@ import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.File;
+import java.util.Random;
 
 @Mod(YDM.MOD_ID)
 public class YDM
@@ -93,8 +92,8 @@ public class YDM
     {
         YDM.instance = this;
         YDM.proxy = DistExecutor.safeRunForDist(
-            () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
-            () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
+                () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
+                () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
         YDM.random = new Random();
         YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
         YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD)
@@ -104,7 +103,7 @@ public class YDM
             {
                 return true;
             }
-        }.setBackgroundImageName("item_search.png");
+        }.setBackgroundSuffix("item_search.png");
         YDM.setsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".sets", () -> YdmItems.BLANC_SET)
         {
             @Override
@@ -112,7 +111,7 @@ public class YDM
             {
                 return true;
             }
-        }.setBackgroundImageName("item_search.png");
+        }.setBackgroundSuffix("item_search.png");
         
         Pair<CommonConfig, ForgeConfigSpec> common = new ForgeConfigSpec.Builder().configure(CommonConfig::new);
         YDM.commonConfig = common.getLeft();
@@ -135,19 +134,19 @@ public class YDM
         YDM.proxy.registerForgeEventListeners(bus);
         
         YDM.proxy.preInit();
-        this.initFolders();
+        initFolders();
     }
     
     private void init(FMLCommonSetupEvent event)
     {
         YDM.channel = NetworkRegistry.newSimpleChannel(new ResourceLocation(YDM.MOD_ID, "main"),
-            () -> YDM.PROTOCOL_VERSION,
-            YDM.PROTOCOL_VERSION::equals,
-            YDM.PROTOCOL_VERSION::equals);
+                () -> YDM.PROTOCOL_VERSION,
+                YDM.PROTOCOL_VERSION::equals,
+                YDM.PROTOCOL_VERSION::equals);
         
-        CapabilityManager.INSTANCE.<CardBinderCardsManager>register(CardBinderCardsManager.class, new CardBinderCardsManager.Storage(), CardBinderCardsManager::new);
+        CapabilityManager.INSTANCE.register(CardBinderCardsManager.class, new CardBinderCardsManager.Storage(), CardBinderCardsManager::new);
         
-        this.initFiles();
+        initFiles();
         
         int index = 0;
         YDM.channel.registerMessage(index++, CardBinderMessages.ChangePage.class, CardBinderMessages.ChangePage::encode, CardBinderMessages.ChangePage::decode, CardBinderMessages.ChangePage::handle);
@@ -286,13 +285,13 @@ public class YDM
         ItemStack itemStack;
         DeckHolder dh;
         
-        for(int i = 0; i < player.inventory.getSizeInventory(); ++i)
+        for(int i = 0; i < player.inventory.getContainerSize(); ++i)
         {
-            itemStack = player.inventory.getStackInSlot(i);
+            itemStack = player.inventory.getItem(i);
             
             if(itemStack.getItem() instanceof DeckBoxItem)
             {
-                dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem)itemStack.getItem()).getCardSleeves(itemStack));
+                dh = new ItemHandlerDeckHolder(((DeckBoxItem) itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem) itemStack.getItem()).getCardSleeves(itemStack));
                 
                 if(!dh.isEmpty())
                 {
@@ -301,10 +300,10 @@ public class YDM
             }
         }
         
-        itemStack = player.getHeldItemOffhand();
+        itemStack = player.getOffhandItem();
         if(itemStack.getItem() instanceof DeckBoxItem)
         {
-            dh = new ItemHandlerDeckHolder(((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem)itemStack.getItem()).getCardSleeves(itemStack));
+            dh = new ItemHandlerDeckHolder(((DeckBoxItem) itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem) itemStack.getItem()).getCardSleeves(itemStack));
             
             if(!dh.isEmpty())
             {
@@ -328,7 +327,8 @@ public class YDM
             for(JsonCardsManager m : JsonCardsManager.LOADED_MANAGERS)
             {
                 m.safe(() ->
-                {});
+                {
+                });
             }
         }
     }

@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.task;
 
-import java.util.concurrent.TimeUnit;
-
 import de.cas_ual_ty.ydm.YDM;
+
+import java.util.concurrent.TimeUnit;
 
 public class Worker extends Thread
 {
@@ -15,7 +15,7 @@ public class Worker extends Thread
         super(name);
         this.index = index;
         this.sleepMillis = sleepMillis;
-        this.isWorking = false;
+        isWorking = false;
     }
     
     @Override
@@ -29,16 +29,16 @@ public class Worker extends Thread
             
             if(t != null)
             {
-                if(!this.isWorking)
+                if(!isWorking)
                 {
-                    this.isWorking = true;
+                    isWorking = true;
                 }
                 
                 try
                 {
                     t.run();
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     YDM.log("Task failed!");
                     e.printStackTrace();
@@ -46,20 +46,20 @@ public class Worker extends Thread
             }
             else
             {
-                if(this.isWorking)
+                if(isWorking)
                 {
-                    this.isWorking = false;
+                    isWorking = false;
                 }
                 
                 try
                 {
-                    TimeUnit.MILLISECONDS.sleep(this.sleepMillis);
+                    TimeUnit.MILLISECONDS.sleep(sleepMillis);
                 }
-                catch (InterruptedException e)
+                catch(InterruptedException e)
                 {
                     YDM.log("Worker failed!");
                     e.printStackTrace();
-                    WorkerManager.failedCallback(this.index);
+                    WorkerManager.failedCallback(index);
                     return;
                 }
             }

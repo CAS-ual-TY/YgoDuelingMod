@@ -1,17 +1,16 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class Distribution
 {
@@ -23,12 +22,12 @@ public class Distribution
     
     public Distribution(JsonObject j)
     {
-        this.name = j.get(JsonKeys.NAME).getAsString();
+        name = j.get(JsonKeys.NAME).getAsString();
         
         int q, r, s;
         
         JsonArray pullsJson = j.get(JsonKeys.PULLS).getAsJsonArray();
-        this.pulls = new Pull[pullsJson.size()];
+        pulls = new Pull[pullsJson.size()];
         
         JsonObject pullJson;
         
@@ -43,7 +42,7 @@ public class Distribution
         JsonArray raritiesJson;
         String[] rarities;
         
-        for(q = 0; q < this.pulls.length; ++q)
+        for(q = 0; q < pulls.length; ++q)
         {
             pullJson = pullsJson.get(q).getAsJsonObject();
             
@@ -67,23 +66,23 @@ public class Distribution
                 entries[r] = new PullEntry(count, rarities);
             }
             
-            this.pulls[q] = new Pull(weight, entries);
+            pulls[q] = new Pull(weight, entries);
             totalWeight += weight;
         }
         
         this.totalWeight = totalWeight;
         
-        this.pullableRarities = new LinkedList<>();
+        pullableRarities = new LinkedList<>();
         
-        for(Pull pull : this.pulls)
+        for(Pull pull : pulls)
         {
             for(PullEntry pe : pull.pullEntries)
             {
                 for(String rarity : pe.rarities)
                 {
-                    if(!this.pullableRarities.contains(rarity))
+                    if(!pullableRarities.contains(rarity))
                     {
-                        this.pullableRarities.add(rarity);
+                        pullableRarities.add(rarity);
                     }
                 }
             }
@@ -92,18 +91,18 @@ public class Distribution
     
     public void postDBInit()
     {
-        this.logErrors();
+        logErrors();
     }
     
     public void addInformation(List<ITextComponent> tooltip, CardSet set)
     {
-        if(this.pulls.length <= 0)
+        if(pulls.length <= 0)
         {
             return;
         }
-        else if(this.pulls.length == 1)
+        else if(pulls.length == 1)
         {
-            Pull pull = this.pulls[0];
+            Pull pull = pulls[0];
             
             for(PullEntry pe : pull.pullEntries)
             {
@@ -112,9 +111,9 @@ public class Distribution
         }
         else
         {
-            for(Pull pull : this.pulls)
+            for(Pull pull : pulls)
             {
-                tooltip.add(new StringTextComponent(Distribution.makeOddsString(pull.weight, this.totalWeight)));
+                tooltip.add(new StringTextComponent(Distribution.makeOddsString(pull.weight, totalWeight)));
                 
                 for(PullEntry pe : pull.pullEntries)
                 {
@@ -132,7 +131,7 @@ public class Distribution
     {
         int gcd = -1;
         
-        for(Pull pull : this.pulls)
+        for(Pull pull : pulls)
         {
             if(gcd == -1)
             {
@@ -150,7 +149,7 @@ public class Distribution
         
         if(gcd > 1)
         {
-            YDM.log("Distribution " + this.name + ": Each weight can be reduced by factor: " + gcd + " (Total: " + this.totalWeight + " -> " + (this.totalWeight / gcd) + ")");
+            YDM.log("Distribution " + name + ": Each weight can be reduced by factor: " + gcd + " (Total: " + totalWeight + " -> " + (totalWeight / gcd) + ")");
         }
     }
     

@@ -1,9 +1,6 @@
 package de.cas_ual_ty.ydm.card;
 
-import java.util.List;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
@@ -12,9 +9,11 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 
+import java.util.List;
+
 public class CardHolder implements Comparable<CardHolder>
 {
-    public static final CardHolder DUMMY = new CardHolder(Properties.DUMMY, (byte)0, Rarity.CREATIVE.name, "DUM-MY");
+    public static final CardHolder DUMMY = new CardHolder(Properties.DUMMY, (byte) 0, Rarity.CREATIVE.name, "DUM-MY");
     public Properties card;
     public byte imageIndex;
     public String rarity;
@@ -35,80 +34,80 @@ public class CardHolder implements Comparable<CardHolder>
     
     protected CardHolder()
     {
-        this(null, (byte)0, "", "");
+        this(null, (byte) 0, "", "");
     }
     
     public CardHolder(CompoundNBT nbt)
     {
         this();
-        this.readCardHolderFromNBT(nbt);
+        readCardHolderFromNBT(nbt);
     }
     
     public CardHolder(JsonObject json)
     {
         this();
-        this.readFromJson(json);
+        readFromJson(json);
     }
     
     public void addInformation(List<ITextComponent> tooltip)
     {
-        tooltip.add(new StringTextComponent(this.getCard().getName()));
-        tooltip.add(new StringTextComponent(this.getCode()));
-        tooltip.add(new StringTextComponent(this.getRarity()));
-        tooltip.add(new StringTextComponent("Image Variant " + (1 + this.getImageIndex())));
+        tooltip.add(new StringTextComponent(getCard().getName()));
+        tooltip.add(new StringTextComponent(getCode()));
+        tooltip.add(new StringTextComponent(getRarity()));
+        tooltip.add(new StringTextComponent("Image Variant " + (1 + getImageIndex())));
     }
     
     public String getImageName()
     {
-        return this.getCard().getImageName(this.getImageIndex());
+        return getCard().getImageName(getImageIndex());
     }
     
     public String getInfoImageName()
     {
-        return this.getCard().getInfoImageName(this.getImageIndex());
+        return getCard().getInfoImageName(getImageIndex());
     }
     
     public String getItemImageName()
     {
-        return this.getCard().getItemImageName(this.getImageIndex());
+        return getCard().getItemImageName(getImageIndex());
     }
     
     public String getMainImageName()
     {
-        return this.getCard().getMainImageName(this.getImageIndex());
+        return getCard().getMainImageName(getImageIndex());
     }
     
     public String getImageURL()
     {
-        return this.getCard().getImageURL(this.getImageIndex());
+        return getCard().getImageURL(getImageIndex());
     }
     
     public ResourceLocation getInfoImageResourceLocation()
     {
-        return this.getCard().getInfoImageResourceLocation(this.getImageIndex());
+        return getCard().getInfoImageResourceLocation(getImageIndex());
     }
     
     public ResourceLocation getItemImageResourceLocation()
     {
-        return this.getCard().getItemImageResourceLocation(this.getImageIndex());
+        return getCard().getItemImageResourceLocation(getImageIndex());
     }
     
     public ResourceLocation getMainImageResourceLocation()
     {
-        return this.getCard().getMainImageResourceLocation(this.getImageIndex());
+        return getCard().getMainImageResourceLocation(getImageIndex());
     }
     
     public void override(CardHolder cardHolder)
     {
-        this.card = cardHolder.card;
-        this.imageIndex = cardHolder.imageIndex;
-        this.rarity = cardHolder.rarity;
-        this.code = cardHolder.code;
+        card = cardHolder.card;
+        imageIndex = cardHolder.imageIndex;
+        rarity = cardHolder.rarity;
+        code = cardHolder.code;
     }
     
     public Properties getCard()
     {
-        return this.card;
+        return card;
     }
     
     public void setCard(Properties card)
@@ -123,7 +122,7 @@ public class CardHolder implements Comparable<CardHolder>
     
     public byte getImageIndex()
     {
-        return this.imageIndex;
+        return imageIndex;
     }
     
     public void setRarity(String rarity)
@@ -133,7 +132,7 @@ public class CardHolder implements Comparable<CardHolder>
     
     public String getRarity()
     {
-        return this.rarity;
+        return rarity;
     }
     
     public void setCode(String code)
@@ -143,85 +142,85 @@ public class CardHolder implements Comparable<CardHolder>
     
     public String getCode()
     {
-        return this.code;
+        return code;
     }
     
     public void readCardHolderFromNBT(CompoundNBT nbt)
     {
-        this.card = YdmDatabase.PROPERTIES_LIST.get(nbt.getLong(JsonKeys.ID));
+        card = YdmDatabase.PROPERTIES_LIST.get(nbt.getLong(JsonKeys.ID));
         
-        if(this.card == null)
+        if(card == null)
         {
-            this.card = Properties.DUMMY;
+            card = Properties.DUMMY;
         }
         
-        this.imageIndex = nbt.getByte(JsonKeys.IMAGE_INDEX);
-        this.rarity = nbt.getString(JsonKeys.RARITY);
-        this.code = nbt.getString(JsonKeys.CODE);
+        imageIndex = nbt.getByte(JsonKeys.IMAGE_INDEX);
+        rarity = nbt.getString(JsonKeys.RARITY);
+        code = nbt.getString(JsonKeys.CODE);
     }
     
     public void writeCardHolderToNBT(CompoundNBT nbt)
     {
-        if(this.card != Properties.DUMMY)
+        if(card != Properties.DUMMY)
         {
-            nbt.putLong(JsonKeys.ID, this.card.getId());
+            nbt.putLong(JsonKeys.ID, card.getId());
         }
         
-        nbt.putByte(JsonKeys.IMAGE_INDEX, this.imageIndex);
-        nbt.putString(JsonKeys.RARITY, this.rarity);
-        nbt.putString(JsonKeys.CODE, this.code);
+        nbt.putByte(JsonKeys.IMAGE_INDEX, imageIndex);
+        nbt.putString(JsonKeys.RARITY, rarity);
+        nbt.putString(JsonKeys.CODE, code);
     }
     
     public void readFromJson(JsonObject json)
     {
-        this.card = YdmDatabase.PROPERTIES_LIST.get(json.get(JsonKeys.ID).getAsLong());
+        card = YdmDatabase.PROPERTIES_LIST.get(json.get(JsonKeys.ID).getAsLong());
         
-        if(this.card == null)
+        if(card == null)
         {
-            this.card = Properties.DUMMY;
+            card = Properties.DUMMY;
         }
         
-        this.imageIndex = json.get(JsonKeys.IMAGE_INDEX).getAsByte();
-        this.rarity = json.get(JsonKeys.RARITY).getAsString();
-        this.code = json.get(JsonKeys.CODE).getAsString();
+        imageIndex = json.get(JsonKeys.IMAGE_INDEX).getAsByte();
+        rarity = json.get(JsonKeys.RARITY).getAsString();
+        code = json.get(JsonKeys.CODE).getAsString();
     }
     
     public void writeToJson(JsonObject json)
     {
-        if(this.card != Properties.DUMMY)
+        if(card != Properties.DUMMY)
         {
-            json.addProperty(JsonKeys.ID, this.card.getId());
+            json.addProperty(JsonKeys.ID, card.getId());
         }
         
-        json.addProperty(JsonKeys.IMAGE_INDEX, this.imageIndex);
-        json.addProperty(JsonKeys.RARITY, this.rarity);
-        json.addProperty(JsonKeys.CODE, this.code);
+        json.addProperty(JsonKeys.IMAGE_INDEX, imageIndex);
+        json.addProperty(JsonKeys.RARITY, rarity);
+        json.addProperty(JsonKeys.CODE, code);
     }
     
     @Override
     public String toString()
     {
-        return this.getCard().getName() + " (" + this.getCode() + ")";
+        return getCard().getName() + " (" + getCode() + ")";
     }
     
     @Override
     public int compareTo(CardHolder o)
     {
-        int c = this.code.compareTo(o.code);
+        int c = code.compareTo(o.code);
         
         if(c != 0)
         {
             return c;
         }
         
-        c = this.rarity.compareTo(o.rarity);
+        c = rarity.compareTo(o.rarity);
         
         if(c != 0)
         {
             return c;
         }
         
-        return Byte.compare(this.imageIndex, o.imageIndex);
+        return Byte.compare(imageIndex, o.imageIndex);
     }
     
     @Override
@@ -232,8 +231,8 @@ public class CardHolder implements Comparable<CardHolder>
             return false;
         }
         
-        CardHolder holder = (CardHolder)obj;
+        CardHolder holder = (CardHolder) obj;
         
-        return this.card == holder.card && this.imageIndex == holder.imageIndex && this.rarity == holder.rarity;
+        return card == holder.card && imageIndex == holder.imageIndex && rarity == holder.rarity;
     }
 }

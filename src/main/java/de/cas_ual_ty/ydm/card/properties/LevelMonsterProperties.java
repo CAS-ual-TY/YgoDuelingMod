@@ -1,13 +1,12 @@
 package de.cas_ual_ty.ydm.card.properties;
 
-import java.util.List;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.text.IFormattableTextComponent;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.List;
 
 public class LevelMonsterProperties extends DefMonsterProperties
 {
@@ -17,7 +16,7 @@ public class LevelMonsterProperties extends DefMonsterProperties
     public LevelMonsterProperties(Properties p0, JsonObject j)
     {
         super(p0);
-        this.readLevelMonsterProperties(j);
+        readLevelMonsterProperties(j);
     }
     
     public LevelMonsterProperties(Properties p0)
@@ -26,9 +25,9 @@ public class LevelMonsterProperties extends DefMonsterProperties
         
         if(p0 instanceof LevelMonsterProperties)
         {
-            LevelMonsterProperties p1 = (LevelMonsterProperties)p0;
-            this.level = p1.level;
-            this.isTuner = p1.isTuner;
+            LevelMonsterProperties p1 = (LevelMonsterProperties) p0;
+            level = p1.level;
+            isTuner = p1.isTuner;
         }
     }
     
@@ -40,66 +39,66 @@ public class LevelMonsterProperties extends DefMonsterProperties
     public void readAllProperties(JsonObject j)
     {
         super.readAllProperties(j);
-        this.readLevelMonsterProperties(j);
+        readLevelMonsterProperties(j);
     }
     
     @Override
     public void writeAllProperties(JsonObject j)
     {
         super.writeAllProperties(j);
-        this.writeLevelProperties(j);
+        writeLevelProperties(j);
     }
     
     public void readLevelMonsterProperties(JsonObject j)
     {
-        this.level = j.get(JsonKeys.LEVEL).getAsByte();
-        this.isTuner = j.get(JsonKeys.IS_TUNER).getAsBoolean();
+        level = j.get(JsonKeys.LEVEL).getAsByte();
+        isTuner = j.get(JsonKeys.IS_TUNER).getAsBoolean();
     }
     
     public void writeLevelProperties(JsonObject j)
     {
-        j.addProperty(JsonKeys.LEVEL, this.level);
-        j.addProperty(JsonKeys.IS_TUNER, this.isTuner);
+        j.addProperty(JsonKeys.LEVEL, level);
+        j.addProperty(JsonKeys.IS_TUNER, isTuner);
     }
     
     @Override
     public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getAttribute() + " / Level " + this.getLevel()));
+        list.add(new StringTextComponent(getAttribute() + " / Level " + getLevel()));
     }
     
     @Override
     public void addMonsterTextHeader(List<ITextComponent> list)
     {
-        IFormattableTextComponent s = new StringTextComponent(this.getSpecies() + " / ");
+        IFormattableTextComponent s = new StringTextComponent(getSpecies() + " / ");
         
-        if(this.getMonsterType() != null)
+        if(getMonsterType() != null)
         {
-            s.appendString(this.getMonsterType().name + " / ");
+            s.append(getMonsterType().name + " / ");
         }
         
-        if(this.getIsPendulum())
+        if(getIsPendulum())
         {
-            s.appendString("Pendulum" + " / ");
+            s.append("Pendulum" + " / ");
         }
         
-        if(!this.getAbility().isEmpty())
+        if(!getAbility().isEmpty())
         {
-            s.appendString(this.getAbility() + " / ");
+            s.append(getAbility() + " / ");
         }
         
-        if(this.getIsTuner())
+        if(getIsTuner())
         {
-            s.appendString("Tuner / ");
+            s.append("Tuner / ");
         }
         
-        if(this.getHasEffect())
+        if(getHasEffect())
         {
-            s.appendString("Effect");
+            s.append("Effect");
         }
         else
         {
-            s.appendString("Normal");
+            s.append("Normal");
         }
         
         list.add(s);
@@ -109,11 +108,11 @@ public class LevelMonsterProperties extends DefMonsterProperties
     
     public byte getLevel()
     {
-        return this.level;
+        return level;
     }
     
     public boolean getIsTuner()
     {
-        return this.isTuner;
+        return isTuner;
     }
 }

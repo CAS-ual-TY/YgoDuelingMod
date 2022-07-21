@@ -6,7 +6,7 @@ public enum SpellType
     
     public final String name;
     
-    private SpellType(String name)
+    SpellType(String name)
     {
         this.name = name;
     }

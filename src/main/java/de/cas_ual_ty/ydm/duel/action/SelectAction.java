@@ -1,12 +1,12 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.network.PacketBuffer;
+
+import javax.annotation.Nullable;
 
 public class SelectAction extends SingleCardAction
 {
@@ -24,7 +24,7 @@ public class SelectAction extends SingleCardAction
     
     public SelectAction(ActionType actionType, @Nullable Zone sourceZone, @Nullable DuelCard card, ZoneOwner owner)
     {
-        this(actionType, sourceZone == null ? (byte)-1 : sourceZone.index, (sourceZone == null || card == null) ? (short)-1 : sourceZone.getCardIndexShort(card), owner.getIndex());
+        this(actionType, sourceZone == null ? (byte) -1 : sourceZone.index, (sourceZone == null || card == null) ? (short) -1 : sourceZone.getCardIndexShort(card), owner.getIndex());
     }
     
     public SelectAction(ActionType actionType, PacketBuffer buf)
@@ -36,20 +36,20 @@ public class SelectAction extends SingleCardAction
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.owner = ZoneOwner.getFromIndex(this.ownerIndex);
-        this.action = () -> playField.setClickedForPlayer(this.owner, this.sourceZone, this.card);
+        owner = ZoneOwner.getFromIndex(ownerIndex);
+        action = () -> playField.setClickedForPlayer(owner, sourceZone, card);
     }
     
     @Override
     public void doAction()
     {
-        this.action.run();
+        action.run();
     }
     
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeByte(this.ownerIndex);
+        buf.writeByte(ownerIndex);
     }
 }

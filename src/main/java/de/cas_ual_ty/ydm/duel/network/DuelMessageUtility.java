@@ -1,21 +1,9 @@
 package de.cas_ual_ty.ydm.duel.network;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.duel.DeckSource;
-import de.cas_ual_ty.ydm.duel.DuelChatMessage;
-import de.cas_ual_ty.ydm.duel.DuelPhase;
-import de.cas_ual_ty.ydm.duel.DuelState;
-import de.cas_ual_ty.ydm.duel.PlayerRole;
+import de.cas_ual_ty.ydm.duel.*;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionType;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
@@ -24,7 +12,13 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.IFormattableTextComponent;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class DuelMessageUtility
 {
@@ -113,7 +107,7 @@ public class DuelMessageUtility
     
     public static void encodePlayerEntityId(PlayerEntity player, PacketBuffer buf)
     {
-        buf.writeInt(player.getEntityId());
+        buf.writeInt(player.getId());
     }
     
     public static int decodePlayerEntityId(PacketBuffer buf)
@@ -148,7 +142,7 @@ public class DuelMessageUtility
             buf.writeBoolean(true);
             CompoundNBT nbt = new CompoundNBT();
             card.writeCardHolderToNBT(nbt);
-            buf.writeCompoundTag(nbt);
+            buf.writeNbt(nbt);
         }
         else
         {
@@ -158,7 +152,7 @@ public class DuelMessageUtility
     
     public static CardHolder decodeCardHolder(PacketBuffer buf)
     {
-        return buf.readBoolean() ? new CardHolder(buf.readCompoundTag()) : null;
+        return buf.readBoolean() ? new CardHolder(buf.readNbt()) : null;
     }
     
     public static void encodeDeckHolder(DeckHolder deck, PacketBuffer buf)
@@ -202,26 +196,26 @@ public class DuelMessageUtility
     
     public static void encodeDuelChatMessage(DuelChatMessage message, PacketBuffer buf)
     {
-        buf.writeTextComponent(message.message);
-        buf.writeTextComponent(message.playerName);
+        buf.writeComponent(message.message);
+        buf.writeComponent(message.playerName);
         DuelMessageUtility.encodePlayerRole(message.sourceRole, buf);
         buf.writeBoolean(message.isAnnouncement);
     }
     
     public static DuelChatMessage decodeDuelChatMessage(PacketBuffer buf)
     {
-        return new DuelChatMessage(buf.readTextComponent(), (IFormattableTextComponent)buf.readTextComponent(), DuelMessageUtility.decodePlayerRole(buf), buf.readBoolean());
+        return new DuelChatMessage(buf.readComponent(), buf.readComponent(), DuelMessageUtility.decodePlayerRole(buf), buf.readBoolean());
     }
     
     public static void encodeDeckSourceParams(DeckSource deck, PacketBuffer buf)
     {
-        buf.writeItemStack(deck.source);
-        buf.writeTextComponent(deck.name);
+        buf.writeItem(deck.source);
+        buf.writeComponent(deck.name);
     }
     
     public static DeckSource decodeDeckSourceParams(PacketBuffer buf)
     {
-        return new DeckSource(null, buf.readItemStack(), buf.readTextComponent());
+        return new DeckSource(null, buf.readItem(), buf.readComponent());
     }
     
     public static void encodePhase(DuelPhase phase, PacketBuffer buf)

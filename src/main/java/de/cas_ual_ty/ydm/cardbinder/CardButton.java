@@ -1,17 +1,16 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import java.util.function.BiConsumer;
-import java.util.function.Function;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import net.minecraft.client.gui.widget.button.AbstractButton;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class CardButton extends AbstractButton
 {
@@ -28,18 +27,18 @@ public class CardButton extends AbstractButton
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTick)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTick)
     {
-        CardHolder card = this.getCard();
+        CardHolder card = getCard();
         if(card != null)
         {
             ScreenUtil.white();
             CardRenderUtil.bindMainResourceLocation(card);
-            YdmBlitUtil.fullBlit(ms, this.x + 1, this.y + 1, 16, 16);
+            YdmBlitUtil.fullBlit(ms, x + 1, y + 1, 16, 16);
             
-            if(this.isHovered())
+            if(isHovered())
             {
-                this.drawHover(ms);
+                drawHover(ms);
             }
         }
     }
@@ -51,7 +50,7 @@ public class CardButton extends AbstractButton
         int y = this.y + 1;
         RenderSystem.colorMask(true, true, true, false);
         int slotColor = -2130706433; // From ContainerScreen::slotColor
-        this.fillGradient(ms, x, y, x + 16, y + 16, slotColor, slotColor);
+        fillGradient(ms, x, y, x + 16, y + 16, slotColor, slotColor);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
     }
@@ -59,11 +58,11 @@ public class CardButton extends AbstractButton
     @Override
     public void onPress()
     {
-        this.onPress.accept(this, this.index);
+        onPress.accept(this, index);
     }
     
     public CardHolder getCard()
     {
-        return this.cardHolder.apply(this.index);
+        return cardHolder.apply(index);
     }
 }

@@ -1,10 +1,6 @@
 package de.cas_ual_ty.ydm.duel.screen;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -28,6 +24,9 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerScreen<E>
 {
     protected AbstractButton prevDeckButton;
@@ -45,8 +44,8 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
     public DuelScreenPreparing(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.activeDeckWrapperIdx = 0;
-        this.deckChosen = false;
+        activeDeckWrapperIdx = 0;
+        deckChosen = false;
     }
     
     @Override
@@ -56,83 +55,83 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         
         int x = width / 2;
         
-        if(!this.deckChosen && this.getZoneOwner() != ZoneOwner.NONE)
+        if(!deckChosen && getZoneOwner() != ZoneOwner.NONE)
         {
             // Faking this to make the chat smaller on the right side
-            int prevXSize = this.xSize;
-            int prevGuiLeft = this.guiLeft;
-            this.xSize = 284;
-            this.guiLeft = (width - this.xSize) / 2;
-            this.initDefaultChat(width, height);
-            this.xSize = prevXSize;
-            this.guiLeft = prevGuiLeft;
+            int prevXSize = imageWidth;
+            int prevGuiLeft = leftPos;
+            imageWidth = 284;
+            leftPos = (width - imageWidth) / 2;
+            initDefaultChat(width, height);
+            imageWidth = prevXSize;
+            leftPos = prevGuiLeft;
             
             //without x+1 its technically not centered, i dont get why :(
-            int chooseWidth = this.xSize - 20;
-            this.addButton(this.prevDeckButton = new ImprovedButton(x - 16 - 16 - 10 - 5 - 10, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"), (button) -> this.prevDeckClicked()));
-            this.addButton(this.nextDeckButton = new ImprovedButton(x - 16 + 32 + 16 + 5, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow"), (button) -> this.nextDeckClicked()));
-            this.addButton(this.chooseDeckButton = new ImprovedButton(x - chooseWidth / 2, this.guiTop + this.ySize - 20 - 10, chooseWidth, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.choose_deck"), (button) -> this.chooseDeckClicked(), this::chooseDeckTooltip));
+            int chooseWidth = imageWidth - 20;
+            addButton(prevDeckButton = new ImprovedButton(x - 16 - 16 - 10 - 5 - 10, topPos + imageHeight - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.left_arrow"), (button) -> prevDeckClicked()));
+            addButton(nextDeckButton = new ImprovedButton(x - 16 + 32 + 16 + 5, topPos + imageHeight - 20 - 10 - 5 - 16 - 10, 20, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.right_arrow"), (button) -> nextDeckClicked()));
+            addButton(chooseDeckButton = new ImprovedButton(x - chooseWidth / 2, topPos + imageHeight - 20 - 10, chooseWidth, 20, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.choose_deck"), (button) -> chooseDeckClicked(), this::chooseDeckTooltip));
             
-            this.addButton(this.prevDeckWidget = new ItemStackWidget(x - 16 - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
-            this.addButton(this.activeDeckWidget = new ItemStackWidget(x - 16, this.guiTop + this.ySize - 20 - 10 - 5 - 32, 32, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
-            this.addButton(this.nextDeckWidget = new ItemStackWidget(x - 16 + 32, this.guiTop + this.ySize - 20 - 10 - 5 - 16 - 8, 16, this.itemRenderer, CardRenderUtil.getInfoCardBack()));
+            addButton(prevDeckWidget = new ItemStackWidget(x - 16 - 16, topPos + imageHeight - 20 - 10 - 5 - 16 - 8, 16, itemRenderer, CardRenderUtil.getInfoCardBack()));
+            addButton(activeDeckWidget = new ItemStackWidget(x - 16, topPos + imageHeight - 20 - 10 - 5 - 32, 32, itemRenderer, CardRenderUtil.getInfoCardBack()));
+            addButton(nextDeckWidget = new ItemStackWidget(x - 16 + 32, topPos + imageHeight - 20 - 10 - 5 - 16 - 8, 16, itemRenderer, CardRenderUtil.getInfoCardBack()));
             
-            this.prevDeckWidget.visible = false;
-            this.activeDeckWidget.visible = false;
-            this.nextDeckWidget.visible = false;
+            prevDeckWidget.visible = false;
+            activeDeckWidget.visible = false;
+            nextDeckWidget.visible = false;
             
-            this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
+            setActiveDeckWrapper(activeDeckWrapperIdx);
         }
         else
         {
-            this.initDefaultChat(width, height);
+            initDefaultChat(width, height);
         }
     }
     
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int mouseX, int mouseY)
+    protected void renderLabels(MatrixStack ms, int mouseX, int mouseY)
     {
-        this.font.drawString(ms, "Choose your decks...", 8.0F, 6.0F, 0x404040);
+        font.draw(ms, "Choose your decks...", 8.0F, 6.0F, 0x404040);
         
-        PlayerRole role = this.getPlayerRole();
+        PlayerRole role = getPlayerRole();
         
         if(role == PlayerRole.PLAYER1 || role == PlayerRole.PLAYER2)
         {
-            if(this.renderDeckChoosing())
+            if(renderDeckChoosing())
             {
-                this.drawActiveDeckForeground(ms, mouseX, mouseY);
+                drawActiveDeckForeground(ms, mouseX, mouseY);
             }
             else
             {
                 String text = "Waiting for other player...";
-                int width = this.font.getStringWidth(text);
-                int height = this.font.FONT_HEIGHT;
-                this.font.drawString(ms, text, (this.xSize - width) / 2F, (this.height - height) / 2F, 0x404040);
+                int width = font.width(text);
+                int height = font.lineHeight;
+                font.draw(ms, text, (imageWidth - width) / 2F, (this.height - height) / 2F, 0x404040);
             }
         }
         else
         {
             String text = "Waiting for players...";
-            int width = this.font.getStringWidth(text);
-            int height = this.font.FONT_HEIGHT;
-            this.font.drawString(ms, text, (this.xSize - width) / 2F, (this.ySize - height) / 2F, 0x404040);
+            int width = font.width(text);
+            int height = font.lineHeight;
+            font.draw(ms, text, (imageWidth - width) / 2F, (imageHeight - height) / 2F, 0x404040);
         }
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
-        super.drawGuiContainerBackgroundLayer(ms, partialTicks, mouseX, mouseY);
+        super.renderBg(ms, partialTicks, mouseX, mouseY);
         
-        if(this.renderDeckChoosing())
+        if(renderDeckChoosing())
         {
-            this.drawActiveDeckBackground(ms, partialTicks, mouseX, mouseY);
+            drawActiveDeckBackground(ms, partialTicks, mouseX, mouseY);
         }
     }
     
     protected void drawActiveDeckForeground(MatrixStack ms, int mouseX, int mouseY)
     {
-        DeckWrapper h = this.getActiveDeckWrapper();
+        DeckWrapper h = getActiveDeckWrapper();
         
         if(h != DeckWrapper.DUMMY)
         {
@@ -143,26 +142,26 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                 // coordinates from #drawActiveDeckBackground
                 int xSize = 284;
                 //                int ySize = 153;
-                int actualGuiLeft = (this.width - xSize) / 2;
-                int guiLeft = actualGuiLeft - this.guiLeft;
-                int guiTop = this.guiTop + 6 + 5 + this.font.FONT_HEIGHT - this.guiTop;
+                int actualGuiLeft = (width - xSize) / 2;
+                int guiLeft = actualGuiLeft - leftPos;
+                int guiTop = topPos + 6 + 5 + font.lineHeight - topPos;
                 
                 // from DeckBoxScreen#drawGuiContainerForegroundLayer
                 
-                mouseX -= (this.guiLeft + guiLeft) - 1;
-                mouseY -= (this.guiTop + guiTop) - 1;
+                mouseX -= (leftPos + guiLeft) - 1;
+                mouseY -= (topPos + guiTop) - 1;
                 
                 // main deck
                 //drawString
-                this.font.drawText(ms, new TranslationTextComponent("container.ydm.deck_box.main").appendString(" " + d.getMainDeckSize() + "/" + DeckHolder.MAIN_DECK_SIZE), guiLeft + 8F, guiTop + 6F, 0x404040);
+                font.draw(ms, new TranslationTextComponent("container.ydm.deck_box.main").append(" " + d.getMainDeckSize() + "/" + DeckHolder.MAIN_DECK_SIZE), guiLeft + 8F, guiTop + 6F, 0x404040);
                 
                 // extra deck
                 //drawString
-                this.font.drawText(ms, new TranslationTextComponent("container.ydm.deck_box.extra").appendString(" " + d.getExtraDeckSize() + "/" + DeckHolder.EXTRA_DECK_SIZE), guiLeft + 8F, guiTop + 92F, 0x404040);
+                font.draw(ms, new TranslationTextComponent("container.ydm.deck_box.extra").append(" " + d.getExtraDeckSize() + "/" + DeckHolder.EXTRA_DECK_SIZE), guiLeft + 8F, guiTop + 92F, 0x404040);
                 
                 // side deck
                 //drawString
-                this.font.drawText(ms, new TranslationTextComponent("container.ydm.deck_box.side").appendString(" " + d.getSideDeckSize() + "/" + DeckHolder.SIDE_DECK_SIZE), guiLeft + 8F, guiTop + 124F, 0x404040);
+                font.draw(ms, new TranslationTextComponent("container.ydm.deck_box.side").append(" " + d.getSideDeckSize() + "/" + DeckHolder.SIDE_DECK_SIZE), guiLeft + 8F, guiTop + 124F, 0x404040);
                 
                 int size = 18;
                 CardHolder c;
@@ -195,7 +194,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                             if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                             {
                                 ScreenUtil.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
-                                this.renderCardInfoForeground(ms, c, actualGuiLeft);
+                                renderCardInfoForeground(ms, c, actualGuiLeft);
                             }
                         }
                         
@@ -231,7 +230,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
                             ScreenUtil.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
-                            this.renderCardInfoForeground(ms, c, actualGuiLeft);
+                            renderCardInfoForeground(ms, c, actualGuiLeft);
                         }
                     }
                     
@@ -258,7 +257,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
                         if(mouseX >= offX && mouseX < offX + size && mouseY >= offY && mouseY < offY + size)
                         {
                             ScreenUtil.renderHoverRect(ms, guiLeft + offX, guiTop + offY, 16, 16);
-                            this.renderCardInfoForeground(ms, c, actualGuiLeft);
+                            renderCardInfoForeground(ms, c, actualGuiLeft);
                         }
                     }
                     
@@ -270,7 +269,7 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
     
     protected void drawActiveDeckBackground(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
-        DeckWrapper h = this.getActiveDeckWrapper();
+        DeckWrapper h = getActiveDeckWrapper();
         
         if(h != DeckWrapper.DUMMY)
         {
@@ -280,10 +279,10 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
             {
                 int xSize = 284;
                 int ySize = 153;
-                int guiLeft = (this.width - xSize) / 2;
-                int guiTop = this.guiTop + 6 + 5 + this.font.FONT_HEIGHT;
+                int guiLeft = (width - xSize) / 2;
+                int guiTop = topPos + 6 + 5 + font.lineHeight;
                 
-                this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DECK_BACKGROUND_GUI_TEXTURE);
+                minecraft.getTextureManager().bind(DuelContainerScreen.DECK_BACKGROUND_GUI_TEXTURE);
                 YdmBlitUtil.blit(ms, guiLeft, guiTop, xSize, ySize, 0, 0, xSize, ySize, 512, 256);
                 YdmBlitUtil.blit(ms, guiLeft, guiTop + ySize, xSize, 7, 0, 243, xSize, 7, 512, 256);
             }
@@ -293,149 +292,149 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
     @Override
     public void populateDeckSources(List<DeckSource> deckSources)
     {
-        this.deckWrappers = new ArrayList<>(deckSources.size());
-        this.activeDeckWrapperIdx = 0;
+        deckWrappers = new ArrayList<>(deckSources.size());
+        activeDeckWrapperIdx = 0;
         
         for(int index = 0; index < deckSources.size(); ++index)
         {
-            this.deckWrappers.add(new DeckWrapper(deckSources.get(index), index));
+            deckWrappers.add(new DeckWrapper(deckSources.get(index), index));
         }
         
-        this.setActiveDeckWrapper(0);
+        setActiveDeckWrapper(0);
     }
     
     @Override
     public void receiveDeck(int index, DeckHolder deck)
     {
-        if(index >= 0 && index < this.deckWrappers.size())
+        if(index >= 0 && index < deckWrappers.size())
         {
-            this.deckWrappers.get(index).deck = deck;
-            this.setActiveDeckWrapper(this.activeDeckWrapperIdx);
+            deckWrappers.get(index).deck = deck;
+            setActiveDeckWrapper(activeDeckWrapperIdx);
         }
     }
     
     @Override
     public void deckAccepted(PlayerRole role)
     {
-        if(role == this.getPlayerRole())
+        if(role == getPlayerRole())
         {
-            this.deckChosen = true;
-            this.reInit();
+            deckChosen = true;
+            reInit();
         }
     }
     
     public void setActiveDeckWrapper(int index)
     {
-        if(this.deckWrappers == null)
+        if(deckWrappers == null)
         {
             return;
         }
         
-        if(index >= this.deckWrappers.size())
+        if(index >= deckWrappers.size())
         {
             index = 0;
         }
         else if(index < 0)
         {
-            index = this.deckWrappers.size() - 1;
+            index = deckWrappers.size() - 1;
         }
         
         int prev = index - 1;
         
         if(prev < 0)
         {
-            prev = this.deckWrappers.size() - 1;
+            prev = deckWrappers.size() - 1;
         }
         
         int next = index + 1;
         
-        if(next >= this.deckWrappers.size())
+        if(next >= deckWrappers.size())
         {
             next = 0;
         }
         
-        this.activeDeckWrapperIdx = index;
+        activeDeckWrapperIdx = index;
         
-        DeckWrapper dPrev = this.deckWrappers.get(prev);
+        DeckWrapper dPrev = deckWrappers.get(prev);
         dPrev.index = prev;
-        this.prevDeckWidget.setItemStack(dPrev.source);
+        prevDeckWidget.setItemStack(dPrev.source);
         
-        DeckWrapper dActive = this.deckWrappers.get(index);
+        DeckWrapper dActive = deckWrappers.get(index);
         dActive.index = index;
-        this.activeDeckWidget.setItemStack(dActive.source);
+        activeDeckWidget.setItemStack(dActive.source);
         
-        DeckWrapper dNext = this.deckWrappers.get(next);
+        DeckWrapper dNext = deckWrappers.get(next);
         dNext.index = next;
-        this.nextDeckWidget.setItemStack(dNext.source);
+        nextDeckWidget.setItemStack(dNext.source);
         
-        this.prevDeckWidget.visible = true;
-        this.activeDeckWidget.visible = true;
-        this.nextDeckWidget.visible = true;
+        prevDeckWidget.visible = true;
+        activeDeckWidget.visible = true;
+        nextDeckWidget.visible = true;
         
         if(!dActive.hasDeck())
         {
-            this.requestDeck(dActive.index);
+            requestDeck(dActive.index);
         }
         
-        this.chooseDeckButton.setMessage(dActive.name);
+        chooseDeckButton.setMessage(dActive.name);
     }
     
     // when true, deck choosing must be rendered, otherwise dont render it
     public boolean renderDeckChoosing()
     {
-        return this.getPlayerRole() == PlayerRole.PLAYER1 ? this.getDuelManager().player1Deck == null : (this.getPlayerRole() == PlayerRole.PLAYER2 ? this.getDuelManager().player2Deck == null : false);
+        return getPlayerRole() == PlayerRole.PLAYER1 ? getDuelManager().player1Deck == null : (getPlayerRole() == PlayerRole.PLAYER2 ? getDuelManager().player2Deck == null : false);
     }
     
     public void renderCardInfoForeground(MatrixStack ms, CardHolder c)
     {
-        this.renderCardInfoForeground(ms, c, this.guiLeft);
+        renderCardInfoForeground(ms, c, leftPos);
     }
     
     public void renderCardInfoForeground(MatrixStack ms, CardHolder c, int width)
     {
-        ms.push();
+        ms.pushPose();
         
-        ms.translate(-this.guiLeft, -this.guiTop, 0D);
+        ms.translate(-leftPos, -topPos, 0D);
         CardRenderUtil.renderCardInfo(ms, c, width);
         
-        ms.pop();
+        ms.popPose();
     }
     
     protected void prevDeckClicked()
     {
-        this.setActiveDeckWrapper(this.activeDeckWrapperIdx - 1);
+        setActiveDeckWrapper(activeDeckWrapperIdx - 1);
     }
     
     protected void nextDeckClicked()
     {
-        this.setActiveDeckWrapper(this.activeDeckWrapperIdx + 1);
+        setActiveDeckWrapper(activeDeckWrapperIdx + 1);
     }
     
     protected void chooseDeckTooltip(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
-        this.renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.choose_deck"), mouseX, mouseY);
+        renderTooltip(ms, new TranslationTextComponent("container.ydm.duel.choose_deck"), mouseX, mouseY);
     }
     
     public DeckWrapper getActiveDeckWrapper()
     {
-        if(this.deckWrappers == null || this.deckWrappers.size() <= this.activeDeckWrapperIdx)
+        if(deckWrappers == null || deckWrappers.size() <= activeDeckWrapperIdx)
         {
             return DeckWrapper.DUMMY;
         }
         else
         {
-            return this.deckWrappers.get(this.activeDeckWrapperIdx);
+            return deckWrappers.get(activeDeckWrapperIdx);
         }
     }
     
     protected void chooseDeckClicked()
     {
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(this.getHeader(), this.getActiveDeckWrapper().index));
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.ChooseDeck(getHeader(), getActiveDeckWrapper().index));
     }
     
     public void requestDeck(int index)
     {
-        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDeck(this.getHeader(), index));
+        YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.RequestDeck(getHeader(), index));
     }
     
     protected static class DeckWrapper
@@ -450,18 +449,18 @@ public class DuelScreenPreparing<E extends DuelContainer> extends DuelContainerS
         public DeckWrapper(DeckSource source, int index)
         {
             this.source = source.source;
-            this.name = source.name;
-            this.deck = source.deck; //should be null
+            name = source.name;
+            deck = source.deck; //should be null
         }
         
         public boolean hasDeck()
         {
-            return this.deck != null;
+            return deck != null;
         }
         
         public ItemStack getShownItemStack()
         {
-            return this.source;
+            return source;
         }
     }
 }

@@ -6,7 +6,7 @@ public enum Attribute
     
     public final String name;
     
-    private Attribute(String name)
+    Attribute(String name)
     {
         this.name = name;
     }

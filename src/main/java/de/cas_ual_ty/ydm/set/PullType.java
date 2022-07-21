@@ -11,7 +11,7 @@ public enum PullType
     public final String s;
     public final Factory factory;
     
-    private PullType(String s, Factory factory)
+    PullType(String s, Factory factory)
     {
         this.s = s;
         this.factory = factory;
@@ -30,8 +30,8 @@ public enum PullType
         throw new IllegalArgumentException("No valid pull-type: " + pullType);
     }
     
-    public static interface Factory
+    public interface Factory
     {
-        public CardPuller create(JsonObject setJson, CardSet set);
+        CardPuller create(JsonObject setJson, CardSet set);
     }
 }

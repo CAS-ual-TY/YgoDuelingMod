@@ -1,17 +1,15 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.util.text.ITextComponent;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class HandZoneWidget extends ZoneWidget
 {
@@ -24,52 +22,52 @@ public class HandZoneWidget extends ZoneWidget
     @Nullable
     public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
     {
-        if(this.zone.getCardsAmount() <= 0)
+        if(zone.getCardsAmount() <= 0)
         {
             return super.renderCards(ms, mouseX, mouseY);
         }
         
-        final int cardsWidth = DuelScreenDueling.CARDS_WIDTH * this.height / DuelScreenDueling.CARDS_HEIGHT;
-        final int cardsHeight = this.height;
+        final int cardsWidth = DuelScreenDueling.CARDS_WIDTH * height / DuelScreenDueling.CARDS_HEIGHT;
+        final int cardsHeight = height;
         final int offset = (cardsHeight - cardsWidth);
         final int cardsTextureSize = cardsHeight;
         
         DuelCard hoveredCard = null;
-        float hoverX = this.x;
-        float hoverY = this.y;
+        float hoverX = x;
+        float hoverY = y;
         float hoverWidth = cardsWidth;
         float hoverHeight = cardsHeight;
         
-        boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
-        boolean isOpponentView = this.zone.getOwner() != this.context.getView();
+        boolean isOwner = zone.getOwner() == context.getZoneOwner();
+        boolean isOpponentView = zone.getOwner() != context.getView();
         
-        final int renderX = this.x;
-        final int renderY = this.y;
+        final int renderX = x;
+        final int renderY = y;
         final int renderWidth = cardsTextureSize;
         final int renderHeight = cardsTextureSize;
         
         DuelCard c = null;
         hoverWidth = cardsWidth;
         
-        int totalW = this.zone.getCardsAmount() * cardsWidth;
+        int totalW = zone.getCardsAmount() * cardsWidth;
         
-        if(totalW <= this.width || this.zone.getCardsAmount() == 1)
+        if(totalW <= width || zone.getCardsAmount() == 1)
         {
-            int newHoverX = renderX + (this.width - totalW) / 2;
+            int newHoverX = renderX + (width - totalW) / 2;
             int newRenderX = newHoverX - (cardsTextureSize - cardsWidth) / 2; // Cards are 24x32, but the textures are still 32x32, so we must account for that
             
-            for(int i = 0; i < this.zone.getCardsAmount(); ++i)
+            for(int i = 0; i < zone.getCardsAmount(); ++i)
             {
                 if(!isOpponentView)
                 {
-                    c = this.zone.getCardUnsafe(i);
+                    c = zone.getCardUnsafe(i);
                 }
                 else
                 {
-                    c = this.zone.getCardUnsafe(this.zone.getCardsAmount() - i - 1);
+                    c = zone.getCardUnsafe(zone.getCardsAmount() - i - 1);
                 }
                 
-                if(this.drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
+                if(drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
                 {
                     hoveredCard = c;
                     hoverX = newHoverX;
@@ -81,12 +79,12 @@ public class HandZoneWidget extends ZoneWidget
         }
         else
         {
-            float hoverXBase = this.x;
+            float hoverXBase = x;
             
             float newRenderX;
             float newHoverX;
             
-            float margin = cardsWidth - (this.zone.getCardsAmount() * cardsWidth - this.width) / (float)(this.zone.getCardsAmount() - 1);
+            float margin = cardsWidth - (zone.getCardsAmount() * cardsWidth - width) / (float) (zone.getCardsAmount() - 1);
             
             boolean renderLeftToRight = false;
             boolean renderFrontToBack = isOpponentView;
@@ -94,24 +92,24 @@ public class HandZoneWidget extends ZoneWidget
             if(!renderLeftToRight)
             {
                 margin *= -1F;
-                hoverXBase += this.width - cardsWidth;
+                hoverXBase += width - cardsWidth;
             }
             
-            for(int i = 0; i < this.zone.getCardsAmount(); ++i)
+            for(int i = 0; i < zone.getCardsAmount(); ++i)
             {
                 if(renderFrontToBack)
                 {
-                    c = this.zone.getCardUnsafe(i);
+                    c = zone.getCardUnsafe(i);
                 }
                 else
                 {
-                    c = this.zone.getCardUnsafe(this.zone.getCardsAmount() - i - 1);
+                    c = zone.getCardUnsafe(zone.getCardsAmount() - i - 1);
                 }
                 
                 newHoverX = hoverXBase + i * margin;
                 newRenderX = newHoverX - offset / 2;
                 
-                if(this.drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
+                if(drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
                 {
                     hoveredCard = c;
                     hoverX = newHoverX;
@@ -121,18 +119,18 @@ public class HandZoneWidget extends ZoneWidget
         
         if(hoveredCard != null)
         {
-            if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !this.zone.getType().getIsSecret()))
+            if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !zone.getType().getIsSecret()))
             {
-                this.context.renderCardInfo(ms, hoveredCard);
+                context.renderCardInfo(ms, hoveredCard);
             }
             
-            if(this.active)
+            if(active)
             {
                 ScreenUtil.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
             }
         }
         
-        if(!this.active)
+        if(!active)
         {
             return null;
         }
@@ -145,6 +143,6 @@ public class HandZoneWidget extends ZoneWidget
     @Override
     public boolean openAdvancedZoneView()
     {
-        return !this.zone.getType().getIsSecret() && this.zone.getCardsAmount() > 12;
+        return !zone.getType().getIsSecret() && zone.getCardsAmount() > 12;
     }
 }

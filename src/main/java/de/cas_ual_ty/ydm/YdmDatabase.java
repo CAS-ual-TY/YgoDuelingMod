@@ -1,27 +1,7 @@
 package de.cas_ual_ty.ydm;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.LinkedList;
-import java.util.function.BiConsumer;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import com.google.common.io.Files;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-
+import com.google.gson.*;
 import de.cas_ual_ty.ydm.card.CustomCards;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.set.CardSet;
@@ -30,6 +10,14 @@ import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
+
+import java.io.*;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.LinkedList;
+import java.util.function.BiConsumer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class YdmDatabase
 {
@@ -82,7 +70,7 @@ public class YdmDatabase
                         downloadDB = true;
                     }
                 }
-                catch (Exception e)
+                catch(Exception e)
                 {
                     downloadDB = true;
                     YDM.log("Failed assessing if a new database needs to be downloaded. Doing it anyways...");
@@ -107,7 +95,7 @@ public class YdmDatabase
                 {
                     YdmDatabase.downloadDatabase();
                 }
-                catch (IOException e)
+                catch(IOException e)
                 {
                     YDM.log("Failed downloading database.");
                     e.printStackTrace();
@@ -137,12 +125,12 @@ public class YdmDatabase
             
             return true;
         }
-        catch (IOException e)
+        catch(IOException e)
         {
             YDM.log("Cannot read local db.json file. Redownloading database...");
             e.printStackTrace();
         }
-        catch (JsonParseException e)
+        catch(JsonParseException e)
         {
             YDM.log("Cannot parse local db.json file. Redownloading database...");
             e.printStackTrace();
@@ -167,12 +155,12 @@ public class YdmDatabase
             
             return true;
         }
-        catch (IOException e)
+        catch(IOException e)
         {
             YDM.log("Cannot read remote db.json file. Staying on current database...");
             e.printStackTrace();
         }
-        catch (JsonParseException | NullPointerException e)
+        catch(JsonParseException | NullPointerException e)
         {
             YDM.log("Cannot parse remote db.json file. Staying on current database...");
             e.printStackTrace();
@@ -295,7 +283,7 @@ public class YdmDatabase
             {
                 Files.move(file, YDM.mainFolder);
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 e.printStackTrace();
             }
@@ -341,27 +329,27 @@ public class YdmDatabase
                 p.addInformation(new LinkedList<>()); // this throws in case of wrong information
                 YdmDatabase.PROPERTIES_LIST.add(p);
             }
-            catch (NullPointerException | IllegalArgumentException | IllegalStateException e)
+            catch(NullPointerException | IllegalArgumentException | IllegalStateException e)
             {
                 YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (JsonSyntaxException e)
+            catch(JsonSyntaxException e)
             {
                 YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (JsonIOException | FileNotFoundException e)
+            catch(JsonIOException | FileNotFoundException e)
             {
                 YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 YDM.log("Failed reading card: " + cardFile.getAbsolutePath());
                 throw e;
@@ -391,27 +379,27 @@ public class YdmDatabase
                 d = new Distribution(j);
                 YdmDatabase.DISTRIBUTIONS_LIST.add(d);
             }
-            catch (NullPointerException | IllegalArgumentException | IllegalStateException e)
+            catch(NullPointerException | IllegalArgumentException | IllegalStateException e)
             {
                 YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (JsonSyntaxException e)
+            catch(JsonSyntaxException e)
             {
                 YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (JsonIOException | FileNotFoundException e)
+            catch(JsonIOException | FileNotFoundException e)
             {
                 YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 YDM.log("Failed reading distribution: " + distributionFile.getAbsolutePath());
                 throw e;
@@ -441,27 +429,27 @@ public class YdmDatabase
                 s = new CardSet(j);
                 YdmDatabase.SETS_LIST.add(s);
             }
-            catch (NullPointerException | IllegalArgumentException | IllegalStateException e)
+            catch(NullPointerException | IllegalArgumentException | IllegalStateException e)
             {
                 YDM.log("Failed reading set: " + setFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (JsonSyntaxException e)
+            catch(JsonSyntaxException e)
             {
                 YDM.log("Failed reading set: " + setFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (JsonIOException | FileNotFoundException e)
+            catch(JsonIOException | FileNotFoundException e)
             {
                 YDM.log("Failed reading set: " + setFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 YDM.log("Failed reading set: " + setFile.getAbsolutePath());
                 e.printStackTrace();
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 YDM.log("Failed reading set: " + setFile.getAbsolutePath());
                 throw e;

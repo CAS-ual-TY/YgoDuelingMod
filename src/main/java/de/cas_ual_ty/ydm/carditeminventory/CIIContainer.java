@@ -32,17 +32,17 @@ public class CIIContainer extends Container
     {
         super(type, id);
         
-        this.player = playerInventoryIn.player;
-        this.slotInv = new Inventory(6 * 9);
-        this.slotInv.addListener(this::onCraftMatrixChanged);
+        player = playerInventoryIn.player;
+        slotInv = new Inventory(6 * 9);
+        slotInv.addListener(this::slotsChanged);
         this.itemHandler = itemHandler;
         
-        this.createTopSlots();
-        this.createBottomSlots(playerInventoryIn);
+        createTopSlots();
+        createBottomSlots(playerInventoryIn);
         
-        this.page = 0;
-        this.maxPage = MathHelper.ceil(this.itemHandler.getSlots() / (6D * 9D));
-        this.updateSlots();
+        page = 0;
+        maxPage = MathHelper.ceil(this.itemHandler.getSlots() / (6D * 9D));
+        updateSlots();
     }
     
     public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, int itemHandlerSize)
@@ -61,18 +61,18 @@ public class CIIContainer extends Container
         {
             for(int k = 0; k < 9; ++k)
             {
-                this.addSlot(new Slot(this.slotInv, k + j * 9, 8 + k * 18, 18 + j * 18)
+                addSlot(new Slot(slotInv, k + j * 9, 8 + k * 18, 18 + j * 18)
                 {
                     @Override
-                    public boolean isItemValid(ItemStack stack)
+                    public boolean mayPlace(ItemStack stack)
                     {
-                        return CIIContainer.this.canPutStack(stack);
+                        return canPutStack(stack);
                     }
                     
                     @Override
-                    public boolean canTakeStack(PlayerEntity playerIn)
+                    public boolean mayPickup(PlayerEntity playerIn)
                     {
-                        return CIIContainer.this.canTakeStack(playerIn, this.getStack());
+                        return canTakeStack(playerIn, getItem());
                     }
                 });
             }
@@ -87,13 +87,13 @@ public class CIIContainer extends Container
         {
             for(int j1 = 0; j1 < 9; ++j1)
             {
-                this.addSlot(new Slot(playerInventoryIn, j1 + l * 9 + 9, 8 + j1 * 18, 103 + l * 18 + i));
+                addSlot(new Slot(playerInventoryIn, j1 + l * 9 + 9, 8 + j1 * 18, 103 + l * 18 + i));
             }
         }
         
         for(int i1 = 0; i1 < 9; ++i1)
         {
-            this.addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i));
+            addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i));
         }
     }
     
@@ -115,127 +115,127 @@ public class CIIContainer extends Container
     
     public int getPage()
     {
-        return this.page;
+        return page;
     }
     
     public int getMaxPage()
     {
-        return this.maxPage;
+        return maxPage;
     }
     
     protected void updatePage()
     {
-        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CIIMessages.SetPage(this.page));
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new CIIMessages.SetPage(page));
     }
     
     public void nextPage()
     {
-        ++this.page;
+        ++page;
         
-        if(this.page >= this.maxPage)
+        if(page >= maxPage)
         {
-            this.page = 0;
+            page = 0;
         }
         
-        this.updateSlots();
-        this.updatePage();
+        updateSlots();
+        updatePage();
     }
     
     public void prevPage()
     {
-        --this.page;
+        --page;
         
-        if(this.page < 0)
+        if(page < 0)
         {
-            this.page = this.maxPage - 1;
+            page = maxPage - 1;
         }
         
-        this.updateSlots();
-        this.updatePage();
+        updateSlots();
+        updatePage();
     }
     
     public void updateSlots()
     {
-        if(this.itemHandler == null)
+        if(itemHandler == null)
         {
             return;
         }
         
-        this.filling = true;
+        filling = true;
         
-        int start = this.page * this.slotInv.getSizeInventory();
-        int end = start + this.slotInv.getSizeInventory();
+        int start = page * slotInv.getContainerSize();
+        int end = start + slotInv.getContainerSize();
         int i, j;
         
-        for(i = start, j = 0; i < end && i < this.itemHandler.getSlots() && j < this.slotInv.getSizeInventory(); ++i, ++j)
+        for(i = start, j = 0; i < end && i < itemHandler.getSlots() && j < slotInv.getContainerSize(); ++i, ++j)
         {
-            this.slotInv.setInventorySlotContents(j, this.itemHandler.getStackInSlot(i));
+            slotInv.setItem(j, itemHandler.getStackInSlot(i));
         }
         
-        for(; j < this.slotInv.getSizeInventory(); ++j)
+        for(; j < slotInv.getContainerSize(); ++j)
         {
-            this.slotInv.setInventorySlotContents(j, ItemStack.EMPTY);
+            slotInv.setItem(j, ItemStack.EMPTY);
         }
         
-        this.filling = false;
+        filling = false;
         
-        this.detectAndSendChanges();
+        broadcastChanges();
     }
     
     @Override
-    public void onCraftMatrixChanged(IInventory inventoryIn)
+    public void slotsChanged(IInventory inventoryIn)
     {
-        if(!this.filling && !this.player.world.isRemote)
+        if(!filling && !player.level.isClientSide)
         {
-            int start = this.page * this.slotInv.getSizeInventory();
-            int end = start + this.slotInv.getSizeInventory();
+            int start = page * slotInv.getContainerSize();
+            int end = start + slotInv.getContainerSize();
             int i, j;
             
-            for(i = start, j = 0; i < end && i < this.itemHandler.getSlots(); ++i, ++j)
+            for(i = start, j = 0; i < end && i < itemHandler.getSlots(); ++i, ++j)
             {
-                this.itemHandler.insertItem(i, this.slotInv.getStackInSlot(j), false);
+                itemHandler.insertItem(i, slotInv.getItem(j), false);
             }
             
-            super.onCraftMatrixChanged(inventoryIn);
+            super.slotsChanged(inventoryIn);
         }
     }
     
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn)
+    public boolean stillValid(PlayerEntity playerIn)
     {
         return true;
     }
     
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
     {
         ItemStack itemstack = ItemStack.EMPTY;
         
-        Slot slot = this.inventorySlots.get(index);
+        Slot slot = slots.get(index);
         
-        if(slot != null && slot.getHasStack())
+        if(slot != null && slot.hasItem())
         {
-            ItemStack itemstack1 = slot.getStack();
+            ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
             if(index < 6 * 9)
             {
-                if(!this.mergeItemStack(itemstack1, 6 * 9, this.inventorySlots.size(), true))
+                if(!moveItemStackTo(itemstack1, 6 * 9, slots.size(), true))
                 {
                     return ItemStack.EMPTY;
                 }
             }
-            else if(!this.mergeItemStack(itemstack1, 0, 6 * 9, false))
+            else if(!moveItemStackTo(itemstack1, 0, 6 * 9, false))
             {
                 return ItemStack.EMPTY;
             }
             
             if(itemstack1.isEmpty())
             {
-                slot.putStack(ItemStack.EMPTY);
+                slot.set(ItemStack.EMPTY);
             }
             else
             {
-                slot.onSlotChanged();
+                slot.setChanged();
             }
         }
         
@@ -244,7 +244,7 @@ public class CIIContainer extends Container
     
     public static void openGui(PlayerEntity player, int itemHandlerSize, INamedContainerProvider p)
     {
-        NetworkHooks.openGui((ServerPlayerEntity)player, p, (extraData) ->
+        NetworkHooks.openGui((ServerPlayerEntity) player, p, (extraData) ->
         {
             extraData.writeInt(itemHandlerSize);
         });

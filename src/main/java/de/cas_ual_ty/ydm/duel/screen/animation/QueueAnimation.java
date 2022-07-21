@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
-import java.util.Queue;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
+
+import java.util.Queue;
 
 public class QueueAnimation extends Animation
 {
@@ -17,18 +17,18 @@ public class QueueAnimation extends Animation
         
         this.animations = animations;
         
-        this.maxTickTime = 0;
+        maxTickTime = 0;
         
         for(Animation a : this.animations)
         {
-            this.maxTickTime += a.maxTickTime;
+            maxTickTime += a.maxTickTime;
         }
         
-        this.onStart = () ->
+        onStart = () ->
         {
             throw new RuntimeException();
         };
-        this.onEnd = () ->
+        onEnd = () ->
         {
             throw new RuntimeException();
         };
@@ -36,13 +36,13 @@ public class QueueAnimation extends Animation
     
     public QueueAnimation setOnStartAlt(Runnable onStart)
     {
-        this.replacementOnStart = onStart;
+        replacementOnStart = onStart;
         return this;
     }
     
     public QueueAnimation setOnEndAlt(Runnable onEnd)
     {
-        this.replacementOnEnd = onEnd;
+        replacementOnEnd = onEnd;
         return this;
     }
     
@@ -61,9 +61,9 @@ public class QueueAnimation extends Animation
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        if(!this.animations.isEmpty())
+        if(!animations.isEmpty())
         {
-            Animation a = this.animations.peek();
+            Animation a = animations.peek();
             a.render(ms, mouseX, mouseY, partialTicks);
         }
     }
@@ -71,32 +71,32 @@ public class QueueAnimation extends Animation
     @Override
     public void tick()
     {
-        if(this.ended())
+        if(ended())
         {
             return;
         }
         
-        if(this.tickTime == 0 && this.replacementOnStart != null)
+        if(tickTime == 0 && replacementOnStart != null)
         {
-            this.replacementOnStart.run();
+            replacementOnStart.run();
         }
         
-        ++this.tickTime;
+        ++tickTime;
         
-        if(!this.animations.isEmpty())
+        if(!animations.isEmpty())
         {
-            Animation a = this.animations.peek();
+            Animation a = animations.peek();
             a.tick();
             
             if(a.ended())
             {
-                this.animations.poll();
+                animations.poll();
             }
         }
         
-        if(this.tickTime == this.maxTickTime && this.replacementOnEnd != null)
+        if(tickTime == maxTickTime && replacementOnEnd != null)
         {
-            this.replacementOnEnd.run();
+            replacementOnEnd.run();
         }
     }
     

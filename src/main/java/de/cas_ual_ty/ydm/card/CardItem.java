@@ -1,7 +1,5 @@
 package de.cas_ual_ty.ydm.card;
 
-import java.util.List;
-
 import de.cas_ual_ty.ydm.YdmDatabase;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -12,6 +10,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class CardItem extends Item
 {
     public CardItem(Properties properties)
@@ -20,17 +20,17 @@ public class CardItem extends Item
     }
     
     @Override
-    public void addInformation(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
     {
-        CardHolder holder = this.getCardHolder(itemStack);
+        CardHolder holder = getCardHolder(itemStack);
         tooltip.clear();
         holder.addInformation(tooltip);
     }
     
     @Override
-    public ITextComponent getDisplayName(ItemStack itemStack)
+    public ITextComponent getName(ItemStack itemStack)
     {
-        CardHolder holder = this.getCardHolder(itemStack);
+        CardHolder holder = getCardHolder(itemStack);
         return new StringTextComponent(holder.getCard().getName());
     }
     
@@ -42,45 +42,45 @@ public class CardItem extends Item
     public ItemStack createItemForCard(de.cas_ual_ty.ydm.card.properties.Properties card, byte imageIndex, String rarity, String code)
     {
         ItemStack itemStack = new ItemStack(this);
-        this.getCardHolder(itemStack).override(new CardHolder(card, imageIndex, rarity, code));
+        getCardHolder(itemStack).override(new CardHolder(card, imageIndex, rarity, code));
         return itemStack;
     }
     
     public ItemStack createItemForCard(de.cas_ual_ty.ydm.card.properties.Properties card, byte imageIndex, String rarity)
     {
         ItemStack itemStack = new ItemStack(this);
-        this.getCardHolder(itemStack).override(new CardHolder(card, imageIndex, rarity));
+        getCardHolder(itemStack).override(new CardHolder(card, imageIndex, rarity));
         return itemStack;
     }
     
     public ItemStack createItemForCard(de.cas_ual_ty.ydm.card.properties.Properties card)
     {
-        return this.createItemForCard(card, (byte)0, Rarity.CREATIVE.name);
+        return createItemForCard(card, (byte) 0, Rarity.CREATIVE.name);
     }
     
     public ItemStack createItemForCardHolder(CardHolder card)
     {
         ItemStack itemStack = new ItemStack(this);
-        this.getCardHolder(itemStack).override(card);
+        getCardHolder(itemStack).override(card);
         return itemStack;
     }
     
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
     {
-        if(!this.isInGroup(group))
+        if(!allowdedIn(group))
         {
             return;
         }
         
         YdmDatabase.forAllCardVariants((card, imageIndex) ->
         {
-            items.add(this.createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
+            items.add(createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
         });
     }
     
     @Override
-    public boolean shouldSyncTag()
+    public boolean shouldOverrideMultiplayerNbt()
     {
         return true;
     }

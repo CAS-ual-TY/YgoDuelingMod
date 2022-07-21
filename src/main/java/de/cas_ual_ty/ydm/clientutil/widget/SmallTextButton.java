@@ -2,7 +2,6 @@ package de.cas_ual_ty.ydm.clientutil.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.FontRenderer;
@@ -24,31 +23,31 @@ public class SmallTextButton extends Button
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
-        minecraft.getTextureManager().bindTexture(Widget.WIDGETS_LOCATION);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-        int i = this.getYImage(this.isHovered());
+        FontRenderer fontrenderer = minecraft.font;
+        minecraft.getTextureManager().bind(Widget.WIDGETS_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
+        int i = getYImage(isHovered());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        this.blit(ms, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height / 2);
-        this.blit(ms, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height / 2);
-        this.blit(ms, this.x, this.y + this.height / 2, 0, 46 + (i + 1) * 20 - this.height / 2, this.width / 2, this.height / 2);
-        this.blit(ms, this.x + this.width / 2, this.y + this.height / 2, 200 - this.width / 2, 46 + (i + 1) * 20 - this.height / 2, this.width / 2, this.height / 2);
-        this.renderBg(ms, minecraft, mouseX, mouseY);
+        blit(ms, x, y, 0, 46 + i * 20, width / 2, height / 2);
+        blit(ms, x + width / 2, y, 200 - width / 2, 46 + i * 20, width / 2, height / 2);
+        blit(ms, x, y + height / 2, 0, 46 + (i + 1) * 20 - height / 2, width / 2, height / 2);
+        blit(ms, x + width / 2, y + height / 2, 200 - width / 2, 46 + (i + 1) * 20 - height / 2, width / 2, height / 2);
+        renderBg(ms, minecraft, mouseX, mouseY);
         
-        ms.push();
+        ms.pushPose();
         ms.scale(0.5F, 0.5F, 1F);
-        int j = this.getFGColor();
-        AbstractGui.drawCenteredString(ms, fontrenderer, this.getMessage(), (this.x + this.width / 2) * 2, (this.y + this.height / 2) * 2 - fontrenderer.FONT_HEIGHT / 2, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
-        ms.pop();
+        int j = getFGColor();
+        AbstractGui.drawCenteredString(ms, fontrenderer, getMessage(), (x + width / 2) * 2, (y + height / 2) * 2 - fontrenderer.lineHeight / 2, j | MathHelper.ceil(alpha * 255.0F) << 24);
+        ms.popPose();
         
-        if(this.isHovered())
+        if(isHovered())
         {
-            this.renderToolTip(ms, mouseX, mouseY);
+            renderToolTip(ms, mouseX, mouseY);
         }
     }
 }

@@ -1,17 +1,15 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.util.text.ITextComponent;
+
+import javax.annotation.Nullable;
+import java.util.function.Consumer;
 
 public class MonsterZoneWidget extends ZoneWidget
 {
@@ -24,37 +22,37 @@ public class MonsterZoneWidget extends ZoneWidget
     @Nullable
     public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
     {
-        if(this.zone.getCardsAmount() <= 0)
+        if(zone.getCardsAmount() <= 0)
         {
             return null;
         }
-        else if(this.zone.getCardsAmount() == 1)
+        else if(zone.getCardsAmount() == 1)
         {
             return super.renderCards(ms, mouseX, mouseY);
         }
         
-        final int cardsWidth = DuelScreenDueling.CARDS_WIDTH * this.height / DuelScreenDueling.CARDS_HEIGHT;
-        final int cardsHeight = this.height;
+        final int cardsWidth = DuelScreenDueling.CARDS_WIDTH * height / DuelScreenDueling.CARDS_HEIGHT;
+        final int cardsHeight = height;
         final int offset = (cardsHeight - cardsWidth);
         final int cardsTextureSize = cardsHeight;
         
         DuelCard hoveredCard = null;
-        float hoverX = this.x;
-        float hoverY = this.y;
+        float hoverX = x;
+        float hoverY = y;
         float hoverWidth = cardsWidth;
         float hoverHeight = cardsHeight;
         
-        boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
-        boolean isOpponentView = this.zone.getOwner() != this.context.getView();
+        boolean isOwner = zone.getOwner() == context.getZoneOwner();
+        boolean isOpponentView = zone.getOwner() != context.getView();
         
-        final int renderX = this.x;
-        final int renderY = this.y;
+        final int renderX = x;
+        final int renderY = y;
         final int renderWidth = cardsTextureSize;
         final int renderHeight = cardsTextureSize;
         
-        final boolean topCardInDef = !this.zone.getTopCard().position.isStraight;
+        final boolean topCardInDef = !zone.getTopCard().position.isStraight;
         final int topCardIndex = topCardInDef ? 1 : 0;
-        final int cardsAmount = this.zone.getCardsAmount() - topCardIndex;
+        final int cardsAmount = zone.getCardsAmount() - topCardIndex;
         
         // If the top card is in DEF, cardsAmount is 1 less than zone.getCardsAmount
         // If not, its the same amount
@@ -63,10 +61,10 @@ public class MonsterZoneWidget extends ZoneWidget
         // if this is true, there are exactly 2 cards in
         if(cardsAmount == 1)
         {
-            DuelCard c = this.zone.getCardUnsafe(topCardIndex); // we get the 2nd card
+            DuelCard c = zone.getCardUnsafe(topCardIndex); // we get the 2nd card
             int newHoverX = renderX + offset / 2; // and put it in the middle
             
-            if(this.drawCard(ms, c, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
+            if(drawCard(ms, c, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
             {
                 hoveredCard = c;
                 hoverX = newHoverX;
@@ -74,25 +72,25 @@ public class MonsterZoneWidget extends ZoneWidget
         }
         else
         {
-            float margin = cardsWidth - (cardsAmount * cardsWidth - this.width) / (float)(cardsAmount - 1);
+            float margin = cardsWidth - (cardsAmount * cardsWidth - width) / (float) (cardsAmount - 1);
             
-            float hoverXBase = this.x;
+            float hoverXBase = x;
             
             boolean renderLeftToRight = !isOpponentView;
             
             if(!renderLeftToRight)
             {
                 margin *= -1F;
-                hoverXBase += this.width - hoverWidth;
+                hoverXBase += width - hoverWidth;
             }
             
             DuelCard c = null;
             float newHoverX;
             float newRenderX;
             
-            for(int i = this.zone.getCardsAmount() - 1; i >= topCardIndex; --i)
+            for(int i = zone.getCardsAmount() - 1; i >= topCardIndex; --i)
             {
-                c = this.zone.getCardUnsafe(i);
+                c = zone.getCardUnsafe(i);
                 
                 newHoverX = hoverXBase + (i - topCardIndex) * margin;
                 newRenderX = newHoverX - offset / 2;
@@ -101,7 +99,7 @@ public class MonsterZoneWidget extends ZoneWidget
                 // and the card is sideways
                 // adjust the hover rect
                 // and also render it centered again
-                if(this.drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
+                if(drawCard(ms, c, newRenderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, hoverY, hoverWidth, hoverHeight))
                 {
                     hoveredCard = c;
                     hoverX = newHoverX;
@@ -112,13 +110,13 @@ public class MonsterZoneWidget extends ZoneWidget
         // if true we did not render this card yet
         if(topCardInDef)
         {
-            DuelCard c = this.zone.getTopCard();
+            DuelCard c = zone.getTopCard();
             float newHoverX = renderX;
             float newHoverY = renderY + offset / 2;
             float newHoverWidth = cardsHeight;
             float newHoverHeight = cardsWidth;
             
-            if(this.drawCard(ms, c, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, newHoverY, newHoverWidth, newHoverHeight))
+            if(drawCard(ms, c, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, newHoverX, newHoverY, newHoverWidth, newHoverHeight))
             {
                 hoveredCard = c;
                 hoverX = newHoverX;
@@ -130,18 +128,18 @@ public class MonsterZoneWidget extends ZoneWidget
         
         if(hoveredCard != null)
         {
-            if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !this.zone.getType().getIsSecret()))
+            if(hoveredCard.getCardPosition().isFaceUp || (isOwner && !zone.getType().getIsSecret()))
             {
-                this.context.renderCardInfo(ms, hoveredCard);
+                context.renderCardInfo(ms, hoveredCard);
             }
             
-            if(this.active)
+            if(active)
             {
                 ScreenUtil.renderHoverRect(ms, hoverX, hoverY, hoverWidth, hoverHeight);
             }
         }
         
-        if(!this.active)
+        if(!active)
         {
             return null;
         }
@@ -154,7 +152,7 @@ public class MonsterZoneWidget extends ZoneWidget
     @Override
     public boolean openAdvancedZoneView()
     {
-        if(this.zone.getCardsAmount() <= 0 || this.zone.getType().getIsSecret())
+        if(zone.getCardsAmount() <= 0 || zone.getType().getIsSecret())
         {
             return false;
         }
@@ -162,12 +160,12 @@ public class MonsterZoneWidget extends ZoneWidget
         {
             int threshold = 3;
             
-            if(!this.zone.getTopCard().getCardPosition().isStraight)
+            if(!zone.getTopCard().getCardPosition().isStraight)
             {
                 threshold++;
             }
             
-            return this.zone.getCardsAmount() > threshold;
+            return zone.getCardsAmount() > threshold;
         }
     }
 }

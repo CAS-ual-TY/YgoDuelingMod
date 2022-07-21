@@ -47,7 +47,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     {
         if(itemStack.getOrCreateTag().contains(DeckBoxItem.CARD_SLEEVES_KEY))
         {
-            return ItemStack.read(itemStack.getOrCreateTag().getCompound(DeckBoxItem.CARD_SLEEVES_KEY));
+            return ItemStack.of(itemStack.getOrCreateTag().getCompound(DeckBoxItem.CARD_SLEEVES_KEY));
         }
         else
         {
@@ -58,33 +58,33 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     public void saveItemHandlerToNBT(ItemStack itemStack, IItemHandler itemHandler)
     {
         itemStack.getOrCreateTag().put(DeckBoxItem.ITEM_HANDLER_KEY,
-            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
+                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
     }
     
     public void saveCardSleevesToNBT(ItemStack itemStack, ItemStack sleevesStack)
     {
-        if(sleevesStack.getItem() instanceof CardSleevesItem && !((CardSleevesItem)sleevesStack.getItem()).sleeves.isCardBack())
+        if(sleevesStack.getItem() instanceof CardSleevesItem && !((CardSleevesItem) sleevesStack.getItem()).sleeves.isCardBack())
         {
-            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, sleevesStack.write(new CompoundNBT()));
+            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, sleevesStack.save(new CompoundNBT()));
         }
         else
         {
-            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, ItemStack.EMPTY.write(new CompoundNBT()));
+            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, ItemStack.EMPTY.save(new CompoundNBT()));
         }
     }
     
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
     {
         ItemStack stack = DeckBoxItem.getActiveDeckBox(player);
         
-        if(player.getHeldItem(hand) == stack)
+        if(player.getItemInHand(hand) == stack)
         {
-            player.openContainer(this);
-            return ActionResult.resultSuccess(stack);
+            player.openMenu(this);
+            return ActionResult.success(stack);
         }
         
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
     
     @Override
@@ -101,7 +101,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     
     public ItemHandlerDeckHolder getDeckHolder(ItemStack itemStack)
     {
-        return new ItemHandlerDeckHolder(this.getItemHandler(itemStack), this.getCardSleeves(itemStack));
+        return new ItemHandlerDeckHolder(getItemHandler(itemStack), getCardSleeves(itemStack));
     }
     
     public void setDeckHolder(ItemStack itemStack, DeckHolder holder)
@@ -155,23 +155,23 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
             itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, ItemStack.EMPTY, false);
         }
         
-        this.saveItemHandlerToNBT(itemStack, itemHandler);
+        saveItemHandlerToNBT(itemStack, itemHandler);
         
         if(!holder.getSleeves().isCardBack())
         {
-            this.saveCardSleevesToNBT(itemStack, new ItemStack(holder.getSleeves().getItem()));
+            saveCardSleevesToNBT(itemStack, new ItemStack(holder.getSleeves().getItem()));
         }
     }
     
     public static ItemStack getActiveDeckBox(PlayerEntity player)
     {
-        if(player.getHeldItemMainhand().getItem() instanceof DeckBoxItem)
+        if(player.getMainHandItem().getItem() instanceof DeckBoxItem)
         {
-            return player.getHeldItemMainhand();
+            return player.getMainHandItem();
         }
-        else if(player.getHeldItemOffhand().getItem() instanceof DeckBoxItem)
+        else if(player.getOffhandItem().getItem() instanceof DeckBoxItem)
         {
-            return player.getHeldItemOffhand();
+            return player.getOffhandItem();
         }
         else
         {

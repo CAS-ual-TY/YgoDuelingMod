@@ -22,32 +22,32 @@ public class DuelTileEntity extends TileEntity implements INamedContainerProvide
     public DuelTileEntity(TileEntityType<?> tileEntityType)
     {
         super(tileEntityType);
-        this.duelManager = null;
+        duelManager = null;
     }
     
     @Override
-    public void setWorldAndPos(World world, BlockPos pos)
+    public void setLevelAndPosition(World world, BlockPos pos)
     {
-        super.setWorldAndPos(world, pos);
+        super.setLevelAndPosition(world, pos);
         
         // world is still null at constructor, so we gotta do this here
-        this.duelManager = this.createDuelManager();
+        duelManager = createDuelManager();
     }
     
     public DuelManager createDuelManager()
     {
-        return new DuelManager(this.world.isRemote, this::createHeader);
+        return new DuelManager(level.isClientSide, this::createHeader);
     }
     
     public DuelMessageHeader createHeader()
     {
-        return new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY, this.getPos());
+        return new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY, getBlockPos());
     }
     
     @Override
     public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
     {
-        return new DuelBlockContainer(YdmContainerTypes.DUEL_BLOCK_CONTAINER, id, playerInv, this.pos);
+        return new DuelBlockContainer(YdmContainerTypes.DUEL_BLOCK_CONTAINER, id, playerInv, worldPosition);
     }
     
     @Override

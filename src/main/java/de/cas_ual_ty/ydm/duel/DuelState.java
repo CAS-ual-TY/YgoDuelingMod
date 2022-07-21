@@ -32,6 +32,6 @@ public enum DuelState
     
     public byte getIndex()
     {
-        return this.index;
+        return index;
     }
 }

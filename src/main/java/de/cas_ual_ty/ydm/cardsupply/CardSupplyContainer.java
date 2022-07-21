@@ -26,39 +26,39 @@ public class CardSupplyContainer extends Container
     public CardSupplyContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, BlockPos blockPos)
     {
         super(type, id);
-        this.pos = blockPos;
-        this.player = playerInventory.player;
+        pos = blockPos;
+        player = playerInventory.player;
         
         // player inventory
         for(int y = 0; y < 3; ++y)
         {
             for(int x = 0; x < 9; ++x)
             {
-                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
+                addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
             }
         }
         
         // player hot bar
         for(int x = 0; x < 9; ++x)
         {
-            this.addSlot(new Slot(playerInventory, x, 8 + x * 18, 198));
+            addSlot(new Slot(playerInventory, x, 8 + x * 18, 198));
         }
     }
     
     public void giveCard(Properties card, byte imageIndex)
     {
-        this.player.addItemStackToInventory(YdmItems.CARD.createItemForCardHolder(new CardHolder(card, imageIndex, Rarity.SUPPLY.name)));
+        player.addItem(YdmItems.CARD.createItemForCardHolder(new CardHolder(card, imageIndex, Rarity.SUPPLY.name)));
     }
     
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
     {
         return ItemStack.EMPTY;
     }
     
     @Override
-    public boolean canInteractWith(PlayerEntity player) // from LockableLootTileEntity::isUsableByPlayer
+    public boolean stillValid(PlayerEntity player) // from LockableLootTileEntity::isUsableByPlayer
     {
-        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 }

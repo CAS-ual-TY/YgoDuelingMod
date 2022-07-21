@@ -30,26 +30,26 @@ public class ChangeCountersAction extends SingleZoneAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeInt(this.counterChange);
+        buf.writeInt(counterChange);
     }
     
     @Override
     public void doAction()
     {
-        this.previousCounters = this.sourceZone.getCounters();
-        this.sourceZone.changeCounters(this.counterChange);
-        this.newCounters = this.sourceZone.getCounters();
+        previousCounters = sourceZone.getCounters();
+        sourceZone.changeCounters(counterChange);
+        newCounters = sourceZone.getCounters();
     }
     
     @Override
     public void undoAction()
     {
-        this.sourceZone.setCounters(this.previousCounters);
+        sourceZone.setCounters(previousCounters);
     }
     
     @Override
     public void redoAction()
     {
-        this.sourceZone.setCounters(this.newCounters);
+        sourceZone.setCounters(newCounters);
     }
 }

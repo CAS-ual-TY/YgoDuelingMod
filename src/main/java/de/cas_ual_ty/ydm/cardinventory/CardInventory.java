@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.cardinventory;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.util.YdmUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CardInventory implements ICardInventory
 {
@@ -18,7 +18,7 @@ public class CardInventory implements ICardInventory
     public CardInventory(List<CardHolder> list)
     {
         this.list = list;
-        this.activeList = new ArrayList<>(this.cardsPerPage());
+        activeList = new ArrayList<>(cardsPerPage());
     }
     
     protected int cardsPerPage()
@@ -29,19 +29,19 @@ public class CardInventory implements ICardInventory
     @Override
     public int getPagesAmount()
     {
-        return this.list.size() / this.cardsPerPage() + 1;
+        return list.size() / cardsPerPage() + 1;
     }
     
     /*
      * cardsPerPage = 9
      * totalCards = 12
      * totalPages = 2
-     * 
+     *
      * Page = 1
      * cards indices 0-9 (0 incl, 9 excl)
      * min = 0 = cardsPerPage * (page - 1) = 9 * 0
      * max = 9 = MIN( cardsPerPage + min = 9 + 0 = 9 , totalCards = 12 )
-     * 
+     *
      * Page = 2
      * cards indices 9-12
      * min = 9 = cardsPerPage * (page - 1) = 9 * 1
@@ -52,7 +52,7 @@ public class CardInventory implements ICardInventory
      * cardsPerPage = 9
      * totalCards = 9
      * totalPages = 9/9 + 1 = 2
-     * 
+     *
      * Page = 2
      * cards indices 9-9
      * min = 9 = cardsPerPage * (page - 1) = 9 * 1
@@ -63,7 +63,7 @@ public class CardInventory implements ICardInventory
      * cardsPerPage = 6 * 9 = 54
      * totalCards = 0
      * totalPages = 0/54 + 1 = 1
-     * 
+     *
      * Page = 1
      * cards indices 0-0
      * min = 0 = cardsPerPage * (page - 1) = 0
@@ -73,25 +73,25 @@ public class CardInventory implements ICardInventory
     @Override
     public List<CardHolder> getCardsForPage(int page)
     {
-        page = YdmUtil.range(page, 1, this.getPagesAmount());
+        page = YdmUtil.range(page, 1, getPagesAmount());
         
-        int min = this.cardsPerPage() * (page - 1);
-        int max = Math.min(this.cardsPerPage() + min, this.list.size());
+        int min = cardsPerPage() * (page - 1);
+        int max = Math.min(cardsPerPage() + min, list.size());
         
-        return this.list.subList(min, max);
+        return list.subList(min, max);
     }
     
     @Override
     public void addCard(CardHolder card)
     {
-        this.list.add(card);
+        list.add(card);
     }
     
     @Override
     public CardHolder extractCard(int page, int index)
     {
-        CardHolder card = this.list.remove((page - 1) * this.cardsPerPage() + index);
-        this.activeList.remove(card);
+        CardHolder card = list.remove((page - 1) * cardsPerPage() + index);
+        activeList.remove(card);
         return card;
     }
     
@@ -99,27 +99,27 @@ public class CardInventory implements ICardInventory
     public void updateCardsList(String search)
     {
         search = search.trim();
-        this.activeList.clear();
+        activeList.clear();
         
         if(!search.isEmpty())
         {
-            for(CardHolder card : this.list)
+            for(CardHolder card : list)
             {
                 if(card.getCard().getName().contains(search))
                 {
-                    this.activeList.add(card);
+                    activeList.add(card);
                 }
             }
         }
         else
         {
-            this.activeList.addAll(this.list);
+            activeList.addAll(list);
         }
     }
     
     @Override
     public int totalCardsSize()
     {
-        return this.list.size();
+        return list.size();
     }
 }

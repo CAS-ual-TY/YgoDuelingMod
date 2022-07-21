@@ -1,28 +1,13 @@
 package de.cas_ual_ty.ydm.duel.screen;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.function.Supplier;
-
-import javax.annotation.Nullable;
-
-import org.lwjgl.glfw.GLFW;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.SwitchableContainerScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.duel.DeckSource;
-import de.cas_ual_ty.ydm.duel.DuelChatMessage;
-import de.cas_ual_ty.ydm.duel.DuelContainer;
-import de.cas_ual_ty.ydm.duel.DuelManager;
-import de.cas_ual_ty.ydm.duel.DuelState;
-import de.cas_ual_ty.ydm.duel.PlayerRole;
+import de.cas_ual_ty.ydm.duel.*;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
@@ -41,6 +26,13 @@ import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraftforge.fml.network.PacketDistributor;
+import org.lwjgl.glfw.GLFW;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.function.Supplier;
 
 public abstract class DuelContainerScreen<E extends DuelContainer> extends SwitchableContainerScreen<E>
 {
@@ -66,51 +58,51 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     public DuelContainerScreen(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.xSize = 234;
-        this.ySize = 250;
+        imageWidth = 234;
+        imageHeight = 250;
         
-        this.worldChatMessages = new ArrayList<>(32);
-        this.textFieldWidget = null;
-        this.duelChat = true;
+        worldChatMessages = new ArrayList<>(32);
+        textFieldWidget = null;
+        duelChat = true;
         
         //default
-        this.screensForEachState = new DuelScreenConstructor[DuelState.VALUES.length];
-        this.screensForEachState[DuelState.IDLE.getIndex()] = DuelScreenIdle::new;
-        this.screensForEachState[DuelState.PREPARING.getIndex()] = DuelScreenPreparing::new;
-        this.screensForEachState[DuelState.END.getIndex()] = DuelScreenPreparing::new;
-        this.screensForEachState[DuelState.DUELING.getIndex()] = DuelScreenDueling::new;
-        this.screensForEachState[DuelState.SIDING.getIndex()] = DuelScreenDueling::new;
+        screensForEachState = new DuelScreenConstructor[DuelState.VALUES.length];
+        screensForEachState[DuelState.IDLE.getIndex()] = DuelScreenIdle::new;
+        screensForEachState[DuelState.PREPARING.getIndex()] = DuelScreenPreparing::new;
+        screensForEachState[DuelState.END.getIndex()] = DuelScreenPreparing::new;
+        screensForEachState[DuelState.DUELING.getIndex()] = DuelScreenDueling::new;
+        screensForEachState[DuelState.SIDING.getIndex()] = DuelScreenDueling::new;
     }
     
     public DuelContainerScreen<E> setScreenForState(DuelState state, DuelScreenConstructor<E> screen)
     {
-        this.screensForEachState[state.getIndex()] = screen;
+        screensForEachState[state.getIndex()] = screen;
         return this;
     }
     
     protected DuelContainerScreen<E> createNewScreenForState(DuelState state)
     {
-        return this.screensForEachState[state.getIndex()].construct(this.container, this.playerInventory, this.title);
+        return screensForEachState[state.getIndex()].construct(menu, inventory, title);
     }
     
     public final void duelStateChanged()
     {
-        this.switchScreen(this.createNewScreenForState(this.getState()));
+        switchScreen(createNewScreenForState(getState()));
     }
     
     public final void reInit()
     {
-        this.init(this.minecraft, this.width, this.height);
+        init(minecraft, width, height);
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
     {
-        ScreenUtil.renderDisabledRect(ms, 0, 0, this.width, this.height);
+        ScreenUtil.renderDisabledRect(ms, 0, 0, width, height);
         
         ScreenUtil.white();
-        this.minecraft.getTextureManager().bindTexture(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
-        this.blit(ms, this.guiLeft, this.guiTop, 0, 0, this.xSize, this.ySize);
+        minecraft.getTextureManager().bind(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
+        blit(ms, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
     
     @Override
@@ -120,9 +112,9 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         
         if(s instanceof DuelContainerScreen)
         {
-            DuelContainerScreen<E> screen = (DuelContainerScreen<E>)s;
-            screen.screensForEachState = this.screensForEachState;
-            screen.worldChatMessages = this.worldChatMessages;
+            DuelContainerScreen<E> screen = (DuelContainerScreen<E>) s;
+            screen.screensForEachState = screensForEachState;
+            screen.worldChatMessages = worldChatMessages;
         }
     }
     
@@ -130,15 +122,15 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     protected void onGuiClose()
     {
         super.onGuiClose();
-        this.getDuelManager().reset();
+        getDuelManager().reset();
     }
     
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if(this.textFieldWidget != null && this.textFieldWidget.isFocused() && !this.textFieldWidget.isMouseOver(mouseX, mouseY))
+        if(textFieldWidget != null && textFieldWidget.isFocused() && !textFieldWidget.isMouseOver(mouseX, mouseY))
         {
-            this.textFieldWidget.setFocused2(false);
+            textFieldWidget.setFocus(false);
         }
         
         return super.mouseClicked(mouseX, mouseY, button);
@@ -147,16 +139,16 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
-        if(this.textFieldWidget != null && this.textFieldWidget.isFocused())
+        if(textFieldWidget != null && textFieldWidget.isFocused())
         {
             if(keyCode == GLFW.GLFW_KEY_ENTER)
             {
-                this.sendChat();
+                sendChat();
                 return true;
             }
             else
             {
-                return this.textFieldWidget.keyPressed(keyCode, scanCode, modifiers);
+                return textFieldWidget.keyPressed(keyCode, scanCode, modifiers);
             }
         }
         else
@@ -168,26 +160,26 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     @Override
     public void renderTooltip(MatrixStack ms, List<? extends IReorderingProcessor> tooltips, int mouseX, int mouseY)
     {
-        ms.push();
+        ms.pushPose();
         ms.translate(0, 0, 10D);
         super.renderTooltip(ms, tooltips, mouseX, mouseY);
-        ms.pop();
+        ms.popPose();
     }
     
     @Override
     public void renderTooltip(MatrixStack ms, ITextComponent text, int mouseX, int mouseY)
     {
-        ms.push();
+        ms.pushPose();
         ms.translate(0, 0, 10D);
         super.renderTooltip(ms, text, mouseX, mouseY);
-        ms.pop();
+        ms.popPose();
     }
     
     public void renderDisabledTooltip(MatrixStack ms, List<IReorderingProcessor> tooltips, int mouseX, int mouseY)
     {
-        tooltips.add(new StringTextComponent("DISABLED").modifyStyle((s) -> s.applyFormatting(TextFormatting.ITALIC).applyFormatting(TextFormatting.RED)).func_241878_f());
-        tooltips.add(new StringTextComponent("COMING SOON").modifyStyle((s) -> s.applyFormatting(TextFormatting.ITALIC).applyFormatting(TextFormatting.RED)).func_241878_f());
-        this.renderTooltip(ms, tooltips, mouseX, mouseY);
+        tooltips.add(new StringTextComponent("DISABLED").withStyle((s) -> s.applyFormat(TextFormatting.ITALIC).applyFormat(TextFormatting.RED)).getVisualOrderText());
+        tooltips.add(new StringTextComponent("COMING SOON").withStyle((s) -> s.applyFormat(TextFormatting.ITALIC).applyFormat(TextFormatting.RED)).getVisualOrderText());
+        renderTooltip(ms, tooltips, mouseX, mouseY);
     }
     
     public void renderDisabledTooltip(MatrixStack ms, @Nullable ITextComponent text, int mouseX, int mouseY)
@@ -196,10 +188,10 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         
         if(text != null)
         {
-            tooltips.add(text.func_241878_f());
+            tooltips.add(text.getVisualOrderText());
         }
         
-        this.renderDisabledTooltip(ms, tooltips, mouseX, mouseY);
+        renderDisabledTooltip(ms, tooltips, mouseX, mouseY);
     }
     
     protected void initDefaultChat(int width, int height)
@@ -207,16 +199,16 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         final int margin = 4;
         final int buttonHeight = 20;
         
-        int x = this.guiLeft + this.xSize + margin;
-        int y = this.guiTop + margin;
+        int x = leftPos + imageWidth + margin;
+        int y = topPos + margin;
         
-        int maxWidth = Math.min(160, (this.width - this.xSize) / 2 - 2 * margin);
-        int maxHeight = this.ySize;
+        int maxWidth = Math.min(160, (this.width - imageWidth) / 2 - 2 * margin);
+        int maxHeight = imageHeight;
         
         int chatWidth = maxWidth;
         int chatHeight = (maxHeight - 4 * (buttonHeight + margin) - 2 * margin);
         
-        this.initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);
+        initChat(width, height, x, y, maxWidth, maxHeight, chatWidth, chatHeight, margin, buttonHeight);
     }
     
     protected void initChat(int width, int height, int x, int y, int w, int h, int chatWidth, int chatHeight, int margin, int buttonHeight)
@@ -226,32 +218,32 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         int halfW = w / 2;
         int extraOff = halfW % 2;
         
-        this.addButton(this.duelChatButton = new Button(x, y, halfW, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.duel_chat"), (b) -> this.switchChat()));
-        this.addButton(this.worldChatButton = new Button(x + halfW - extraOff, y, halfW + extraOff, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.world_chat"), (b) -> this.switchChat()));
+        addButton(duelChatButton = new Button(x, y, halfW, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.duel_chat"), (b) -> switchChat()));
+        addButton(worldChatButton = new Button(x + halfW - extraOff, y, halfW + extraOff, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.world_chat"), (b) -> switchChat()));
         y += offset;
         
-        this.addButton(this.chatUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
+        addButton(chatUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
         y += offset;
         
-        this.addButton(this.chatWidget = new DisplayChatWidget(x, y - (chatHeight % this.font.FONT_HEIGHT) / 2, chatWidth, chatHeight, StringTextComponent.EMPTY));
+        addButton(chatWidget = new DisplayChatWidget(x, y - (chatHeight % font.lineHeight) / 2, chatWidth, chatHeight, StringTextComponent.EMPTY));
         y += chatHeight + margin;
         
-        this.addButton(this.chatDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
+        addButton(chatDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
         y += offset;
         
-        this.addButton(this.textFieldWidget = new TextFieldWidget(this.font, x + 1, y + 1, w - 2, buttonHeight - 2, StringTextComponent.EMPTY));
-        this.textFieldWidget.setMaxStringLength(64);
+        addButton(textFieldWidget = new TextFieldWidget(font, x + 1, y + 1, w - 2, buttonHeight - 2, StringTextComponent.EMPTY));
+        textFieldWidget.setMaxLength(64);
         y += offset;
         
-        this.appendToInitChat(width, height, extraOff, y, w, halfW, chatWidth, chatHeight, margin);
+        appendToInitChat(width, height, extraOff, y, w, halfW, chatWidth, chatHeight, margin);
         
-        this.duelChat = !this.duelChat;
-        this.switchChat();
+        duelChat = !duelChat;
+        switchChat();
         
-        this.chatUpButton.active = false;
-        this.chatDownButton.active = false; //TODO remove these
+        chatUpButton.active = false;
+        chatDownButton.active = false; //TODO remove these
         
-        this.makeChatVisible();
+        makeChatVisible();
     }
     
     protected void appendToInitChat(int width, int height, int x, int y, int w, int h, int chatWidth, int chatHeight, int margin)
@@ -261,66 +253,66 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     protected void changeChatFlags(boolean flag)
     {
-        this.chatUpButton.visible = flag;
-        this.chatDownButton.visible = flag;
-        this.chatWidget.visible = flag;
-        this.textFieldWidget.visible = flag;
-        this.duelChatButton.visible = flag;
-        this.worldChatButton.visible = flag;
+        chatUpButton.visible = flag;
+        chatDownButton.visible = flag;
+        chatWidget.visible = flag;
+        textFieldWidget.visible = flag;
+        duelChatButton.visible = flag;
+        worldChatButton.visible = flag;
     }
     
     public void makeChatVisible()
     {
-        this.changeChatFlags(true);
+        changeChatFlags(true);
     }
     
     public void makeChatInvisible()
     {
-        this.changeChatFlags(false);
+        changeChatFlags(false);
     }
     
     protected void sendChat()
     {
-        String text = this.textFieldWidget.getText().trim();
+        String text = textFieldWidget.getValue().trim();
         
         if(!text.isEmpty())
         {
-            if(this.duelChat)
+            if(duelChat)
             {
-                YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.SendMessageToServer(this.getHeader(), new StringTextComponent(text)));
+                YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.SendMessageToServer(getHeader(), new StringTextComponent(text)));
             }
             else
             {
-                this.sendMessage(text, true);
+                sendMessage(text, true);
             }
         }
         
-        this.textFieldWidget.setText("");
+        textFieldWidget.setValue("");
     }
     
     protected void switchChat()
     {
-        if(this.chatWidget.visible)
+        if(chatWidget.visible)
         {
             Button toEnable;
             Button toDisable;
             
-            if(this.duelChat)
+            if(duelChat)
             {
-                toEnable = this.duelChatButton;
-                toDisable = this.worldChatButton;
-                this.chatWidget.setTextSupplier(this.getWorldMessagesSupplier());
+                toEnable = duelChatButton;
+                toDisable = worldChatButton;
+                chatWidget.setTextSupplier(getWorldMessagesSupplier());
             }
             else
             {
-                toEnable = this.worldChatButton;
-                toDisable = this.duelChatButton;
-                this.chatWidget.setTextSupplier(this.getDuelMessagesSupplier());
+                toEnable = worldChatButton;
+                toDisable = duelChatButton;
+                chatWidget.setTextSupplier(getDuelMessagesSupplier());
             }
             
             toEnable.active = true;
             toDisable.active = false;
-            this.duelChat = !this.duelChat;
+            duelChat = !duelChat;
         }
     }
     
@@ -328,11 +320,11 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     {
         return () -> //TODO
         {
-            List<ITextComponent> list = new ArrayList<>(DuelContainerScreen.this.getDuelManager().getMessages().size());
+            List<ITextComponent> list = new ArrayList<>(getDuelManager().getMessages().size());
             
-            for(DuelChatMessage msg : DuelContainerScreen.this.getDuelManager().getMessages())
+            for(DuelChatMessage msg : getDuelManager().getMessages())
             {
-                list.add(msg.generateStyledMessage(DuelContainerScreen.this.getPlayerRole(), TextFormatting.BLUE, TextFormatting.RED, TextFormatting.WHITE));
+                list.add(msg.generateStyledMessage(getPlayerRole(), TextFormatting.BLUE, TextFormatting.RED, TextFormatting.WHITE));
             }
             
             return list;
@@ -352,7 +344,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     protected void chatScrollButtonHovered(Widget w, MatrixStack ms, int mouseX, int mouseY)
     {
         //TODO
-        this.renderDisabledTooltip(ms, (ITextComponent)null, mouseX, mouseY);
+        renderDisabledTooltip(ms, (ITextComponent) null, mouseX, mouseY);
     }
     
     public void populateDeckSources(List<DeckSource> deckSources)
@@ -369,38 +361,38 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     public void handleAction(Action action)
     {
-        action.initClient(this.getDuelManager().getPlayField());
+        action.initClient(getDuelManager().getPlayField());
         action.doAction();
     }
     
     public DuelManager getDuelManager()
     {
-        return this.container.getDuelManager();
+        return menu.getDuelManager();
     }
     
     public PlayField getPlayField()
     {
-        return this.getDuelManager().getPlayField();
+        return getDuelManager().getPlayField();
     }
     
     public DuelMessageHeader getHeader()
     {
-        return this.getDuelManager().headerFactory.get();
+        return getDuelManager().headerFactory.get();
     }
     
     public DuelState getState()
     {
-        return this.getDuelManager().getDuelState();
+        return getDuelManager().getDuelState();
     }
     
     public PlayerRole getPlayerRole()
     {
-        return this.getDuelManager().getRoleFor(ClientProxy.getPlayer());
+        return getDuelManager().getRoleFor(ClientProxy.getPlayer());
     }
     
     public ZoneOwner getZoneOwner()
     {
-        PlayerRole role = this.getPlayerRole();
+        PlayerRole role = getPlayerRole();
         
         if(ZoneOwner.PLAYER1.player == role)
         {
@@ -416,8 +408,8 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         }
     }
     
-    public static interface DuelScreenConstructor<E extends DuelContainer>
+    public interface DuelScreenConstructor<E extends DuelContainer>
     {
-        public DuelContainerScreen<E> construct(E container, PlayerInventory inv, ITextComponent title);
+        DuelContainerScreen<E> construct(E container, PlayerInventory inv, ITextComponent title);
     }
 }

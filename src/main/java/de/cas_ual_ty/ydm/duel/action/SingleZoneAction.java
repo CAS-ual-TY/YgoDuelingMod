@@ -24,31 +24,31 @@ public abstract class SingleZoneAction extends Action
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        buf.writeByte(this.sourceZoneId);
+        buf.writeByte(sourceZoneId);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
-        if(this.sourceZoneId != -1)
+        if(sourceZoneId != -1)
         {
-            this.sourceZone = playField.getZone(this.sourceZoneId);
+            sourceZone = playField.getZone(sourceZoneId);
         }
         else
         {
-            this.sourceZone = null;
+            sourceZone = null;
         }
     }
     
     @Override
     public void undoAction()
     {
-        this.doAction();
+        doAction();
     }
     
     @Override
     public void redoAction()
     {
-        this.doAction();
+        doAction();
     }
 }

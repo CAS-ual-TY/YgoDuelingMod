@@ -1,8 +1,5 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -18,6 +15,9 @@ import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.network.PacketDistributor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CardBinderContainer extends Container
 {
@@ -40,46 +40,46 @@ public class CardBinderContainer extends Container
     public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
         this(type, id, playerInventory, null, YdmItems.CARD_BINDER.getActiveBinder(playerInventory.player));
-        this.clientList = new ArrayList<>(CardInventory.DEFAULT_CARDS_PER_PAGE);
-        this.page = 0;
-        this.clientMaxPage = 0;
+        clientList = new ArrayList<>(CardInventory.DEFAULT_CARDS_PER_PAGE);
+        page = 0;
+        clientMaxPage = 0;
     }
     
     public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, UUIDCardsManager manager, ItemStack itemStack)
     {
         super(type, id);
         this.manager = manager;
-        this.player = playerInventory.player;
+        player = playerInventory.player;
         this.itemStack = itemStack;
-        this.serverList = null;
+        serverList = null;
         
-        this.loaded = false;
+        loaded = false;
         
-        this.containerInv = new Inventory(1);
-        this.addSlot(this.insertionSlot = new Slot(this.containerInv, 0, 179, 18)
+        containerInv = new Inventory(1);
+        addSlot(insertionSlot = new Slot(containerInv, 0, 179, 18)
         {
             @Override
-            public boolean isItemValid(ItemStack stack)
+            public boolean mayPlace(ItemStack stack)
             {
                 return stack.getItem() == YdmItems.CARD && YdmItems.CARD.getCardHolder(stack).getCard() != null;
             }
             
             @Override
-            public void putStack(ItemStack stack)
+            public void set(ItemStack stack)
             {
-                if(CardBinderContainer.this.serverList != null)
+                if(serverList != null)
                 {
-                    int maxPage = CardBinderContainer.this.serverList.getPagesAmount();
-                    CardBinderContainer.this.serverList.addCard(YdmItems.CARD.getCardHolder(stack));
+                    int maxPage = serverList.getPagesAmount();
+                    serverList.addCard(YdmItems.CARD.getCardHolder(stack));
                     
-                    if(CardBinderContainer.this.page == maxPage)
+                    if(page == maxPage)
                     {
-                        CardBinderContainer.this.updateListToClient();
+                        updateListToClient();
                     }
                     
-                    if(CardBinderContainer.this.serverList.getPagesAmount() != maxPage)
+                    if(serverList.getPagesAmount() != maxPage)
                     {
-                        CardBinderContainer.this.updatePagesToClient();
+                        updatePagesToClient();
                     }
                 }
             }
@@ -90,7 +90,7 @@ public class CardBinderContainer extends Container
         {
             for(int x = 0; x < 9; ++x)
             {
-                this.addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
+                addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
             }
         }
         
@@ -100,51 +100,51 @@ public class CardBinderContainer extends Container
         {
             s = new Slot(playerInventory, x, 8 + x * 18, 198);
             
-            if(s.getStack() == this.itemStack)
+            if(s.getItem() == this.itemStack)
             {
-                s = new Slot(playerInventory, s.getSlotIndex(), s.xPos, s.yPos)
+                s = new Slot(playerInventory, s.getSlotIndex(), s.x, s.y)
                 {
                     @Override
-                    public boolean canTakeStack(PlayerEntity playerIn)
+                    public boolean mayPickup(PlayerEntity playerIn)
                     {
                         return false;
                     }
                 };
             }
             
-            this.addSlot(s);
+            addSlot(s);
         }
         
         if(this.manager != null && this.manager.isInIdleState())
         {
-            this.manager.load(this.genericCallback());
+            this.manager.load(genericCallback());
         }
     }
     
     protected void updateListToClient()
     {
-        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CardBinderMessages.UpdateList(this.page, this.serverList.getCardsForPage(this.page)));
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new CardBinderMessages.UpdateList(page, serverList.getCardsForPage(page)));
     }
     
     protected void updatePagesToClient()
     {
-        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CardBinderMessages.UpdatePage(this.page, this.serverList.getPagesAmount()));
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new CardBinderMessages.UpdatePage(page, serverList.getPagesAmount()));
     }
     
     public void setClientList(int page, List<CardHolder> list)
     {
-        if(!this.loaded)
+        if(!loaded)
         {
-            this.loaded = true;
+            loaded = true;
         }
         
         this.page = page;
-        this.clientList = list;
+        clientList = list;
     }
     
     public void setClientMaxPage(int page)
     {
-        this.clientMaxPage = page;
+        clientMaxPage = page;
     }
     
     public void setClientPage(int page)
@@ -154,20 +154,20 @@ public class CardBinderContainer extends Container
     
     protected void updateHoldingItemStack(ItemStack itemStack)
     {
-        this.player.inventory.setItemStack(itemStack);
+        player.inventory.setCarried(itemStack);
     }
     
     protected CardHolder extractCard(int index)
     {
-        int maxPage = CardBinderContainer.this.serverList.getPagesAmount();
+        int maxPage = serverList.getPagesAmount();
         
-        CardHolder card = this.serverList.extractCard(this.page, index);
+        CardHolder card = serverList.extractCard(page, index);
         
-        this.updateListToClient();
+        updateListToClient();
         
-        if(maxPage != this.serverList.getPagesAmount())
+        if(maxPage != serverList.getPagesAmount())
         {
-            this.updatePagesToClient();
+            updatePagesToClient();
         }
         
         return card;
@@ -175,12 +175,12 @@ public class CardBinderContainer extends Container
     
     public void indexClicked(int index, boolean shiftDown)
     {
-        if(!this.manager.isLoaded())
+        if(!manager.isLoaded())
         {
             return;
         }
         
-        CardHolder card = this.extractCard(index);
+        CardHolder card = extractCard(index);
         
         if(card != null)
         {
@@ -188,34 +188,34 @@ public class CardBinderContainer extends Container
             
             if(shiftDown)
             {
-                this.player.addItemStackToInventory(itemStack);
+                player.addItem(itemStack);
             }
             else
             {
-                this.player.inventory.setItemStack(itemStack);
+                player.inventory.setCarried(itemStack);
             }
         }
     }
     
     public void indexDropped(int index)
     {
-        if(!this.manager.isLoaded())
+        if(!manager.isLoaded())
         {
             return;
         }
         
-        CardHolder card = this.extractCard(index);
+        CardHolder card = extractCard(index);
         
         if(card != null)
         {
             ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(card);
-            this.player.dropItem(itemStack, false);
+            player.drop(itemStack, false);
         }
     }
     
     public void nextPage()
     {
-        if(!this.manager.isLoaded())
+        if(!manager.isLoaded())
         {
             return;
         }
@@ -225,83 +225,83 @@ public class CardBinderContainer extends Container
         this.page++;
         */
         
-        if(this.page >= this.serverList.getPagesAmount())
+        if(page >= serverList.getPagesAmount())
         {
-            this.page = 1;
+            page = 1;
         }
         else
         {
-            this.page++;
+            page++;
         }
         
-        this.updateListToClient();
+        updateListToClient();
     }
     
     public void prevPage()
     {
-        if(!this.manager.isLoaded())
+        if(!manager.isLoaded())
         {
             return;
         }
         
-        if(this.page <= 1)
+        if(page <= 1)
         {
-            this.page = this.serverList.getPagesAmount();
+            page = serverList.getPagesAmount();
         }
         else
         {
-            this.page--;
+            page--;
         }
         
-        this.updateListToClient();
+        updateListToClient();
     }
     
     public void managerFinished()
     {
-        if(this.manager.isLoaded())
+        if(manager.isLoaded())
         {
-            this.serverList = new CardInventory(this.manager.getList());
-            this.updateCardsList("");
-            this.updatePagesToClient();
-            this.updateListToClient();
+            serverList = new CardInventory(manager.getList());
+            updateCardsList("");
+            updatePagesToClient();
+            updateListToClient();
         }
-        else if(this.manager.isSafed())
+        else if(manager.isSafed())
         {
-            this.manager.load(this.genericCallback());
+            manager.load(genericCallback());
         }
     }
     
     public void updateCardsList(String search)
     {
-        this.serverList.updateCardsList(search);
-        this.page = 1;
-        this.updateListToClient();
+        serverList.updateCardsList(search);
+        page = 1;
+        updateListToClient();
     }
     
     public Runnable genericCallback()
     {
         return () ->
         {
-            if(this.player.openContainer instanceof CardBinderContainer)
+            if(player.containerMenu instanceof CardBinderContainer)
             {
-                ((CardBinderContainer)this.player.openContainer).managerFinished();
+                ((CardBinderContainer) player.containerMenu).managerFinished();
             }
         };
     }
     
     @Override
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
     {
-        Slot slot = this.inventorySlots.get(index);
+        Slot slot = slots.get(index);
         
-        if(slot != this.insertionSlot && slot.canTakeStack(playerIn))
+        if(slot != insertionSlot && slot.mayPickup(playerIn))
         {
-            ItemStack stack = slot.getStack();
+            ItemStack stack = slot.getItem();
             
-            if(this.insertionSlot.isItemValid(stack))
+            if(insertionSlot.mayPlace(stack))
             {
-                slot.putStack(ItemStack.EMPTY);
-                this.insertionSlot.putStack(stack);
+                slot.set(ItemStack.EMPTY);
+                insertionSlot.set(stack);
             }
         }
         
@@ -309,18 +309,18 @@ public class CardBinderContainer extends Container
     }
     
     @Override
-    public boolean canInteractWith(PlayerEntity playerIn)
+    public boolean stillValid(PlayerEntity playerIn)
     {
         return true;
     }
     
     @Override
-    public void onContainerClosed(PlayerEntity playerIn)
+    public void removed(PlayerEntity playerIn)
     {
-        super.onContainerClosed(playerIn);
-        if(this.manager != null && this.manager.isLoaded())
+        super.removed(playerIn);
+        if(manager != null && manager.isLoaded())
         {
-            this.manager.safe(this.genericCallback());
+            manager.safe(genericCallback());
         }
     }
 }

@@ -38,7 +38,7 @@ public abstract class DuelMessageHeader
         @Override
         public IDuelManagerProvider getDuelManager(PlayerEntity player)
         {
-            return (IDuelManagerProvider)player.openContainer;
+            return (IDuelManagerProvider) player.containerMenu;
         }
     }
     
@@ -60,24 +60,24 @@ public abstract class DuelMessageHeader
         @Override
         public void writeToBuf(PacketBuffer buf)
         {
-            buf.writeBlockPos(this.pos);
+            buf.writeBlockPos(pos);
         }
         
         @Override
         public void readFromBuf(PacketBuffer buf)
         {
-            this.pos = buf.readBlockPos();
+            pos = buf.readBlockPos();
         }
         
         @Override
         public IDuelManagerProvider getDuelManager(PlayerEntity player)
         {
-            DuelTileEntity te0 = (DuelTileEntity)player.world.getTileEntity(this.pos);
+            DuelTileEntity te0 = (DuelTileEntity) player.level.getBlockEntity(pos);
             DuelManager dm = te0.duelManager;
             
             return DistExecutor.<IDuelManagerProvider>unsafeRunForDist(
-                () -> () -> new de.cas_ual_ty.ydm.duel.network.ClientDuelManagerProvider(dm),
-                () -> () -> () -> dm);
+                    () -> () -> new de.cas_ual_ty.ydm.duel.network.ClientDuelManagerProvider(dm),
+                    () -> () -> () -> dm);
         }
     }
 }

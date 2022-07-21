@@ -13,7 +13,7 @@ public abstract class SingleCardAction extends SingleZoneAction
     public SingleCardAction(ActionType actionType, byte sourceZoneId, short sourceCardId)
     {
         super(actionType, sourceZoneId);
-        this.sourceCardIndex = sourceCardId;
+        sourceCardIndex = sourceCardId;
     }
     
     public SingleCardAction(ActionType actionType, PacketBuffer buf)
@@ -25,20 +25,20 @@ public abstract class SingleCardAction extends SingleZoneAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeShort(this.sourceCardIndex);
+        buf.writeShort(sourceCardIndex);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        if(this.sourceCardIndex == -1 || this.sourceZone == null)
+        if(sourceCardIndex == -1 || sourceZone == null)
         {
-            this.card = null;
+            card = null;
         }
         else
         {
-            this.card = this.sourceZone.getCard(this.sourceCardIndex);
+            card = sourceZone.getCard(sourceCardIndex);
         }
     }
     
@@ -46,18 +46,18 @@ public abstract class SingleCardAction extends SingleZoneAction
     {
         // dont use index here
         // zone might have changed, index might catch different card
-        this.sourceZone.removeCard(this.card);
+        sourceZone.removeCard(card);
     }
     
     @Override
     public void undoAction()
     {
-        this.doAction();
+        doAction();
     }
     
     @Override
     public void redoAction()
     {
-        this.doAction();
+        doAction();
     }
 }

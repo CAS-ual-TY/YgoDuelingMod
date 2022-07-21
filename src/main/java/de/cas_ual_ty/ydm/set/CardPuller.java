@@ -1,14 +1,13 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.List;
-import java.util.Random;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.List;
+import java.util.Random;
 
 public abstract class CardPuller
 {
@@ -21,7 +20,7 @@ public abstract class CardPuller
     
     public void postDBInit()
     {
-        this.logErrors();
+        logErrors();
     }
     
     public abstract List<ItemStack> open(Random random);
@@ -35,7 +34,7 @@ public abstract class CardPuller
     
     public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
     {
-        this.set.cards.forEach(sortedSet::add);
+        set.cards.forEach(sortedSet::add);
     }
     
     public void logErrors()

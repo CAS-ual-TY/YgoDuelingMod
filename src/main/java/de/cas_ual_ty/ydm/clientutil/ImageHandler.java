@@ -1,22 +1,5 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.awt.Graphics;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -29,6 +12,22 @@ import de.cas_ual_ty.ydm.task.TaskQueue;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import de.cas_ual_ty.ydm.util.YdmUtil;
+
+import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ImageHandler
 {
@@ -59,9 +58,9 @@ public class ImageHandler
             size = YdmUtil.getPow2(i);
             YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
             ImageHandler.adjustRawImage(
-                new File(parent, ImageHandler.getAdjustedCardImageFile(card.getImageName((byte)0), size).getName()),
-                new File(parent, ImageHandler.getRawCardImageFile(card.getImageName((byte)0)).getName()),
-                size);
+                    new File(parent, ImageHandler.getAdjustedCardImageFile(card.getImageName((byte) 0), size).getName()),
+                    new File(parent, ImageHandler.getRawCardImageFile(card.getImageName((byte) 0)).getName()),
+                    size);
         }
     }
     
@@ -83,9 +82,9 @@ public class ImageHandler
             size = YdmUtil.getPow2(i);
             YdmIOUtil.createDirIfNonExistant(new File(parent, "" + size));
             ImageHandler.adjustRawImage(
-                new File(parent, size + "/" + sleeve.getResourceName() + ".png"),
-                new File(parent, "raw/" + sleeve.getResourceName() + "." + rawType),
-                size);
+                    new File(parent, size + "/" + sleeve.getResourceName() + ".png"),
+                    new File(parent, "raw/" + sleeve.getResourceName() + "." + rawType),
+                    size);
         }
     }
     
@@ -173,8 +172,8 @@ public class ImageHandler
     public static Task makeMissingRawTask(String imageName, String imageURL, File raw)
     {
         if(ImageHandler.RAW_IMAGE_LIST.isFinished(imageName) ||
-            ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName) ||
-            ImageHandler.RAW_IMAGE_LIST.isFailed(imageName))
+                ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName) ||
+                ImageHandler.RAW_IMAGE_LIST.isFailed(imageName))
         {
             return null;
         }
@@ -210,20 +209,20 @@ public class ImageHandler
                     {
                         TimeUnit.MILLISECONDS.sleep(50 - duration + 1);
                     }
-                    catch (InterruptedException e)
+                    catch(InterruptedException e)
                     {
                         //                        e.printStackTrace();
                     }
                 }
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 e.printStackTrace();
                 ImageHandler.RAW_IMAGE_LIST.setFailed(imageName);
             }
         })
-            .setCancelable(() -> !ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName))
-            .setOnCancel(() -> ImageHandler.RAW_IMAGE_LIST.unInProgress(imageName));
+                .setCancelable(() -> !ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName))
+                .setOnCancel(() -> ImageHandler.RAW_IMAGE_LIST.unInProgress(imageName));
         
         return task;
     }
@@ -233,8 +232,8 @@ public class ImageHandler
         final String adjustedImageName = ImageHandler.tagImage(imageName, imageSize);
         
         if(ImageHandler.ADJUSTED_IMAGE_LIST.isFinished(adjustedImageName) ||
-            ImageHandler.ADJUSTED_IMAGE_LIST.isInProgress(adjustedImageName) ||
-            ImageHandler.ADJUSTED_IMAGE_LIST.isFailed(adjustedImageName))
+                ImageHandler.ADJUSTED_IMAGE_LIST.isInProgress(adjustedImageName) ||
+                ImageHandler.ADJUSTED_IMAGE_LIST.isFailed(adjustedImageName))
         {
             return null;
         }
@@ -256,16 +255,16 @@ public class ImageHandler
                 ImageHandler.adjustRawImage(adjusted, raw, imageSize);
                 ImageHandler.ADJUSTED_IMAGE_LIST.setFinished(adjustedImageName);
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 e.printStackTrace();
                 ImageHandler.ADJUSTED_IMAGE_LIST.setFailed(adjustedImageName);
             }
         })
-            .setDependency(() -> ImageHandler.RAW_IMAGE_LIST.isFinished(imageName))
-            .setCancelable(() -> ImageHandler.RAW_IMAGE_LIST.isFailed(imageName) ||
-                (!ImageHandler.RAW_IMAGE_LIST.isFinished(imageName) && !ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName)))
-            .setOnCancel(() -> ImageHandler.ADJUSTED_IMAGE_LIST.unInProgress(adjustedImageName));
+                .setDependency(() -> ImageHandler.RAW_IMAGE_LIST.isFinished(imageName))
+                .setCancelable(() -> ImageHandler.RAW_IMAGE_LIST.isFailed(imageName) ||
+                        (!ImageHandler.RAW_IMAGE_LIST.isFinished(imageName) && !ImageHandler.RAW_IMAGE_LIST.isInProgress(imageName)))
+                .setOnCancel(() -> ImageHandler.ADJUSTED_IMAGE_LIST.unInProgress(adjustedImageName));
         
         return task;
     }
@@ -285,14 +284,14 @@ public class ImageHandler
         }
     }
     
-    public static void downloadRawImage(String imageUrl, File rawImageFile) throws MalformedURLException, IOException
+    public static void downloadRawImage(String imageUrl, File rawImageFile) throws IOException
     {
         URL url;
         try
         {
             url = new URL(imageUrl);
         }
-        catch (MalformedURLException e)
+        catch(MalformedURLException e)
         {
             YDM.log("Malformed url: \"" + imageUrl + "\" for raw image file target: " + rawImageFile.getAbsolutePath());
             throw e;
@@ -328,16 +327,16 @@ public class ImageHandler
             int sizeX = img.getWidth();
             int sizeY = img.getHeight();
             
-            double factor = (double)sizeY / sizeX;
+            double factor = (double) sizeY / sizeX;
             
             // (sizeX / sizeY =) factor = newSizeX / newSizeY
             // <=> newSizeY = newSizeX / factor
             
             int newSizeY = size - margin;
-            int newSizeX = (int)Math.round(newSizeY / factor);
+            int newSizeX = (int) Math.round(newSizeY / factor);
             
-            double scaleFactorX = (double)newSizeX / sizeX;
-            double scaleFactorY = (double)newSizeY / sizeY;
+            double scaleFactorX = (double) newSizeX / sizeX;
+            double scaleFactorY = (double) newSizeY / sizeY;
             
             // Resize card image to size that fits the next image
             BufferedImage after = new BufferedImage(newSizeX, newSizeY, BufferedImage.TYPE_INT_ARGB);
@@ -496,66 +495,66 @@ public class ImageHandler
         
         public ImageList()
         {
-            this.finishedList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
-            this.inProgressList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
-            this.failedList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
+            finishedList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
+            inProgressList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
+            failedList = new DNCList<>((s) -> s, (s1, s2) -> s1.compareTo(s2));
         }
         
         public void setInProgress(String imagePathName)
         {
-            synchronized(this.inProgressList)
+            synchronized(inProgressList)
             {
-                this.inProgressList.addKeepSorted(imagePathName);
+                inProgressList.addKeepSorted(imagePathName);
             }
         }
         
         public void unInProgress(String imagePathName)
         {
-            if(this.inProgressList.contains(imagePathName))
+            if(inProgressList.contains(imagePathName))
             {
-                synchronized(this.inProgressList)
+                synchronized(inProgressList)
                 {
-                    this.inProgressList.remove(imagePathName);
+                    inProgressList.remove(imagePathName);
                 }
             }
         }
         
         public void setImmediateFinished(String imagePathName)
         {
-            synchronized(this.finishedList)
+            synchronized(finishedList)
             {
-                this.finishedList.addKeepSorted(imagePathName);
+                finishedList.addKeepSorted(imagePathName);
             }
         }
         
         public void setFinished(String imagePathName)
         {
-            this.unInProgress(imagePathName);
-            this.setImmediateFinished(imagePathName);
+            unInProgress(imagePathName);
+            setImmediateFinished(imagePathName);
         }
         
         public void setFailed(String imagePathName)
         {
-            this.unInProgress(imagePathName);
-            synchronized(this.failedList)
+            unInProgress(imagePathName);
+            synchronized(failedList)
             {
-                this.failedList.addKeepSorted(imagePathName);
+                failedList.addKeepSorted(imagePathName);
             }
         }
         
         public boolean isInProgress(String imagePathName)
         {
-            return this.inProgressList.contains(imagePathName);
+            return inProgressList.contains(imagePathName);
         }
         
         public boolean isFinished(String imagePathName)
         {
-            return this.finishedList.contains(imagePathName);
+            return finishedList.contains(imagePathName);
         }
         
         public boolean isFailed(String imagePathName)
         {
-            return this.failedList.contains(imagePathName);
+            return failedList.contains(imagePathName);
         }
     }
 }

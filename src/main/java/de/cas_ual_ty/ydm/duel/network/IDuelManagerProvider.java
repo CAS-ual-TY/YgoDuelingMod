@@ -1,51 +1,47 @@
 package de.cas_ual_ty.ydm.duel.network;
 
-import java.util.List;
-
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import de.cas_ual_ty.ydm.duel.DeckSource;
-import de.cas_ual_ty.ydm.duel.DuelChatMessage;
-import de.cas_ual_ty.ydm.duel.DuelManager;
-import de.cas_ual_ty.ydm.duel.DuelState;
-import de.cas_ual_ty.ydm.duel.PlayerRole;
+import de.cas_ual_ty.ydm.duel.*;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
 
+import java.util.List;
+
 public interface IDuelManagerProvider
 {
-    public DuelManager getDuelManager();
+    DuelManager getDuelManager();
     
-    public default DuelMessageHeader getMessageHeader()
+    default DuelMessageHeader getMessageHeader()
     {
-        return this.getDuelManager().headerFactory.get();
+        return getDuelManager().headerFactory.get();
     }
     
-    public default void updateDuelState(DuelState duelState)
+    default void updateDuelState(DuelState duelState)
     {
-        this.getDuelManager().setDuelStateAndUpdate(duelState);
+        getDuelManager().setDuelStateAndUpdate(duelState);
     }
     
-    public default void handleAction(Action action)
-    {
-    }
-    
-    public default void handleAllActions(List<Action> actions)
+    default void handleAction(Action action)
     {
     }
     
-    public default void receiveDeckSources(List<DeckSource> deckSources)
+    default void handleAllActions(List<Action> actions)
     {
     }
     
-    public default void receiveDeck(int index, DeckHolder deck)
+    default void receiveDeckSources(List<DeckSource> deckSources)
     {
     }
     
-    public default void deckAccepted(PlayerRole role)
+    default void receiveDeck(int index, DeckHolder deck)
     {
     }
     
-    public default void receiveMessage(PlayerEntity player, DuelChatMessage message)
+    default void deckAccepted(PlayerRole role)
+    {
+    }
+    
+    default void receiveMessage(PlayerEntity player, DuelChatMessage message)
     {
     }
 }

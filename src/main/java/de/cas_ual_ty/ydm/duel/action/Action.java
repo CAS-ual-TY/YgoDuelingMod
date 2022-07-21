@@ -31,7 +31,7 @@ public abstract class Action
     // not called by superclasses
     public void initClient(PlayField playField)
     {
-        this.initServer(playField);
+        initServer(playField);
     }
     
     public abstract void doAction();
@@ -42,6 +42,6 @@ public abstract class Action
     
     public ActionType getActionType()
     {
-        return this.actionType;
+        return actionType;
     }
 }

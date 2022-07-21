@@ -14,26 +14,26 @@ public abstract class SwitchableContainerScreen<T extends Container> extends Con
     public SwitchableContainerScreen(T screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
         super(screenContainer, inv, titleIn);
-        this.isClosedByPlayer = true;
+        isClosedByPlayer = true;
     }
     
     @Override
-    public void onClose()
+    public void removed()
     {
-        if(this.isClosedByPlayer)
+        if(isClosedByPlayer)
         {
-            this.onGuiClose();
+            onGuiClose();
         }
     }
     
     protected void onGuiClose()
     {
-        super.onClose();
+        super.removed();
     }
     
     public void switchScreen(ContainerScreen<T> screen)
     {
-        this.isClosedByPlayer = false;
-        this.minecraft.displayGuiScreen(screen);
+        isClosedByPlayer = false;
+        minecraft.setScreen(screen);
     }
 }

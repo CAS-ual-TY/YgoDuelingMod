@@ -1,13 +1,7 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
@@ -20,6 +14,10 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Consumer;
 
 public class ViewCardStackWidget extends Button
 {
@@ -34,13 +32,13 @@ public class ViewCardStackWidget extends Button
     
     public ViewCardStackWidget(IDuelScreenContext context, int x, int y, int width, int height, ITextComponent title, Consumer<ViewCardStackWidget> onPress, ITooltip onTooltip)
     {
-        super(x, y, width, height, title, (button) -> onPress.accept((ViewCardStackWidget)button), onTooltip);
+        super(x, y, width, height, title, (button) -> onPress.accept((ViewCardStackWidget) button), onTooltip);
         this.context = context;
-        this.hoverCard = null;
-        this.rows = 0;
-        this.columns = 0;
-        this.currentRow = 0;
-        this.deactivate();
+        hoverCard = null;
+        rows = 0;
+        columns = 0;
+        currentRow = 0;
+        deactivate();
     }
     
     public ViewCardStackWidget setRowsAndColumns(int cardsTextureSize, int rows, int columns)
@@ -53,35 +51,35 @@ public class ViewCardStackWidget extends Button
     
     public void activate(List<DuelCard> cards, boolean forceFaceUp)
     {
-        this.active = true;
-        this.visible = true;
-        this.currentRow = 0;
+        active = true;
+        visible = true;
+        currentRow = 0;
         this.cards = cards;
         this.forceFaceUp = forceFaceUp;
     }
     
     public void forceFaceUp()
     {
-        this.forceFaceUp = true;
+        forceFaceUp = true;
     }
     
     public void deactivate()
     {
-        this.cards = null;
-        this.visible = false;
-        this.active = false;
+        cards = null;
+        visible = false;
+        active = false;
     }
     
     public int getCurrentRow()
     {
-        return this.currentRow;
+        return currentRow;
     }
     
     public int getMaxRows()
     {
-        if(this.cards != null && this.columns > 0)
+        if(cards != null && columns > 0)
         {
-            return Math.max(0, MathHelper.ceil(this.cards.size() / (float)this.columns) - this.rows);
+            return Math.max(0, MathHelper.ceil(cards.size() / (float) columns) - rows);
         }
         else
         {
@@ -91,46 +89,46 @@ public class ViewCardStackWidget extends Button
     
     public void decreaseCurrentRow()
     {
-        this.currentRow = Math.max(0, this.currentRow - 1);
+        currentRow = Math.max(0, currentRow - 1);
     }
     
     public void increaseCurrentRow()
     {
-        this.currentRow = Math.min(this.getMaxRows(), this.currentRow + 1);
+        currentRow = Math.min(getMaxRows(), currentRow + 1);
     }
     
     public boolean getForceFaceUp()
     {
-        return this.forceFaceUp;
+        return forceFaceUp;
     }
     
     public List<DuelCard> getCards()
     {
-        return this.cards;
+        return cards;
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
+        FontRenderer fontrenderer = minecraft.font;
         
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        RenderSystem.color4f(1F, 1F, 1F, alpha);
         
-        if(!this.cards.isEmpty())
+        if(!cards.isEmpty())
         {
-            this.hoverCard = this.renderCards(ms, mouseX, mouseY);
+            hoverCard = renderCards(ms, mouseX, mouseY);
         }
         else
         {
-            this.hoverCard = null;
+            hoverCard = null;
         }
         
-        int j = this.getFGColor();
-        AbstractGui.drawCenteredString(ms, fontrenderer, this.getMessage(), this.x, this.y, j | MathHelper.ceil(this.alpha * 255.0F) << 24);
+        int j = getFGColor();
+        AbstractGui.drawCenteredString(ms, fontrenderer, getMessage(), x, y, j | MathHelper.ceil(alpha * 255.0F) << 24);
     }
     
     @Nullable
@@ -139,20 +137,20 @@ public class ViewCardStackWidget extends Button
         DuelCard hoveredCard = null;
         int hoverX = 0, hoverY = 0;
         
-        int index = this.currentRow * this.columns;
+        int index = currentRow * columns;
         int x, y;
         DuelCard c;
         
-        for(int i = 0; i < this.rows; ++i)
+        for(int i = 0; i < rows; ++i)
         {
-            for(int j = 0; j < this.columns && index < this.cards.size(); ++j)
+            for(int j = 0; j < columns && index < cards.size(); ++j)
             {
-                x = this.x + j * this.cardsTextureSize;
-                y = this.y + i * this.cardsTextureSize;
+                x = this.x + j * cardsTextureSize;
+                y = this.y + i * cardsTextureSize;
                 
-                c = this.cards.get(index++);
+                c = cards.get(index++);
                 
-                if(this.drawCard(ms, c, x, y, this.cardsTextureSize, this.cardsTextureSize, mouseX, mouseY))
+                if(drawCard(ms, c, x, y, cardsTextureSize, cardsTextureSize, mouseX, mouseY))
                 {
                     hoverX = x;
                     hoverY = y;
@@ -163,15 +161,15 @@ public class ViewCardStackWidget extends Button
         
         if(hoveredCard != null)
         {
-            if(hoveredCard.getCardPosition().isFaceUp || this.forceFaceUp || (this.context.getClickedZone() != null && this.context.getZoneOwner() == this.context.getClickedZone().getOwner() && !this.context.getClickedZone().getType().getIsSecret()))
+            if(hoveredCard.getCardPosition().isFaceUp || forceFaceUp || (context.getClickedZone() != null && context.getZoneOwner() == context.getClickedZone().getOwner() && !context.getClickedZone().getType().getIsSecret()))
             {
-                this.context.renderCardInfo(ms, hoveredCard);
+                context.renderCardInfo(ms, hoveredCard);
             }
             
-            ScreenUtil.renderHoverRect(ms, hoverX, hoverY, this.cardsTextureSize, this.cardsTextureSize);
+            ScreenUtil.renderHoverRect(ms, hoverX, hoverY, cardsTextureSize, cardsTextureSize);
         }
         
-        if(!this.active)
+        if(!active)
         {
             return null;
         }
@@ -183,9 +181,9 @@ public class ViewCardStackWidget extends Button
     
     protected boolean drawCard(MatrixStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY)
     {
-        if(this.context.getClickedCard() == duelCard)
+        if(context.getClickedCard() == duelCard)
         {
-            if(this.context.getOpponentClickedCard() == duelCard)
+            if(context.getOpponentClickedCard() == duelCard)
             {
                 DuelScreenDueling.renderBothSelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
             }
@@ -196,7 +194,7 @@ public class ViewCardStackWidget extends Button
         }
         else
         {
-            if(this.context.getOpponentClickedCard() == duelCard)
+            if(context.getOpponentClickedCard() == duelCard)
             {
                 DuelScreenDueling.renderEnemySelectedRect(ms, renderX, renderY, renderWidth, renderHeight);
             }
@@ -206,15 +204,8 @@ public class ViewCardStackWidget extends Button
             }
         }
         
-        CardRenderUtil.renderDuelCardCentered(ms, this.context.getClickedZone() != null ? this.context.getClickedZone().getSleeves() : CardSleevesType.CARD_BACK, mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, this.forceFaceUp);
+        CardRenderUtil.renderDuelCardCentered(ms, context.getClickedZone() != null ? context.getClickedZone().getSleeves() : CardSleevesType.CARD_BACK, mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, forceFaceUp);
         
-        if(this.isHovered() && mouseX >= renderX && mouseX < renderX + renderWidth && mouseY >= renderY && mouseY < renderY + renderHeight)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return isHovered() && mouseX >= renderX && mouseX < renderX + renderWidth && mouseY >= renderY && mouseY < renderY + renderHeight;
     }
 }

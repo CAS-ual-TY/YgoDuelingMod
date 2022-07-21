@@ -1,14 +1,10 @@
 package de.cas_ual_ty.ydm.serverutil;
 
-import java.util.List;
-import java.util.UUID;
-
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
@@ -23,45 +19,48 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 import net.minecraft.util.text.StringTextComponent;
 
+import java.util.List;
+import java.util.UUID;
+
 public class YdmCommand
 {
     public static void registerCommand(CommandDispatcher<CommandSource> dispatcher)
     {
         dispatcher.register(
-            Commands.literal(YDM.MOD_ID)
-                .then(Commands.literal("setcontents")
-                    .requires((source) -> source.getEntity() instanceof PlayerEntity)
-                    .executes((source) -> YdmCommand.setcontents(source)))
-                .then(Commands.literal("binders")
-                    .then(Commands.literal("uuid")
-                        .requires((source) -> source.getEntity() instanceof PlayerEntity)
-                        .then(Commands.literal("get")
-                            .executes((context) -> YdmCommand.bindersGet(context)))
-                        .then(Commands.literal("create")
-                            .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
-                            .then(Commands.argument("uuid", StringArgumentType.word())
-                                .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid")))))
-                        .then(Commands.literal("set")
-                            .requires((source) -> source.getServer().isSinglePlayer() || source.hasPermissionLevel(2))
-                            .then(Commands.argument("uuid", StringArgumentType.word())
-                                .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid"))))))
-                    .then(Commands.literal("fill")
-                        .requires((source) -> source.getEntity() instanceof PlayerEntity)
-                        .executes((context) -> YdmCommand.bindersFill(context, 3))
-                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
-                            .executes((context) -> YdmCommand.bindersFill(context, IntegerArgumentType.getInteger(context, "count")))))));
+                Commands.literal(YDM.MOD_ID)
+                        .then(Commands.literal("setcontents")
+                                .requires((source) -> source.getEntity() instanceof PlayerEntity)
+                                .executes((source) -> YdmCommand.setcontents(source)))
+                        .then(Commands.literal("binders")
+                                .then(Commands.literal("uuid")
+                                        .requires((source) -> source.getEntity() instanceof PlayerEntity)
+                                        .then(Commands.literal("get")
+                                                .executes((context) -> YdmCommand.bindersGet(context)))
+                                        .then(Commands.literal("create")
+                                                .requires((source) -> source.getServer().isSingleplayer() || source.hasPermission(2))
+                                                .then(Commands.argument("uuid", StringArgumentType.word())
+                                                        .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid")))))
+                                        .then(Commands.literal("set")
+                                                .requires((source) -> source.getServer().isSingleplayer() || source.hasPermission(2))
+                                                .then(Commands.argument("uuid", StringArgumentType.word())
+                                                        .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid"))))))
+                                .then(Commands.literal("fill")
+                                        .requires((source) -> source.getEntity() instanceof PlayerEntity)
+                                        .executes((context) -> YdmCommand.bindersFill(context, 3))
+                                        .then(Commands.argument("count", IntegerArgumentType.integer(1))
+                                                .executes((context) -> YdmCommand.bindersFill(context, IntegerArgumentType.getInteger(context, "count")))))));
     }
     
     public static int bindersGet(CommandContext<CommandSource> context)
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            ItemStack itemStack = YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity)context.getSource().getEntity());
+            ItemStack itemStack = YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity) context.getSource().getEntity());
             
             if(!itemStack.isEmpty())
             {
                 CardBinderCardsManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
-                context.getSource().sendFeedback(new StringTextComponent("Binder UUID: " + m.getUUID()), true);
+                context.getSource().sendSuccess(new StringTextComponent("Binder UUID: " + m.getUUID()), true);
             }
         }
         
@@ -76,8 +75,8 @@ public class YdmCommand
             ItemStack itemStack = new ItemStack(YdmItems.CARD_BINDER);
             CardBinderCardsManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
             m.setUUID(uuid);
-            context.getSource().sendFeedback(new StringTextComponent("Created Binder with UUID: " + uuid.toString()), true);
-            ((PlayerEntity)context.getSource().getEntity()).addItemStackToInventory(itemStack);
+            context.getSource().sendSuccess(new StringTextComponent("Created Binder with UUID: " + uuid.toString()), true);
+            ((PlayerEntity) context.getSource().getEntity()).addItem(itemStack);
         }
         
         return Command.SINGLE_SUCCESS;
@@ -88,7 +87,7 @@ public class YdmCommand
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
             UUID uuid = UUID.fromString(uuidArg);
-            ItemStack itemStack = YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity)context.getSource().getEntity());
+            ItemStack itemStack = YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity) context.getSource().getEntity());
             
             if(!itemStack.isEmpty())
             {
@@ -99,14 +98,14 @@ public class YdmCommand
                 
                 if(uuidOld == null)
                 {
-                    context.getSource().sendFeedback(new StringTextComponent("Binder did not have an UUID!"), true);
+                    context.getSource().sendSuccess(new StringTextComponent("Binder did not have an UUID!"), true);
                 }
                 else
                 {
-                    context.getSource().sendFeedback(new StringTextComponent("Old Binder UUID: " + uuidOld.toString()), true);
+                    context.getSource().sendSuccess(new StringTextComponent("Old Binder UUID: " + uuidOld.toString()), true);
                 }
                 
-                context.getSource().sendFeedback(new StringTextComponent("Set Binder UUID to: " + uuid.toString()), true);
+                context.getSource().sendSuccess(new StringTextComponent("Set Binder UUID to: " + uuid.toString()), true);
             }
         }
         
@@ -117,7 +116,7 @@ public class YdmCommand
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            ItemStack itemStack = YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity)context.getSource().getEntity());
+            ItemStack itemStack = YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity) context.getSource().getEntity());
             
             if(!itemStack.isEmpty())
             {
@@ -133,13 +132,13 @@ public class YdmCommand
                     
                     if(!m.isLoaded())
                     {
-                        context.getSource().sendFeedback(new StringTextComponent("Loading Binder..."), true);
+                        context.getSource().sendSuccess(new StringTextComponent("Loading Binder..."), true);
                         m.loadRunnable().run();
                     }
                     
                     // --- Filling ---
                     
-                    context.getSource().sendFeedback(new StringTextComponent("Filling Binder..."), true);
+                    context.getSource().sendSuccess(new StringTextComponent("Filling Binder..."), true);
                     
                     List<CardHolder> list = m.forceGetList();
                     
@@ -153,14 +152,14 @@ public class YdmCommand
                     
                     // --- Saving ---
                     
-                    context.getSource().sendFeedback(new StringTextComponent("Saving Binder..."), true);
+                    context.getSource().sendSuccess(new StringTextComponent("Saving Binder..."), true);
                     m.safeRunnable().run();
                     
                     // --- Done ---
                     
                     m.setIdle();
                     
-                    context.getSource().sendFeedback(new StringTextComponent("Done! Binder can now be opened!"), true);
+                    context.getSource().sendSuccess(new StringTextComponent("Done! Binder can now be opened!"), true);
                 }
             }
             
@@ -174,14 +173,14 @@ public class YdmCommand
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            PlayerEntity player = (PlayerEntity)context.getSource().getEntity();
+            PlayerEntity player = (PlayerEntity) context.getSource().getEntity();
             Hand hand = CardSetBaseItem.getActiveSetItem(player);
             
             if(hand != null)
             {
-                ItemStack itemStack = player.getHeldItem(hand);
+                ItemStack itemStack = player.getItemInHand(hand);
                 
-                ((CardSetBaseItem)itemStack.getItem()).viewSetContents(player.world, player, itemStack);
+                ((CardSetBaseItem) itemStack.getItem()).viewSetContents(player.level, player, itemStack);
                 
                 return Command.SINGLE_SUCCESS;
             }

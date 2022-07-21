@@ -1,20 +1,20 @@
 package de.cas_ual_ty.ydm.cardinventory;
 
-import java.util.List;
-
 import de.cas_ual_ty.ydm.card.CardHolder;
+
+import java.util.List;
 
 public interface ICardInventory
 {
-    public int getPagesAmount();
+    int getPagesAmount();
     
-    public List<CardHolder> getCardsForPage(int page);
+    List<CardHolder> getCardsForPage(int page);
     
-    public void addCard(CardHolder card);
+    void addCard(CardHolder card);
     
-    public CardHolder extractCard(int page, int index);
+    CardHolder extractCard(int page, int index);
     
-    public void updateCardsList(String search);
+    void updateCardsList(String search);
     
-    public int totalCardsSize();
+    int totalCardsSize();
 }

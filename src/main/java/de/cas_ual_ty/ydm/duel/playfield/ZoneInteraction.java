@@ -1,9 +1,9 @@
 package de.cas_ual_ty.ydm.duel.playfield;
 
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionIcon;
+
+import javax.annotation.Nullable;
 
 public class ZoneInteraction
 {

@@ -1,14 +1,13 @@
 package de.cas_ual_ty.ydm.duel.playfield;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.action.ActionIcon;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
 
 public class PlayFieldType
 {
@@ -26,26 +25,26 @@ public class PlayFieldType
     
     public PlayFieldType(int startingLifePoints)
     {
-        this.zoneEntries = new ArrayList<>(0);
-        this.interactionEntries = new ArrayList<>(0);
-        this.advancedInteractionEntries = new ArrayList<>(0);
+        zoneEntries = new ArrayList<>(0);
+        interactionEntries = new ArrayList<>(0);
+        advancedInteractionEntries = new ArrayList<>(0);
         this.startingLifePoints = startingLifePoints;
     }
     
     public PlayFieldType addEntry(ZoneType type, ZoneOwner owner, int x, int y, int width, int height)
     {
-        this.zoneEntries.add(new ZoneEntry(type, owner, x, y, width, height));
+        zoneEntries.add(new ZoneEntry(type, owner, x, y, width, height));
         return this;
     }
     
     public PlayFieldType addEntryFull(ZoneType type, ZoneOwner owner, int x, int y)
     {
-        return this.addEntry(type, owner, x, y, 32, 32);
+        return addEntry(type, owner, x, y, 32, 32);
     }
     
     public PlayFieldType addEntrySlim(ZoneType type, ZoneOwner owner, int x, int y)
     {
-        return this.addEntry(type, owner, x, y, 24, 32);
+        return addEntry(type, owner, x, y, 24, 32);
     }
     
     // width and height already accounted form, so deltaX/Y is the space between zones
@@ -56,7 +55,7 @@ public class PlayFieldType
             throw new IllegalArgumentException();
         }
         
-        ZoneEntry e = this.zoneEntries.get(this.zoneEntries.size() - 1);
+        ZoneEntry e = zoneEntries.get(zoneEntries.size() - 1);
         int x = e.x;
         int y = e.y;
         
@@ -82,7 +81,7 @@ public class PlayFieldType
         {
             x += deltaX;
             y += deltaY;
-            this.addEntry(e.type, e.owner, x, y, e.width, e.height);
+            addEntry(e.type, e.owner, x, y, e.width, e.height);
         }
         
         return this;
@@ -90,60 +89,60 @@ public class PlayFieldType
     
     public PlayFieldType repeatPlayerZonesForOpponent()
     {
-        List<ZoneEntry> newEntries = new ArrayList<>(this.zoneEntries.size());
+        List<ZoneEntry> newEntries = new ArrayList<>(zoneEntries.size());
         
         ZoneEntry e1;
-        for(ZoneEntry e : this.zoneEntries)
+        for(ZoneEntry e : zoneEntries)
         {
             if(e.owner != ZoneOwner.NONE)
             {
                 newEntries.add(e1 = new ZoneEntry(e.type, e.owner == ZoneOwner.PLAYER1 ? ZoneOwner.PLAYER2 : ZoneOwner.PLAYER1, -e.x, -e.y, e.width, e.height));
                 
-                if(e == this.player1Deck)
+                if(e == player1Deck)
                 {
-                    this.player2Deck = e1;
+                    player2Deck = e1;
                 }
-                else if(e == this.player1ExtraDeck)
+                else if(e == player1ExtraDeck)
                 {
-                    this.player2ExtraDeck = e1;
+                    player2ExtraDeck = e1;
                 }
-                else if(e == this.player2Deck)
+                else if(e == player2Deck)
                 {
-                    this.player1Deck = e1;
+                    player1Deck = e1;
                 }
-                else if(e == this.player2ExtraDeck)
+                else if(e == player2ExtraDeck)
                 {
-                    this.player1ExtraDeck = e1;
+                    player1ExtraDeck = e1;
                 }
             }
         }
         
-        this.zoneEntries.addAll(newEntries);
+        zoneEntries.addAll(newEntries);
         
         return this;
     }
     
     public PlayFieldType setLastToPlayer1Deck()
     {
-        this.player1Deck = this.zoneEntries.get(this.zoneEntries.size() - 1);
+        player1Deck = zoneEntries.get(zoneEntries.size() - 1);
         return this;
     }
     
     public PlayFieldType setLastToPlayer1ExtraDeck()
     {
-        this.player1ExtraDeck = this.zoneEntries.get(this.zoneEntries.size() - 1);
+        player1ExtraDeck = zoneEntries.get(zoneEntries.size() - 1);
         return this;
     }
     
     public PlayFieldType setLastToPlayer2Deck()
     {
-        this.player2Deck = this.zoneEntries.get(this.zoneEntries.size() - 1);
+        player2Deck = zoneEntries.get(zoneEntries.size() - 1);
         return this;
     }
     
     public PlayFieldType setLastToPlayer2ExtraDeck()
     {
-        this.player2ExtraDeck = this.zoneEntries.get(this.zoneEntries.size() - 1);
+        player2ExtraDeck = zoneEntries.get(zoneEntries.size() - 1);
         return this;
     }
     
@@ -159,25 +158,25 @@ public class PlayFieldType
     
     public PlayFieldType registerInteraction(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<DuelCard> interactorCard, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
     {
-        this.interactionEntries.add(new InteractionEntry(icon, interactor, interactorCard, interactee, interaction));
+        interactionEntries.add(new InteractionEntry(icon, interactor, interactorCard, interactee, interaction));
         return this;
     }
     
     public PlayFieldType registerAdvancedInteraction(ActionIcon icon, Predicate<ZoneType> interactor, Predicate<DuelCard> interactorCard, Predicate<ZoneType> interactee, SingleZoneInteraction interaction)
     {
-        this.advancedInteractionEntries.add(new InteractionEntry(icon, interactor, interactorCard, interactee, interaction));
+        advancedInteractionEntries.add(new InteractionEntry(icon, interactor, interactorCard, interactee, interaction));
         return this;
     }
     
     public PlayFieldType registerInteractions(List<InteractionEntry> list)
     {
-        this.interactionEntries.addAll(list);
+        interactionEntries.addAll(list);
         return this;
     }
     
     public PlayFieldType copyInteractions(PlayFieldType playFieldType)
     {
-        return this.registerInteractions(playFieldType.interactionEntries);
+        return registerInteractions(playFieldType.interactionEntries);
     }
     
     public List<ZoneInteraction> getActionsFor(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee)
@@ -185,7 +184,7 @@ public class PlayFieldType
         List<ZoneInteraction> list = new ArrayList<>(4);
         
         Action action;
-        for(InteractionEntry e : this.interactionEntries)
+        for(InteractionEntry e : interactionEntries)
         {
             if(e.interactor.test(interactor.type) && e.interactorCard.test(interactorCard) && e.interactee.test(interactee.type))
             {
@@ -206,7 +205,7 @@ public class PlayFieldType
         List<ZoneInteraction> list = new ArrayList<>(4);
         
         Action action;
-        for(InteractionEntry e : this.advancedInteractionEntries)
+        for(InteractionEntry e : advancedInteractionEntries)
         {
             if(e.interactor.test(interactor.type) && e.interactorCard.test(interactorCard) && e.interactee.test(interactee.type))
             {
@@ -233,10 +232,10 @@ public class PlayFieldType
         
         public InteractionBuilder(boolean isAdvanced)
         {
-            this.interactor = null;
-            this.interactorCard = null;
-            this.interactee = null;
-            this.interaction = null;
+            interactor = null;
+            interactorCard = null;
+            interactee = null;
+            interaction = null;
             this.isAdvanced = isAdvanced;
         }
         
@@ -278,7 +277,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorAny()
         {
-            this.interactor = (zoneType) -> true;
+            interactor = (zoneType) -> true;
             return this;
         }
         
@@ -290,31 +289,31 @@ public class PlayFieldType
         
         public InteractionBuilder interactorCardNotNull()
         {
-            this.interactorCard = (interactorCard) -> interactorCard != null;
+            interactorCard = (interactorCard) -> interactorCard != null;
             return this;
         }
         
         public InteractionBuilder interactorCardNull()
         {
-            this.interactorCard = (interactorCard) -> interactorCard == null;
+            interactorCard = (interactorCard) -> interactorCard == null;
             return this;
         }
         
         public InteractionBuilder interactorCardAny()
         {
-            this.interactorCard = (interactorCard) -> true;
+            interactorCard = (interactorCard) -> true;
             return this;
         }
         
         public InteractionBuilder interactorCardToken()
         {
-            this.interactorCard = (interactorCard) -> interactorCard != null && interactorCard.getIsToken();
+            interactorCard = (interactorCard) -> interactorCard != null && interactorCard.getIsToken();
             return this;
         }
         
         public InteractionBuilder interactorCardNotNullNoToken()
         {
-            this.interactorCard = (interactorCard) -> interactorCard != null && !interactorCard.getIsToken();
+            interactorCard = (interactorCard) -> interactorCard != null && !interactorCard.getIsToken();
             return this;
         }
         
@@ -356,7 +355,7 @@ public class PlayFieldType
         
         public InteractionBuilder playerAndInteractorSameOwner()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -368,7 +367,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorAndInteracteeSameOwner()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -380,7 +379,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorAndInteracteeNotSameOwner()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -392,7 +391,7 @@ public class PlayFieldType
         
         public InteractionBuilder cardAndInteracteeSameOwner()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -404,7 +403,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorEmpty()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -416,7 +415,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorNonEmpty()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -428,7 +427,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorNonEmptyNoTokens()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -461,7 +460,7 @@ public class PlayFieldType
         
         public InteractionBuilder interacteeEmpty()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -473,7 +472,7 @@ public class PlayFieldType
         
         public InteractionBuilder interacteeNonEmpty()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -485,7 +484,7 @@ public class PlayFieldType
         
         public InteractionBuilder interacteeNonEmptyNoTokens()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -518,7 +517,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorEqualsInteractee()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -530,7 +529,7 @@ public class PlayFieldType
         
         public InteractionBuilder interactorUnequalsInteractee()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -542,7 +541,7 @@ public class PlayFieldType
         
         public InteractionBuilder cardInPosition(CardPosition position)
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -554,7 +553,7 @@ public class PlayFieldType
         
         public InteractionBuilder cardNotInPosition(CardPosition position)
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -566,7 +565,7 @@ public class PlayFieldType
         
         public InteractionBuilder cardIsOnTop()
         {
-            if(this.interaction == null)
+            if(interaction == null)
             {
                 return this;
             }
@@ -578,19 +577,19 @@ public class PlayFieldType
         
         public PlayFieldType addInteraction()
         {
-            if(this.icon == null || this.interactor == null || this.interactorCard == null || this.interactee == null || this.interaction == null)
+            if(icon == null || interactor == null || interactorCard == null || interactee == null || interaction == null)
             {
                 new IllegalStateException("InteractionBuilder: Missing params or wrong order params!").printStackTrace();
                 return PlayFieldType.this;
             }
             
-            if(!this.isAdvanced)
+            if(!isAdvanced)
             {
-                PlayFieldType.this.registerInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
+                registerInteraction(icon, interactor, interactorCard, interactee, interaction);
             }
             else
             {
-                PlayFieldType.this.registerAdvancedInteraction(this.icon, this.interactor, this.interactorCard, this.interactee, this.interaction);
+                registerAdvancedInteraction(icon, interactor, interactorCard, interactee, interaction);
             }
             
             return PlayFieldType.this;
@@ -635,8 +634,9 @@ public class PlayFieldType
         }
     }
     
-    public static interface SingleZoneInteraction
+    public interface SingleZoneInteraction
     {
-        public @Nullable Action createAction(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee);
+        @Nullable
+        Action createAction(ZoneOwner player, Zone interactor, @Nullable DuelCard interactorCard, Zone interactee);
     }
 }

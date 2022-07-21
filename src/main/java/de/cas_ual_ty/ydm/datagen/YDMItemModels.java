@@ -22,19 +22,19 @@ public class YDMItemModels extends ItemModelProvider
         {
             if(!sleeves.isCardBack())
             {
-                String main = this.modid + ":item/" + sleeves.getResourceName();
+                String main = modid + ":item/" + sleeves.getResourceName();
                 
-                this.getBuilder(main)
-                    .parent(new UncheckedModelFile("item/generated"))
-                    .texture("layer0", this.modLoc("item/" + 16 + "/" + sleeves.getResourceName()));
+                getBuilder(main)
+                        .parent(new UncheckedModelFile("item/generated"))
+                        .texture("layer0", modLoc("item/" + 16 + "/" + sleeves.getResourceName()));
                 
                 for(int i = 4; i <= 10; ++i)
                 {
                     int size = YdmUtil.getPow2(i);
                     
-                    this.getBuilder(sleeves.getItemModelRL(size).toString())
-                        .parent(new UncheckedModelFile(main))
-                        .texture("layer0", this.modLoc("item/" + size + "/" + sleeves.getResourceName()));
+                    getBuilder(sleeves.getItemModelRL(size).toString())
+                            .parent(new UncheckedModelFile(main))
+                            .texture("layer0", modLoc("item/" + size + "/" + sleeves.getResourceName()));
                 }
             }
         }
@@ -42,8 +42,8 @@ public class YDMItemModels extends ItemModelProvider
     
     public void defaultSizedModel(Item item, int size)
     {
-        this.getBuilder(item.getRegistryName().toString() + "_" + size)
-            .parent(new UncheckedModelFile(item.getRegistryName().toString()))
-            .texture("layer0", this.modLoc("item/" + item.getRegistryName().getPath() + "_" + size));
+        getBuilder(item.getRegistryName().toString() + "_" + size)
+                .parent(new UncheckedModelFile(item.getRegistryName().toString()))
+                .texture("layer0", modLoc("item/" + item.getRegistryName().getPath() + "_" + size));
     }
 }

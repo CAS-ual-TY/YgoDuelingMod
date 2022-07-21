@@ -1,12 +1,7 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
@@ -16,6 +11,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class CompositionCardPuller extends CardPuller
 {
@@ -28,12 +27,12 @@ public class CompositionCardPuller extends CardPuller
         
         JsonArray subSetsJson = setJson.get(JsonKeys.SUB_SETS).getAsJsonArray();
         
-        this.subSetCodes = new ArrayList<>(subSetsJson.size());
-        this.subSets = null;
+        subSetCodes = new ArrayList<>(subSetsJson.size());
+        subSets = null;
         
         for(int i = 0; i < subSetsJson.size(); ++i)
         {
-            this.subSetCodes.add(subSetsJson.get(i).getAsString());
+            subSetCodes.add(subSetsJson.get(i).getAsString());
         }
     }
     
@@ -41,27 +40,27 @@ public class CompositionCardPuller extends CardPuller
     public void postDBInit()
     {
         super.postDBInit();
-        this.linkSubSets();
+        linkSubSets();
     }
     
     public void linkSubSets()
     {
-        if(this.subSets == null)
+        if(subSets == null)
         {
-            this.subSets = new ArrayList<>(this.subSetCodes.size());
+            subSets = new ArrayList<>(subSetCodes.size());
             
             CardSet subSet;
-            for(String code : this.subSetCodes)
+            for(String code : subSetCodes)
             {
                 subSet = YdmDatabase.SETS_LIST.get(code);
                 
                 if(subSet == null)
                 {
-                    YDM.log("Can not find sub-set: " + code + " in set: " + this.set.code + " (" + this.set.name + ")");
+                    YDM.log("Can not find sub-set: " + code + " in set: " + set.code + " (" + set.name + ")");
                 }
                 else
                 {
-                    this.subSets.add(subSet);
+                    subSets.add(subSet);
                 }
             }
         }
@@ -72,7 +71,7 @@ public class CompositionCardPuller extends CardPuller
     {
         List<ItemStack> list = new ArrayList<>(0);
         
-        for(CardSet subSet : this.subSets)
+        for(CardSet subSet : subSets)
         {
             if(subSet.isIndependentAndItem())
             {
@@ -90,9 +89,9 @@ public class CompositionCardPuller extends CardPuller
     @Override
     public void addInformation(List<ITextComponent> tooltip)
     {
-        if(this.addInformationInComposition())
+        if(addInformationInComposition())
         {
-            for(CardSet subSet : this.subSets)
+            for(CardSet subSet : subSets)
             {
                 if(subSet.isIndependentAndItem())
                 {
@@ -109,7 +108,7 @@ public class CompositionCardPuller extends CardPuller
     @Override
     public boolean addInformationInComposition()
     {
-        for(CardSet subSet : this.subSets)
+        for(CardSet subSet : subSets)
         {
             if(!subSet.pull.addInformationInComposition())
             {
@@ -123,7 +122,7 @@ public class CompositionCardPuller extends CardPuller
     @Override
     public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
     {
-        for(CardSet subSet : this.subSets)
+        for(CardSet subSet : subSets)
         {
             subSet.addAllCardEntries(sortedSet);
         }

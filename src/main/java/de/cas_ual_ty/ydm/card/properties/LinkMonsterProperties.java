@@ -1,16 +1,15 @@
 package de.cas_ual_ty.ydm.card.properties;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TextFormatting;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class LinkMonsterProperties extends MonsterProperties
 {
@@ -20,7 +19,7 @@ public class LinkMonsterProperties extends MonsterProperties
     public LinkMonsterProperties(Properties p0, JsonObject j)
     {
         super(p0);
-        this.readLinkMonsterProperties(j);
+        readLinkMonsterProperties(j);
     }
     
     public LinkMonsterProperties(Properties p0)
@@ -29,9 +28,9 @@ public class LinkMonsterProperties extends MonsterProperties
         
         if(p0 instanceof LinkMonsterProperties)
         {
-            LinkMonsterProperties p1 = (LinkMonsterProperties)p0;
-            this.linkRating = p1.linkRating;
-            this.linkArrows = p1.linkArrows;
+            LinkMonsterProperties p1 = (LinkMonsterProperties) p0;
+            linkRating = p1.linkRating;
+            linkArrows = p1.linkArrows;
         }
     }
     
@@ -43,19 +42,19 @@ public class LinkMonsterProperties extends MonsterProperties
     public void readAllProperties(JsonObject j)
     {
         super.readAllProperties(j);
-        this.readLinkMonsterProperties(j);
+        readLinkMonsterProperties(j);
     }
     
     @Override
     public void writeAllProperties(JsonObject j)
     {
         super.writeAllProperties(j);
-        this.writeLinkProperties(j);
+        writeLinkProperties(j);
     }
     
     public void readLinkMonsterProperties(JsonObject j)
     {
-        this.linkRating = j.get(JsonKeys.LINK_RATING).getAsByte();
+        linkRating = j.get(JsonKeys.LINK_RATING).getAsByte();
         
         JsonArray linkArrows = j.get(JsonKeys.LINK_ARROWS).getAsJsonArray();
         this.linkArrows = new ArrayList<>(linkArrows.size());
@@ -67,7 +66,7 @@ public class LinkMonsterProperties extends MonsterProperties
     
     public void writeLinkProperties(JsonObject j)
     {
-        j.addProperty(JsonKeys.LINK_RATING, this.linkRating);
+        j.addProperty(JsonKeys.LINK_RATING, linkRating);
         
         JsonArray linkArrows = new JsonArray();
         for(LinkArrow linkArrow : this.linkArrows)
@@ -80,13 +79,13 @@ public class LinkMonsterProperties extends MonsterProperties
     @Override
     public void addMonsterHeader2(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getAtk() + " ATK / LINK-" + this.getLinkRating()));
+        list.add(new StringTextComponent(getAtk() + " ATK / LINK-" + getLinkRating()));
     }
     
     @Override
     public void addText(List<ITextComponent> list)
     {
-        this.addLinkMarkers(list);
+        addLinkMarkers(list);
         list.add(StringTextComponent.EMPTY);
         super.addText(list);
     }
@@ -94,18 +93,18 @@ public class LinkMonsterProperties extends MonsterProperties
     public void addLinkMarkers(List<ITextComponent> list)
     {
         //        list.add(this.linkArrows.stream().map((arrow) -> arrow.name).collect(Collectors.joining(", ")));
-        list.addAll(LinkArrow.buildSymbolsString(this.getLinkArrows(), TextFormatting.DARK_GRAY, TextFormatting.RED, "  "));
+        list.addAll(LinkArrow.buildSymbolsString(getLinkArrows(), TextFormatting.DARK_GRAY, TextFormatting.RED, "  "));
     }
     
     // --- Getters ---
     
     public byte getLinkRating()
     {
-        return this.linkRating;
+        return linkRating;
     }
     
     public List<LinkArrow> getLinkArrows()
     {
-        return this.linkArrows;
+        return linkArrows;
     }
 }

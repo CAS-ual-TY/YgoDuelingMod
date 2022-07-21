@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
@@ -27,12 +26,12 @@ public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
     public CIIScreen(T container, PlayerInventory playerInventory, ITextComponent title)
     {
         super(container, playerInventory, title);
-        this.passEvents = false;
+        passEvents = false;
         //int i = 222;
         //int j = 114;
-        this.inventoryRows = 6;
-        this.ySize = 114 + this.inventoryRows * 18;
-        this.playerInventoryTitleY = this.ySize - 94;
+        inventoryRows = 6;
+        imageHeight = 114 + inventoryRows * 18;
+        inventoryLabelY = imageHeight - 94;
     }
     
     @Override
@@ -40,44 +39,44 @@ public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
     {
         super.init();
         
-        this.addButton(this.prevButton = new ImprovedButton(this.guiLeft + this.xSize - 24 - 8, this.guiTop + 4, 12, 12, new TranslationTextComponent("generic.ydm.left_arrow"), this::onButtonClicked));
-        this.addButton(this.nextButton = new ImprovedButton(this.guiLeft + this.xSize - 12 - 8, this.guiTop + 4, 12, 12, new TranslationTextComponent("generic.ydm.right_arrow"), this::onButtonClicked));
+        addButton(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.left_arrow"), this::onButtonClicked));
+        addButton(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.right_arrow"), this::onButtonClicked));
     }
     
     @Override
     public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
-        this.renderBackground(matrixStack);
+        renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
-        this.renderHoveredTooltip(matrixStack, mouseX, mouseY);
+        renderTooltip(matrixStack, mouseX, mouseY);
     }
     
     @Override
-    protected void drawGuiContainerForegroundLayer(MatrixStack ms, int x, int y)
+    protected void renderLabels(MatrixStack ms, int x, int y)
     {
         IFormattableTextComponent title = new StringTextComponent(this.title.getString());
-        title = title.appendString(" ").appendSibling(new StringTextComponent((this.container.getPage() + 1) + "/" + this.container.getMaxPage()));
-        this.font.drawText(ms, title, 8.0F, 6.0F, 0x404040);
+        title = title.append(" ").append(new StringTextComponent((menu.getPage() + 1) + "/" + menu.getMaxPage()));
+        font.draw(ms, title, 8.0F, 6.0F, 0x404040);
     }
     
     @Override
-    protected void drawGuiContainerBackgroundLayer(MatrixStack ms, float partialTicks, int x, int y)
+    protected void renderBg(MatrixStack ms, float partialTicks, int x, int y)
     {
         ScreenUtil.white();
-        this.minecraft.getTextureManager().bindTexture(CIIScreen.CHEST_GUI_TEXTURE);
-        int i = (this.width - this.xSize) / 2;
-        int j = (this.height - this.ySize) / 2;
-        this.blit(ms, i, j, 0, 0, this.xSize, this.inventoryRows * 18 + 17);
-        this.blit(ms, i, j + this.inventoryRows * 18 + 17, 0, 126, this.xSize, 96);
+        minecraft.getTextureManager().bind(CIIScreen.CHEST_GUI_TEXTURE);
+        int i = (width - imageWidth) / 2;
+        int j = (height - imageHeight) / 2;
+        blit(ms, i, j, 0, 0, imageWidth, inventoryRows * 18 + 17);
+        blit(ms, i, j + inventoryRows * 18 + 17, 0, 126, imageWidth, 96);
     }
     
     protected void onButtonClicked(Button button)
     {
-        if(button == this.prevButton)
+        if(button == prevButton)
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CIIMessages.ChangePage(false));
         }
-        else if(button == this.nextButton)
+        else if(button == nextButton)
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CIIMessages.ChangePage(true));
         }

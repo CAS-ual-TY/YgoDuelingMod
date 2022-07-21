@@ -1,12 +1,11 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.function.Supplier;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.function.Supplier;
 
 public class RoleButtonWidget extends Button
 {
@@ -23,7 +22,7 @@ public class RoleButtonWidget extends Button
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partial)
     {
-        this.active = this.available.get();
+        active = available.get();
         super.render(ms, mouseX, mouseY, partial);
     }
 }

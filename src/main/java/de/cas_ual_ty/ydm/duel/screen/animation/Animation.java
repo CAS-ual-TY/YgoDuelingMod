@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import net.minecraft.client.gui.IRenderable;
 
 public abstract class Animation implements IRenderable
@@ -14,7 +13,7 @@ public abstract class Animation implements IRenderable
     
     public Animation(int maxTickTime)
     {
-        this.tickTime = 0;
+        tickTime = 0;
         this.maxTickTime = maxTickTime;
     }
     
@@ -32,27 +31,27 @@ public abstract class Animation implements IRenderable
     
     public void tick()
     {
-        if(this.ended())
+        if(ended())
         {
             return;
         }
         
-        if(this.tickTime == 0 && this.onStart != null)
+        if(tickTime == 0 && onStart != null)
         {
-            this.onStart.run();
+            onStart.run();
         }
         
-        ++this.tickTime;
+        ++tickTime;
         
-        if(this.tickTime == this.maxTickTime && this.onEnd != null)
+        if(tickTime == maxTickTime && onEnd != null)
         {
-            this.onEnd.run();
+            onEnd.run();
         }
     }
     
     public boolean ended()
     {
-        return this.tickTime >= this.maxTickTime;
+        return tickTime >= maxTickTime;
     }
     
     @Override

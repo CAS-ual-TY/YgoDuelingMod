@@ -1,8 +1,5 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.util.List;
-import java.util.Random;
-
 import net.minecraft.block.BlockState;
 import net.minecraft.client.renderer.model.BakedQuad;
 import net.minecraft.client.renderer.model.IBakedModel;
@@ -13,6 +10,9 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 
+import java.util.List;
+import java.util.Random;
+
 @SuppressWarnings("deprecation")
 public class CardSetBakedModel implements IBakedModel
 {
@@ -22,49 +22,49 @@ public class CardSetBakedModel implements IBakedModel
     public CardSetBakedModel(IBakedModel mainModel)
     {
         this.mainModel = mainModel;
-        this.overrideList = new CardSetOverrideList(new FinalCardSetBakedModel(mainModel));
+        overrideList = new CardSetOverrideList(new FinalCardSetBakedModel(mainModel));
     }
     
     @Override
     public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
     {
-        return this.mainModel.getQuads(state, side, rand);
+        return mainModel.getQuads(state, side, rand);
     }
     
     @Override
-    public boolean isAmbientOcclusion()
+    public boolean useAmbientOcclusion()
     {
-        return this.mainModel.isAmbientOcclusion();
+        return mainModel.useAmbientOcclusion();
     }
     
     @Override
     public boolean isGui3d()
     {
-        return this.mainModel.isGui3d();
+        return mainModel.isGui3d();
     }
     
     @Override
-    public boolean isSideLit()
+    public boolean usesBlockLight()
     {
-        return this.mainModel.isSideLit();
+        return mainModel.usesBlockLight();
     }
     
     @Override
-    public boolean isBuiltInRenderer()
+    public boolean isCustomRenderer()
     {
-        return this.mainModel.isBuiltInRenderer();
+        return mainModel.isCustomRenderer();
     }
     
     @Override
-    public TextureAtlasSprite getParticleTexture()
+    public TextureAtlasSprite getParticleIcon()
     {
-        return this.mainModel.getParticleTexture();
+        return mainModel.getParticleIcon();
     }
     
     @Override
     public ItemOverrideList getOverrides()
     {
-        return this.overrideList;
+        return overrideList;
     }
     
     private static class CardSetOverrideList extends ItemOverrideList
@@ -77,9 +77,9 @@ public class CardSetBakedModel implements IBakedModel
         }
         
         @Override
-        public IBakedModel getOverrideModel(IBakedModel model, ItemStack stack, ClientWorld worldIn, LivingEntity entityIn)
+        public IBakedModel resolve(IBakedModel model, ItemStack stack, ClientWorld worldIn, LivingEntity entityIn)
         {
-            return this.finalModel.setActiveItemStack(stack);
+            return finalModel.setActiveItemStack(stack);
         }
     }
 }

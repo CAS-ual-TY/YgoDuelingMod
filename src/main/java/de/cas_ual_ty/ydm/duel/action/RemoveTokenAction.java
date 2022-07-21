@@ -30,18 +30,18 @@ public class RemoveTokenAction extends DualZoneAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        DuelMessageUtility.encodeZoneOwner(this.player, buf);
+        DuelMessageUtility.encodeZoneOwner(player, buf);
     }
     
     @Override
     public void doAction()
     {
-        this.sourceZone.removeCard(this.card);
+        sourceZone.removeCard(card);
     }
     
     @Override
     public void undoAction()
     {
-        this.sourceZone.addCard(this.player, this.card, this.sourceCardIndex);
+        sourceZone.addCard(player, card, sourceCardIndex);
     }
 }

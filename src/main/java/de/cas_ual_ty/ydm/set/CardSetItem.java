@@ -18,35 +18,35 @@ public class CardSetItem extends CardSetBaseItem
     }
     
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand)
+    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
     {
         ItemStack stack = CardSetItem.getActiveSet(player);
         
-        if(player.getHeldItem(hand) == stack)
+        if(player.getItemInHand(hand) == stack)
         {
-            this.unseal(stack, player, hand);
+            unseal(stack, player, hand);
             
-            if(!world.isRemote)
+            if(!world.isClientSide)
             {
-                return player.getHeldItem(hand).getItem().onItemRightClick(world, player, hand);
+                return player.getItemInHand(hand).getItem().use(world, player, hand);
             }
         }
         
-        return super.onItemRightClick(world, player, hand);
+        return super.use(world, player, hand);
     }
     
     public void unseal(ItemStack itemStack, PlayerEntity player, Hand hand)
     {
-        ItemStack newStack = YdmItems.OPENED_SET.createItemForSet(this.getCardSet(itemStack));
-        player.setHeldItem(hand, newStack);
+        ItemStack newStack = YdmItems.OPENED_SET.createItemForSet(getCardSet(itemStack));
+        player.setItemInHand(hand, newStack);
         
         if(itemStack.getCount() > 1)
         {
             itemStack.shrink(1);
             
-            if(!player.world.isRemote)
+            if(!player.level.isClientSide)
             {
-                player.inventory.placeItemBackInInventory(player.world, itemStack);
+                player.inventory.placeItemBackInInventory(player.level, itemStack);
             }
         }
     }
@@ -54,14 +54,14 @@ public class CardSetItem extends CardSetBaseItem
     public ItemStack createItemForSet(CardSet set)
     {
         ItemStack itemStack = new ItemStack(this);
-        this.setCardSet(itemStack, set);
+        setCardSet(itemStack, set);
         return itemStack;
     }
     
     @Override
-    public void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
     {
-        if(!this.isInGroup(group))
+        if(!allowdedIn(group))
         {
             return;
         }
@@ -70,20 +70,20 @@ public class CardSetItem extends CardSetBaseItem
         {
             if(set.isIndependentAndItem())
             {
-                items.add(this.createItemForSet(set));
+                items.add(createItemForSet(set));
             }
         }
     }
     
     public static ItemStack getActiveSet(PlayerEntity player)
     {
-        if(player.getHeldItemMainhand().getItem() == YdmItems.SET)
+        if(player.getMainHandItem().getItem() == YdmItems.SET)
         {
-            return player.getHeldItemMainhand();
+            return player.getMainHandItem();
         }
-        else if(player.getHeldItemOffhand().getItem() == YdmItems.SET)
+        else if(player.getOffhandItem().getItem() == YdmItems.SET)
         {
-            return player.getHeldItemOffhand();
+            return player.getOffhandItem();
         }
         else
         {

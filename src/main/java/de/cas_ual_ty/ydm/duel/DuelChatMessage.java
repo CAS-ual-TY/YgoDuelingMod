@@ -17,7 +17,7 @@ public class DuelChatMessage
     {
         this.message = message;
         this.playerName = playerName;
-        this.sourceRole = playerRole;
+        sourceRole = playerRole;
         this.isAnnouncement = isAnnouncement;
     }
     
@@ -30,63 +30,63 @@ public class DuelChatMessage
     // flipping does not affect it
     public ITextComponent generateStyledMessage(PlayerRole viewerRole, TextFormatting friendlyColor, TextFormatting opponentColor, TextFormatting neutralColor)
     {
-        IFormattableTextComponent playerName = this.playerName.deepCopy();
+        IFormattableTextComponent playerName = this.playerName.copy();
         
         if(ZoneOwner.fromPlayerRole(viewerRole).isPlayer())
         {
             // viewer is a player
             
-            if(this.sourceRole == viewerRole)
+            if(sourceRole == viewerRole)
             {
                 // viewer is a player
                 // source = viewer
                 // so viewer is the player who sent the message
                 // blue
                 
-                playerName.modifyStyle((style) -> style.applyFormatting(friendlyColor));
+                playerName.withStyle((style) -> style.applyFormat(friendlyColor));
             }
-            else if(ZoneOwner.fromPlayerRole(this.sourceRole) == ZoneOwner.NONE)
+            else if(ZoneOwner.fromPlayerRole(sourceRole) == ZoneOwner.NONE)
             {
                 // viewer is a player
                 // message is not from a player
                 // white
                 
-                playerName.modifyStyle((style) -> style.applyFormatting(neutralColor));
+                playerName.withStyle((style) -> style.applyFormat(neutralColor));
             }
             else
             {
                 // now it can only be opponent
                 // red
                 
-                playerName.modifyStyle((style) -> style.applyFormatting(opponentColor));
+                playerName.withStyle((style) -> style.applyFormat(opponentColor));
             }
         }
         else
         {
             // viewer is a spectator
             
-            if(this.sourceRole == PlayerRole.PLAYER1)
+            if(sourceRole == PlayerRole.PLAYER1)
             {
-                playerName.modifyStyle((style) -> style.applyFormatting(friendlyColor));
+                playerName.withStyle((style) -> style.applyFormat(friendlyColor));
             }
-            else if(this.sourceRole == PlayerRole.PLAYER2)
+            else if(sourceRole == PlayerRole.PLAYER2)
             {
-                playerName.modifyStyle((style) -> style.applyFormatting(opponentColor));
+                playerName.withStyle((style) -> style.applyFormat(opponentColor));
             }
             else //if(this.playerRole == PlayerRole.SPECTATOR)
             {
-                playerName.modifyStyle((style) -> style.applyFormatting(neutralColor));
+                playerName.withStyle((style) -> style.applyFormat(neutralColor));
             }
         }
         
-        IFormattableTextComponent m = this.message.deepCopy();
+        IFormattableTextComponent m = message.copy();
         
-        if(this.isAnnouncement)
+        if(isAnnouncement)
         {
-            m.modifyStyle((style) -> style.applyFormatting(TextFormatting.ITALIC));
+            m.withStyle((style) -> style.applyFormat(TextFormatting.ITALIC));
         }
         
-        IFormattableTextComponent t = new StringTextComponent("<").appendSibling(playerName).appendString("> ").appendSibling(m);
+        IFormattableTextComponent t = new StringTextComponent("<").append(playerName).append("> ").append(m);
         
         //        if(this.isAnnouncement)
         //        {

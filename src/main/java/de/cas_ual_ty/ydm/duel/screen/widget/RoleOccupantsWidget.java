@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.function.Function;
-
 import de.cas_ual_ty.ydm.clientutil.widget.TextWidget;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import net.minecraft.util.text.ITextComponent;
+
+import java.util.function.Function;
 
 public class RoleOccupantsWidget extends TextWidget
 {

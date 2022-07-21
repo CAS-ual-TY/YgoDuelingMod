@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm;
 
-import java.util.function.Supplier;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+
+import java.util.function.Supplier;
 
 public class YdmItemGroup extends ItemGroup
 {
@@ -17,8 +17,8 @@ public class YdmItemGroup extends ItemGroup
     }
     
     @Override
-    public ItemStack createIcon()
+    public ItemStack makeIcon()
     {
-        return new ItemStack(this.supplier.get());
+        return new ItemStack(supplier.get());
     }
 }

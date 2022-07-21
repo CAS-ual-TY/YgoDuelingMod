@@ -1,16 +1,7 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmDatabase;
@@ -42,17 +33,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.client.event.ClientChatReceivedEvent;
-import net.minecraftforge.client.event.GuiScreenEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.event.RenderGameOverlayEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.config.ModConfig;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ClientProxy implements ISidedProxy
 {
@@ -124,7 +117,7 @@ public class ClientProxy implements ISidedProxy
         
         if(ClientProxy.getMinecraft() != null)
         {
-            ClientProxy.getMinecraft().getResourcePackList().addPackFinder(new YdmResourcePackFinder());
+            ClientProxy.getMinecraft().getResourcePackRepository().addPackFinder(new YdmResourcePackFinder());
         }
     }
     
@@ -151,7 +144,7 @@ public class ClientProxy implements ISidedProxy
                     ClientProxy.itemsUseCardImagesFailed = true;
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 YDM.log("Failed checking missing item images!");
                 e.printStackTrace();
@@ -177,7 +170,7 @@ public class ClientProxy implements ISidedProxy
                     ClientProxy.itemsUseSetImagesFailed = true;
                 }
             }
-            catch (Exception e)
+            catch(Exception e)
             {
                 YDM.log("Failed checking missing set images!");
                 e.printStackTrace();
@@ -185,13 +178,13 @@ public class ClientProxy implements ISidedProxy
             }
         }
         
-        ScreenManager.registerFactory(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
-        ScreenManager.registerFactory(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
-        ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>registerFactory(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
-        ScreenManager.registerFactory(YdmContainerTypes.CARD_SUPPLY, CardSupplyScreen::new);
-        ScreenManager.<CIIContainer, CIIScreen<CIIContainer>>registerFactory(YdmContainerTypes.CARD_SET, CIIScreen::new);
-        ScreenManager.<CIIContainer, CIIScreen<CIIContainer>>registerFactory(YdmContainerTypes.CARD_SET_CONTENTS, CIIScreen::new);
-        ScreenManager.<CIIContainer, CIIScreen<CIIContainer>>registerFactory(YdmContainerTypes.SIMPLE_BINDER, CIIScreen::new);
+        ScreenManager.register(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
+        ScreenManager.register(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
+        ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>register(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
+        ScreenManager.register(YdmContainerTypes.CARD_SUPPLY, CardSupplyScreen::new);
+        ScreenManager.register(YdmContainerTypes.CARD_SET, (ScreenManager.IScreenFactory<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
+        ScreenManager.register(YdmContainerTypes.CARD_SET_CONTENTS, (ScreenManager.IScreenFactory<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
+        ScreenManager.register(YdmContainerTypes.SIMPLE_BINDER, (ScreenManager.IScreenFactory<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
         
         CardRenderUtil.init(ClientProxy.maxInfoImages, ClientProxy.maxMainImages);
     }
@@ -288,7 +281,7 @@ public class ClientProxy implements ISidedProxy
     @SuppressWarnings("deprecation")
     private void textureStitchPre(TextureStitchEvent.Pre event)
     {
-        if(event.getMap().getTextureLocation() != AtlasTexture.LOCATION_BLOCKS_TEXTURE)
+        if(event.getMap().location() != AtlasTexture.LOCATION_BLOCKS)
         {
             return;
         }
@@ -297,7 +290,7 @@ public class ClientProxy implements ISidedProxy
         int i = 0;
         
         while((ClientProxy.itemsUseCardImages && !ClientProxy.itemsUseCardImagesFailed && !ClientProxy.itemsUseCardImagesActive)
-            || (ClientProxy.itemsUseSetImages && !ClientProxy.itemsUseSetImagesFailed && !ClientProxy.itemsUseSetImagesActive))
+                || (ClientProxy.itemsUseSetImages && !ClientProxy.itemsUseSetImagesFailed && !ClientProxy.itemsUseSetImagesActive))
         {
             if(!flag)
             {
@@ -314,7 +307,7 @@ public class ClientProxy implements ISidedProxy
             {
                 TimeUnit.SECONDS.sleep(1);
             }
-            catch (InterruptedException e)
+            catch(InterruptedException e)
             {
                 YDM.log("Tried sleeping to give textures enough time... It didnt work :(");
                 e.printStackTrace();
@@ -372,7 +365,7 @@ public class ClientProxy implements ISidedProxy
             {
                 TimeUnit.SECONDS.sleep(1);
             }
-            catch (InterruptedException e)
+            catch(InterruptedException e)
             {
                 YDM.log("Tried sleeping to give textures enough time... It didnt work :(");
                 e.printStackTrace();
@@ -413,23 +406,23 @@ public class ClientProxy implements ISidedProxy
         if(ClientProxy.activeCardItemImageSize != 16)
         {
             event.getModelRegistry().put(new ModelResourceLocation(YdmItems.BLANC_CARD.getRegistryName(), "inventory"),
-                event.getModelRegistry().get(
-                    new ModelResourceLocation(
-                        new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
+                    event.getModelRegistry().get(
+                            new ModelResourceLocation(
+                                    new ResourceLocation(YdmItems.BLANC_CARD.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
             
             event.getModelRegistry().put(new ModelResourceLocation(YdmItems.CARD_BACK.getRegistryName(), "inventory"),
-                event.getModelRegistry().get(
-                    new ModelResourceLocation(
-                        new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
+                    event.getModelRegistry().get(
+                            new ModelResourceLocation(
+                                    new ResourceLocation(YdmItems.CARD_BACK.getRegistryName().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
             
             for(CardSleevesType sleeves : CardSleevesType.VALUES)
             {
                 if(!sleeves.isCardBack())
                 {
                     event.getModelRegistry().put(new ModelResourceLocation(new ResourceLocation(YDM.MOD_ID, "sleeves_" + sleeves.name), "inventory"),
-                        event.getModelRegistry().get(
-                            new ModelResourceLocation(
-                                sleeves.getItemModelRL(ClientProxy.activeCardItemImageSize), "inventory")));
+                            event.getModelRegistry().get(
+                                    new ModelResourceLocation(
+                                            sleeves.getItemModelRL(ClientProxy.activeCardItemImageSize), "inventory")));
                 }
             }
         }
@@ -437,9 +430,9 @@ public class ClientProxy implements ISidedProxy
         if(ClientProxy.activeSetItemImageSize != 16)
         {
             event.getModelRegistry().put(new ModelResourceLocation(YdmItems.BLANC_SET.getRegistryName(), "inventory"),
-                event.getModelRegistry().get(
-                    new ModelResourceLocation(
-                        new ResourceLocation(YdmItems.BLANC_SET.getRegistryName().toString() + "_" + ClientProxy.activeSetItemImageSize), "inventory")));
+                    event.getModelRegistry().get(
+                            new ModelResourceLocation(
+                                    new ResourceLocation(YdmItems.BLANC_SET.getRegistryName().toString() + "_" + ClientProxy.activeSetItemImageSize), "inventory")));
         }
         
         ModelResourceLocation key = new ModelResourceLocation(YdmItems.CARD.getRegistryName(), "inventory");
@@ -479,11 +472,11 @@ public class ClientProxy implements ISidedProxy
     {
         if(event.getGui() instanceof ContainerScreen)
         {
-            ContainerScreen<?> containerScreen = (ContainerScreen<?>)event.getGui();
+            ContainerScreen<?> containerScreen = (ContainerScreen<?>) event.getGui();
             
-            if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getStack().isEmpty())
+            if(containerScreen.getSlotUnderMouse() != null && !containerScreen.getSlotUnderMouse().getItem().isEmpty())
             {
-                ItemStack itemStack = containerScreen.getSlotUnderMouse().getStack();
+                ItemStack itemStack = containerScreen.getSlotUnderMouse().getItem();
                 
                 if(itemStack.getItem() == YdmItems.CARD)
                 {
@@ -491,15 +484,15 @@ public class ClientProxy implements ISidedProxy
                 }
                 else if(itemStack.getItem() == YdmItems.SET)
                 {
-                    this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(itemStack), containerScreen.getGuiLeft());
+                    renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(itemStack), containerScreen.getGuiLeft());
                 }
                 else if(itemStack.getItem() == YdmItems.OPENED_SET)
                 {
-                    this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(itemStack), containerScreen.getGuiLeft());
+                    renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(itemStack), containerScreen.getGuiLeft());
                 }
                 else if(itemStack.getItem() instanceof CardSleevesItem)
                 {
-                    this.renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem)itemStack.getItem()).sleeves, containerScreen.getGuiLeft());
+                    renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem) itemStack.getItem()).sleeves, containerScreen.getGuiLeft());
                 }
             }
         }
@@ -512,48 +505,48 @@ public class ClientProxy implements ISidedProxy
             return;
         }
         
-        if(this.getClientPlayer() != null && ClientProxy.getMinecraft().currentScreen == null)
+        if(getClientPlayer() != null && ClientProxy.getMinecraft().screen == null)
         {
-            PlayerEntity player = this.getClientPlayer();
+            PlayerEntity player = getClientPlayer();
             
-            if(player.getHeldItemMainhand().getItem() == YdmItems.CARD)
+            if(player.getMainHandItem().getItem() == YdmItems.CARD)
             {
-                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemMainhand()));
+                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getMainHandItem()));
             }
-            else if(player.getHeldItemMainhand().getItem() == YdmItems.SET)
+            else if(player.getMainHandItem().getItem() == YdmItems.SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemMainhand()));
+                renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getMainHandItem()));
             }
-            else if(player.getHeldItemMainhand().getItem() == YdmItems.OPENED_SET)
+            else if(player.getMainHandItem().getItem() == YdmItems.OPENED_SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemMainhand()));
+                renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getMainHandItem()));
             }
-            else if(player.getHeldItemMainhand().getItem() instanceof CardSleevesItem)
+            else if(player.getMainHandItem().getItem() instanceof CardSleevesItem)
             {
-                this.renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem)player.getHeldItemMainhand().getItem()).sleeves);
+                renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem) player.getMainHandItem().getItem()).sleeves);
             }
-            else if(player.getHeldItemOffhand().getItem() == YdmItems.CARD)
+            else if(player.getOffhandItem().getItem() == YdmItems.CARD)
             {
-                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getHeldItemOffhand()));
+                CardRenderUtil.renderCardInfo(event.getMatrixStack(), YdmItems.CARD.getCardHolder(player.getOffhandItem()));
             }
-            else if(player.getHeldItemOffhand().getItem() == YdmItems.SET)
+            else if(player.getOffhandItem().getItem() == YdmItems.SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getHeldItemOffhand()));
+                renderSetInfo(event.getMatrixStack(), YdmItems.SET.getCardSet(player.getOffhandItem()));
             }
-            else if(player.getHeldItemOffhand().getItem() == YdmItems.OPENED_SET)
+            else if(player.getOffhandItem().getItem() == YdmItems.OPENED_SET)
             {
-                this.renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getHeldItemOffhand()));
+                renderSetInfo(event.getMatrixStack(), YdmItems.OPENED_SET.getCardSet(player.getOffhandItem()));
             }
-            else if(player.getHeldItemOffhand().getItem() instanceof CardSleevesItem)
+            else if(player.getOffhandItem().getItem() instanceof CardSleevesItem)
             {
-                this.renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem)player.getHeldItemMainhand().getItem()).sleeves);
+                renderSleevesInfo(event.getMatrixStack(), ((CardSleevesItem) player.getMainHandItem().getItem()).sleeves);
             }
         }
     }
     
     private void renderSetInfo(MatrixStack ms, CardSet set)
     {
-        this.renderSetInfo(ms, set, 150);
+        renderSetInfo(ms, set, 150);
     }
     
     private void renderSetInfo(MatrixStack ms, CardSet set, int width)
@@ -569,48 +562,44 @@ public class ClientProxy implements ISidedProxy
         
         int maxWidth = width - margin * 2;
         
-        ms.push();
+        ms.pushPose();
         ScreenUtil.white();
         
+        int x = margin;
+        
+        if(maxWidth < imageSize)
         {
-            int x = margin;
-            
-            if(maxWidth < imageSize)
-            {
-                // draw it centered if the space we got is limited
-                // to make sure the image is NOT rendered more to the right of the center
-                x = (maxWidth - imageSize) / 2 + margin;
-            }
-            
-            // card texture
-            
-            Minecraft.getInstance().textureManager.bindTexture(set.getInfoImageResourceLocation());
-            YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
+            // draw it centered if the space we got is limited
+            // to make sure the image is NOT rendered more to the right of the center
+            x = (maxWidth - imageSize) / 2 + margin;
         }
+        
+        // card texture
+        
+        Minecraft.getInstance().textureManager.bind(set.getInfoImageResourceLocation());
+        YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
         
         // need to multiply x2 because we are scaling the text to x0.5
         maxWidth *= 2;
         margin *= 2;
         ms.scale(f, f, f);
         
-        {
-            // card description text
-            
-            @SuppressWarnings("resource")
-            FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
-            
-            List<ITextComponent> list = new LinkedList<>();
-            set.addInformation(list);
-            
-            ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
-        }
+        // card description text
         
-        ms.pop();
+        @SuppressWarnings("resource")
+        FontRenderer fontRenderer = ClientProxy.getMinecraft().font;
+        
+        List<ITextComponent> list = new LinkedList<>();
+        set.addInformation(list);
+        
+        ScreenUtil.drawSplitString(ms, fontRenderer, list, margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
+        
+        ms.popPose();
     }
     
     private void renderSleevesInfo(MatrixStack ms, CardSleevesType sleeves)
     {
-        this.renderSleevesInfo(ms, sleeves, 150);
+        renderSleevesInfo(ms, sleeves, 150);
     }
     
     private void renderSleevesInfo(MatrixStack ms, CardSleevesType sleeves, int width)
@@ -626,40 +615,36 @@ public class ClientProxy implements ISidedProxy
         
         int maxWidth = width - margin * 2;
         
-        ms.push();
+        ms.pushPose();
         ScreenUtil.white();
         
+        int x = margin;
+        
+        if(maxWidth < imageSize)
         {
-            int x = margin;
-            
-            if(maxWidth < imageSize)
-            {
-                // draw it centered if the space we got is limited
-                // to make sure the image is NOT rendered more to the right of the center
-                x = (maxWidth - imageSize) / 2 + margin;
-            }
-            
-            // card texture
-            
-            Minecraft.getInstance().textureManager.bindTexture(sleeves.getMainRL(ClientProxy.activeCardInfoImageSize));
-            YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
+            // draw it centered if the space we got is limited
+            // to make sure the image is NOT rendered more to the right of the center
+            x = (maxWidth - imageSize) / 2 + margin;
         }
+        
+        // card texture
+        
+        Minecraft.getInstance().textureManager.bind(sleeves.getMainRL(ClientProxy.activeCardInfoImageSize));
+        YdmBlitUtil.fullBlit(ms, x, margin, imageSize, imageSize);
         
         // need to multiply x2 because we are scaling the text to x0.5
         maxWidth *= 2;
         margin *= 2;
         ms.scale(f, f, f);
         
-        {
-            // card description text
-            
-            @SuppressWarnings("resource")
-            FontRenderer fontRenderer = ClientProxy.getMinecraft().fontRenderer;
-            
-            ScreenUtil.drawSplitString(ms, fontRenderer, ImmutableList.<ITextComponent>of(new TranslationTextComponent("item.ydm." + sleeves.getResourceName())), margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
-        }
+        // card description text
         
-        ms.pop();
+        @SuppressWarnings("resource")
+        FontRenderer fontRenderer = ClientProxy.getMinecraft().font;
+        
+        ScreenUtil.drawSplitString(ms, fontRenderer, ImmutableList.of(new TranslationTextComponent("item.ydm." + sleeves.getResourceName())), margin, imageSize * 2 + margin * 2, maxWidth, 0xFFFFFF);
+        
+        ms.popPose();
     }
     
     public static int maxMessages = 50; //TODO make configurable
@@ -667,7 +652,7 @@ public class ClientProxy implements ISidedProxy
     
     private void clientChatReceived(ClientChatReceivedEvent event)
     {
-        if(!event.isCanceled() && event.getMessage() != null && !event.getMessage().getString().isEmpty() && !ClientProxy.getMinecraft().cannotSendChatMessages(event.getSenderUUID()))
+        if(!event.isCanceled() && event.getMessage() != null && !event.getMessage().getString().isEmpty() && !ClientProxy.getMinecraft().isBlocked(event.getSenderUUID()))
         {
             if(ClientProxy.chatMessages.size() >= ClientProxy.maxMessages)
             {

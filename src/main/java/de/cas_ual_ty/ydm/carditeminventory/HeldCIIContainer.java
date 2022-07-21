@@ -22,7 +22,7 @@ public abstract class HeldCIIContainer extends CIIContainer
     {
         super(type, id, playerInventoryIn, itemHandler);
         this.hand = hand;
-        this.itemStack = this.player.getHeldItem(hand);
+        itemStack = player.getItemInHand(hand);
     }
     
     public HeldCIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
@@ -35,7 +35,7 @@ public abstract class HeldCIIContainer extends CIIContainer
     @Override
     protected void createBottomSlots(PlayerInventory playerInventoryIn)
     {
-        if(this.hand == Hand.OFF_HAND)
+        if(hand == Hand.OFF_HAND)
         {
             super.createBottomSlots(playerInventoryIn);
             return;
@@ -51,12 +51,12 @@ public abstract class HeldCIIContainer extends CIIContainer
             {
                 id = j1 + l * 9 + 9;
                 
-                if(id == playerInventoryIn.currentItem)
+                if(id == playerInventoryIn.selected)
                 {
-                    this.addSlot(new Slot(playerInventoryIn, id, 8 + j1 * 18, 103 + l * 18 + i)
+                    addSlot(new Slot(playerInventoryIn, id, 8 + j1 * 18, 103 + l * 18 + i)
                     {
                         @Override
-                        public boolean canTakeStack(PlayerEntity playerIn)
+                        public boolean mayPickup(PlayerEntity playerIn)
                         {
                             return false;
                         }
@@ -64,7 +64,7 @@ public abstract class HeldCIIContainer extends CIIContainer
                 }
                 else
                 {
-                    this.addSlot(new Slot(playerInventoryIn, id, 8 + j1 * 18, 103 + l * 18 + i));
+                    addSlot(new Slot(playerInventoryIn, id, 8 + j1 * 18, 103 + l * 18 + i));
                 }
             }
         }
@@ -73,12 +73,12 @@ public abstract class HeldCIIContainer extends CIIContainer
         {
             id = i1;
             
-            if(id == playerInventoryIn.currentItem)
+            if(id == playerInventoryIn.selected)
             {
-                this.addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i)
+                addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i)
                 {
                     @Override
-                    public boolean canTakeStack(PlayerEntity playerIn)
+                    public boolean mayPickup(PlayerEntity playerIn)
                     {
                         return false;
                     }
@@ -86,25 +86,25 @@ public abstract class HeldCIIContainer extends CIIContainer
             }
             else
             {
-                this.addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i));
+                addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i));
             }
         }
     }
     
     @Override
-    public void onContainerClosed(PlayerEntity playerIn)
+    public void removed(PlayerEntity playerIn)
     {
-        super.onContainerClosed(playerIn);
+        super.removed(playerIn);
         
-        if(!playerIn.world.isRemote)
+        if(!playerIn.level.isClientSide)
         {
-            this.saveItemHandler(this.player, this.itemStack, this.itemHandler);
+            saveItemHandler(player, itemStack, itemHandler);
         }
     }
     
     public static void openGui(PlayerEntity player, Hand hand, int itemHandlerSize, INamedContainerProvider p)
     {
-        NetworkHooks.openGui((ServerPlayerEntity)player, p, (extraData) ->
+        NetworkHooks.openGui((ServerPlayerEntity) player, p, (extraData) ->
         {
             extraData.writeInt(itemHandlerSize);
             extraData.writeBoolean(hand == Hand.MAIN_HAND);

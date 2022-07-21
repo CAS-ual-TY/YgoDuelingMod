@@ -31,19 +31,19 @@ public abstract class RandomAction extends Action implements IAnnouncedAction
     @Override
     public void undoAction()
     {
-        this.doAction();
+        doAction();
     }
     
     @Override
     public void redoAction()
     {
-        this.doAction();
+        doAction();
     }
     
     @Override
     public String getAnnouncementLocalKey()
     {
-        return this.actionType.getLocalKey();
+        return actionType.getLocalKey();
     }
     
     @Override

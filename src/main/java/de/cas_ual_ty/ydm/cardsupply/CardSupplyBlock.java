@@ -24,21 +24,21 @@ public class CardSupplyBlock extends Block
     }
     
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        if(!worldIn.isRemote && player instanceof ServerPlayerEntity)
+        if(!worldIn.isClientSide && player instanceof ServerPlayerEntity)
         {
-            NetworkHooks.openGui((ServerPlayerEntity)player, this.getContainer(state, worldIn, pos), pos);
+            NetworkHooks.openGui((ServerPlayerEntity) player, getMenuProvider(state, worldIn, pos), pos);
         }
         
         return ActionResultType.SUCCESS;
     }
     
     @Override
-    public INamedContainerProvider getContainer(BlockState state, World worldIn, BlockPos pos)
+    public INamedContainerProvider getMenuProvider(BlockState state, World worldIn, BlockPos pos)
     {
         return new SimpleNamedContainerProvider(
-            (id, inventory, player) -> new CardSupplyContainer(YdmContainerTypes.CARD_SUPPLY, id, inventory, pos),
-            new TranslationTextComponent("container." + YDM.MOD_ID + ".card_supply"));
+                (id, inventory, player) -> new CardSupplyContainer(YdmContainerTypes.CARD_SUPPLY, id, inventory, pos),
+                new TranslationTextComponent("container." + YDM.MOD_ID + ".card_supply"));
     }
 }

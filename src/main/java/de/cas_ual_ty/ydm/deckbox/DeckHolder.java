@@ -1,11 +1,11 @@
 package de.cas_ual_ty.ydm.deckbox;
 
+import de.cas_ual_ty.ydm.card.CardHolder;
+import de.cas_ual_ty.ydm.card.CardSleevesType;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-
-import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.card.CardSleevesType;
 
 public class DeckHolder
 {
@@ -51,62 +51,62 @@ public class DeckHolder
     
     public List<CardHolder> getMainDeck()
     {
-        return this.mainDeck;
+        return mainDeck;
     }
     
     public List<CardHolder> getExtraDeck()
     {
-        return this.extraDeck;
+        return extraDeck;
     }
     
     public List<CardHolder> getSideDeck()
     {
-        return this.sideDeck;
+        return sideDeck;
     }
     
     public CardSleevesType getSleeves()
     {
-        return this.sleeves;
+        return sleeves;
     }
     
     public boolean isEmpty()
     {
-        return this.getMainDeckSize() == 0 && this.getExtraDeckSize() == 0 && this.getSideDeckSize() == 0;
+        return getMainDeckSize() == 0 && getExtraDeckSize() == 0 && getSideDeckSize() == 0;
     }
     
     public Stream<CardHolder> getMainDeckNonNull()
     {
-        return this.getMainDeck().stream().filter((ch) -> ch != null);
+        return getMainDeck().stream().filter((ch) -> ch != null);
     }
     
     public Stream<CardHolder> getExtraDeckNonNull()
     {
-        return this.getExtraDeck().stream().filter((ch) -> ch != null);
+        return getExtraDeck().stream().filter((ch) -> ch != null);
     }
     
     public Stream<CardHolder> getSideDeckNonNull()
     {
-        return this.getSideDeck().stream().filter((ch) -> ch != null);
+        return getSideDeck().stream().filter((ch) -> ch != null);
     }
     
     public int getMainDeckSize()
     {
-        return (int)this.getMainDeckNonNull().count();
+        return (int) getMainDeckNonNull().count();
     }
     
     public int getExtraDeckSize()
     {
-        return (int)this.getExtraDeckNonNull().count();
+        return (int) getExtraDeckNonNull().count();
     }
     
     public int getSideDeckSize()
     {
-        return (int)this.getSideDeckNonNull().count();
+        return (int) getSideDeckNonNull().count();
     }
     
     @Override
     public String toString()
     {
-        return this.mainDeck.toString() + this.extraDeck.toString() + this.sideDeck.toString();
+        return mainDeck.toString() + extraDeck.toString() + sideDeck.toString();
     }
 }

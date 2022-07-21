@@ -1,18 +1,7 @@
 package de.cas_ual_ty.ydm.cardinventory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-
+import com.google.gson.*;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.task.Task;
@@ -21,6 +10,12 @@ import de.cas_ual_ty.ydm.task.TaskQueue;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.nbt.CompoundNBT;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public abstract class JsonCardsManager
 {
@@ -35,19 +30,19 @@ public abstract class JsonCardsManager
     
     public JsonCardsManager()
     {
-        this.isIdle = true;
-        this.loaded = false;
-        this.stackList = new DNCList<>((w) -> w.getKey(), CardHolderStack::compareCardHolders);
-        this.cardsList = new ArrayList<>(0);
+        isIdle = true;
+        loaded = false;
+        stackList = new DNCList<>((w) -> w.getKey(), CardHolderStack::compareCardHolders);
+        cardsList = new ArrayList<>(0);
     }
     
     protected abstract File getFile();
     
     public List<CardHolder> getList()
     {
-        if(this.isInIdleState())
+        if(isInIdleState())
         {
-            return this.cardsList;
+            return cardsList;
         }
         else
         {
@@ -57,19 +52,19 @@ public abstract class JsonCardsManager
     
     public List<CardHolder> forceGetList()
     {
-        return this.cardsList;
+        return cardsList;
     }
     
     public void load(Runnable callback)
     {
-        YDM.log("Trying to load card inventory from file: " + this.getFile().getAbsolutePath());
+        YDM.log("Trying to load card inventory from file: " + getFile().getAbsolutePath());
         
-        if(this.isSafed())
+        if(isSafed())
         {
             YDM.log("File will load!");
             
-            this.setWorking();
-            this.loaded = true;
+            setWorking();
+            loaded = true;
             
             synchronized(JsonCardsManager.LOADED_MANAGERS)
             {
@@ -78,9 +73,9 @@ public abstract class JsonCardsManager
             
             Task t = new Task(TaskPriority.BINDER_LOAD, () ->
             {
-                this.loadRunnable().run();
-                YDM.log("Done loading from file: " + this.getFile().getAbsolutePath());
-                this.setIdle();
+                loadRunnable().run();
+                YDM.log("Done loading from file: " + getFile().getAbsolutePath());
+                setIdle();
                 callback.run();
             });
             
@@ -92,7 +87,7 @@ public abstract class JsonCardsManager
     {
         return () ->
         {
-            JsonArray array = this.loadFromFile();
+            JsonArray array = loadFromFile();
             JsonObject j;
             CardHolderStack stack;
             int index;
@@ -104,44 +99,44 @@ public abstract class JsonCardsManager
                 j = e.getAsJsonObject();
                 
                 stack = new CardHolderStack(j);
-                index = this.stackList.getIndexOfSameKey(stack);
+                index = stackList.getIndexOfSameKey(stack);
                 
                 if(index == -1)
                 {
-                    this.stackList.add(stack);
+                    stackList.add(stack);
                 }
                 else
                 {
-                    this.stackList.getByIndex(index).merge(stack);
+                    stackList.getByIndex(index).merge(stack);
                 }
                 
                 total += stack.getCount();
             }
             
-            this.cardsList = new ArrayList<>(total);
+            cardsList = new ArrayList<>(total);
             
-            for(CardHolderStack value : this.stackList)
+            for(CardHolderStack value : stackList)
             {
                 for(index = 0; index < value.getCount(); ++index)
                 {
-                    this.cardsList.add(value.getKey());
+                    cardsList.add(value.getKey());
                 }
             }
             
-            this.stackList.clear();
+            stackList.clear();
         };
     }
     
     public void safe(Runnable callback)
     {
-        YDM.log("Trying to save card inventory to file: " + this.getFile().getAbsolutePath());
+        YDM.log("Trying to save card inventory to file: " + getFile().getAbsolutePath());
         
-        if(this.isLoaded())
+        if(isLoaded())
         {
             YDM.log("File will safe!");
             
-            this.setWorking();
-            this.loaded = false;
+            setWorking();
+            loaded = false;
             
             synchronized(JsonCardsManager.LOADED_MANAGERS)
             {
@@ -150,9 +145,9 @@ public abstract class JsonCardsManager
             
             Task t = new Task(TaskPriority.BINDER_SAVE, () ->
             {
-                this.safeRunnable().run();
-                YDM.log("Done saving to file: " + this.getFile().getAbsolutePath());
-                this.setIdle();
+                safeRunnable().run();
+                YDM.log("Done saving to file: " + getFile().getAbsolutePath());
+                setIdle();
                 callback.run();
             });
             
@@ -167,64 +162,64 @@ public abstract class JsonCardsManager
             CardHolderStack stack;
             int index;
             
-            for(CardHolder cardHolder : this.cardsList)
+            for(CardHolder cardHolder : cardsList)
             {
                 stack = new CardHolderStack(cardHolder);
-                index = this.stackList.getIndexOfSameKey(stack);
+                index = stackList.getIndexOfSameKey(stack);
                 
                 if(index == -1)
                 {
-                    this.stackList.addKeepSorted(stack);
+                    stackList.addKeepSorted(stack);
                 }
                 else
                 {
-                    this.stackList.getByIndex(index).merge(stack);
+                    stackList.getByIndex(index).merge(stack);
                 }
             }
             
             JsonArray array = new JsonArray();
             JsonObject j;
             
-            for(CardHolderStack value : this.stackList)
+            for(CardHolderStack value : stackList)
             {
                 j = new JsonObject();
                 value.writeToJson(j);
                 array.add(j);
             }
             
-            this.saveToFile(array);
-            this.stackList.clear();
+            saveToFile(array);
+            stackList.clear();
         };
     }
     
     public boolean isLoaded()
     {
-        return this.isInIdleState() && this.loaded;
+        return isInIdleState() && loaded;
     }
     
     public boolean isSafed()
     {
-        return this.isInIdleState() && !this.loaded;
+        return isInIdleState() && !loaded;
     }
     
     public boolean isInIdleState()
     {
-        return this.isIdle;
+        return isIdle;
     }
     
     public void setIdle()
     {
-        this.isIdle = true;
+        isIdle = true;
     }
     
     public void setWorking()
     {
-        this.isIdle = false;
+        isIdle = false;
     }
     
     protected JsonArray loadFromFile()
     {
-        File file = this.getFile();
+        File file = getFile();
         
         if(!file.exists())
         {
@@ -234,7 +229,7 @@ public abstract class JsonCardsManager
             {
                 YdmIOUtil.writeJson(file, a);
             }
-            catch (IOException e)
+            catch(IOException e)
             {
                 e.printStackTrace();
             }
@@ -247,7 +242,7 @@ public abstract class JsonCardsManager
             {
                 return YdmIOUtil.parseJsonFile(file).getAsJsonArray();
             }
-            catch (JsonIOException | JsonSyntaxException | IOException e)
+            catch(JsonIOException | JsonSyntaxException | IOException e)
             {
                 e.printStackTrace();
                 return new JsonArray();
@@ -257,13 +252,13 @@ public abstract class JsonCardsManager
     
     protected void saveToFile(JsonArray json)
     {
-        File file = this.getFile();
+        File file = getFile();
         
         try
         {
             YdmIOUtil.writeJson(file, json);
         }
-        catch (IOException e)
+        catch(IOException e)
         {
             e.printStackTrace();
         }

@@ -1,12 +1,11 @@
 package de.cas_ual_ty.ydm.card.properties;
 
-import java.util.List;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.List;
 
 public class XyzMonsterProperties extends DefMonsterProperties
 {
@@ -15,7 +14,7 @@ public class XyzMonsterProperties extends DefMonsterProperties
     public XyzMonsterProperties(Properties p0, JsonObject j)
     {
         super(p0);
-        this.readXyzProperties(j);
+        readXyzProperties(j);
     }
     
     public XyzMonsterProperties(Properties p0)
@@ -24,8 +23,8 @@ public class XyzMonsterProperties extends DefMonsterProperties
         
         if(p0 instanceof XyzMonsterProperties)
         {
-            XyzMonsterProperties p1 = (XyzMonsterProperties)p0;
-            this.rank = p1.rank;
+            XyzMonsterProperties p1 = (XyzMonsterProperties) p0;
+            rank = p1.rank;
         }
     }
     
@@ -37,7 +36,7 @@ public class XyzMonsterProperties extends DefMonsterProperties
     public void readAllProperties(JsonObject j)
     {
         super.readAllProperties(j);
-        this.readXyzProperties(j);
+        readXyzProperties(j);
     }
     
     @Override
@@ -48,24 +47,24 @@ public class XyzMonsterProperties extends DefMonsterProperties
     
     public void readXyzProperties(JsonObject j)
     {
-        this.rank = j.get(JsonKeys.RANK).getAsByte();
+        rank = j.get(JsonKeys.RANK).getAsByte();
     }
     
     public void writeXyzProperties(JsonObject j)
     {
-        j.addProperty(JsonKeys.RANK, this.rank);
+        j.addProperty(JsonKeys.RANK, rank);
     }
     
     @Override
     public void addMonsterHeader1(List<ITextComponent> list)
     {
-        list.add(new StringTextComponent(this.getAttribute() + " / Rank " + this.getRank()));
+        list.add(new StringTextComponent(getAttribute() + " / Rank " + getRank()));
     }
     
     // --- Getters ---
     
     public byte getRank()
     {
-        return this.rank;
+        return rank;
     }
 }

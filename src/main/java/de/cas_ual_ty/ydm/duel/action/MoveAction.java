@@ -32,15 +32,15 @@ public abstract class MoveAction extends DualZoneAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeByte(this.destinationCardPosition.getIndex());
-        DuelMessageUtility.encodeZoneOwner(this.player, buf);
+        buf.writeByte(destinationCardPosition.getIndex());
+        DuelMessageUtility.encodeZoneOwner(player, buf);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.sourceCardPosition = this.card.getCardPosition();
+        sourceCardPosition = card.getCardPosition();
     }
     
     @Override
@@ -52,32 +52,32 @@ public abstract class MoveAction extends DualZoneAction
          */
         
         // split this into single parts, for animations
-        this.removeCardFromZone();
-        this.addCard();
-        this.finish();
+        removeCardFromZone();
+        addCard();
+        finish();
     }
     
     public abstract void addCard();
     
     public void finish()
     {
-        this.card.setPosition(this.destinationCardPosition);
-        this.destinationCardIndex = this.destinationZone.getCardIndexShort(this.card);
+        card.setPosition(destinationCardPosition);
+        destinationCardIndex = destinationZone.getCardIndexShort(card);
     }
     
     @Override
     public void undoAction()
     {
-        this.destinationZone.removeCard(this.destinationCardIndex);
-        this.card.setPosition(this.sourceCardPosition);
-        this.sourceZone.addCard(this.player, this.card, this.sourceCardIndex);
+        destinationZone.removeCard(destinationCardIndex);
+        card.setPosition(sourceCardPosition);
+        sourceZone.addCard(player, card, sourceCardIndex);
     }
     
     @Override
     public void redoAction()
     {
-        this.sourceZone.removeCard(this.sourceCardIndex);
-        this.card.setPosition(this.destinationCardPosition);
-        this.destinationZone.addCard(this.player, this.card, this.destinationCardIndex);
+        sourceZone.removeCard(sourceCardIndex);
+        card.setPosition(destinationCardPosition);
+        destinationZone.addCard(player, card, destinationCardIndex);
     }
 }

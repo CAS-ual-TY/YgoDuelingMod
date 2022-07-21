@@ -26,12 +26,12 @@ public class ActionIcon extends ForgeRegistryEntry<ActionIcon>
     
     public String getLocalKey()
     {
-        return "actionIcon." + this.getRegistryName().getNamespace() + "." + this.getRegistryName().getPath();
+        return "actionIcon." + getRegistryName().getNamespace() + "." + getRegistryName().getPath();
     }
     
     public ITextComponent getLocal()
     {
-        return new TranslationTextComponent(this.getLocalKey());
+        return new TranslationTextComponent(getLocalKey());
     }
     
     public ActionIcon(ResourceLocation sourceFile, int size)

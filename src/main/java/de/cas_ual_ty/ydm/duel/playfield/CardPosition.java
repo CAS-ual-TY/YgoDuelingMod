@@ -25,7 +25,7 @@ public enum CardPosition
     
     private byte index;
     
-    private CardPosition(boolean isStraight, boolean isFaceUp)
+    CardPosition(boolean isStraight, boolean isFaceUp)
     {
         this.isStraight = isStraight;
         this.isFaceUp = isFaceUp;
@@ -33,7 +33,7 @@ public enum CardPosition
     
     public byte getIndex()
     {
-        return this.index;
+        return index;
     }
     
     public CardPosition flip()

@@ -1,7 +1,5 @@
 package de.cas_ual_ty.ydm.datagen;
 
-import java.io.IOException;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.ImageHandler;
@@ -9,6 +7,8 @@ import net.minecraft.data.DataGenerator;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+
+import java.io.IOException;
 
 @EventBusSubscriber(bus = EventBusSubscriber.Bus.MOD)
 public class YDMDataGen
@@ -20,7 +20,7 @@ public class YDMDataGen
         {
             ImageHandler.createCustomSleevesImages(CardSleevesType.P_2, "jpg");
         }
-        catch (IOException e)
+        catch(IOException e)
         {
             e.printStackTrace();
         }

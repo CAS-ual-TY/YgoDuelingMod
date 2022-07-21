@@ -6,7 +6,7 @@ public enum Ability
     
     public final String name;
     
-    private Ability(String name)
+    Ability(String name)
     {
         this.name = name;
     }

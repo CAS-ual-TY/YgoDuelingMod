@@ -2,7 +2,6 @@ package de.cas_ual_ty.ydm.clientutil.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -23,13 +22,13 @@ public class TextureButton extends Button
     public TextureButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ITooltip onTooltip)
     {
         super(x, y, width, height, title, pressedAction, onTooltip);
-        this.textureLocation = null;
+        textureLocation = null;
     }
     
     public TextureButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction)
     {
         super(x, y, width, height, title, pressedAction);
-        this.textureLocation = null;
+        textureLocation = null;
     }
     
     public TextureButton setTexture(ResourceLocation textureLocation, int texX, int texY, int texW, int texH)
@@ -43,31 +42,31 @@ public class TextureButton extends Button
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
-        minecraft.getTextureManager().bindTexture(Widget.WIDGETS_LOCATION);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-        int i = this.getYImage(this.isHovered());
+        FontRenderer fontrenderer = minecraft.font;
+        minecraft.getTextureManager().bind(Widget.WIDGETS_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
+        int i = getYImage(isHovered());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        this.blit(ms, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height / 2);
-        this.blit(ms, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height / 2);
-        this.blit(ms, this.x, this.y + this.height / 2, 0, 46 + (i + 1) * 20 - this.height / 2, this.width / 2, this.height / 2);
-        this.blit(ms, this.x + this.width / 2, this.y + this.height / 2, 200 - this.width / 2, 46 + (i + 1) * 20 - this.height / 2, this.width / 2, this.height / 2);
-        this.renderBg(ms, minecraft, mouseX, mouseY);
+        blit(ms, x, y, 0, 46 + i * 20, width / 2, height / 2);
+        blit(ms, x + width / 2, y, 200 - width / 2, 46 + i * 20, width / 2, height / 2);
+        blit(ms, x, y + height / 2, 0, 46 + (i + 1) * 20 - height / 2, width / 2, height / 2);
+        blit(ms, x + width / 2, y + height / 2, 200 - width / 2, 46 + (i + 1) * 20 - height / 2, width / 2, height / 2);
+        renderBg(ms, minecraft, mouseX, mouseY);
         
-        if(this.textureLocation != null)
+        if(textureLocation != null)
         {
-            minecraft.getTextureManager().bindTexture(this.textureLocation);
-            YdmBlitUtil.blit(ms, this.x, this.y, this.width, this.height, this.texX, this.texY, this.texW, this.texH, 256, 256);
+            minecraft.getTextureManager().bind(textureLocation);
+            YdmBlitUtil.blit(ms, x, y, width, height, texX, texY, texW, texH, 256, 256);
         }
         
-        if(this.isHovered())
+        if(isHovered())
         {
-            this.renderToolTip(ms, mouseX, mouseY);
+            renderToolTip(ms, mouseX, mouseY);
         }
     }
 }

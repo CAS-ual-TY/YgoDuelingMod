@@ -29,19 +29,19 @@ public class CoinFlipAction extends RandomAction
     @Override
     public void writeToBuf(PacketBuffer buf)
     {
-        buf.writeBoolean(this.heads);
+        buf.writeBoolean(heads);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
-        this.heads = playField.getDuelManager().getRandom().nextBoolean();
+        heads = playField.getDuelManager().getRandom().nextBoolean();
     }
     
     @Override
     public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
     {
-        return new TranslationTextComponent(this.getAnnouncementLocalKey()).appendString(": ")
-            .appendSibling(new TranslationTextComponent(this.getAnnouncementLocalKey() + "." + (this.heads ? "heads" : "tails")));
+        return new TranslationTextComponent(getAnnouncementLocalKey()).append(": ")
+                .append(new TranslationTextComponent(getAnnouncementLocalKey() + "." + (heads ? "heads" : "tails")));
     }
 }

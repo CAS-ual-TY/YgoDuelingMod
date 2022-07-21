@@ -1,8 +1,5 @@
 package de.cas_ual_ty.ydm.cardsupply;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,13 +7,16 @@ import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 import net.minecraftforge.fml.network.NetworkEvent.Context;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public class CardSupplyMessages
 {
     public static void doForBinderContainer(PlayerEntity player, Consumer<CardSupplyContainer> consumer)
     {
-        if(player != null && player.openContainer instanceof CardSupplyContainer)
+        if(player != null && player.containerMenu instanceof CardSupplyContainer)
         {
-            consumer.accept((CardSupplyContainer)player.openContainer);
+            consumer.accept((CardSupplyContainer) player.containerMenu);
         }
     }
     

@@ -24,7 +24,7 @@ public class DuelCard
     
     public DuelCard setToken()
     {
-        this.isToken = true;
+        isToken = true;
         return this;
     }
     
@@ -36,27 +36,27 @@ public class DuelCard
     
     public CardHolder getCardHolder()
     {
-        return this.cardHolder;
+        return cardHolder;
     }
     
     public boolean getIsToken()
     {
-        return this.isToken;
+        return isToken;
     }
     
     public CardPosition getCardPosition()
     {
-        return this.position;
+        return position;
     }
     
     public ZoneOwner getOwner()
     {
-        return this.owner;
+        return owner;
     }
     
     @Override
     public String toString()
     {
-        return "[" + this.owner + ": " + this.cardHolder.toString() + "]";
+        return "[" + owner + ": " + cardHolder.toString() + "]";
     }
 }

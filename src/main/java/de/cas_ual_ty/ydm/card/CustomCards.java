@@ -1,19 +1,8 @@
 package de.cas_ual_ty.ydm.card;
 
 import com.google.common.collect.Lists;
-
 import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.card.properties.Attribute;
-import de.cas_ual_ty.ydm.card.properties.LevelMonsterProperties;
-import de.cas_ual_ty.ydm.card.properties.LinkArrow;
-import de.cas_ual_ty.ydm.card.properties.LinkMonsterProperties;
-import de.cas_ual_ty.ydm.card.properties.MonsterType;
-import de.cas_ual_ty.ydm.card.properties.Properties;
-import de.cas_ual_ty.ydm.card.properties.Species;
-import de.cas_ual_ty.ydm.card.properties.SpellProperties;
-import de.cas_ual_ty.ydm.card.properties.SpellType;
-import de.cas_ual_ty.ydm.card.properties.Type;
-import de.cas_ual_ty.ydm.card.properties.XyzMonsterProperties;
+import de.cas_ual_ty.ydm.card.properties.*;
 
 public class CustomCards
 {
@@ -111,8 +100,8 @@ public class CustomCards
         CustomCards.PATREON_003_PROPERTIES.monsterType = null;
         CustomCards.PATREON_003_PROPERTIES.isPendulum = true;
         CustomCards.PATREON_003_PROPERTIES.pendulumText = "Once Per turn, you can pay 2000 LP to Special Summon 1 \"Onomic:\" monster from your Deck or Graveyard. All \"Onomic\" Monsters you control gain 100 ATK for each FIRE monster In both players' Graveyard and on the field.";
-        CustomCards.PATREON_003_PROPERTIES.pendulumScaleLeftBlue = (byte)6;
-        CustomCards.PATREON_003_PROPERTIES.pendulumScaleRightRed = (byte)6;
+        CustomCards.PATREON_003_PROPERTIES.pendulumScaleLeftBlue = (byte) 6;
+        CustomCards.PATREON_003_PROPERTIES.pendulumScaleRightRed = (byte) 6;
         CustomCards.PATREON_003_PROPERTIES.ability = "";
         CustomCards.PATREON_003_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_003_PROPERTIES.def = 1400;
@@ -158,8 +147,8 @@ public class CustomCards
         CustomCards.PATREON_005_PROPERTIES.monsterType = null;
         CustomCards.PATREON_005_PROPERTIES.isPendulum = true;
         CustomCards.PATREON_005_PROPERTIES.pendulumText = "Your opponent cannot activate any cards in response to \"Onomic:\" monster effects.";
-        CustomCards.PATREON_005_PROPERTIES.pendulumScaleLeftBlue = (byte)2;
-        CustomCards.PATREON_005_PROPERTIES.pendulumScaleRightRed = (byte)2;
+        CustomCards.PATREON_005_PROPERTIES.pendulumScaleLeftBlue = (byte) 2;
+        CustomCards.PATREON_005_PROPERTIES.pendulumScaleRightRed = (byte) 2;
         CustomCards.PATREON_005_PROPERTIES.ability = "";
         CustomCards.PATREON_005_PROPERTIES.hasEffect = true;
         CustomCards.PATREON_005_PROPERTIES.def = 2000;
@@ -232,7 +221,7 @@ public class CustomCards
         CustomCards.PATREON_009_PROPERTIES.isPendulum = false;
         CustomCards.PATREON_009_PROPERTIES.ability = "";
         CustomCards.PATREON_009_PROPERTIES.hasEffect = true;
-        CustomCards.PATREON_009_PROPERTIES.linkRating = (byte)4;
+        CustomCards.PATREON_009_PROPERTIES.linkRating = (byte) 4;
         CustomCards.PATREON_009_PROPERTIES.linkArrows = Lists.newArrayList(LinkArrow.TOP_RIGHT, LinkArrow.BOTTOM_RIGHT, LinkArrow.BOTTOM, LinkArrow.BOTTOM_LEFT);
         CustomCards.PATREON_009_CARD = CustomCards.createPatreonCard(CustomCards.PATREON_009_PROPERTIES);
         YdmDatabase.PROPERTIES_LIST.add(CustomCards.PATREON_009_PROPERTIES);
@@ -283,6 +272,6 @@ public class CustomCards
     
     public static CardHolder createPatreonCard(Properties c) // add rarity here as parameter
     {
-        return new CardHolder(c, (byte)0, Rarity.COMMON.name, "PATREON-" + c.id);
+        return new CardHolder(c, (byte) 0, Rarity.COMMON.name, "PATREON-" + c.id);
     }
 }

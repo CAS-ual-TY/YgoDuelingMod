@@ -35,10 +35,10 @@ public class YdmContainerTypes
         IForgeRegistry<ContainerType<?>> registry = event.getRegistry();
         registry.register(new ContainerType<>((id, playerInv) -> new CardBinderContainer(YdmContainerTypes.CARD_BINDER, id, playerInv)).setRegistryName(YDM.MOD_ID, "card_binder"));
         registry.register(new ContainerType<>((id, playerInv) -> new DeckBoxContainer(YdmContainerTypes.DECK_BOX, id, playerInv)).setRegistryName(YDM.MOD_ID, "deck_box"));
-        registry.register(new ContainerType<>((IContainerFactory<DuelBlockContainer>)(id, playerInv, extraData) -> new DuelBlockContainer(YdmContainerTypes.DECK_BOX, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "duel_block_container"));
-        registry.register(new ContainerType<>((IContainerFactory<CardSupplyContainer>)(id, playerInv, extraData) -> new CardSupplyContainer(YdmContainerTypes.CARD_SUPPLY, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_supply"));
-        registry.register(new ContainerType<>((IContainerFactory<CIIContainer>)(id, playerInv, extraData) -> new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_set"));
-        registry.register(new ContainerType<>((IContainerFactory<CIIContainer>)(id, playerInv, extraData) -> new CardSetContentsContainer(YdmContainerTypes.CARD_SET_CONTENTS, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_set_contents"));
-        registry.register(new ContainerType<>((IContainerFactory<CIIContainer>)(id, playerInv, extraData) -> new SimpleBinderContainer(YdmContainerTypes.SIMPLE_BINDER, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "simple_binder"));
+        registry.register(new ContainerType<>((IContainerFactory<DuelBlockContainer>) (id, playerInv, extraData) -> new DuelBlockContainer(YdmContainerTypes.DECK_BOX, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "duel_block_container"));
+        registry.register(new ContainerType<>((IContainerFactory<CardSupplyContainer>) (id, playerInv, extraData) -> new CardSupplyContainer(YdmContainerTypes.CARD_SUPPLY, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_supply"));
+        registry.register(new ContainerType<>((IContainerFactory<CIIContainer>) (id, playerInv, extraData) -> new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_set"));
+        registry.register(new ContainerType<>((IContainerFactory<CIIContainer>) (id, playerInv, extraData) -> new CardSetContentsContainer(YdmContainerTypes.CARD_SET_CONTENTS, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "card_set_contents"));
+        registry.register(new ContainerType<>((IContainerFactory<CIIContainer>) (id, playerInv, extraData) -> new SimpleBinderContainer(YdmContainerTypes.SIMPLE_BINDER, id, playerInv, extraData)).setRegistryName(YDM.MOD_ID, "simple_binder"));
     }
 }

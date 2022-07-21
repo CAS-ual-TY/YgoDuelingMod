@@ -1,11 +1,11 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 import de.cas_ual_ty.ydm.duel.DuelPhase;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import net.minecraft.network.PacketBuffer;
+
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class EndTurnAction extends Action
 {
@@ -30,30 +30,30 @@ public class EndTurnAction extends Action
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.turnSwapper = playField::endTurn;
-        this.phaseSetter = playField::setPhase;
-        this.phaseGetter = playField::getPhase;
+        turnSwapper = playField::endTurn;
+        phaseSetter = playField::setPhase;
+        phaseGetter = playField::getPhase;
     }
     
     @Override
     public void doAction()
     {
-        this.prevPhase = this.phaseGetter.get();
-        this.turnSwapper.run();
-        this.nextPhase = this.phaseGetter.get();
+        prevPhase = phaseGetter.get();
+        turnSwapper.run();
+        nextPhase = phaseGetter.get();
     }
     
     @Override
     public void undoAction()
     {
-        this.turnSwapper.run();
-        this.phaseSetter.accept(this.prevPhase);
+        turnSwapper.run();
+        phaseSetter.accept(prevPhase);
     }
     
     @Override
     public void redoAction()
     {
-        this.turnSwapper.run();
-        this.phaseSetter.accept(this.nextPhase);
+        turnSwapper.run();
+        phaseSetter.accept(nextPhase);
     }
 }

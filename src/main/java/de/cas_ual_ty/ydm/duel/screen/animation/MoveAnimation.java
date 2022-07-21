@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
@@ -40,30 +39,30 @@ public class MoveAnimation extends Animation
         this.sourcePosition = sourcePosition;
         this.destinationPosition = destinationPosition;
         
-        this.sourceX = this.sourceZone.getAnimationSourceX();
-        this.sourceY = this.sourceZone.getAnimationSourceY();
-        this.destX = this.destinationZone.getAnimationDestX();
-        this.destY = this.destinationZone.getAnimationDestY();
+        sourceX = this.sourceZone.getAnimationSourceX();
+        sourceY = this.sourceZone.getAnimationSourceY();
+        destX = this.destinationZone.getAnimationDestX();
+        destY = this.destinationZone.getAnimationDestY();
     }
     
     @Override
     public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        double relativeTickTime = (double)(this.tickTime + partialTicks) / this.maxTickTime;
+        double relativeTickTime = (double) (tickTime + partialTicks) / maxTickTime;
         float relativePositionRotation;
         float relativeScale;
         
         // [1pi, 2pi]
         double cosTime1 = Math.PI * relativeTickTime + Math.PI;
         // [0, 1]
-        relativePositionRotation = (float)((Math.cos(cosTime1) + 1) * 0.5D);
+        relativePositionRotation = (float) ((Math.cos(cosTime1) + 1) * 0.5D);
         
-        if(this.sourcePosition.isFaceUp != this.destinationPosition.isFaceUp)
+        if(sourcePosition.isFaceUp != destinationPosition.isFaceUp)
         {
             // [0pi, 2pi]
             double cosTime2 = 2 * Math.PI * relativeTickTime;
             // [0, 1]
-            relativeScale = (float)((Math.cos(cosTime2) + 1) * 0.5D);
+            relativeScale = (float) ((Math.cos(cosTime2) + 1) * 0.5D);
         }
         else
         {
@@ -74,28 +73,28 @@ public class MoveAnimation extends Animation
         float cardWidth = relativeScale * cardSize;
         float cardHeight = cardSize;
         
-        float posX = this.sourceX;
-        float posY = this.sourceY;
+        float posX = sourceX;
+        float posY = sourceY;
         
-        posX += (this.destX - this.sourceX) * relativePositionRotation;
-        posY += (this.destY - this.sourceY) * relativePositionRotation;
+        posX += (destX - sourceX) * relativePositionRotation;
+        posY += (destY - sourceY) * relativePositionRotation;
         
         CardPosition cardPosition;
         CardSleevesType sleeves;
         
-        if(this.tickTime >= this.maxTickTime / 2)
+        if(tickTime >= maxTickTime / 2)
         {
-            cardPosition = this.destinationPosition;
-            sleeves = this.destinationZone.zone.getSleeves();
+            cardPosition = destinationPosition;
+            sleeves = destinationZone.zone.getSleeves();
         }
         else
         {
-            cardPosition = this.sourcePosition;
-            sleeves = this.sourceZone.zone.getSleeves();
+            cardPosition = sourcePosition;
+            sleeves = sourceZone.zone.getSleeves();
         }
         
-        float sourceRotation = MoveAnimation.getRotationForPositionAndView(this.view == this.sourceZone.zone.getOwner() || !this.sourceZone.zone.hasOwner(), this.sourcePosition);
-        float targetRotation = MoveAnimation.getRotationForPositionAndView(this.view == this.destinationZone.zone.getOwner() || !this.destinationZone.zone.hasOwner(), this.destinationPosition);
+        float sourceRotation = MoveAnimation.getRotationForPositionAndView(view == sourceZone.zone.getOwner() || !sourceZone.zone.hasOwner(), sourcePosition);
+        float targetRotation = MoveAnimation.getRotationForPositionAndView(view == destinationZone.zone.getOwner() || !destinationZone.zone.hasOwner(), destinationPosition);
         
         if(Math.abs(targetRotation - sourceRotation) > Math.abs(targetRotation - sourceRotation + 360))
         {
@@ -118,15 +117,15 @@ public class MoveAnimation extends Animation
             rotation -= 360;
         }
         
-        ms.push();
+        ms.pushPose();
         
         ms.translate(posX, posY, 0);
-        ms.rotate(new Quaternion(0, 0, rotation, true));
+        ms.mulPose(new Quaternion(0, 0, rotation, true));
         
         // we always render the card position straight and manually rotate it, thats why we use fullBlit here
-        CardRenderUtil.renderDuelCardAdvanced(ms, sleeves, mouseX, mouseY, -cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, this.duelCard, cardPosition, YdmBlitUtil::fullBlit);
+        CardRenderUtil.renderDuelCardAdvanced(ms, sleeves, mouseX, mouseY, -cardWidth / 2, -cardHeight / 2, cardWidth, cardHeight, duelCard, cardPosition, YdmBlitUtil::fullBlit);
         
-        ms.pop();
+        ms.popPose();
     }
     
     public static float getRotationForPositionAndView(boolean isOpponentView, CardPosition position)

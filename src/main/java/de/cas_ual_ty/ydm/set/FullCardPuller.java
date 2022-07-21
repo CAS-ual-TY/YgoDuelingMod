@@ -1,16 +1,15 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class FullCardPuller extends CardPuller
 {
@@ -24,7 +23,7 @@ public class FullCardPuller extends CardPuller
     {
         List<ItemStack> list = new ArrayList<>();
         
-        for(CardHolder c : this.set.cards)
+        for(CardHolder c : set.cards)
         {
             list.add(YdmItems.CARD.createItemForCardHolder(c));
         }
@@ -35,22 +34,22 @@ public class FullCardPuller extends CardPuller
     @Override
     public void addInformation(List<ITextComponent> tooltip)
     {
-        if(this.set.cards.size() <= 10)
+        if(set.cards.size() <= 10)
         {
-            for(CardHolder ch : this.set.cards)
+            for(CardHolder ch : set.cards)
             {
                 tooltip.add(new StringTextComponent("\"" + ch.getCard().getName() + "\""));
             }
         }
-        else if(this.set.name != null)
+        else if(set.name != null)
         {
-            tooltip.add(new StringTextComponent("1x \"" + this.set.name + "\""));
+            tooltip.add(new StringTextComponent("1x \"" + set.name + "\""));
         }
     }
     
     @Override
     public boolean addInformationInComposition()
     {
-        return this.set.cards.size() <= 10 || this.set.name != null;
+        return set.cards.size() <= 10 || set.name != null;
     }
 }

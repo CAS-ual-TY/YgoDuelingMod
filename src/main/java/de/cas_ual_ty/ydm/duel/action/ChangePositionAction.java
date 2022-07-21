@@ -32,25 +32,25 @@ public class ChangePositionAction extends SingleCardAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        DuelMessageUtility.encodeCardPosition(this.destinationCardPosition, buf);
+        DuelMessageUtility.encodeCardPosition(destinationCardPosition, buf);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.sourceCardPosition = this.sourceZone.getCard(this.sourceCardIndex).getCardPosition();
+        sourceCardPosition = sourceZone.getCard(sourceCardIndex).getCardPosition();
     }
     
     @Override
     public void doAction()
     {
-        this.card.setPosition(this.destinationCardPosition);
+        card.setPosition(destinationCardPosition);
     }
     
     @Override
     public void undoAction()
     {
-        this.card.setPosition(this.sourceCardPosition);
+        card.setPosition(sourceCardPosition);
     }
 }

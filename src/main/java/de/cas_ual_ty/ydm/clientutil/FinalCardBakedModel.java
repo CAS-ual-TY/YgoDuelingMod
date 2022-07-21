@@ -1,13 +1,6 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.function.Function;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
@@ -28,6 +21,12 @@ import net.minecraft.util.math.vector.Quaternion;
 import net.minecraft.util.math.vector.TransformationMatrix;
 import net.minecraftforge.client.model.ItemTextureQuadConverter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.function.Function;
+
 @SuppressWarnings("deprecation")
 public class FinalCardBakedModel implements IBakedModel
 {
@@ -44,14 +43,14 @@ public class FinalCardBakedModel implements IBakedModel
     public FinalCardBakedModel(IBakedModel mainModel)
     {
         this.mainModel = mainModel;
-        this.setActiveItemStack(ItemStack.EMPTY);
-        this.textureGetter = Minecraft.getInstance().getAtlasSpriteGetter(AtlasTexture.LOCATION_BLOCKS_TEXTURE);
-        this.quadsMap = new HashMap<>(YdmDatabase.PROPERTIES_LIST.size());
+        setActiveItemStack(ItemStack.EMPTY);
+        textureGetter = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS);
+        quadsMap = new HashMap<>(YdmDatabase.PROPERTIES_LIST.size());
     }
     
     public FinalCardBakedModel setActiveItemStack(ItemStack itemStack)
     {
-        this.activeItemStack = itemStack;
+        activeItemStack = itemStack;
         return this;
     }
     
@@ -60,79 +59,79 @@ public class FinalCardBakedModel implements IBakedModel
     {
         if(ClientProxy.itemsUseCardImagesActive)
         {
-            CardHolder card = YdmItems.CARD.getCardHolder(this.activeItemStack);
+            CardHolder card = YdmItems.CARD.getCardHolder(activeItemStack);
             
             if(card != null)
             {
                 List<BakedQuad> list = new ArrayList<>();
-                list.addAll(this.getPartneredBackList());
+                list.addAll(getPartneredBackList());
                 
                 if(card.getCard() != null)
                 {
                     ResourceLocation front = card.getItemImageResourceLocation();
-                    TextureAtlasSprite spriteFront = this.textureGetter.apply(front);
+                    TextureAtlasSprite spriteFront = textureGetter.apply(front);
                     
-                    if(!this.quadsMap.containsKey(card.getCard()))
+                    if(!quadsMap.containsKey(card.getCard()))
                     {
                         List<BakedQuad> textureQuads = new ArrayList<>(0);
                         textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
-                        this.quadsMap.put(card.getCard(), textureQuads);
+                        quadsMap.put(card.getCard(), textureQuads);
                     }
                     
-                    list.addAll(this.quadsMap.get(card.getCard()));
+                    list.addAll(quadsMap.get(card.getCard()));
                 }
                 else
                 {
-                    list.addAll(this.getBlancList());
+                    list.addAll(getBlancList());
                 }
                 
                 return list;
             }
         }
         
-        return this.getSingleBackList();
+        return getSingleBackList();
     }
     
     @Override
-    public boolean isAmbientOcclusion()
+    public boolean useAmbientOcclusion()
     {
-        return this.mainModel.isAmbientOcclusion();
+        return mainModel.useAmbientOcclusion();
     }
     
     @Override
     public boolean isGui3d()
     {
-        return this.mainModel.isGui3d();
+        return mainModel.isGui3d();
     }
     
     @Override
-    public boolean isSideLit()
+    public boolean usesBlockLight()
     {
-        return this.mainModel.isSideLit();
+        return mainModel.usesBlockLight();
     }
     
     @Override
-    public boolean isBuiltInRenderer()
+    public boolean isCustomRenderer()
     {
-        return this.mainModel.isBuiltInRenderer();
+        return mainModel.isCustomRenderer();
     }
     
     @Override
-    public TextureAtlasSprite getParticleTexture()
+    public TextureAtlasSprite getParticleIcon()
     {
-        return this.mainModel.getParticleTexture();
+        return mainModel.getParticleIcon();
     }
     
     @Override
     public ItemOverrideList getOverrides()
     {
-        return this.mainModel.getOverrides();
+        return mainModel.getOverrides();
     }
     
     @Override
     public IBakedModel handlePerspective(TransformType t, MatrixStack mat)
     {
-        mat.push();
+        mat.pushPose();
         
         switch(t)
         {
@@ -151,7 +150,7 @@ public class FinalCardBakedModel implements IBakedModel
                 mat.scale(0.5F, 0.5F, 0.5F);
                 break;
             case FIXED:
-                mat.rotate(new Quaternion(Direction.UP.toVector3f(), 180F, true));
+                mat.mulPose(new Quaternion(Direction.UP.step(), 180F, true));
                 break;
             default:
                 break;
@@ -162,39 +161,39 @@ public class FinalCardBakedModel implements IBakedModel
     
     private List<BakedQuad> getSingleBackList()
     {
-        if(this.singleBackList == null)
+        if(singleBackList == null)
         {
             ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addCardItemTag("card_back"));
-            TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.singleBackList = new ArrayList<>(0);
-            this.singleBackList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
-            this.singleBackList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1));
+            TextureAtlasSprite sprite = textureGetter.apply(rl);
+            singleBackList = new ArrayList<>(0);
+            singleBackList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
+            singleBackList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1));
         }
         
-        return this.singleBackList;
+        return singleBackList;
     }
     
     private List<BakedQuad> getPartneredBackList()
     {
-        if(this.partneredBackList == null)
+        if(partneredBackList == null)
         {
             ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addCardItemTag("card_back"));
-            TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.partneredBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1);
+            TextureAtlasSprite sprite = textureGetter.apply(rl);
+            partneredBackList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1);
         }
         
-        return this.partneredBackList;
+        return partneredBackList;
     }
     
     private List<BakedQuad> getBlancList()
     {
-        if(this.blancList == null)
+        if(blancList == null)
         {
             ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addCardItemTag("blanc_card"));
-            TextureAtlasSprite sprite = this.textureGetter.apply(rl);
-            this.blancList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1);
+            TextureAtlasSprite sprite = textureGetter.apply(rl);
+            blancList = ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1);
         }
         
-        return this.blancList;
+        return blancList;
     }
 }

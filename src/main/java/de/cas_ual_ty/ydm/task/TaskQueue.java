@@ -1,9 +1,8 @@
 package de.cas_ual_ty.ydm.task;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.LinkedList;
-
-import javax.annotation.Nullable;
 
 public class TaskQueue
 {

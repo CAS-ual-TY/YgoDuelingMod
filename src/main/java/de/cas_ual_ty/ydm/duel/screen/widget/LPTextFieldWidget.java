@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
-
 import de.cas_ual_ty.ydm.clientutil.widget.ITooltip;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.TextFieldWidget;
@@ -17,9 +16,9 @@ public class LPTextFieldWidget extends TextFieldWidget
     {
         super(fontrenderer, x, y, width, height, StringTextComponent.EMPTY);
         this.tooltip = tooltip;
-        this.setMaxStringLength(6);
+        setMaxLength(6);
         
-        this.setValidator((text) ->
+        setFilter((text) ->
         {
             if(text.isEmpty())
             {
@@ -47,53 +46,53 @@ public class LPTextFieldWidget extends TextFieldWidget
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        this.x *= 2;
-        this.y *= 2;
-        this.width *= 2;
-        this.height *= 2;
+        x *= 2;
+        y *= 2;
+        width *= 2;
+        height *= 2;
         
-        this.x += 1;
-        this.y += 1;
-        this.width -= 2;
-        this.height -= 2;
+        x += 1;
+        y += 1;
+        width -= 2;
+        height -= 2;
         
-        ms.push();
+        ms.pushPose();
         ms.scale(0.5F, 0.5F, 1);
         
-        super.renderWidget(ms, mouseX * 2, mouseY * 2, partialTicks);
+        super.renderButton(ms, mouseX * 2, mouseY * 2, partialTicks);
         
-        ms.pop();
+        ms.popPose();
         
-        this.x -= 1;
-        this.y -= 1;
-        this.width += 2;
-        this.height += 2;
+        x -= 1;
+        y -= 1;
+        width += 2;
+        height += 2;
         
-        this.x /= 2;
-        this.y /= 2;
-        this.width /= 2;
-        this.height /= 2;
+        x /= 2;
+        y /= 2;
+        width /= 2;
+        height /= 2;
         
-        if(this.isMouseOver(mouseX, mouseY))
+        if(isMouseOver(mouseX, mouseY))
         {
-            this.tooltip.onTooltip(this, ms, mouseX, mouseY);
+            tooltip.onTooltip(this, ms, mouseX, mouseY);
         }
     }
     
     @Override
-    public int getAdjustedWidth()
+    public int getInnerWidth()
     {
-        return 2 * (this.enableBackgroundDrawing ? this.width - 8 : this.width);
+        return 2 * (enableBackgroundDrawing ? width - 8 : width);
     }
     
     // the getter is private,
     // so we gotta catch the value here
     @Override
-    public void setEnableBackgroundDrawing(boolean enableBackgroundDrawingIn)
+    public void setBordered(boolean enableBackgroundDrawingIn)
     {
-        this.enableBackgroundDrawing = enableBackgroundDrawingIn;
-        super.setEnableBackgroundDrawing(enableBackgroundDrawingIn);
+        enableBackgroundDrawing = enableBackgroundDrawingIn;
+        super.setBordered(enableBackgroundDrawingIn);
     }
 }

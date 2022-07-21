@@ -25,13 +25,13 @@ public abstract class DualZoneAction extends SingleCardAction
     public void writeToBuf(PacketBuffer buf)
     {
         super.writeToBuf(buf);
-        buf.writeByte(this.destinationZoneId);
+        buf.writeByte(destinationZoneId);
     }
     
     @Override
     public void initServer(PlayField playField)
     {
         super.initServer(playField);
-        this.destinationZone = playField.getZone(this.destinationZoneId);
+        destinationZone = playField.getZone(destinationZoneId);
     }
 }

@@ -1,20 +1,8 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Set;
-import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
-
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.resources.ResourcePack;
 import net.minecraft.resources.ResourcePackFileNotFoundException;
@@ -24,11 +12,21 @@ import net.minecraft.util.JSONUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.Util;
 
+import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Set;
+import java.util.function.Predicate;
+
 public class YdmCardResourcePack extends ResourcePack
 {
     public static final String PATH_PREFIX = "assets/" + YDM.MOD_ID + "/textures/item/";
     
-    private static final boolean OS_WINDOWS = Util.getOSType() == Util.OS.WINDOWS;
+    private static final boolean OS_WINDOWS = Util.getPlatform() == Util.OS.WINDOWS;
     private static final CharMatcher BACKSLASH_MATCHER = CharMatcher.is('\\');
     
     private JsonObject packMeta;
@@ -36,11 +34,11 @@ public class YdmCardResourcePack extends ResourcePack
     public YdmCardResourcePack()
     {
         super(null);
-        this.packMeta = new JsonObject();
+        packMeta = new JsonObject();
         JsonObject pack = new JsonObject();
         pack.addProperty("description", "All dynamically downloaded images of the Ygo Dueling Mod.");
         pack.addProperty("pack_format", 6);
-        this.packMeta.add("pack", pack);
+        packMeta.add("pack", pack);
     }
     
     public static String convertPath(String s)
@@ -54,12 +52,12 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    protected InputStream getInputStream(String resourcePath) throws IOException
+    protected InputStream getResource(String resourcePath) throws IOException
     {
         //TODO pack.png needs to be returned as well
         
         // We get system dependent resource paths here (so eg. \ for windows, / for mac) so we need to convert
-        File image = this.getFile(YdmCardResourcePack.convertPath(resourcePath));
+        File image = getFile(YdmCardResourcePack.convertPath(resourcePath));
         
         if(image == null)
         {
@@ -72,9 +70,9 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    protected boolean resourceExists(String resourcePath)
+    protected boolean hasResource(String resourcePath)
     {
-        return this.getFile(resourcePath) != null;
+        return getFile(resourcePath) != null;
     }
     
     @Nullable
@@ -117,9 +115,9 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    public Set<String> getResourceNamespaces(ResourcePackType type)
+    public Set<String> getNamespaces(ResourcePackType type)
     {
-        return type == ResourcePackType.CLIENT_RESOURCES ? ImmutableSet.<String>of(YDM.MOD_ID) : ImmutableSet.<String>of();
+        return type == ResourcePackType.CLIENT_RESOURCES ? ImmutableSet.of(YDM.MOD_ID) : ImmutableSet.of();
     }
     
     @Override
@@ -128,7 +126,7 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    public Collection<ResourceLocation> getAllResourceLocations(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn)
+    public Collection<ResourceLocation> getResources(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn)
     {
         // This is only needed for fonts and sounds afaik
         /*
@@ -151,11 +149,11 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    public <T> T getMetadata(IMetadataSectionSerializer<T> deserializer) throws IOException
+    public <T> T getMetadataSection(IMetadataSectionSerializer<T> deserializer) throws IOException
     {
-        if(deserializer.getSectionName().equals("pack"))
+        if(deserializer.getMetadataSectionName().equals("pack"))
         {
-            return deserializer.deserialize(JSONUtils.getJsonObject(this.packMeta, deserializer.getSectionName()));
+            return deserializer.fromJson(JSONUtils.getAsJsonObject(packMeta, deserializer.getMetadataSectionName()));
         }
         return null;
     }

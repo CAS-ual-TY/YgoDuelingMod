@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.duel.network;
 
-import java.util.function.Supplier;
-
 import net.minecraftforge.registries.ForgeRegistryEntry;
+
+import java.util.function.Supplier;
 
 public class DuelMessageHeaderType extends ForgeRegistryEntry<DuelMessageHeaderType>
 {
@@ -15,6 +15,6 @@ public class DuelMessageHeaderType extends ForgeRegistryEntry<DuelMessageHeaderT
     
     public DuelMessageHeader createHeader()
     {
-        return this.factory.get();
+        return factory.get();
     }
 }

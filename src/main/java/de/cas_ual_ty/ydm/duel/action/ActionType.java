@@ -16,20 +16,20 @@ public class ActionType extends ForgeRegistryEntry<ActionType>
     
     public ActionType.Factory getFactory()
     {
-        return this.factory;
+        return factory;
     }
     
     public String getLocalKey()
     {
-        return "action." + this.getRegistryName().getNamespace() + "." + this.getRegistryName().getPath();
+        return "action." + getRegistryName().getNamespace() + "." + getRegistryName().getPath();
     }
     
     public ITextComponent getLocal()
     {
-        return new TranslationTextComponent(this.getLocalKey());
+        return new TranslationTextComponent(getLocalKey());
     }
     
-    public static interface Factory
+    public interface Factory
     {
         Action create(ActionType type, PacketBuffer buf);
     }

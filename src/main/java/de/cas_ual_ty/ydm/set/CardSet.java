@@ -1,17 +1,9 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -22,6 +14,9 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SortedArraySet;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
+
+import java.text.ParseException;
+import java.util.*;
 
 public class CardSet
 {
@@ -84,26 +79,26 @@ public class CardSet
         this.pull = pull;
         this.cards = cards;
         
-        this.init();
+        init();
     }
     
     public CardSet(JsonObject j) throws IllegalArgumentException
     {
         if(j.has(JsonKeys.NAME))
         {
-            this.name = j.get(JsonKeys.NAME).getAsString();
+            name = j.get(JsonKeys.NAME).getAsString();
         }
         else
         {
-            this.name = null;
+            name = null;
         }
         
-        this.code = j.get(JsonKeys.CODE).getAsString();
-        this.type = j.get(JsonKeys.TYPE).getAsString();
+        code = j.get(JsonKeys.CODE).getAsString();
+        type = j.get(JsonKeys.TYPE).getAsString();
         
         if(!j.has(JsonKeys.DATE))
         {
-            this.date = null;
+            date = null;
         }
         else
         {
@@ -112,7 +107,7 @@ public class CardSet
             {
                 this.date = YdmDatabase.SET_DATE_PARSER.parse(date);
             }
-            catch (ParseException e)
+            catch(ParseException e)
             {
                 YDM.log("Can not parse date: " + date);
                 throw new IllegalArgumentException(e);
@@ -121,25 +116,25 @@ public class CardSet
         
         if(!j.has(JsonKeys.IMAGE))
         {
-            this.image = null;
+            image = null;
         }
         else
         {
-            this.image = j.get(JsonKeys.IMAGE).getAsString();
+            image = j.get(JsonKeys.IMAGE).getAsString();
         }
         
-        this.pull = PullType.createPull(j.get(JsonKeys.PULL_TYPE).getAsString(), j, this);
+        pull = PullType.createPull(j.get(JsonKeys.PULL_TYPE).getAsString(), j, this);
         
         if(!j.has(JsonKeys.CARDS))
         {
-            this.cards = ImmutableList.of();
-            this.rarityPool = ImmutableList.of();
+            cards = ImmutableList.of();
+            rarityPool = ImmutableList.of();
         }
         else
         {
             JsonArray cards = j.get(JsonKeys.CARDS).getAsJsonArray();
             this.cards = new ArrayList<>(cards.size());
-            this.rarityPool = new LinkedList<>();
+            rarityPool = new LinkedList<>();
             
             JsonObject c;
             long id;
@@ -155,7 +150,7 @@ public class CardSet
                 
                 if(card == null)
                 {
-                    YDM.log("Can not parse card in: " + this.code + " card: " + id);
+                    YDM.log("Can not parse card in: " + code + " card: " + id);
                     continue;
                 }
                 
@@ -163,91 +158,91 @@ public class CardSet
                 
                 if(imageIndex >= card.getImageIndicesAmt())
                 {
-                    YDM.log("Bad image index for card in: " + this.code + " card: " + card);
+                    YDM.log("Bad image index for card in: " + code + " card: " + card);
                 }
                 
                 rarity = c.get(JsonKeys.RARITY).getAsString();
                 
-                if(!this.rarityPool.contains(rarity))
+                if(!rarityPool.contains(rarity))
                 {
-                    this.rarityPool.add(rarity);
+                    rarityPool.add(rarity);
                 }
                 
                 this.cards.add(new CardHolder(card, imageIndex, rarity, c.get(JsonKeys.CODE).getAsString()));
             }
         }
         
-        this.init();
+        init();
     }
     
     protected void init()
     {
-        this.isSubSet = this.type.equals("Sub-Set");
-        this.shownCode = this.code.split("_")[0];
+        isSubSet = type.equals("Sub-Set");
+        shownCode = code.split("_")[0];
     }
     
     public void postDBInit()
     {
-        this.pull.postDBInit();
+        pull.postDBInit();
     }
     
     public List<ItemStack> open(Random random)
     {
-        return this.pull.open(random);
+        return pull.open(random);
     }
     
     public SortedArraySet<CardHolder> getAllCardEntries()
     {
-        SortedArraySet<CardHolder> sortedSet = SortedArraySet.newSet(0);
-        this.addAllCardEntries(sortedSet);
+        SortedArraySet<CardHolder> sortedSet = SortedArraySet.create(0);
+        addAllCardEntries(sortedSet);
         return sortedSet;
     }
     
     public void addAllCardEntries(SortedArraySet<CardHolder> sortedSet)
     {
-        this.pull.addAllCardEntries(sortedSet);
+        pull.addAllCardEntries(sortedSet);
     }
     
     public void addItemInformation(List<ITextComponent> tooltip)
     {
-        tooltip.add(new StringTextComponent(this.name));
-        tooltip.add(new StringTextComponent(this.type));
-        tooltip.add(new StringTextComponent(this.shownCode));
+        tooltip.add(new StringTextComponent(name));
+        tooltip.add(new StringTextComponent(type));
+        tooltip.add(new StringTextComponent(shownCode));
     }
     
     public void addInformation(List<ITextComponent> tooltip)
     {
-        tooltip.add(new StringTextComponent(this.name));
-        tooltip.add(new StringTextComponent(this.type));
-        tooltip.add(new StringTextComponent(YdmDatabase.SET_DATE_PARSER.format(this.date)));
-        tooltip.add(new StringTextComponent(this.shownCode));
+        tooltip.add(new StringTextComponent(name));
+        tooltip.add(new StringTextComponent(type));
+        tooltip.add(new StringTextComponent(YdmDatabase.SET_DATE_PARSER.format(date)));
+        tooltip.add(new StringTextComponent(shownCode));
         tooltip.add(StringTextComponent.EMPTY);
-        this.pull.addInformation(tooltip);
+        pull.addInformation(tooltip);
     }
     
     public boolean isIndependentAndItem()
     {
-        return this != CardSet.DUMMY && !this.isSubSet && this.name != null && this.date != null;
+        return this != CardSet.DUMMY && !isSubSet && name != null && date != null;
     }
     
     public String getImageName()
     {
-        return this.code.toLowerCase();
+        return code.toLowerCase();
     }
     
     public String getImageURL()
     {
-        return this.image;
+        return image;
     }
     
     public String getInfoImageName()
     {
-        return YDM.proxy.addSetInfoTag(this.getImageName());
+        return YDM.proxy.addSetInfoTag(getImageName());
     }
     
     public String getItemImageName()
     {
-        return YDM.proxy.addSetItemTag(this.getImageName());
+        return YDM.proxy.addSetItemTag(getImageName());
     }
     
     public ResourceLocation getInfoImageResourceLocation()
@@ -257,7 +252,7 @@ public class CardSet
     
     public ResourceLocation getItemImageResourceLocation()
     {
-        return new ResourceLocation(YDM.MOD_ID, "item/" + this.getItemImageName());
+        return new ResourceLocation(YDM.MOD_ID, "item/" + getItemImageName());
     }
     
     public boolean getIsHardcoded()

@@ -1,13 +1,7 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import java.util.List;
-import java.util.function.Consumer;
-
-import javax.annotation.Nullable;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.DuelManager;
@@ -26,6 +20,10 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.function.Consumer;
+
 public class ZoneWidget extends Button
 {
     public final Zone zone;
@@ -35,23 +33,23 @@ public class ZoneWidget extends Button
     
     public ZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
     {
-        super(0, 0, width, height, title, (w) -> onPress.accept((ZoneWidget)w), onTooltip);
+        super(0, 0, width, height, title, (w) -> onPress.accept((ZoneWidget) w), onTooltip);
         this.zone = zone;
         this.context = context;
-        this.shift();
-        this.hoverCard = null;
+        shift();
+        hoverCard = null;
     }
     
     protected void shift()
     {
-        this.x -= this.width / 2;
-        this.y -= this.height / 2;
+        x -= width / 2;
+        y -= height / 2;
     }
     
     protected void unshift()
     {
-        this.x += this.width / 2;
-        this.y += this.height / 2;
+        x += width / 2;
+        y += height / 2;
     }
     
     public ZoneWidget flip(int guiWidth, int guiHeight)
@@ -59,20 +57,20 @@ public class ZoneWidget extends Button
         guiWidth /= 2;
         guiHeight /= 2;
         
-        this.unshift();
+        unshift();
         
-        this.x -= guiWidth;
-        this.y -= guiHeight;
+        x -= guiWidth;
+        y -= guiHeight;
         
-        this.x = -this.x;
-        this.y = -this.y;
+        x = -x;
+        y = -y;
         
-        this.x += guiWidth;
-        this.y += guiHeight;
+        x += guiWidth;
+        y += guiHeight;
         
-        this.shift();
+        shift();
         
-        this.isFlipped = !this.isFlipped;
+        isFlipped = !isFlipped;
         
         return this;
     }
@@ -82,9 +80,9 @@ public class ZoneWidget extends Button
         this.x = x + guiWidth / 2;
         this.y = y + guiHeight / 2;
         
-        this.shift();
+        shift();
         
-        this.isFlipped = false;
+        isFlipped = false;
         
         return this;
     }
@@ -94,65 +92,65 @@ public class ZoneWidget extends Button
         this.x = guiWidth / 2 - x;
         this.y = guiHeight / 2 - y;
         
-        this.shift();
+        shift();
         
-        this.isFlipped = true;
+        isFlipped = true;
         
         return this;
     }
     
     @Override
-    public void renderWidget(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.fontRenderer;
+        FontRenderer fontrenderer = minecraft.font;
         
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        RenderSystem.color4f(1F, 1F, 1F, alpha);
         
-        this.renderZoneSelectRect(ms, this.zone, this.x, this.y, this.width, this.height);
+        renderZoneSelectRect(ms, zone, x, y, width, height);
         
-        this.hoverCard = this.renderCards(ms, mouseX, mouseY);
+        hoverCard = renderCards(ms, mouseX, mouseY);
         
-        RenderSystem.color4f(1F, 1F, 1F, this.alpha);
+        RenderSystem.color4f(1F, 1F, 1F, alpha);
         
-        if(this.zone.type.getCanHaveCounters() && this.zone.getCounters() > 0)
+        if(zone.type.getCanHaveCounters() && zone.getCounters() > 0)
         {
             // see font renderer, top static Vector3f
             // white is translated in front by that
-            ms.push();
+            ms.pushPose();
             ms.translate(0, 0, 0.03F);
-            AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent("(" + this.zone.getCounters() + ")"),
-                this.x + this.width / 2, this.y + this.height / 2 - fontrenderer.FONT_HEIGHT / 2,
-                16777215 | MathHelper.ceil(this.alpha * 255.0F) << 24);
-            ms.pop();
+            AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent("(" + zone.getCounters() + ")"),
+                    x + width / 2, y + height / 2 - fontrenderer.lineHeight / 2,
+                    16777215 | MathHelper.ceil(alpha * 255.0F) << 24);
+            ms.popPose();
         }
         
-        if(this.active)
+        if(active)
         {
-            if(this.isHovered())
+            if(isHovered())
             {
-                if(this.zone.getCardsAmount() == 0)
+                if(zone.getCardsAmount() == 0)
                 {
-                    ScreenUtil.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    ScreenUtil.renderHoverRect(ms, x, y, width, height);
                 }
                 
-                this.renderToolTip(ms, mouseX, mouseY);
+                renderToolTip(ms, mouseX, mouseY);
             }
         }
         else
         {
-            ScreenUtil.renderDisabledRect(ms, this.x, this.y, this.width, this.height);
+            ScreenUtil.renderDisabledRect(ms, x, y, width, height);
         }
     }
     
     public void renderZoneSelectRect(MatrixStack ms, Zone zone, float x, float y, float width, float height)
     {
-        if(this.context.getClickedZone() == zone && this.context.getClickedCard() == null)
+        if(context.getClickedZone() == zone && context.getClickedCard() == null)
         {
-            if(this.context.getOpponentClickedZone() == zone && this.context.getOpponentClickedCard() == null)
+            if(context.getOpponentClickedZone() == zone && context.getOpponentClickedCard() == null)
             {
                 DuelScreenDueling.renderBothSelectedRect(ms, x, y, width, height);
             }
@@ -163,7 +161,7 @@ public class ZoneWidget extends Button
         }
         else
         {
-            if(this.context.getOpponentClickedZone() == zone && this.context.getOpponentClickedCard() == null)
+            if(context.getOpponentClickedZone() == zone && context.getOpponentClickedCard() == null)
             {
                 DuelScreenDueling.renderEnemySelectedRect(ms, x, y, width, height);
             }
@@ -176,9 +174,9 @@ public class ZoneWidget extends Button
     
     public void renderCardSelectRect(MatrixStack ms, DuelCard card, float x, float y, float width, float height)
     {
-        if(this.context.getClickedCard() == card)
+        if(context.getClickedCard() == card)
         {
-            if(this.context.getOpponentClickedCard() == card)
+            if(context.getOpponentClickedCard() == card)
             {
                 DuelScreenDueling.renderBothSelectedRect(ms, x, y, width, height);
             }
@@ -189,7 +187,7 @@ public class ZoneWidget extends Button
         }
         else
         {
-            if(this.context.getOpponentClickedCard() == card)
+            if(context.getOpponentClickedCard() == card)
             {
                 DuelScreenDueling.renderEnemySelectedRect(ms, x, y, width, height);
             }
@@ -203,34 +201,34 @@ public class ZoneWidget extends Button
     @Nullable
     public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
     {
-        if(this.zone.getCardsAmount() <= 0)
+        if(zone.getCardsAmount() <= 0)
         {
             return null;
         }
         
-        boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
-        DuelCard c = this.zone.getTopCard();
+        boolean isOwner = zone.getOwner() == context.getZoneOwner();
+        DuelCard c = zone.getTopCard();
         
         if(c != null)
         {
-            if(this.drawCard(ms, c, this.x, this.y, this.width, this.height, mouseX, mouseY, this.x, this.y, this.width, this.height))
+            if(drawCard(ms, c, x, y, width, height, mouseX, mouseY, x, y, width, height))
             {
-                if(c.getCardPosition().isFaceUp || (isOwner && !this.zone.getType().getIsSecret()))
+                if(c.getCardPosition().isFaceUp || (isOwner && !zone.getType().getIsSecret()))
                 {
-                    this.context.renderCardInfo(ms, c);
+                    context.renderCardInfo(ms, c);
                 }
                 
-                if(this.active)
+                if(active)
                 {
-                    ScreenUtil.renderHoverRect(ms, this.x, this.y, this.width, this.height);
+                    ScreenUtil.renderHoverRect(ms, x, y, width, height);
                     return c;
                 }
             }
         }
         
-        if(this.context.getClickedZone() == this.zone)
+        if(context.getClickedZone() == zone)
         {
-            DuelScreenDueling.renderSelectedRect(ms, this.x, this.y, this.width, this.height);
+            DuelScreenDueling.renderSelectedRect(ms, x, y, width, height);
         }
         
         return null;
@@ -258,27 +256,27 @@ public class ZoneWidget extends Button
             hoverHeight = cardsWidth;
         }
         
-        return this.drawCard(ms, duelCard, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, hoverX, hoverY, hoverWidth, hoverHeight);
+        return drawCard(ms, duelCard, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, hoverX, hoverY, hoverWidth, hoverHeight);
     }
     
     protected boolean drawCard(MatrixStack ms, DuelCard duelCard, float renderX, float renderY, float renderWidth, float renderHeight, int mouseX, int mouseY, float hoverX, float hoverY, float hoverWidth, float hoverHeight)
     {
-        boolean isOwner = this.zone.getOwner() == this.context.getZoneOwner();
-        boolean faceUp = this.zone.getType().getShowFaceDownCardsToOwner() && isOwner;
-        boolean isOpponentView = this.zone.getOwner() != this.context.getView();
+        boolean isOwner = zone.getOwner() == context.getZoneOwner();
+        boolean faceUp = zone.getType().getShowFaceDownCardsToOwner() && isOwner;
+        boolean isOpponentView = zone.getOwner() != context.getView();
         
-        this.renderCardSelectRect(ms, duelCard, hoverX, hoverY, hoverWidth, hoverHeight);
+        renderCardSelectRect(ms, duelCard, hoverX, hoverY, hoverWidth, hoverHeight);
         
         if(!isOpponentView)
         {
-            CardRenderUtil.renderDuelCardCentered(ms, this.zone.getSleeves(), mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            CardRenderUtil.renderDuelCardCentered(ms, zone.getSleeves(), mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         else
         {
-            CardRenderUtil.renderDuelCardReversedCentered(ms, this.zone.getSleeves(), mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
+            CardRenderUtil.renderDuelCardReversedCentered(ms, zone.getSleeves(), mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         
-        if(this.isHovered() && mouseX >= hoverX && mouseX < hoverX + hoverWidth && mouseY >= hoverY && mouseY < hoverY + hoverHeight)
+        if(isHovered() && mouseX >= hoverX && mouseX < hoverX + hoverWidth && mouseY >= hoverY && mouseY < hoverY + hoverHeight)
         {
             return true;
         }
@@ -294,11 +292,11 @@ public class ZoneWidget extends Button
         
         if(!isAdvanced)
         {
-            interactions = m.getActionsFor(player, interactor, interactorCard, this.zone);
+            interactions = m.getActionsFor(player, interactor, interactorCard, zone);
         }
         else
         {
-            interactions = m.getAdvancedActionsFor(player, interactor, interactorCard, this.zone);
+            interactions = m.getAdvancedActionsFor(player, interactor, interactorCard, zone);
         }
         
         if(interactions.size() == 0)
@@ -308,63 +306,63 @@ public class ZoneWidget extends Button
         
         if(interactions.size() == 1)
         {
-            list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(0), context, x, y, width, height, onPress, onTooltip));
         }
         else if(interactions.size() == 2)
         {
-            if(this.width <= this.height)
+            if(width <= height)
             {
                 // Split them horizontally (1 action on top, 1 on bottom)
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 2, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 2, this.width, this.height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), context, x, y, width, height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), context, x, y + height / 2, width, height / 2, onPress, onTooltip));
             }
             else
             {
                 // Split them vertically (1 left, 1 right)
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 2, this.height, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 2, this.y, this.width / 2, this.height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), context, x, y, width / 2, height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), context, x + width / 2, y, width / 2, height, onPress, onTooltip));
             }
         }
         else if(interactions.size() == 3)
         {
-            if(this.width == this.height)
+            if(width == height)
             {
                 // 1 on top half, 1 bottom left, 1 bottom right
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 2, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(2), this.context, this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), context, x, y, width, height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), context, x, y + height / 2, width / 2, height / 2, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(2), context, x + width / 2, y + height / 2, width / 2, height / 2, onPress, onTooltip));
             }
-            else if(this.width < this.height)
+            else if(width < height)
             {
                 // Horizontally split
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width, this.height / 3, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x, this.y + this.height / 3, this.width, this.height / 3, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(2), this.context, this.x, this.y + this.height * 2 / 3, this.width, this.height / 3, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), context, x, y, width, height / 3, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), context, x, y + height / 3, width, height / 3, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(2), context, x, y + height * 2 / 3, width, height / 3, onPress, onTooltip));
             }
             else //if(this.width > this.height)
             {
                 // Vertically split
-                list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 3, this.height, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 3, this.y, this.width / 3, this.height, onPress, onTooltip));
-                list.add(new InteractionWidget(interactions.get(2), this.context, this.x + this.width * 2 / 3, this.y, this.width / 3, this.height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(0), context, x, y, width / 3, height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(1), context, x + width / 3, y, width / 3, height, onPress, onTooltip));
+                list.add(new InteractionWidget(interactions.get(2), context, x + width * 2 / 3, y, width / 3, height, onPress, onTooltip));
             }
         }
-        else if(interactions.size() == 4 && this.width == this.height)
+        else if(interactions.size() == 4 && width == height)
         {
             // 1 on top left, 1 top right, 1 bottom left, 1 bottom right
-            list.add(new InteractionWidget(interactions.get(0), this.context, this.x, this.y, this.width / 2, this.height / 2, onPress, onTooltip));
-            list.add(new InteractionWidget(interactions.get(1), this.context, this.x + this.width / 2, this.y, this.width / 2, this.height / 2, onPress, onTooltip));
-            list.add(new InteractionWidget(interactions.get(2), this.context, this.x, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
-            list.add(new InteractionWidget(interactions.get(3), this.context, this.x + this.width / 2, this.y + this.height / 2, this.width / 2, this.height / 2, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(0), context, x, y, width / 2, height / 2, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(1), context, x + width / 2, y, width / 2, height / 2, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(2), context, x, y + height / 2, width / 2, height / 2, onPress, onTooltip));
+            list.add(new InteractionWidget(interactions.get(3), context, x + width / 2, y + height / 2, width / 2, height / 2, onPress, onTooltip));
         }
         else
         {
-            if(this.width < this.height)
+            if(width < height)
             {
                 // Horizontally split
                 for(int i = 0; i < interactions.size(); ++i)
                 {
-                    list.add(new InteractionWidget(interactions.get(i), this.context, this.x, this.y + this.height * i / interactions.size(), this.width, this.height / interactions.size(), onPress, onTooltip));
+                    list.add(new InteractionWidget(interactions.get(i), context, x, y + height * i / interactions.size(), width, height / interactions.size(), onPress, onTooltip));
                 }
             }
             else //if(this.width > this.height)
@@ -372,7 +370,7 @@ public class ZoneWidget extends Button
                 // Vertically split
                 for(int i = 0; i < interactions.size(); ++i)
                 {
-                    list.add(new InteractionWidget(interactions.get(i), this.context, this.x + this.width * i / interactions.size(), this.y, this.width / interactions.size(), this.height, onPress, onTooltip));
+                    list.add(new InteractionWidget(interactions.get(i), context, x + width * i / interactions.size(), y, width / interactions.size(), height, onPress, onTooltip));
                 }
             }
         }
@@ -380,27 +378,27 @@ public class ZoneWidget extends Button
     
     public int getAnimationSourceX()
     {
-        return this.x + this.width / 2;
+        return x + width / 2;
     }
     
     public int getAnimationSourceY()
     {
-        return this.y + this.height / 2;
+        return y + height / 2;
     }
     
     public int getAnimationDestX()
     {
-        return this.x + this.width / 2;
+        return x + width / 2;
     }
     
     public int getAnimationDestY()
     {
-        return this.y + this.height / 2;
+        return y + height / 2;
     }
     
     public ITextComponent getTranslation()
     {
-        return new TranslationTextComponent(this.zone.getType().getRegistryName().getNamespace() + ".zone." + this.zone.getType().getRegistryName().getPath());
+        return new TranslationTextComponent(zone.getType().getRegistryName().getNamespace() + ".zone." + zone.getType().getRegistryName().getPath());
     }
     
     public boolean openAdvancedZoneView()

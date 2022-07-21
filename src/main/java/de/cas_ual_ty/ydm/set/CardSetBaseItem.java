@@ -1,7 +1,5 @@
 package de.cas_ual_ty.ydm.set;
 
-import java.util.List;
-
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmDatabase;
@@ -29,6 +27,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.util.List;
+
 public abstract class CardSetBaseItem extends Item
 {
     public CardSetBaseItem(Properties properties)
@@ -37,23 +37,23 @@ public abstract class CardSetBaseItem extends Item
     }
     
     @Override
-    public void addInformation(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
     {
-        CardSet set = this.getCardSet(itemStack);
+        CardSet set = getCardSet(itemStack);
         tooltip.clear();
         set.addItemInformation(tooltip);
     }
     
     @Override
-    public ITextComponent getDisplayName(ItemStack itemStack)
+    public ITextComponent getName(ItemStack itemStack)
     {
-        CardSet set = this.getCardSet(itemStack);
+        CardSet set = getCardSet(itemStack);
         return new StringTextComponent(set.name);
     }
     
     public CardSet getCardSet(ItemStack itemStack)
     {
-        String code = this.getNBT(itemStack).getString(JsonKeys.CODE);
+        String code = getNBT(itemStack).getString(JsonKeys.CODE);
         
         if(code.isEmpty())
         {
@@ -72,7 +72,7 @@ public abstract class CardSetBaseItem extends Item
     
     public void setCardSet(ItemStack itemStack, CardSet set)
     {
-        this.getNBT(itemStack).putString(JsonKeys.CODE, set.code);
+        getNBT(itemStack).putString(JsonKeys.CODE, set.code);
     }
     
     public CompoundNBT getNBT(ItemStack itemStack)
@@ -81,19 +81,19 @@ public abstract class CardSetBaseItem extends Item
     }
     
     @Override
-    public abstract void fillItemGroup(ItemGroup group, NonNullList<ItemStack> items);
+    public abstract void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items);
     
     @Override
-    public boolean shouldSyncTag()
+    public boolean shouldOverrideMultiplayerNbt()
     {
         return true;
     }
     
     public void viewSetContents(World world, PlayerEntity player, ItemStack itemStack)
     {
-        if(!world.isRemote)
+        if(!world.isClientSide)
         {
-            CardSet set = this.getCardSet(itemStack);
+            CardSet set = getCardSet(itemStack);
             SortedArraySet<CardHolder> cardsSet = set.getAllCardEntries();
             CardHolder[] cards = cardsSet.toArray(new CardHolder[0]);
             

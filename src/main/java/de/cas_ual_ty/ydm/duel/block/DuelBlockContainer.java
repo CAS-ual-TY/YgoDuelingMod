@@ -18,13 +18,13 @@ public class DuelBlockContainer extends DuelContainer
     
     public DuelBlockContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, BlockPos blockPos)
     {
-        super(type, id, playerInventory.player, ((DuelTileEntity)playerInventory.player.world.getTileEntity(blockPos)).duelManager);
-        this.pos = blockPos;
+        super(type, id, playerInventory.player, ((DuelTileEntity) playerInventory.player.level.getBlockEntity(blockPos)).duelManager);
+        pos = blockPos;
     }
     
     @Override
-    public boolean canInteractWith(PlayerEntity player) // from LockableLootTileEntity::isUsableByPlayer
+    public boolean stillValid(PlayerEntity player) // from LockableLootTileEntity::isUsableByPlayer
     {
-        return player.getDistanceSq(this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D) <= 64.0D;
+        return player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }
 }

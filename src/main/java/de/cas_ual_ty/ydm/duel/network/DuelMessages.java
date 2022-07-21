@@ -1,10 +1,5 @@
 package de.cas_ual_ty.ydm.duel.network;
 
-import java.util.List;
-import java.util.UUID;
-
-import javax.annotation.Nullable;
-
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.DeckSource;
 import de.cas_ual_ty.ydm.duel.DuelChatMessage;
@@ -14,6 +9,10 @@ import de.cas_ual_ty.ydm.duel.action.Action;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.text.ITextComponent;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.UUID;
 
 public class DuelMessages
 {
@@ -35,19 +34,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodePlayerRole(this.playerRole, buf);
+            DuelMessageUtility.encodePlayerRole(playerRole, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.playerRole = DuelMessageUtility.decodePlayerRole(buf);
+            playerRole = DuelMessageUtility.decodePlayerRole(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.getDuelManager().playerSelectRole(player, this.playerRole);
+            provider.getDuelManager().playerSelectRole(player, playerRole);
         }
     }
     
@@ -67,7 +66,7 @@ public class DuelMessages
         
         public UpdateRole(DuelMessageHeader header, @Nullable PlayerRole role, PlayerEntity rolePlayer)
         {
-            this(header, role, rolePlayer.getUniqueID());
+            this(header, role, rolePlayer.getUUID());
         }
         
         public UpdateRole(PacketBuffer buf)
@@ -78,17 +77,17 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            if(this.role != null)
+            if(role != null)
             {
                 buf.writeBoolean(true);
-                DuelMessageUtility.encodePlayerRole(this.role, buf);
+                DuelMessageUtility.encodePlayerRole(role, buf);
             }
             else
             {
                 buf.writeBoolean(false);
             }
             
-            buf.writeUniqueId(this.rolePlayerId);
+            buf.writeUUID(rolePlayerId);
         }
         
         @Override
@@ -96,28 +95,28 @@ public class DuelMessages
         {
             if(buf.readBoolean())
             {
-                this.role = DuelMessageUtility.decodePlayerRole(buf);
+                role = DuelMessageUtility.decodePlayerRole(buf);
             }
             else
             {
-                this.role = null;
+                role = null;
             }
             
-            this.rolePlayerId = buf.readUniqueId();
+            rolePlayerId = buf.readUUID();
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            PlayerEntity rolePlayer = player.world.getPlayerByUuid(this.rolePlayerId);
+            PlayerEntity rolePlayer = player.level.getPlayerByUUID(rolePlayerId);
             
-            if(this.role != null && rolePlayer != null)
+            if(role != null && rolePlayer != null)
             {
-                provider.getDuelManager().playerSelectRole(rolePlayer, this.role);
+                provider.getDuelManager().playerSelectRole(rolePlayer, role);
             }
             else
             {
-                provider.getDuelManager().playerCloseContainerClient(this.rolePlayerId);
+                provider.getDuelManager().playerCloseContainerClient(rolePlayerId);
             }
         }
     }
@@ -140,19 +139,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodeDuelState(this.duelState, buf);
+            DuelMessageUtility.encodeDuelState(duelState, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.duelState = DuelMessageUtility.decodeDuelState(buf);
+            duelState = DuelMessageUtility.decodeDuelState(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.updateDuelState(this.duelState);
+            provider.updateDuelState(duelState);
         }
     }
     
@@ -205,19 +204,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            buf.writeBoolean(this.ready);
+            buf.writeBoolean(ready);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.ready = buf.readBoolean();
+            ready = buf.readBoolean();
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.getDuelManager().requestReady(player, this.ready);
+            provider.getDuelManager().requestReady(player, ready);
         }
     }
     
@@ -241,21 +240,21 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodePlayerRole(this.role, buf);
-            buf.writeBoolean(this.ready);
+            DuelMessageUtility.encodePlayerRole(role, buf);
+            buf.writeBoolean(ready);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.role = DuelMessageUtility.decodePlayerRole(buf);
-            this.ready = buf.readBoolean();
+            role = DuelMessageUtility.decodePlayerRole(buf);
+            ready = buf.readBoolean();
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.getDuelManager().updateReady(this.role, this.ready);
+            provider.getDuelManager().updateReady(role, ready);
         }
     }
     
@@ -277,19 +276,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodeList(this.deckSources, buf, DuelMessageUtility::encodeDeckSourceParams);
+            DuelMessageUtility.encodeList(deckSources, buf, DuelMessageUtility::encodeDeckSourceParams);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.deckSources = DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeDeckSourceParams);
+            deckSources = DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeDeckSourceParams);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.receiveDeckSources(this.deckSources);
+            provider.receiveDeckSources(deckSources);
         }
     }
     
@@ -311,19 +310,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            buf.writeInt(this.index);
+            buf.writeInt(index);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.index = buf.readInt();
+            index = buf.readInt();
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.getDuelManager().requestDeck(this.index, player);
+            provider.getDuelManager().requestDeck(index, player);
         }
     }
     
@@ -347,21 +346,21 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            buf.writeInt(this.index);
-            DuelMessageUtility.encodeDeckHolder(this.deck, buf);
+            buf.writeInt(index);
+            DuelMessageUtility.encodeDeckHolder(deck, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.index = buf.readInt();
-            this.deck = DuelMessageUtility.decodeDeckHolder(buf);
+            index = buf.readInt();
+            deck = DuelMessageUtility.decodeDeckHolder(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.receiveDeck(this.index, this.deck);
+            provider.receiveDeck(index, deck);
         }
     }
     
@@ -383,19 +382,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            buf.writeInt(this.index);
+            buf.writeInt(index);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.index = buf.readInt();
+            index = buf.readInt();
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.getDuelManager().chooseDeck(this.index, player);
+            provider.getDuelManager().chooseDeck(index, player);
         }
     }
     
@@ -417,19 +416,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodePlayerRole(this.role, buf);
+            DuelMessageUtility.encodePlayerRole(role, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.role = DuelMessageUtility.decodePlayerRole(buf);
+            role = DuelMessageUtility.decodePlayerRole(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.deckAccepted(this.role);
+            provider.deckAccepted(role);
         }
     }
     
@@ -451,19 +450,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodeAction(this.action, buf);
+            DuelMessageUtility.encodeAction(action, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.action = DuelMessageUtility.decodeAction(buf);
+            action = DuelMessageUtility.decodeAction(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.getDuelManager().receiveActionFrom(player, this.action);
+            provider.getDuelManager().receiveActionFrom(player, action);
         }
     }
     
@@ -490,20 +489,20 @@ public class DuelMessages
         public void encodeMessage(PacketBuffer buf)
         {
             //encodePlayerRole
-            DuelMessageUtility.encodeAction(this.action, buf);
+            DuelMessageUtility.encodeAction(action, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
             //decodePlayerRole
-            this.action = DuelMessageUtility.decodeAction(buf);
+            action = DuelMessageUtility.decodeAction(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.handleAction(this.action);
+            provider.handleAction(action);
         }
     }
     
@@ -526,19 +525,19 @@ public class DuelMessages
         public void encodeMessage(PacketBuffer buf)
         {
             //encodePlayerRole ?? if this is done in DuelAction class, might need to do it here too
-            DuelMessageUtility.encodeActions(this.actions, buf);
+            DuelMessageUtility.encodeActions(actions, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.actions = DuelMessageUtility.decodeActions(buf);
+            actions = DuelMessageUtility.decodeActions(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.handleAllActions(this.actions);
+            provider.handleAllActions(actions);
         }
     }
     
@@ -560,19 +559,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            buf.writeTextComponent(this.message);
+            buf.writeComponent(message);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.message = buf.readTextComponent();
+            message = buf.readComponent();
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.getDuelManager().receiveMessageFromClient(player, this.message);
+            provider.getDuelManager().receiveMessageFromClient(player, message);
         }
     }
     
@@ -594,19 +593,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf)
         {
-            DuelMessageUtility.encodeDuelChatMessage(this.message, buf);
+            DuelMessageUtility.encodeDuelChatMessage(message, buf);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf)
         {
-            this.message = DuelMessageUtility.decodeDuelChatMessage(buf);
+            message = DuelMessageUtility.decodeDuelChatMessage(buf);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            provider.receiveMessage(player, this.message);
+            provider.receiveMessage(player, message);
         }
     }
     
@@ -617,7 +616,7 @@ public class DuelMessages
         public SendAllMessagesToClient(DuelMessageHeader header, List<DuelChatMessage> message)
         {
             super(header);
-            this.messages = message;
+            messages = message;
         }
         
         public SendAllMessagesToClient(PacketBuffer buf)
@@ -628,19 +627,19 @@ public class DuelMessages
         @Override
         public void encodeMessage(PacketBuffer buf0)
         {
-            DuelMessageUtility.encodeList(this.messages, buf0, DuelMessageUtility::encodeDuelChatMessage);
+            DuelMessageUtility.encodeList(messages, buf0, DuelMessageUtility::encodeDuelChatMessage);
         }
         
         @Override
         public void decodeMessage(PacketBuffer buf0)
         {
-            this.messages = DuelMessageUtility.decodeList(buf0, DuelMessageUtility::decodeDuelChatMessage);
+            messages = DuelMessageUtility.decodeList(buf0, DuelMessageUtility::decodeDuelChatMessage);
         }
         
         @Override
         public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
         {
-            for(DuelChatMessage message : this.messages)
+            for(DuelChatMessage message : messages)
             {
                 provider.receiveMessage(player, message);
             }

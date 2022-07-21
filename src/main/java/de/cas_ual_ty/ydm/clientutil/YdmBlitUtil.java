@@ -1,18 +1,16 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import org.lwjgl.opengl.GL11;
-
 import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.vector.Matrix4f;
+import org.lwjgl.opengl.GL11;
 
 public class YdmBlitUtil
 {
@@ -44,21 +42,21 @@ public class YdmBlitUtil
      * Param 1-4: Where to and how big to draw on the screen
      * Param 5-8: What part of the texture file to cut out and draw
      * Param 9-10: How big the entire texture file is in general (pow2 only)
-     * 
-     * @param renderX Where to draw on the screen
-     * @param renderY Where to draw on the screen
-     * @param renderWidth How big to draw on the screen
-     * @param renderHeight How big to draw on the screen
+     *
+     * @param renderX                Where to draw on the screen
+     * @param renderY                Where to draw on the screen
+     * @param renderWidth            How big to draw on the screen
+     * @param renderHeight           How big to draw on the screen
      * @param textureX
      * @param textureY
      * @param textureWidth
      * @param textureHeight
-     * @param totalTextureFileWidth The total texture file size
+     * @param totalTextureFileWidth  The total texture file size
      * @param totalTextureFileHeight The total texture file size
      */
     public static void blit(MatrixStack ms, float renderX, float renderY, float renderWidth, float renderHeight, float textureX, float textureY, float textureWidth, float textureHeight, int totalTextureFileWidth, int totalTextureFileHeight)
     {
-        YdmBlitUtil.customInnerBlit(ms.getLast().getMatrix(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, textureX / totalTextureFileWidth, (textureX + textureWidth) / totalTextureFileWidth, textureY / totalTextureFileHeight, (textureY + textureHeight) / totalTextureFileHeight);
+        YdmBlitUtil.customInnerBlit(ms.last().pose(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, textureX / totalTextureFileWidth, (textureX + textureWidth) / totalTextureFileWidth, textureY / totalTextureFileHeight, (textureY + textureHeight) / totalTextureFileHeight);
     }
     
     public static void blit90Degree(MatrixStack ms, float renderX, float renderY, float renderWidth, float renderHeight, float textureX, float textureY, float textureWidth, float textureHeight, int totalTextureFileWidth, int totalTextureFileHeight)
@@ -67,7 +65,7 @@ public class YdmBlitUtil
         float y1 = textureY / totalTextureFileHeight;
         float x2 = (textureX + textureWidth) / totalTextureFileWidth;
         float y2 = (textureY + textureHeight) / totalTextureFileHeight;
-        YdmBlitUtil.customInnerBlit(ms.getLast().getMatrix(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, x2, y1, x2, y2, x1, y2, x1, y1);
+        YdmBlitUtil.customInnerBlit(ms.last().pose(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, x2, y1, x2, y2, x1, y2, x1, y1);
     }
     
     public static void blit180Degree(MatrixStack ms, float renderX, float renderY, float renderWidth, float renderHeight, float textureX, float textureY, float textureWidth, float textureHeight, int totalTextureFileWidth, int totalTextureFileHeight)
@@ -76,7 +74,7 @@ public class YdmBlitUtil
         float y1 = textureY / totalTextureFileHeight;
         float x2 = (textureX + textureWidth) / totalTextureFileWidth;
         float y2 = (textureY + textureHeight) / totalTextureFileHeight;
-        YdmBlitUtil.customInnerBlit(ms.getLast().getMatrix(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, x2, y2, x1, y2, x1, y1, x2, y1);
+        YdmBlitUtil.customInnerBlit(ms.last().pose(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, x2, y2, x1, y2, x1, y1, x2, y1);
     }
     
     public static void blit270Degree(MatrixStack ms, float renderX, float renderY, float renderWidth, float renderHeight, float textureX, float textureY, float textureWidth, float textureHeight, int totalTextureFileWidth, int totalTextureFileHeight)
@@ -85,7 +83,7 @@ public class YdmBlitUtil
         float y1 = textureY / totalTextureFileHeight;
         float x2 = (textureX + textureWidth) / totalTextureFileWidth;
         float y2 = (textureY + textureHeight) / totalTextureFileHeight;
-        YdmBlitUtil.customInnerBlit(ms.getLast().getMatrix(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, x1, y2, x1, y1, x2, y1, x2, y2);
+        YdmBlitUtil.customInnerBlit(ms.last().pose(), renderX, renderX + renderWidth, renderY, renderY + renderHeight, YdmBlitUtil.blitOffset, x1, y2, x1, y1, x2, y1, x2, y2);
     }
     
     // see https://github.com/CAS-ual-TY/UsefulCodeBitsForTheBlocksGame/blob/main/src/main/java/com/example/examplemod/client/screen/BlitUtil.java
@@ -126,18 +124,18 @@ public class YdmBlitUtil
     
     protected static void customInnerBlit(Matrix4f matrix, float posX1, float posX2, float posY1, float posY2, float posZ, float topLeftX, float topLeftY, float topRightX, float topRightY, float botRightX, float botRightY, float botLeftX, float botLeftY)
     {
-        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuffer();
+        BufferBuilder bufferbuilder = Tessellator.getInstance().getBuilder();
         bufferbuilder.begin(7, DefaultVertexFormats.POSITION_TEX);
-        bufferbuilder.pos(matrix, posX1, posY2, posZ).tex(botLeftX, botLeftY).endVertex();
-        bufferbuilder.pos(matrix, posX2, posY2, posZ).tex(botRightX, botRightY).endVertex();
-        bufferbuilder.pos(matrix, posX2, posY1, posZ).tex(topRightX, topRightY).endVertex();
-        bufferbuilder.pos(matrix, posX1, posY1, posZ).tex(topLeftX, topLeftY).endVertex();
-        bufferbuilder.finishDrawing();
+        bufferbuilder.vertex(matrix, posX1, posY2, posZ).uv(botLeftX, botLeftY).endVertex();
+        bufferbuilder.vertex(matrix, posX2, posY2, posZ).uv(botRightX, botRightY).endVertex();
+        bufferbuilder.vertex(matrix, posX2, posY1, posZ).uv(topRightX, topRightY).endVertex();
+        bufferbuilder.vertex(matrix, posX1, posY1, posZ).uv(topLeftX, topLeftY).endVertex();
+        bufferbuilder.end();
         RenderSystem.enableAlphaTest();
-        WorldVertexBufferUploader.draw(bufferbuilder);
+        WorldVertexBufferUploader.end(bufferbuilder);
     }
     
-    public static interface FullBlitMethod
+    public interface FullBlitMethod
     {
         void fullBlit(MatrixStack ms, float x, float y, float width, float height);
     }

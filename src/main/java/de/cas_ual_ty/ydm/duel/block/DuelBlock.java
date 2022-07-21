@@ -31,11 +31,11 @@ public class DuelBlock extends HorizontalBlock
     }
     
     @Override
-    public ActionResultType onBlockActivated(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
-        if(!worldIn.isRemote && player instanceof ServerPlayerEntity)
+        if(!worldIn.isClientSide && player instanceof ServerPlayerEntity)
         {
-            NetworkHooks.openGui((ServerPlayerEntity)player, this.getTE(worldIn, pos), pos);
+            NetworkHooks.openGui((ServerPlayerEntity) player, getTE(worldIn, pos), pos);
         }
         
         return ActionResultType.SUCCESS;
@@ -43,8 +43,8 @@ public class DuelBlock extends HorizontalBlock
     
     public DuelTileEntity getTE(World world, BlockPos pos)
     {
-        TileEntity te = world.getTileEntity(pos);
-        return te instanceof DuelTileEntity ? (DuelTileEntity)te : null;
+        TileEntity te = world.getBlockEntity(pos);
+        return te instanceof DuelTileEntity ? (DuelTileEntity) te : null;
     }
     
     @Override
@@ -62,17 +62,17 @@ public class DuelBlock extends HorizontalBlock
     @Override
     public BlockState getStateForPlacement(BlockItemUseContext context)
     {
-        return this.getDefaultState().with(HorizontalBlock.HORIZONTAL_FACING, context.getPlacementHorizontalFacing().getOpposite());
+        return defaultBlockState().setValue(HorizontalBlock.FACING, context.getHorizontalDirection().getOpposite());
     }
     
     @Override
-    protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
     {
-        builder.add(HorizontalBlock.HORIZONTAL_FACING);
+        builder.add(HorizontalBlock.FACING);
     }
     
     @Override
-    public BlockRenderType getRenderType(BlockState state)
+    public BlockRenderType getRenderShape(BlockState state)
     {
         return BlockRenderType.MODEL;
     }
@@ -80,6 +80,6 @@ public class DuelBlock extends HorizontalBlock
     @Override
     public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
     {
-        return this.shape;
+        return shape;
     }
 }

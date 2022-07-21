@@ -1,14 +1,10 @@
 package de.cas_ual_ty.ydm.card.properties;
 
+import de.cas_ual_ty.ydm.util.YdmUtil;
+import net.minecraft.util.text.*;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import de.cas_ual_ty.ydm.util.YdmUtil;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
 
 public enum LinkArrow
 {
@@ -21,18 +17,18 @@ public enum LinkArrow
     private final String symbolUnactive;
     private final String symbolActive;
     
-    private LinkArrow(String name, int index, String textUnactive, String textActive)
+    LinkArrow(String name, int index, String textUnactive, String textActive)
     {
         this.name = name;
         this.index = index;
-        this.number = YdmUtil.getPow2(index);
-        this.symbolUnactive = textUnactive;
-        this.symbolActive = textUnactive;
+        number = YdmUtil.getPow2(index);
+        symbolUnactive = textUnactive;
+        symbolActive = textUnactive;
     }
     
     public boolean isContainedIn(short linkNumber)
     {
-        return (linkNumber % YdmUtil.getPow2(this.index + 1)) >= this.number;
+        return (linkNumber % YdmUtil.getPow2(index + 1)) >= number;
     }
     
     public static final LinkArrow[] VALUES = LinkArrow.values();
@@ -65,16 +61,16 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                s.appendSibling(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
             }
             else
             {
-                s.appendSibling(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
             }
             
             if(i < 2)
             {
-                s.appendString(joiner);
+                s.append(joiner);
             }
         }
         
@@ -86,22 +82,22 @@ public enum LinkArrow
         
         if(arrows.contains(LEFT))
         {
-            s.appendSibling(new StringTextComponent(LEFT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+            s.append(new StringTextComponent(LEFT.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
         }
         else
         {
-            s.appendSibling(new StringTextComponent(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+            s.append(new StringTextComponent(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
         }
         
-        s.appendString(joiner + "" + joiner);
+        s.append(joiner + "" + joiner);
         
         if(arrows.contains(RIGHT))
         {
-            s.appendSibling(new StringTextComponent(RIGHT.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+            s.append(new StringTextComponent(RIGHT.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
         }
         else
         {
-            s.appendSibling(new StringTextComponent(RIGHT.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+            s.append(new StringTextComponent(RIGHT.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
         }
         
         list.add(s);
@@ -116,16 +112,16 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                s.appendSibling(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormatting(active)));
+                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
             }
             else
             {
-                s.appendSibling(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormatting(unactive)));
+                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
             }
             
             if(i > 4)
             {
-                s.appendString(joiner);
+                s.append(joiner);
             }
         }
         
