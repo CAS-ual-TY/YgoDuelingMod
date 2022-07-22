@@ -30,8 +30,6 @@ public abstract class HeldCIIContainer extends CIIContainer
         this(type, id, playerInventoryIn, new ItemStackHandler(extraData.readInt()), extraData.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
     }
     
-    public abstract void saveItemHandler(PlayerEntity player, ItemStack itemStack, IItemHandler itemHandler);
-    
     @Override
     protected void createBottomSlots(PlayerInventory playerInventoryIn)
     {
@@ -88,17 +86,6 @@ public abstract class HeldCIIContainer extends CIIContainer
             {
                 addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i));
             }
-        }
-    }
-    
-    @Override
-    public void removed(PlayerEntity playerIn)
-    {
-        super.removed(playerIn);
-        
-        if(!playerIn.level.isClientSide)
-        {
-            saveItemHandler(player, itemStack, itemHandler);
         }
     }
     

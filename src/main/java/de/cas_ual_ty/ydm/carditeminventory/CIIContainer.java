@@ -5,7 +5,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.ContainerType;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -18,10 +17,14 @@ import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import javax.annotation.Nonnull;
+
 public class CIIContainer extends Container
 {
+    public static final int INV_SIZE = 4 * 9;
+    public static final int PAGE_SIZE = 6 * 9;
+    
     protected final PlayerEntity player;
-    protected final Inventory slotInv;
     protected final IItemHandler itemHandler;
     
     protected int page;
@@ -33,16 +36,13 @@ public class CIIContainer extends Container
         super(type, id);
         
         player = playerInventoryIn.player;
-        slotInv = new Inventory(6 * 9);
-        slotInv.addListener(this::slotsChanged);
         this.itemHandler = itemHandler;
         
-        createTopSlots();
         createBottomSlots(playerInventoryIn);
+        createTopSlots();
         
         page = 0;
-        maxPage = MathHelper.ceil(this.itemHandler.getSlots() / (6D * 9D));
-        updateSlots();
+        maxPage = MathHelper.ceil(this.itemHandler.getSlots() / (double) PAGE_SIZE);
     }
     
     public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, int itemHandlerSize)
@@ -61,10 +61,18 @@ public class CIIContainer extends Container
         {
             for(int k = 0; k < 9; ++k)
             {
-                addSlot(new Slot(slotInv, k + j * 9, 8 + k * 18, 18 + j * 18)
+                int slotIndex = k + j * 9;
+                int itemIndex = page * PAGE_SIZE + slotIndex;
+                
+                if(itemIndex >= itemHandler.getSlots())
+                {
+                    continue;
+                }
+                
+                addSlot(new SplitItemHandlerSlot(itemHandler, slotIndex, 8 + k * 18, 18 + j * 18, itemIndex)
                 {
                     @Override
-                    public boolean mayPlace(ItemStack stack)
+                    public boolean mayPlace(@Nonnull ItemStack stack)
                     {
                         return canPutStack(stack);
                     }
@@ -137,8 +145,8 @@ public class CIIContainer extends Container
             page = 0;
         }
         
-        updateSlots();
         updatePage();
+        updateSlots();
     }
     
     public void prevPage()
@@ -150,54 +158,20 @@ public class CIIContainer extends Container
             page = maxPage - 1;
         }
         
-        updateSlots();
         updatePage();
+        updateSlots();
     }
     
     public void updateSlots()
     {
-        if(itemHandler == null)
-        {
-            return;
-        }
-        
-        filling = true;
-        
-        int start = page * slotInv.getContainerSize();
-        int end = start + slotInv.getContainerSize();
-        int i, j;
-        
-        for(i = start, j = 0; i < end && i < itemHandler.getSlots() && j < slotInv.getContainerSize(); ++i, ++j)
-        {
-            slotInv.setItem(j, itemHandler.getStackInSlot(i));
-        }
-        
-        for(; j < slotInv.getContainerSize(); ++j)
-        {
-            slotInv.setItem(j, ItemStack.EMPTY);
-        }
-        
-        filling = false;
-        
-        broadcastChanges();
+        slots.clear();
+        createBottomSlots(player.inventory);
+        createTopSlots();
     }
     
     @Override
     public void slotsChanged(IInventory inventoryIn)
     {
-        if(!filling && !player.level.isClientSide)
-        {
-            int start = page * slotInv.getContainerSize();
-            int end = start + slotInv.getContainerSize();
-            int i, j;
-            
-            for(i = start, j = 0; i < end && i < itemHandler.getSlots(); ++i, ++j)
-            {
-                itemHandler.insertItem(i, slotInv.getItem(j), false);
-            }
-            
-            super.slotsChanged(inventoryIn);
-        }
     }
     
     @Override
@@ -209,37 +183,31 @@ public class CIIContainer extends Container
     @Override
     public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
     {
-        ItemStack itemstack = ItemStack.EMPTY;
-        
         Slot slot = slots.get(index);
+        ItemStack original = slot.getItem().copy();
         
-        if(slot != null && slot.hasItem())
+        if(!original.isEmpty())
         {
-            ItemStack itemstack1 = slot.getItem();
-            itemstack = itemstack1.copy();
-            if(index < 6 * 9)
+            ItemStack itemStack = slot.getItem().split(1);
+            
+            if(index < INV_SIZE)
             {
-                if(!moveItemStackTo(itemstack1, 6 * 9, slots.size(), true))
+                // move into container
+                if(moveItemStackTo(itemStack, INV_SIZE, slots.size(), false))
                 {
-                    return ItemStack.EMPTY;
+                    return slot.getItem();
                 }
             }
-            else if(!moveItemStackTo(itemstack1, 0, 6 * 9, false))
+            // move to inventory
+            else if(moveItemStackTo(itemStack, 0, INV_SIZE, false))
             {
-                return ItemStack.EMPTY;
+                return slot.getItem();
             }
             
-            if(itemstack1.isEmpty())
-            {
-                slot.set(ItemStack.EMPTY);
-            }
-            else
-            {
-                slot.setChanged();
-            }
+            slot.set(original);
         }
         
-        return itemstack;
+        return ItemStack.EMPTY;
     }
     
     public static void openGui(PlayerEntity player, int itemHandlerSize, INamedContainerProvider p)

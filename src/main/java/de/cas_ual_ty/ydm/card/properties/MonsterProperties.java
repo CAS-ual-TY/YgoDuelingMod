@@ -140,6 +140,12 @@ public class MonsterProperties extends Properties
         return getMonsterType() == MonsterType.XYZ;
     }
     
+    @Override
+    public boolean getIsInExtraDeck()
+    {
+        return getIsFusion() || getIsLink() || getIsSynchro() || getIsXyz();
+    }
+    
     public boolean getHasLevel()
     {
         return getMonsterType() == null || getIsFusion() || getIsRitual() || getIsSynchro();

@@ -18,14 +18,15 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class SimpleBinderItem extends Item implements INamedContainerProvider
+public class SimpleBinderItem extends Item
 {
     public final int binderSize;
     
@@ -48,18 +49,55 @@ public class SimpleBinderItem extends Item implements INamedContainerProvider
         if(!world.isClientSide && hand == YdmUtil.getActiveItem(player, this))
         {
             ItemStack itemStack = player.getItemInHand(hand);
-            HeldCIIContainer.openGui(player, hand, binderSize, this);
+            
+            getItemHandler(itemStack).ifPresent(handler ->
+            {
+                if(hasOldItemHandler(itemStack))
+                {
+                    ItemStackHandler oldHandler = getOldItemHandler(itemStack);
+                    handler.deserializeNBT(oldHandler.serializeNBT());
+                    removeOldItemHandler(itemStack);
+                }
+                
+                HeldCIIContainer.openGui(player, hand, binderSize, new INamedContainerProvider()
+                {
+                    @Override
+                    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
+                    {
+                        ItemStack itemStack = player.getItemInHand(hand);
+                        return new SimpleBinderContainer(YdmContainerTypes.SIMPLE_BINDER, id, playerInventory, handler, hand);
+                    }
+                    
+                    @Override
+                    public ITextComponent getDisplayName()
+                    {
+                        return new TranslationTextComponent("container." + YDM.MOD_ID + ".simple_binder");
+                    }
+                });
+            });
+            
             return ActionResult.success(itemStack);
         }
         
         return super.use(world, player, hand);
     }
     
-    @Nullable
-    public IItemHandler getItemHandler(ItemStack itemStack)
+    public LazyOptional<ItemStackHandler> getItemHandler(ItemStack itemStack)
+    {
+        return itemStack.getCapability(YDM.CARD_ITEM_INVENTORY);
+    }
+    
+    public boolean hasOldItemHandler(ItemStack itemStack)
     {
         CompoundNBT nbt = getNBT(itemStack);
-        IItemHandler itemHandler = new ItemStackHandler(binderSize);
+        return nbt != null && nbt.contains("itemHandler");
+    }
+    
+    @Nullable
+    public ItemStackHandler getOldItemHandler(ItemStack itemStack)
+    {
+        CompoundNBT nbt = getNBT(itemStack);
+        ItemStackHandler itemHandler = new ItemStackHandler(binderSize);
         
         if(nbt.contains("itemHandler"))
         {
@@ -69,37 +107,14 @@ public class SimpleBinderItem extends Item implements INamedContainerProvider
         return itemHandler;
     }
     
-    public void setItemHandler(ItemStack itemStack, IItemHandler itemHandler)
+    public void removeOldItemHandler(ItemStack itemStack)
     {
-        getNBT(itemStack).put("itemHandler", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
-    }
-    
-    @Override
-    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
-    {
-        Hand hand = YdmUtil.getActiveItem(player, this);
-        ItemStack itemStack = player.getItemInHand(hand);
-        IItemHandler itemHandler = getItemHandler(itemStack);
-        return new SimpleBinderContainer(YdmContainerTypes.SIMPLE_BINDER, id, playerInventory, itemHandler, hand);
-    }
-    
-    @Override
-    public ITextComponent getDisplayName()
-    {
-        return new TranslationTextComponent("container." + YDM.MOD_ID + ".simple_binder");
+        getNBT(itemStack).remove("itemHandler");
     }
     
     public CompoundNBT getNBT(ItemStack itemStack)
     {
         return itemStack.getOrCreateTag();
-    }
-    
-    public static void saveItemHandler(ItemStack itemStack, IItemHandler itemHandler)
-    {
-        if(itemStack.getItem() instanceof SimpleBinderItem)
-        {
-            ((SimpleBinderItem) itemStack.getItem()).setItemHandler(itemStack, itemHandler);
-        }
     }
     
     public static Item makeItem(String modId, ItemGroup itemGroup, int pagesAmt)
@@ -111,5 +126,40 @@ public class SimpleBinderItem extends Item implements INamedContainerProvider
     public boolean shouldOverrideMultiplayerNbt()
     {
         return true;
+    }
+    
+    @Override
+    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt)
+    {
+        super.readShareTag(stack, nbt);
+        
+        if(nbt != null && nbt.contains("simple_binder_inventory", Constants.NBT.TAG_COMPOUND))
+        {
+            stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
+            {
+                handler.deserializeNBT(nbt.getCompound("simple_binder_inventory"));
+            });
+        }
+    }
+    
+    @Nullable
+    @Override
+    public CompoundNBT getShareTag(ItemStack stack)
+    {
+        CompoundNBT nbt = super.getShareTag(stack);
+        
+        if(nbt == null)
+        {
+            nbt = new CompoundNBT();
+        }
+        
+        CompoundNBT finalNBT = nbt;
+        
+        stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
+        {
+            finalNBT.put("simple_binder_inventory", handler.serializeNBT());
+        });
+        
+        return finalNBT;
     }
 }

@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.deckbox;
 
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardSleevesItem;
+import de.cas_ual_ty.ydm.card.properties.Properties;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventory;
@@ -67,6 +68,7 @@ public class DeckBoxContainer extends Container
                 return 1;
             }
         });
+        
         cardSleevesSlot.set(YdmItems.BLACK_DECK_BOX.getCardSleeves(itemStack));
         
         // player inventory
@@ -103,9 +105,61 @@ public class DeckBoxContainer extends Container
     @Override
     public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
     {
-        if(index >= 0 && index < DeckHolder.TOTAL_DECK_SIZE)
+        Slot slot = slots.get(index);
+        ItemStack original = slot.getItem().copy();
+        
+        if(index < DeckHolder.TOTAL_DECK_SIZE || index == cardSleevesSlot.index)
         {
-            // TODO
+            //deck box slot or sleeves slot into inventory
+            ItemStack itemStack = slot.getItem();
+            
+            if(moveItemStackTo(itemStack, cardSleevesSlot.index + 1, slots.size(), false))
+            {
+                slot.set(ItemStack.EMPTY);
+                return ItemStack.EMPTY;
+            }
+            
+            return ItemStack.EMPTY;
+        }
+        else if(original.getItem() == YdmItems.CARD)
+        {
+            //inventory to deck box
+            
+            Properties card = YdmItems.CARD.getCardHolder(original).getCard();
+            boolean isExtraDeck = card.getIsInExtraDeck();
+            
+            int minTarget;
+            int maxTarget;
+            
+            if(!isExtraDeck)
+            {
+                minTarget = DeckHolder.MAIN_DECK_INDEX_START;
+                maxTarget = DeckHolder.MAIN_DECK_INDEX_END;
+            }
+            else
+            {
+                minTarget = DeckHolder.EXTRA_DECK_INDEX_START;
+                maxTarget = DeckHolder.EXTRA_DECK_INDEX_END;
+            }
+            
+            ItemStack itemStack = slot.getItem().split(1);
+            
+            if(moveItemStackTo(itemStack, minTarget, maxTarget, false))
+            {
+                return slot.getItem();
+            }
+            // side deck
+            else if(moveItemStackTo(itemStack, DeckHolder.SIDE_DECK_INDEX_START, DeckHolder.SIDE_DECK_INDEX_END, false))
+            {
+                return slot.getItem();
+            }
+            
+            slot.set(original);
+        }
+        else if(original.getItem() instanceof CardSleevesItem && !cardSleevesSlot.hasItem())
+        {
+            cardSleevesSlot.set(slot.getItem().split(1));
+            return slot.getItem();
         }
         
         return ItemStack.EMPTY;

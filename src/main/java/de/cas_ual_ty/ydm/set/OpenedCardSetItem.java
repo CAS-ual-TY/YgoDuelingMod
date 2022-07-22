@@ -19,15 +19,16 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.text.TranslationTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class OpenedCardSetItem extends CardSetBaseItem implements INamedContainerProvider
+public class OpenedCardSetItem extends CardSetBaseItem
 {
     public OpenedCardSetItem(Properties properties)
     {
@@ -48,10 +49,30 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
         {
             ItemStack itemStack = player.getItemInHand(hand);
             
-            if(hasItemHandler(itemStack))
+            if(hasOldItemHandler(itemStack))
             {
-                HeldCIIContainer.openGui(player, hand, getSize(itemStack), this);
+                ItemStackHandler itemHandler = getOldItemHandler(itemStack);
+                getItemHandler(itemStack).ifPresent(current -> current.deserializeNBT(itemHandler.serializeNBT()));
+                removeOldItemHandler(itemStack);
             }
+            
+            getItemHandler(itemStack).ifPresent(itemHandler ->
+            {
+                HeldCIIContainer.openGui(player, hand, itemHandler.getSlots(), new INamedContainerProvider()
+                {
+                    @Override
+                    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
+                    {
+                        return new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInventory, itemHandler, hand);
+                    }
+                    
+                    @Override
+                    public ITextComponent getDisplayName()
+                    {
+                        return new TranslationTextComponent("container." + YDM.MOD_ID + ".card_set");
+                    }
+                });
+            });
             
             return ActionResult.success(itemStack);
         }
@@ -64,13 +85,13 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
         return getNBT(itemStack).getInt("size");
     }
     
-    public boolean hasItemHandler(ItemStack itemStack)
+    public boolean hasOldItemHandler(ItemStack itemStack)
     {
         return getNBT(itemStack).contains("itemHandler");
     }
     
     @Nullable
-    public IItemHandler getItemHandler(ItemStack itemStack)
+    public ItemStackHandler getOldItemHandler(ItemStack itemStack)
     {
         CompoundNBT nbt = getNBT(itemStack);
         
@@ -81,24 +102,29 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
         else
         {
             int size = nbt.getInt("size");
-            IItemHandler itemHandler = new ItemStackHandler(size);
+            ItemStackHandler itemHandler = new ItemStackHandler(size);
             CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, nbt.get("itemHandler"));
             return itemHandler;
         }
     }
     
-    public void setItemHandler(ItemStack itemStack, IItemHandler itemHandler)
+    public void removeOldItemHandler(ItemStack itemStack)
     {
         CompoundNBT nbt = getNBT(itemStack);
-        nbt.putInt("size", itemHandler.getSlots());
-        nbt.put("itemHandler", CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
+        nbt.remove("itemHandler");
+        nbt.remove("size");
     }
     
-    public ItemStack createItemForSet(CardSet set, IItemHandler itemHandler)
+    public LazyOptional<ItemStackHandler> getItemHandler(ItemStack itemStack)
+    {
+        return itemStack.getCapability(YDM.CARD_ITEM_INVENTORY);
+    }
+    
+    public ItemStack createItemForSet(CardSet set, ItemStackHandler itemHandler)
     {
         ItemStack itemStack = new ItemStack(this);
         setCardSet(itemStack, set);
-        setItemHandler(itemStack, itemHandler);
+        getItemHandler(itemStack).ifPresent(current -> current.deserializeNBT(itemHandler.serializeNBT()));
         return itemStack;
     }
     
@@ -131,17 +157,37 @@ public class OpenedCardSetItem extends CardSetBaseItem implements INamedContaine
     }
     
     @Override
-    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
+    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt)
     {
-        Hand hand = YdmUtil.getActiveItem(player, this);
-        ItemStack itemStack = player.getItemInHand(hand);
-        IItemHandler itemHandler = getItemHandler(itemStack);
-        return new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInventory, itemHandler, hand);
+        super.readShareTag(stack, nbt);
+        
+        if(nbt != null && nbt.contains("card_item_inventory", Constants.NBT.TAG_COMPOUND))
+        {
+            stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
+            {
+                handler.deserializeNBT(nbt.getCompound("card_item_inventory"));
+            });
+        }
     }
     
+    @Nullable
     @Override
-    public ITextComponent getDisplayName()
+    public CompoundNBT getShareTag(ItemStack stack)
     {
-        return new TranslationTextComponent("container." + YDM.MOD_ID + ".card_set");
+        CompoundNBT nbt = super.getShareTag(stack);
+        
+        if(nbt == null)
+        {
+            nbt = new CompoundNBT();
+        }
+        
+        CompoundNBT finalNBT = nbt;
+        
+        stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
+        {
+            finalNBT.put("card_item_inventory", handler.serializeNBT());
+        });
+        
+        return finalNBT;
     }
 }

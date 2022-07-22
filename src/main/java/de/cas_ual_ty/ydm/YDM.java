@@ -16,18 +16,24 @@ import de.cas_ual_ty.ydm.duel.network.DuelMessageHeaderType;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
+import de.cas_ual_ty.ydm.simplebinder.SimpleBinderItem;
 import de.cas_ual_ty.ydm.task.WorkerManager;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent.NewRegistry;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -40,6 +46,8 @@ import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -80,6 +88,9 @@ public class YDM
     
     @CapabilityInject(CardBinderCardsManager.class)
     public static Capability<CardBinderCardsManager> BINDER_INVENTORY_CAPABILITY = null;
+    
+    @CapabilityInject(IItemHandler.class)
+    public static Capability<ItemStackHandler> CARD_ITEM_INVENTORY = null;
     
     public static IForgeRegistry<ActionIcon> actionIconRegistry;
     public static IForgeRegistry<ZoneType> zoneTypeRegistry;
@@ -127,7 +138,7 @@ public class YDM
         bus = MinecraftForge.EVENT_BUS;
         // see: https://github.com/MinecraftForge/MinecraftForge/pull/6954
         // need to write directly to nbt for now
-        // bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
+        bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
         bus.addListener(this::registerCommands);
         bus.addListener(this::findDecks);
         bus.addListener(this::serverStopped);
@@ -199,70 +210,64 @@ public class YDM
         YdmDatabase.initDatabase();
     }
     
-    /*
     private void attachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event)
     {
-        if(event.getObject() instanceof ItemStack && event.getObject().getItem() == YdmItems.CARD_BINDER)
+        if(event.getObject().getItem() instanceof SimpleBinderItem)
         {
-            final LazyOptional<CardBinderCardsManager> instance = LazyOptional.of(CardBinderCardsManager::new);
-            final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>()
+            SimpleBinderItem item = (SimpleBinderItem) event.getObject().getItem();
+            ItemStackHandler handler = new ItemStackHandler(item.binderSize);
+            final LazyOptional<ItemStackHandler> instance = LazyOptional.of(() -> handler);
+            final ICapabilitySerializable<CompoundNBT> provider = new ICapabilitySerializable<CompoundNBT>()
             {
                 @Override
                 public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
                 {
-                    return YDM.BINDER_INVENTORY_CAPABILITY.orEmpty(cap, instance);
+                    return YDM.CARD_ITEM_INVENTORY.orEmpty(cap, instance);
                 }
                 
                 @Override
-                public INBT serializeNBT()
+                public CompoundNBT serializeNBT()
                 {
-                    return YDM.BINDER_INVENTORY_CAPABILITY.writeNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null);
+                    return handler.serializeNBT();
                 }
                 
                 @Override
-                public void deserializeNBT(INBT nbt)
+                public void deserializeNBT(CompoundNBT nbt)
                 {
-                    YDM.BINDER_INVENTORY_CAPABILITY.readNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null, nbt);
+                    handler.deserializeNBT(nbt);
                 }
             };
-            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_inventory_manager"), provider);
+            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_item_inventory"), provider);
             event.addListener(instance::invalidate);
         }
-        else if(event.getObject() instanceof ItemStack && event.getObject().getItem() instanceof DeckBoxItem)
+        if(event.getObject().getItem() == YdmItems.OPENED_SET)
         {
-            final LazyOptional<IItemHandler> instance = LazyOptional.of(() -> new ItemStackHandler(DeckHolder.TOTAL_DECK_SIZE)
-            {
-                @Override
-                public boolean isItemValid(int slot, @Nonnull ItemStack stack)
-                {
-                    return stack.getItem() == YdmItems.CARD;
-                }
-            });
-            final ICapabilitySerializable<INBT> provider = new ICapabilitySerializable<INBT>()
+            ItemStackHandler handler = new ItemStackHandler(0);
+            final LazyOptional<ItemStackHandler> instance = LazyOptional.of(() -> handler);
+            final ICapabilitySerializable<CompoundNBT> provider = new ICapabilitySerializable<CompoundNBT>()
             {
                 @Override
                 public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
                 {
-                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.orEmpty(cap, instance);
+                    return YDM.CARD_ITEM_INVENTORY.orEmpty(cap, instance);
                 }
                 
                 @Override
-                public INBT serializeNBT()
+                public CompoundNBT serializeNBT()
                 {
-                    return CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null);
+                    return handler.serializeNBT();
                 }
                 
                 @Override
-                public void deserializeNBT(INBT nbt)
+                public void deserializeNBT(CompoundNBT nbt)
                 {
-                    CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(instance.orElseThrow(YdmUtil.throwNullCapabilityException()), null, nbt);
+                    handler.deserializeNBT(nbt);
                 }
             };
-            event.addCapability(new ResourceLocation(YDM.MOD_ID, "item_handler"), provider);
+            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_item_inventory"), provider);
             event.addListener(instance::invalidate);
         }
     }
-    */
     
     private void registerCommands(RegisterCommandsEvent event)
     {

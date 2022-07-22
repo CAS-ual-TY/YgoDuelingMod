@@ -147,6 +147,11 @@ public class Properties
         return getType() == Type.MONSTER;
     }
     
+    public boolean getIsInExtraDeck()
+    {
+        return false;
+    }
+    
     public int getImageIndicesAmt()
     {
         return imageIndicesAmt;
