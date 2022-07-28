@@ -64,6 +64,41 @@ public class CardBinderMessages
         }
     }
     
+    // client changes search, tells server
+    public static class ChangeSearch
+    {
+        public String search;
+        
+        public ChangeSearch(String search)
+        {
+            this.search = search;
+        }
+        
+        public static void encode(ChangeSearch msg, PacketBuffer buf)
+        {
+            buf.writeUtf(msg.search);
+        }
+        
+        public static ChangeSearch decode(PacketBuffer buf)
+        {
+            return new ChangeSearch(buf.readUtf());
+        }
+        
+        public static void handle(ChangeSearch msg, Supplier<NetworkEvent.Context> ctx)
+        {
+            Context context = ctx.get();
+            context.enqueueWork(() ->
+            {
+                CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->
+                {
+                    container.updateSearch(msg.search);
+                });
+            });
+            
+            context.setPacketHandled(true);
+        }
+    }
+    
     // update pages to client
     public static class UpdatePage
     {

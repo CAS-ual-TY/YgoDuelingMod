@@ -29,7 +29,7 @@ public class CardInventory implements ICardInventory
     @Override
     public int getPagesAmount()
     {
-        return list.size() / cardsPerPage() + 1;
+        return activeList.size() / cardsPerPage() + 1;
     }
     
     /*
@@ -76,9 +76,9 @@ public class CardInventory implements ICardInventory
         page = YdmUtil.range(page, 1, getPagesAmount());
         
         int min = cardsPerPage() * (page - 1);
-        int max = Math.min(cardsPerPage() + min, list.size());
+        int max = Math.min(cardsPerPage() + min, activeList.size());
         
-        return list.subList(min, max);
+        return activeList.subList(min, max);
     }
     
     @Override
@@ -90,8 +90,8 @@ public class CardInventory implements ICardInventory
     @Override
     public CardHolder extractCard(int page, int index)
     {
-        CardHolder card = list.remove((page - 1) * cardsPerPage() + index);
-        activeList.remove(card);
+        CardHolder card = activeList.remove((page - 1) * cardsPerPage() + index);
+        list.remove(card);
         return card;
     }
     
@@ -105,7 +105,7 @@ public class CardInventory implements ICardInventory
         {
             for(CardHolder card : list)
             {
-                if(card.getCard().getName().contains(search))
+                if(card.getCard().getName().toLowerCase().contains(search.toLowerCase()))
                 {
                     activeList.add(card);
                 }
@@ -120,6 +120,6 @@ public class CardInventory implements ICardInventory
     @Override
     public int totalCardsSize()
     {
-        return list.size();
+        return activeList.size();
     }
 }

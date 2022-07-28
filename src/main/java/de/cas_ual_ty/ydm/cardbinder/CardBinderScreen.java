@@ -8,9 +8,11 @@ import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
+import de.cas_ual_ty.ydm.clientutil.widget.TextureButton;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IHasContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
+import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -35,6 +37,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     
     protected CardButton[] cardButtons;
     
+    protected Button reloadButton;
     protected Button prevButton;
     protected Button nextButton;
     
@@ -42,6 +45,8 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     
     protected int centerX;
     protected int centerY;
+    
+    protected TextFieldWidget cardSearch;
     
     public CardBinderScreen(CardBinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
     {
@@ -68,9 +73,13 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
                 addButton(button);
             }
         }
-        
-        addButton(prevButton = new ImprovedButton(leftPos + imageWidth - 80 - 8 - 27, topPos + imageHeight - 96, 40, 12, new TranslationTextComponent("container.ydm.card_binder.prev"), this::onButtonClicked));
-        addButton(nextButton = new ImprovedButton(leftPos + imageWidth - 40 - 8 - 27, topPos + imageHeight - 96, 40, 12, new TranslationTextComponent("container.ydm.card_binder.next"), this::onButtonClicked));
+    
+        addButton(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8 - 27, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.left_arrow"), this::onButtonClicked));
+        addButton(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8 - 27, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.right_arrow"), this::onButtonClicked));
+    
+        addButton(reloadButton = new TextureButton(leftPos + imageWidth - 12 - 8 - 27, topPos + imageHeight - 96, 12, 12, StringTextComponent.EMPTY, this::onButtonClicked)
+                .setTexture(new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_widgets.png"), 64, 0, 16, 16));
+        addButton(cardSearch = new TextFieldWidget(font, leftPos + imageWidth - 12 - 8 - 27 - 82, topPos + imageHeight - 96, 80, 12, StringTextComponent.EMPTY));
     }
     
     @Override
@@ -157,6 +166,10 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.ChangePage(true));
         }
+        else if(button == reloadButton)
+        {
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.ChangeSearch(this.cardSearch.getValue()));
+        }
     }
     
     protected void onCardClicked(CardButton button, int index)
@@ -186,7 +199,11 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
-        if(getMenu().loaded)
+        if(this.cardSearch != null && this.cardSearch.isFocused())
+        {
+            return this.cardSearch.keyPressed(keyCode, scanCode, modifiers);
+        }
+        else if(getMenu().loaded)
         {
             if(keyCode == CardBinderScreen.LEFT_SHIFT)
             {

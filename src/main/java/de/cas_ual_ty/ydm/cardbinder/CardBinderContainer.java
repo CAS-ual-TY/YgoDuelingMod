@@ -37,12 +37,16 @@ public class CardBinderContainer extends Container
     
     protected IInventory containerInv;
     
+    protected String currentSearch;
+    
     public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
     {
         this(type, id, playerInventory, null, YdmItems.CARD_BINDER.getActiveBinder(playerInventory.player));
         clientList = new ArrayList<>(CardInventory.DEFAULT_CARDS_PER_PAGE);
         page = 0;
         clientMaxPage = 0;
+        
+        currentSearch = "";
     }
     
     public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, UUIDCardsManager manager, ItemStack itemStack)
@@ -52,6 +56,8 @@ public class CardBinderContainer extends Container
         player = playerInventory.player;
         this.itemStack = itemStack;
         serverList = null;
+    
+        currentSearch = "";
         
         loaded = false;
         
@@ -213,6 +219,19 @@ public class CardBinderContainer extends Container
         }
     }
     
+    public void updateSearch(String search)
+    {
+        YDM.log("updateSearch: " + search);
+        
+        if(!search.equals(this.currentSearch))
+        {
+            YDM.log("updateSearch2: " + search);
+    
+            this.currentSearch = search;
+            updateCardsList(currentSearch);
+        }
+    }
+    
     public void nextPage()
     {
         if(!manager.isLoaded())
@@ -261,9 +280,7 @@ public class CardBinderContainer extends Container
         if(manager.isLoaded())
         {
             serverList = new CardInventory(manager.getList());
-            updateCardsList("");
-            updatePagesToClient();
-            updateListToClient();
+            updateCardsList(currentSearch);
         }
         else if(manager.isSafed())
         {
@@ -273,8 +290,10 @@ public class CardBinderContainer extends Container
     
     public void updateCardsList(String search)
     {
+        YDM.log("updateCardsList: " + search);
         serverList.updateCardsList(search);
         page = 1;
+        updatePagesToClient();
         updateListToClient();
     }
     
@@ -300,8 +319,8 @@ public class CardBinderContainer extends Container
             
             if(insertionSlot.mayPlace(stack))
             {
-                slot.set(ItemStack.EMPTY);
-                insertionSlot.set(stack);
+                ItemStack split = stack.split(1);
+                insertionSlot.set(split);
             }
         }
         
