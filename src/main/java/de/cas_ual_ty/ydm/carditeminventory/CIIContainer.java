@@ -63,6 +63,7 @@ public class CIIContainer extends Container
             {
                 int slotIndex = k + j * 9;
                 int itemIndex = page * PAGE_SIZE + slotIndex;
+                slotIndex += 4 * 9;
                 
                 if(itemIndex >= itemHandler.getSlots())
                 {

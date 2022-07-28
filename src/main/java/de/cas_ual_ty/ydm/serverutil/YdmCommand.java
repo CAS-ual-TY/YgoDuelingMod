@@ -3,7 +3,6 @@ package de.cas_ual_ty.ydm.serverutil;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
@@ -14,6 +13,7 @@ import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.set.CardSetBaseItem;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
+import net.minecraft.command.arguments.UUIDArgument;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
@@ -38,12 +38,12 @@ public class YdmCommand
                                                 .executes((context) -> YdmCommand.bindersGet(context)))
                                         .then(Commands.literal("create")
                                                 .requires((source) -> source.getServer().isSingleplayer() || source.hasPermission(2))
-                                                .then(Commands.argument("uuid", StringArgumentType.word())
-                                                        .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid")))))
+                                                .then(Commands.argument("uuid", UUIDArgument.uuid())
+                                                        .executes((context) -> YdmCommand.bindersSet(context, UUIDArgument.getUuid(context, "uuid")))))
                                         .then(Commands.literal("set")
                                                 .requires((source) -> source.getServer().isSingleplayer() || source.hasPermission(2))
-                                                .then(Commands.argument("uuid", StringArgumentType.word())
-                                                        .executes((context) -> YdmCommand.bindersSet(context, StringArgumentType.getString(context, "uuid"))))))
+                                                .then(Commands.argument("uuid", UUIDArgument.uuid())
+                                                        .executes((context) -> YdmCommand.bindersSet(context, UUIDArgument.getUuid(context, "uuid"))))))
                                 .then(Commands.literal("fill")
                                         .requires((source) -> source.getEntity() instanceof PlayerEntity)
                                         .executes((context) -> YdmCommand.bindersFill(context, 3))
@@ -67,11 +67,10 @@ public class YdmCommand
         return Command.SINGLE_SUCCESS;
     }
     
-    public static int bindersCreate(CommandContext<CommandSource> context, String uuidArg)
+    public static int bindersCreate(CommandContext<CommandSource> context, UUID uuid)
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            UUID uuid = UUID.fromString(uuidArg);
             ItemStack itemStack = new ItemStack(YdmItems.CARD_BINDER);
             CardBinderCardsManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
             m.setUUID(uuid);
@@ -82,28 +81,15 @@ public class YdmCommand
         return Command.SINGLE_SUCCESS;
     }
     
-    public static int bindersSet(CommandContext<CommandSource> context, String uuidArg)
+    public static int bindersSet(CommandContext<CommandSource> context, UUID uuid)
     {
         if(context.getSource().getEntity() instanceof PlayerEntity)
         {
-            UUID uuid = UUID.fromString(uuidArg);
             ItemStack itemStack = YdmItems.CARD_BINDER.getActiveBinder((PlayerEntity) context.getSource().getEntity());
             
             if(!itemStack.isEmpty())
             {
-                CardBinderCardsManager m = YdmItems.CARD_BINDER.getInventoryManager(itemStack);
-                
-                UUID uuidOld = m.getUUID();
-                m.setUUID(uuid);
-                
-                if(uuidOld == null)
-                {
-                    context.getSource().sendSuccess(new StringTextComponent("Binder did not have an UUID!"), true);
-                }
-                else
-                {
-                    context.getSource().sendSuccess(new StringTextComponent("Old Binder UUID: " + uuidOld.toString()), true);
-                }
+                YdmItems.CARD_BINDER.setUUIDAndUpdateManager(itemStack, uuid);
                 
                 context.getSource().sendSuccess(new StringTextComponent("Set Binder UUID to: " + uuid.toString()), true);
             }

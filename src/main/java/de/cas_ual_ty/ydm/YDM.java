@@ -2,6 +2,8 @@ package de.cas_ual_ty.ydm;
 
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderMessages;
+import de.cas_ual_ty.ydm.cardbinder.IUUIDHolder;
+import de.cas_ual_ty.ydm.cardbinder.UUIDHolder;
 import de.cas_ual_ty.ydm.cardinventory.JsonCardsManager;
 import de.cas_ual_ty.ydm.carditeminventory.CIIMessages;
 import de.cas_ual_ty.ydm.cardsupply.CardSupplyMessages;
@@ -23,7 +25,7 @@ import de.cas_ual_ty.ydm.util.YdmIOUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
 import net.minecraft.util.Direction;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
@@ -32,6 +34,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -86,8 +89,8 @@ public class YDM
     
     public static SimpleChannel channel;
     
-    @CapabilityInject(CardBinderCardsManager.class)
-    public static Capability<CardBinderCardsManager> BINDER_INVENTORY_CAPABILITY = null;
+    @CapabilityInject(IUUIDHolder.class)
+    public static Capability<UUIDHolder> UUID_HOLDER = null;
     
     @CapabilityInject(IItemHandler.class)
     public static Capability<ItemStackHandler> CARD_ITEM_INVENTORY = null;
@@ -212,60 +215,56 @@ public class YDM
     
     private void attachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event)
     {
+        if(event.getObject().getItem() == YdmItems.CARD_BINDER)
+        {
+            attachCapability(event, new UUIDHolder(), UUID_HOLDER, "uuid_holder", true);
+        }
         if(event.getObject().getItem() instanceof SimpleBinderItem)
         {
             SimpleBinderItem item = (SimpleBinderItem) event.getObject().getItem();
             ItemStackHandler handler = new ItemStackHandler(item.binderSize);
-            final LazyOptional<ItemStackHandler> instance = LazyOptional.of(() -> handler);
-            final ICapabilitySerializable<CompoundNBT> provider = new ICapabilitySerializable<CompoundNBT>()
-            {
-                @Override
-                public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
-                {
-                    return YDM.CARD_ITEM_INVENTORY.orEmpty(cap, instance);
-                }
-                
-                @Override
-                public CompoundNBT serializeNBT()
-                {
-                    return handler.serializeNBT();
-                }
-                
-                @Override
-                public void deserializeNBT(CompoundNBT nbt)
-                {
-                    handler.deserializeNBT(nbt);
-                }
-            };
-            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_item_inventory"), provider);
-            event.addListener(instance::invalidate);
+            attachCapability(event, handler, CARD_ITEM_INVENTORY, "card_item_inventory", true);
         }
         if(event.getObject().getItem() == YdmItems.OPENED_SET)
         {
-            ItemStackHandler handler = new ItemStackHandler(0);
-            final LazyOptional<ItemStackHandler> instance = LazyOptional.of(() -> handler);
-            final ICapabilitySerializable<CompoundNBT> provider = new ICapabilitySerializable<CompoundNBT>()
+            attachCapability(event, new ItemStackHandler(0), CARD_ITEM_INVENTORY, "card_item_inventory", true);
+        }
+    }
+    
+    private static <T extends INBT, C extends INBTSerializable<T>> void attachCapability(AttachCapabilitiesEvent<?> event, C capData, Capability<C> capability, String name, boolean invalidate)
+    {
+        LazyOptional<C> optional = LazyOptional.of(() -> capData);
+        ICapabilitySerializable<T> provider = new ICapabilitySerializable<T>()
+        {
+            @Override
+            public <S> LazyOptional<S> getCapability(Capability<S> cap, Direction side)
             {
-                @Override
-                public <T> LazyOptional<T> getCapability(Capability<T> cap, Direction side)
+                if(cap == capability)
                 {
-                    return YDM.CARD_ITEM_INVENTORY.orEmpty(cap, instance);
+                    return optional.cast();
                 }
                 
-                @Override
-                public CompoundNBT serializeNBT()
-                {
-                    return handler.serializeNBT();
-                }
-                
-                @Override
-                public void deserializeNBT(CompoundNBT nbt)
-                {
-                    handler.deserializeNBT(nbt);
-                }
-            };
-            event.addCapability(new ResourceLocation(YDM.MOD_ID, "card_item_inventory"), provider);
-            event.addListener(instance::invalidate);
+                return LazyOptional.empty();
+            }
+            
+            @Override
+            public T serializeNBT()
+            {
+                return capData.serializeNBT();
+            }
+            
+            @Override
+            public void deserializeNBT(T tag)
+            {
+                capData.deserializeNBT(tag);
+            }
+        };
+        
+        event.addCapability(new ResourceLocation(MOD_ID, name), provider);
+        
+        if(invalidate)
+        {
+            event.addListener(optional::invalidate);
         }
     }
     
