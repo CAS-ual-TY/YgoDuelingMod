@@ -168,8 +168,16 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     public CompoundNBT getShareTag(ItemStack stack)
     {
         CompoundNBT nbt = super.getShareTag(stack);
-        stack.getCapability(YDM.UUID_HOLDER).ifPresent(holder -> nbt.put(MANAGER_UUID_KEY, holder.serializeNBT()));
-        return nbt;
+        
+        if(nbt == null)
+        {
+            nbt = new CompoundNBT();
+        }
+        
+        CompoundNBT finalNbt = nbt;
+        
+        stack.getCapability(YDM.UUID_HOLDER).ifPresent(holder -> finalNbt.put(MANAGER_UUID_KEY, holder.serializeNBT()));
+        return finalNbt;
     }
     
     @Override

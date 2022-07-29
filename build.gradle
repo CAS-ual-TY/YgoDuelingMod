@@ -17,7 +17,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 compileJava.options.encoding = 'UTF-8'
 
-version = '1.16.5-2.10.0.41'
+version = '1.16.5-2.10.1.42'
 group = 'de.cas_ual_ty.ydm' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'ydm'
 
