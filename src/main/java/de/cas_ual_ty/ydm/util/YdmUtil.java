@@ -176,12 +176,12 @@ public class YdmUtil
                             commands = YDM.commonConfig.defeatBothOnCDCommands.getPath();
                         }
                     }
-    
+                    
                     if(cdWinner.isOffCooldown())
                     {
                         cdWinner.setCooldown(YDM.commonConfig.winnerCooldown.get());
                     }
-    
+                    
                     if(cdLoser.isOffCooldown())
                     {
                         cdLoser.setCooldown(YDM.commonConfig.loserCooldown.get());
@@ -245,12 +245,12 @@ public class YdmUtil
                             commands = YDM.commonConfig.drawBothOnCDCommands.getPath();
                         }
                     }
-    
+                    
                     if(cd1.isOffCooldown())
                     {
                         cd1.setCooldown(YDM.commonConfig.drawCooldown.get());
                     }
-    
+                    
                     if(cd2.isOffCooldown())
                     {
                         cd2.setCooldown(YDM.commonConfig.drawCooldown.get());
