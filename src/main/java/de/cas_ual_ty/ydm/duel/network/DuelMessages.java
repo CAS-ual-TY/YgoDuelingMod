@@ -645,4 +645,66 @@ public class DuelMessages
             }
         }
     }
+    
+    public static class SendAdmitDefeat extends DuelMessage.ServerBaseMessage
+    {
+        public SendAdmitDefeat(DuelMessageHeader header)
+        {
+            super(header);
+        }
+        
+        public SendAdmitDefeat(PacketBuffer buf)
+        {
+            super(buf);
+        }
+        
+        @Override
+        public void encodeMessage(PacketBuffer buf)
+        {
+        
+        }
+        
+        @Override
+        public void decodeMessage(PacketBuffer buf)
+        {
+        
+        }
+        
+        @Override
+        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        {
+            provider.getDuelManager().playerAdmitsDefeat(player);
+        }
+    }
+    
+    public static class SendOfferDraw extends DuelMessage.ServerBaseMessage
+    {
+        public SendOfferDraw(DuelMessageHeader header)
+        {
+            super(header);
+        }
+        
+        public SendOfferDraw(PacketBuffer buf)
+        {
+            super(buf);
+        }
+        
+        @Override
+        public void encodeMessage(PacketBuffer buf)
+        {
+        
+        }
+        
+        @Override
+        public void decodeMessage(PacketBuffer buf)
+        {
+        
+        }
+        
+        @Override
+        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        {
+            provider.getDuelManager().playerOffersDraw(player);
+        }
+    }
 }

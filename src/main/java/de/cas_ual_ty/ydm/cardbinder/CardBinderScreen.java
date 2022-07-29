@@ -73,10 +73,10 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
                 addButton(button);
             }
         }
-    
+        
         addButton(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8 - 27, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.left_arrow"), this::onButtonClicked));
         addButton(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8 - 27, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.right_arrow"), this::onButtonClicked));
-    
+        
         addButton(reloadButton = new TextureButton(leftPos + imageWidth - 12 - 8 - 27, topPos + imageHeight - 96, 12, 12, StringTextComponent.EMPTY, this::onButtonClicked)
                 .setTexture(new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_widgets.png"), 64, 0, 16, 16));
         addButton(cardSearch = new TextFieldWidget(font, leftPos + imageWidth - 12 - 8 - 27 - 82, topPos + imageHeight - 96, 80, 12, StringTextComponent.EMPTY));
@@ -168,7 +168,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
         }
         else if(button == reloadButton)
         {
-            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.ChangeSearch(this.cardSearch.getValue()));
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.ChangeSearch(cardSearch.getValue()));
         }
     }
     
@@ -199,9 +199,9 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers)
     {
-        if(this.cardSearch != null && this.cardSearch.isFocused())
+        if(cardSearch != null && cardSearch.isFocused())
         {
-            return this.cardSearch.keyPressed(keyCode, scanCode, modifiers);
+            return cardSearch.keyPressed(keyCode, scanCode, modifiers);
         }
         else if(getMenu().loaded)
         {

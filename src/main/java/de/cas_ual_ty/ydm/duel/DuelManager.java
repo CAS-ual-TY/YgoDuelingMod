@@ -7,12 +7,10 @@ import de.cas_ual_ty.ydm.duel.action.*;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import de.cas_ual_ty.ydm.duel.playfield.*;
+import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.network.PacketDistributor;
 
@@ -54,6 +52,12 @@ public class DuelManager
     public DeckHolder player2Deck;
     
     public Random random;
+    
+    public boolean player1OfferedDraw;
+    public boolean player2OfferedDraw;
+    
+    public boolean player1AdmittingDefeat;
+    public boolean player2AdmittingDefeat;
     
     public DuelManager(boolean isRemote, Supplier<DuelMessageHeader> header)
     {
@@ -223,6 +227,10 @@ public class DuelManager
         playField = new PlayField(this, getPlayFieldType());
         player1Deck = null;
         player2Deck = null;
+        player1OfferedDraw = false;
+        player2OfferedDraw = false;
+        player1AdmittingDefeat = false;
+        player2AdmittingDefeat = false;
     }
     
     protected void resetPlayer1()
@@ -452,6 +460,12 @@ public class DuelManager
     
     public void setDuelStateAndUpdate(DuelState duelState)
     {
+        if(duelState == DuelState.END)
+        {
+            doForAllPlayers(this::kickPlayer);
+            return;
+        }
+        
         this.duelState = duelState;
         
         if(!isRemote)
@@ -713,6 +727,12 @@ public class DuelManager
         {
             doAction(action);
             
+            if(!player.level.isClientSide)
+            {
+                setPlayerOffersDraw(player, role, false);
+                setPlayerAdmitsDefeat(player, role, false);
+            }
+            
             // if action throws, it is no announced
             
             if(action instanceof IAnnouncedAction)
@@ -725,6 +745,129 @@ public class DuelManager
         catch(Exception e)
         {
             // action failed
+        }
+    }
+    
+    public void setPlayerOffersDraw(PlayerEntity player, PlayerRole role, boolean offersDraw)
+    {
+        boolean previous;
+        
+        if(role == PlayerRole.PLAYER1 && player1OfferedDraw != offersDraw)
+        {
+            previous = player1OfferedDraw;
+            player1OfferedDraw = offersDraw;
+        }
+        else if(role == PlayerRole.PLAYER2)
+        {
+            previous = player2OfferedDraw;
+            player2OfferedDraw = offersDraw;
+        }
+        else
+        {
+            return;
+        }
+        
+        if(previous == offersDraw)
+        {
+            return; // dont send message
+        }
+        
+        if(offersDraw)
+        {
+            logAndSendMessage(new DuelChatMessage(new StringTextComponent("Offering Draw"), player.getName(), role, true));
+        }
+        else
+        {
+            logAndSendMessage(new DuelChatMessage(new StringTextComponent("Cancel Draw Offer"), player.getName(), role, true));
+        }
+    }
+    
+    public boolean setPlayerAdmitsDefeat(PlayerEntity player, PlayerRole role, boolean admitsDefeat)
+    {
+        boolean previous = false;
+        
+        if(role == PlayerRole.PLAYER1)
+        {
+            if(admitsDefeat)
+            {
+                if(player1AdmittingDefeat)
+                {
+                    logAndSendMessage(new DuelChatMessage(new StringTextComponent("Admit Defeat"), player.getName(), role, true));
+                    return true;
+                }
+            }
+            
+            previous = player1AdmittingDefeat;
+            player1AdmittingDefeat = admitsDefeat;
+        }
+        else if(role == PlayerRole.PLAYER2)
+        {
+            if(admitsDefeat)
+            {
+                if(player2AdmittingDefeat)
+                {
+                    logAndSendMessage(new DuelChatMessage(new StringTextComponent("Admit Defeat"), player.getName(), role, true));
+                    return true;
+                }
+            }
+            
+            previous = player2AdmittingDefeat;
+            player2AdmittingDefeat = admitsDefeat;
+        }
+        else
+        {
+            return false;
+        }
+        
+        if(previous == admitsDefeat)
+        {
+            return false;
+        }
+        
+        if(admitsDefeat)
+        {
+            sendMessageTo(player, new DuelChatMessage(new StringTextComponent("Click 'Admit Defeat' again to confirm"), player.getName(), role, true));
+        }
+        else
+        {
+            sendMessageTo(player, new DuelChatMessage(new StringTextComponent("Cancel 'Admit Defeat'"), player.getName(), role, true));
+        }
+        
+        return false;
+    }
+    
+    public void playerOffersDraw(PlayerEntity player)
+    {
+        PlayerRole role = getRoleFor(player);
+        setPlayerOffersDraw(player, role, role == PlayerRole.PLAYER1 ? !player1OfferedDraw : (role == PlayerRole.PLAYER2 ? !player2OfferedDraw : false));
+        
+        if(player1OfferedDraw && player2OfferedDraw)
+        {
+            YdmUtil.executeDrawCommands(player1, player2);
+            setDuelStateAndUpdate(DuelState.END);
+        }
+    }
+    
+    public void playerAdmitsDefeat(PlayerEntity player)
+    {
+        PlayerRole role = getRoleFor(player);
+        
+        boolean end = false;
+        
+        if(role == PlayerRole.PLAYER1 && setPlayerAdmitsDefeat(player, role, true))
+        {
+            YdmUtil.executeAdmitDefeatCommands(player2, player1);
+            end = true;
+        }
+        else if(role == PlayerRole.PLAYER2 && setPlayerAdmitsDefeat(player, role, true))
+        {
+            YdmUtil.executeAdmitDefeatCommands(player1, player2);
+            end = true;
+        }
+        
+        if(end)
+        {
+            setDuelStateAndUpdate(DuelState.END);
         }
     }
     
@@ -741,6 +884,7 @@ public class DuelManager
         {
             sendActionToAll(action);
         }
+        
         logAction(action);
     }
     

@@ -992,8 +992,14 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         {
             flip();
         }
-        // TODO offer draw
-        // TODO admit defeat
+        else if(w == admitDefeatButton)
+        {
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.SendAdmitDefeat(getHeader()));
+        }
+        else if(w == offerDrawButton)
+        {
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.SendOfferDraw(getHeader()));
+        }
     }
     
     protected void leftButtonClicked(Button button)
@@ -1139,11 +1145,11 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
         }
         else if(w == offerDrawButton)
         {
-            renderDisabledTooltip(ms, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.offer_draw"), mouseX, mouseY);
+            renderTooltip(ms, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.offer_draw"), mouseX, mouseY);
         }
         else if(w == admitDefeatButton)
         {
-            renderDisabledTooltip(ms, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.admit_defeat"), mouseX, mouseY);
+            renderTooltip(ms, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.admit_defeat"), mouseX, mouseY);
         }
     }
     

@@ -56,7 +56,7 @@ public class CardBinderContainer extends Container
         player = playerInventory.player;
         this.itemStack = itemStack;
         serverList = null;
-    
+        
         currentSearch = "";
         
         loaded = false;
@@ -223,11 +223,11 @@ public class CardBinderContainer extends Container
     {
         YDM.log("updateSearch: " + search);
         
-        if(!search.equals(this.currentSearch))
+        if(!search.equals(currentSearch))
         {
             YDM.log("updateSearch2: " + search);
-    
-            this.currentSearch = search;
+            
+            currentSearch = search;
             updateCardsList(currentSearch);
         }
     }

@@ -66,6 +66,18 @@ minecraft {
             }
         }
 
+        client1 {
+            parent runs.client
+
+            args '--username', 'Duelist1'
+        }
+
+        client2 {
+            parent runs.client
+
+            args '--username', 'Duelist2'
+        }
+
         server {
             workingDirectory project.file('run')
 

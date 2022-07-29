@@ -20,8 +20,11 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.simplebinder.SimpleBinderItem;
 import de.cas_ual_ty.ydm.task.WorkerManager;
+import de.cas_ual_ty.ydm.util.CooldownHolder;
+import de.cas_ual_ty.ydm.util.ICooldownHolder;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -39,6 +42,8 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.RegistryEvent.NewRegistry;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -95,6 +100,9 @@ public class YDM
     @CapabilityInject(IItemHandler.class)
     public static Capability<ItemStackHandler> CARD_ITEM_INVENTORY = null;
     
+    @CapabilityInject(ICooldownHolder.class)
+    public static Capability<CooldownHolder> COOLDOWN_HOLDER = null;
+    
     public static IForgeRegistry<ActionIcon> actionIconRegistry;
     public static IForgeRegistry<ZoneType> zoneTypeRegistry;
     public static IForgeRegistry<ActionType> actionTypeRegistry;
@@ -142,6 +150,9 @@ public class YDM
         // see: https://github.com/MinecraftForge/MinecraftForge/pull/6954
         // need to write directly to nbt for now
         bus.addGenericListener(ItemStack.class, this::attachItemStackCapabilities);
+        bus.addGenericListener(Entity.class, this::attachPlayerCapabilities);
+        bus.addListener(this::playerClone);
+        bus.addListener(this::playerTick);
         bus.addListener(this::registerCommands);
         bus.addListener(this::findDecks);
         bus.addListener(this::serverStopped);
@@ -187,6 +198,8 @@ public class YDM
         DuelMessage.register(YDM.channel, index++, DuelMessages.SendMessageToServer.class, DuelMessages.SendMessageToServer::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.SendMessageToClient.class, DuelMessages.SendMessageToClient::new);
         DuelMessage.register(YDM.channel, index++, DuelMessages.SendAllMessagesToClient.class, DuelMessages.SendAllMessagesToClient::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.SendAdmitDefeat.class, DuelMessages.SendAdmitDefeat::new);
+        DuelMessage.register(YDM.channel, index++, DuelMessages.SendOfferDraw.class, DuelMessages.SendOfferDraw::new);
         YDM.channel.registerMessage(index++, CIIMessages.SetPage.class, CIIMessages.SetPage::encode, CIIMessages.SetPage::decode, CIIMessages.SetPage::handle);
         YDM.channel.registerMessage(index++, CIIMessages.ChangePage.class, CIIMessages.ChangePage::encode, CIIMessages.ChangePage::decode, CIIMessages.ChangePage::handle);
         
@@ -232,6 +245,15 @@ public class YDM
         }
     }
     
+    private void attachPlayerCapabilities(AttachCapabilitiesEvent<Entity> event)
+    {
+        if(event.getObject() instanceof PlayerEntity)
+        {
+            PlayerEntity player = (PlayerEntity) event.getObject();
+            attachCapability(event, new CooldownHolder(), COOLDOWN_HOLDER, "cooldown_holder", false);
+        }
+    }
+    
     private static <T extends INBT, C extends INBTSerializable<T>> void attachCapability(AttachCapabilitiesEvent<?> event, C capData, Capability<C> capability, String name, boolean invalidate)
     {
         LazyOptional<C> optional = LazyOptional.of(() -> capData);
@@ -266,6 +288,32 @@ public class YDM
         if(invalidate)
         {
             event.addListener(optional::invalidate);
+        }
+    }
+    
+    private void playerClone(PlayerEvent.Clone event)
+    {
+        final PlayerEntity original = event.getOriginal();
+        final PlayerEntity current = event.getPlayer();
+        
+        original.revive();
+        
+        original.getCapability(COOLDOWN_HOLDER).ifPresent(originalCD ->
+        {
+            current.getCapability(COOLDOWN_HOLDER).ifPresent(currentCD ->
+            {
+                currentCD.deserializeNBT(original.serializeNBT());
+            });
+        });
+        
+        original.remove();
+    }
+    
+    private void playerTick(TickEvent.PlayerTickEvent event)
+    {
+        if(event.phase == TickEvent.Phase.END)
+        {
+            event.player.getCapability(COOLDOWN_HOLDER).ifPresent(CooldownHolder::tick);
         }
     }
     

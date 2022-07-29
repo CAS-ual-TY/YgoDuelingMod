@@ -414,44 +414,48 @@ public class CustomDecks
             
             .build();
     
-    public static DeckSource getOjamaDeck()
-    {
-        return CustomDecks.makeDeckSource(CustomDecks.OJAMA_DECK_MAKER, new StringTextComponent("CAS_ual_TY's Ojarampage"), (c) -> c.getName().equals("Ojama Delta Hurricane!!"));
-    }
     
     public static List<DeckSource> getAllPatreonDeckSources()
     {
         List<DeckSource> list = new LinkedList<>();
         
-        list.add(CustomDecks.makeDeckSource(CustomDecks.KING_SCRUBBY_DECK_1, new StringTextComponent("King's Soul"), (c) -> c.getName().equals("Dark Magical Circle")));
-        list.add(CustomDecks.makeDeckSource(CustomDecks.BLESS_DECK_1, new StringTextComponent("\"Why did we make this?\""), (c) -> c.getName().equals("Duza the Meteor Cubic Vessel")));
-        list.add(CustomDecks.makeDeckSource(CustomDecks.KING_SCRUBBY_DECK_2, new StringTextComponent("King's Stardust Deck"), (c) -> c.getName().equals("Stardust Dragon")));
-        list.add(CustomDecks.makeDeckSource(CustomDecks.TIME_BLAZING_GAMING_DECK_1, new StringTextComponent("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker")));
-        list.add(CustomDecks.makeDeckSource(CustomDecks.LUIS_RAVEN_FLAME_DECK_1, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light")));
+        CustomDecks.addDeckSource(list, CustomDecks.OJAMA_DECK_MAKER, new StringTextComponent("CAS_ual_TY's Ojarampage"), (c) -> c.getName().equals("Ojama Delta Hurricane!!"));
+        CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_1, new StringTextComponent("King's Soul"), (c) -> c.getName().equals("Dark Magical Circle"));
+        CustomDecks.addDeckSource(list, CustomDecks.BLESS_DECK_1, new StringTextComponent("\"Why did we make this?\""), (c) -> c.getName().equals("Duza the Meteor Cubic Vessel"));
+        CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_2, new StringTextComponent("King's Stardust Deck"), (c) -> c.getName().equals("Stardust Dragon"));
+        CustomDecks.addDeckSource(list, CustomDecks.TIME_BLAZING_GAMING_DECK_1, new StringTextComponent("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker"));
+        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_1, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light"));
         
         return list;
     }
     
-    public static DeckSource makeDeckSource(Supplier<DeckHolder> deckHolder, ITextComponent name, Predicate<Properties> flagShipCardChooser)
+    public static void addDeckSource(List<DeckSource> decks, Supplier<DeckHolder> deckHolder, ITextComponent name, Predicate<Properties> flagShipCardChooser)
     {
-        DeckHolder deck = deckHolder.get();
-        
-        Properties card = YdmDatabase.PROPERTIES_LIST.getByIndex(0);
-        
-        if(deck.getMainDeck() != null && deck.getMainDeckSize() > 0)
+        try
         {
-            card = deck.getMainDeck().get(0).getCard();
-        }
-        
-        for(Properties c : YdmDatabase.PROPERTIES_LIST)
-        {
-            if(flagShipCardChooser.test(c))
+            DeckHolder deck = deckHolder.get();
+            
+            Properties card = YdmDatabase.PROPERTIES_LIST.getByIndex(0);
+            
+            if(deck.getMainDeck() != null && deck.getMainDeckSize() > 0)
             {
-                card = c;
-                break;
+                card = deck.getMainDeck().get(0).getCard();
             }
+            
+            for(Properties c : YdmDatabase.PROPERTIES_LIST)
+            {
+                if(flagShipCardChooser.test(c))
+                {
+                    card = c;
+                    break;
+                }
+            }
+            
+            DeckSource s = new DeckSource(deck, YdmItems.CARD.createItemForCard(card), name);
+            decks.add(s);
         }
-        
-        return new DeckSource(deck, YdmItems.CARD.createItemForCard(card), name);
+        catch(Exception e)
+        {
+        }
     }
 }
