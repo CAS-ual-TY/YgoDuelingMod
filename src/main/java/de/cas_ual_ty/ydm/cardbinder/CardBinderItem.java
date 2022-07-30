@@ -185,7 +185,7 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     {
         super.readShareTag(stack, nbt);
         
-        if(nbt != null && nbt.contains(MANAGER_UUID_KEY))
+        if(nbt != null && nbt.contains(MANAGER_UUID_KEY, 8))
         {
             stack.getCapability(YDM.UUID_HOLDER).ifPresent(holder -> holder.deserializeNBT((StringNBT) nbt.get(MANAGER_UUID_KEY)));
         }

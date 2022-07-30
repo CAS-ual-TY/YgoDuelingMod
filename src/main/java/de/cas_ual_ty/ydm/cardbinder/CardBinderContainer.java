@@ -221,12 +221,8 @@ public class CardBinderContainer extends Container
     
     public void updateSearch(String search)
     {
-        YDM.log("updateSearch: " + search);
-        
         if(!search.equals(currentSearch))
         {
-            YDM.log("updateSearch2: " + search);
-            
             currentSearch = search;
             updateCardsList(currentSearch);
         }
@@ -290,11 +286,17 @@ public class CardBinderContainer extends Container
     
     public void updateCardsList(String search)
     {
-        YDM.log("updateCardsList: " + search);
-        serverList.updateCardsList(search);
-        page = 1;
-        updatePagesToClient();
-        updateListToClient();
+        try
+        {
+            serverList.updateCardsList(search);
+            page = 1;
+            updatePagesToClient();
+            updateListToClient();
+        }
+        catch(Exception e)
+        {
+            player.closeContainer();
+        }
     }
     
     public Runnable genericCallback()

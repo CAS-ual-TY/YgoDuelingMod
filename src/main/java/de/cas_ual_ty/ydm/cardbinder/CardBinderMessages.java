@@ -76,12 +76,12 @@ public class CardBinderMessages
         
         public static void encode(ChangeSearch msg, PacketBuffer buf)
         {
-            buf.writeUtf(msg.search);
+            buf.writeUtf(msg.search, Short.MAX_VALUE);
         }
         
         public static ChangeSearch decode(PacketBuffer buf)
         {
-            return new ChangeSearch(buf.readUtf());
+            return new ChangeSearch(buf.readUtf(Short.MAX_VALUE));
         }
         
         public static void handle(ChangeSearch msg, Supplier<NetworkEvent.Context> ctx)
