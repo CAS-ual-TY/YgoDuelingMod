@@ -414,6 +414,67 @@ public class CustomDecks
             
             .build();
     
+    public static final Supplier<DeckHolder> LUIS_RAVEN_FLAME_DECK_2 = new DeckBuilder()
+            .startMainDeck()
+            .id(25451383L)
+            .id(25451383L)
+            .id(25451383L)
+            .id(35984222L)
+            .id(62962630L)
+            .id(62962630L)
+            .id(62962630L)
+            .id(68468459L)
+            .id(68468459L)
+            .id(68468459L)
+            .id(45484331L)
+            .id(55273560L)
+            .id(55273560L)
+            .id(19096726L)
+            .id(15717011L)
+            .id(79109599L)
+            .id(79109599L)
+            .id(79109599L)
+            .id(36577931L)
+            .id(36577931L)
+            .id(24094653L)
+            .id(24094653L)
+            .id(33782437L)
+            .id(34995106L)
+            .id(44362883L)
+            .id(44362883L)
+            .id(44362883L)
+            .id(70368879L)
+            .id(75500286L)
+            .id(81439173L)
+            .id(36637374L)
+            .id(36637374L)
+            .id(36637374L)
+            .id(18973184L)
+            .id(18973184L)
+            .id(18973184L)
+            .id(99543666L)
+            .id(1041278L)
+            .id(6763530L)
+            .id(17751597L)
+            .startExtraDeck()
+            .id(18666161L)
+            .id(11321089L)
+            .id(37818794L)
+            .id(44146295L)
+            .id(44146295L)
+            .id(41209828L)
+            .id(69946549L)
+            .id(70534340L)
+            .id(3410461L)
+            .id(72272462L)
+            .id(1906812L)
+            .id(6855503L)
+            .id(34848821L)
+            .id(87746184L)
+            .id(87746184L)
+            
+            .build();
+    
     
     public static List<DeckSource> getAllPatreonDeckSources()
     {
@@ -425,6 +486,7 @@ public class CustomDecks
         CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_2, new StringTextComponent("King's Stardust Deck"), (c) -> c.getName().equals("Stardust Dragon"));
         CustomDecks.addDeckSource(list, CustomDecks.TIME_BLAZING_GAMING_DECK_1, new StringTextComponent("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker"));
         CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_1, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light"));
+        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_2, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light"));
         
         return list;
     }
