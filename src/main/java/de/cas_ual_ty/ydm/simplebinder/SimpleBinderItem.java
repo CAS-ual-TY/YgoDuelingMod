@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.simplebinder;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -82,7 +83,7 @@ public class SimpleBinderItem extends Item
         return super.use(world, player, hand);
     }
     
-    public LazyOptional<ItemStackHandler> getItemHandler(ItemStack itemStack)
+    public LazyOptional<YDMItemHandler> getItemHandler(ItemStack itemStack)
     {
         return itemStack.getCapability(YDM.CARD_ITEM_INVENTORY);
     }

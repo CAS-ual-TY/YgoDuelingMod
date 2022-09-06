@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
@@ -38,6 +39,8 @@ public class CIIContainer extends Container
         player = playerInventoryIn.player;
         this.itemHandler = itemHandler;
         
+        attemptLoad();
+        
         createBottomSlots(playerInventoryIn);
         createTopSlots();
         
@@ -53,6 +56,22 @@ public class CIIContainer extends Container
     public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
     {
         this(type, id, playerInventoryIn, extraData.readInt());
+    }
+    
+    protected void attemptLoad()
+    {
+        if(itemHandler instanceof YDMItemHandler)
+        {
+            ((YDMItemHandler) itemHandler).load();
+        }
+    }
+    
+    protected void attemptSave()
+    {
+        if(itemHandler instanceof YDMItemHandler)
+        {
+            ((YDMItemHandler) itemHandler).save();
+        }
     }
     
     protected void createTopSlots()
@@ -165,6 +184,7 @@ public class CIIContainer extends Container
     
     public void updateSlots()
     {
+        attemptSave();
         slots.clear();
         createBottomSlots(player.inventory);
         createTopSlots();
@@ -209,6 +229,13 @@ public class CIIContainer extends Container
         }
         
         return ItemStack.EMPTY;
+    }
+    
+    @Override
+    public void removed(PlayerEntity pPlayer)
+    {
+        attemptSave();
+        super.removed(pPlayer);
     }
     
     public static void openGui(PlayerEntity player, int itemHandlerSize, INamedContainerProvider p)

@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.set;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,12 +53,16 @@ public class OpenedCardSetItem extends CardSetBaseItem
             if(hasOldItemHandler(itemStack))
             {
                 ItemStackHandler itemHandler = getOldItemHandler(itemStack);
-                getItemHandler(itemStack).ifPresent(current -> current.deserializeNBT(itemHandler.serializeNBT()));
+                getItemHandler(itemStack).ifPresent(current -> {
+                    current.deserializeNBT(itemHandler.serializeNBT());
+                    current.save();
+                });
                 removeOldItemHandler(itemStack);
             }
             
             getItemHandler(itemStack).ifPresent(itemHandler ->
             {
+                itemHandler.load();
                 HeldCIIContainer.openGui(player, hand, itemHandler.getSlots(), new INamedContainerProvider()
                 {
                     @Override
@@ -115,12 +120,12 @@ public class OpenedCardSetItem extends CardSetBaseItem
         nbt.remove("size");
     }
     
-    public LazyOptional<ItemStackHandler> getItemHandler(ItemStack itemStack)
+    public LazyOptional<YDMItemHandler> getItemHandler(ItemStack itemStack)
     {
         return itemStack.getCapability(YDM.CARD_ITEM_INVENTORY);
     }
     
-    public ItemStack createItemForSet(CardSet set, ItemStackHandler itemHandler)
+    public ItemStack createItemForSet(CardSet set, YDMItemHandler itemHandler)
     {
         ItemStack itemStack = new ItemStack(this);
         setCardSet(itemStack, set);
@@ -147,7 +152,11 @@ public class OpenedCardSetItem extends CardSetBaseItem
     
     public ItemStack createItemForSet(CardSet set, NonNullList<ItemStack> items)
     {
-        return createItemForSet(set, new ItemStackHandler(items));
+        ItemStack itemStack = new ItemStack(this);
+        YDMItemHandler itemHandler = new YDMItemHandler(items, itemStack::getOrCreateTag);
+        setCardSet(itemStack, set);
+        getItemHandler(itemStack).ifPresent(current -> current.deserializeNBT(itemHandler.serializeNBT()));
+        return itemStack;
     }
     
     @Override

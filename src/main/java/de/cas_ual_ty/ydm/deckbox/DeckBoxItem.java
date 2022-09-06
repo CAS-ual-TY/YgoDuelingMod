@@ -39,8 +39,6 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         ListNBT nbt = itemStack.getOrCreateTag().getList(DeckBoxItem.ITEM_HANDLER_KEY, Constants.NBT.TAG_COMPOUND);
         CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, nbt);
         return itemHandler;
-        
-        //        return itemStack.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).orElseThrow(YdmUtil.throwNullCapabilityException());
     }
     
     public ItemStack getCardSleeves(ItemStack itemStack)

@@ -20,10 +20,7 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneType;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.simplebinder.SimpleBinderItem;
 import de.cas_ual_ty.ydm.task.WorkerManager;
-import de.cas_ual_ty.ydm.util.CooldownHolder;
-import de.cas_ual_ty.ydm.util.ICooldownHolder;
-import de.cas_ual_ty.ydm.util.ISidedProxy;
-import de.cas_ual_ty.ydm.util.YdmIOUtil;
+import de.cas_ual_ty.ydm.util.*;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemGroup;
@@ -55,7 +52,6 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.network.NetworkRegistry;
 import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.commons.lang3.tuple.Pair;
@@ -98,7 +94,7 @@ public class YDM
     public static Capability<UUIDHolder> UUID_HOLDER = null;
     
     @CapabilityInject(IItemHandler.class)
-    public static Capability<ItemStackHandler> CARD_ITEM_INVENTORY = null;
+    public static Capability<YDMItemHandler> CARD_ITEM_INVENTORY = null;
     
     @CapabilityInject(ICooldownHolder.class)
     public static Capability<CooldownHolder> COOLDOWN_HOLDER = null;
@@ -231,17 +227,17 @@ public class YDM
     {
         if(event.getObject().getItem() == YdmItems.CARD_BINDER)
         {
-            attachCapability(event, new UUIDHolder(), UUID_HOLDER, "uuid_holder", true);
+            attachCapability(event, new UUIDHolder(event.getObject()::getOrCreateTag), UUID_HOLDER, "uuid_holder", true);
         }
         if(event.getObject().getItem() instanceof SimpleBinderItem)
         {
             SimpleBinderItem item = (SimpleBinderItem) event.getObject().getItem();
-            ItemStackHandler handler = new ItemStackHandler(item.binderSize);
+            YDMItemHandler handler = new YDMItemHandler(item.binderSize, event.getObject()::getOrCreateTag);
             attachCapability(event, handler, CARD_ITEM_INVENTORY, "card_item_inventory", true);
         }
         if(event.getObject().getItem() == YdmItems.OPENED_SET)
         {
-            attachCapability(event, new ItemStackHandler(0), CARD_ITEM_INVENTORY, "card_item_inventory", true);
+            attachCapability(event, new YDMItemHandler(0, event.getObject()::getOrCreateTag), CARD_ITEM_INVENTORY, "card_item_inventory", true);
         }
     }
     

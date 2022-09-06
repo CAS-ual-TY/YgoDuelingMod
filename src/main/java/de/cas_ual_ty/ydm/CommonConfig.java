@@ -25,6 +25,8 @@ public class CommonConfig
     public final ConfigValue<List<? extends String>> drawPlayer2OffCDCommands;
     public final ConfigValue<List<? extends String>> drawBothOffCDCommands;
     
+    public final ConfigValue<Boolean> mohistWorkaround;
+    
     public CommonConfig(ForgeConfigSpec.Builder builder)
     {
         builder.push("common");
@@ -32,6 +34,10 @@ public class CommonConfig
         dbSourceUrl = builder
                 .comment("Link to the db.json of the used cards and sets database.")
                 .define("dbSourceUrl", "https://raw.githubusercontent.com/CAS-ual-TY/YDM2-DB/master/db.json");
+        
+        mohistWorkaround = builder
+                .comment("If set to true contents will be saved directly to item NBTs to avoid wipes when using mohist.")
+                .define("mohistWorkaround", false);
         
         builder.push("commandCooldowns").comment("Cooldowns (in ticks; 1 second = 20 ticks) given to the players after commands are executed involving them.");
         
