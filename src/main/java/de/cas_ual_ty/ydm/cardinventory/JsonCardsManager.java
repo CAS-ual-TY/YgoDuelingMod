@@ -57,11 +57,17 @@ public abstract class JsonCardsManager
     
     public void load(Runnable callback)
     {
-        YDM.log("Trying to load card inventory from file: " + getFile().getAbsolutePath());
+        if(YDM.commonConfig.logBinderIO.get())
+        {
+            YDM.log("Trying to load card inventory from file: " + getFile().getAbsolutePath());
+        }
         
         if(isSafed())
         {
-            YDM.log("File will load!");
+            if(YDM.commonConfig.logBinderIO.get())
+            {
+                YDM.log("File will load!");
+            }
             
             setWorking();
             loaded = true;
@@ -74,7 +80,10 @@ public abstract class JsonCardsManager
             Task t = new Task(TaskPriority.BINDER_LOAD, () ->
             {
                 loadRunnable().run();
-                YDM.log("Done loading from file: " + getFile().getAbsolutePath());
+                if(YDM.commonConfig.logBinderIO.get())
+                {
+                    YDM.log("Done loading from file: " + getFile().getAbsolutePath());
+                }
                 setIdle();
                 callback.run();
             });
@@ -129,11 +138,17 @@ public abstract class JsonCardsManager
     
     public void safe(Runnable callback)
     {
-        YDM.log("Trying to save card inventory to file: " + getFile().getAbsolutePath());
+        if(YDM.commonConfig.logBinderIO.get())
+        {
+            YDM.log("Trying to save card inventory to file: " + getFile().getAbsolutePath());
+        }
         
         if(isLoaded())
         {
-            YDM.log("File will safe!");
+            if(YDM.commonConfig.logBinderIO.get())
+            {
+                YDM.log("File will safe!");
+            }
             
             setWorking();
             loaded = false;
@@ -146,7 +161,10 @@ public abstract class JsonCardsManager
             Task t = new Task(TaskPriority.BINDER_SAVE, () ->
             {
                 safeRunnable().run();
-                YDM.log("Done saving to file: " + getFile().getAbsolutePath());
+                if(YDM.commonConfig.logBinderIO.get())
+                {
+                    YDM.log("Done saving to file: " + getFile().getAbsolutePath());
+                }
                 setIdle();
                 callback.run();
             });

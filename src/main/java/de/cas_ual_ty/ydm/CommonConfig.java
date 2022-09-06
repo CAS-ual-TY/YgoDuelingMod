@@ -26,6 +26,7 @@ public class CommonConfig
     public final ConfigValue<List<? extends String>> drawBothOffCDCommands;
     
     public final ConfigValue<Boolean> mohistWorkaround;
+    public final ConfigValue<Boolean> logBinderIO;
     
     public CommonConfig(ForgeConfigSpec.Builder builder)
     {
@@ -38,6 +39,11 @@ public class CommonConfig
         mohistWorkaround = builder
                 .comment("If set to true contents will be saved directly to item NBTs to avoid wipes when using mohist.")
                 .define("mohistWorkaround", false);
+        
+        logBinderIO = builder
+                .comment("If set to true loading and saving from/to infinite binder files will be logged.")
+                .define("logInfiniteBinders", false);
+        
         
         builder.push("commandCooldowns").comment("Cooldowns (in ticks; 1 second = 20 ticks) given to the players after commands are executed involving them.");
         
