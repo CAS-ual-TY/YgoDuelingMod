@@ -42,8 +42,8 @@ public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
     @Override
     public void setUUID(UUID uuid)
     {
-        save();
         this.uuid = uuid;
+        save();
     }
     
     @Override
