@@ -71,6 +71,7 @@ public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
     {
         if(YDM.commonConfig.mohistWorkaround.get())
         {
+            UUID old = uuid;
             CompoundNBT nbt = nbtSupplier.get();
             
             if(nbt.contains("uuid_cap"))
@@ -82,12 +83,17 @@ public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
                     deserializeNBT((StringNBT) inbt);
                 }
             }
+            
+            if(uuid == null)
+            {
+                uuid = old;
+            }
         }
     }
     
     public void save()
     {
-        if(YDM.commonConfig.mohistWorkaround.get())
+        if(YDM.commonConfig.mohistWorkaround.get() && uuid != null)
         {
             CompoundNBT nbt = nbtSupplier.get();
             nbt.put("uuid_cap", serializeNBT());
