@@ -76,10 +76,11 @@ public class CardBinderContainer extends Container
                 if(serverList != null)
                 {
                     int maxPage = serverList.getPagesAmount();
-                    serverList.addCard(YdmItems.CARD.getCardHolder(stack));
+                    serverList.addCard(YdmItems.CARD.getCardHolder(stack), page);
                     
-                    if(page == maxPage)
+                    if(page == maxPage && currentSearch.isEmpty())
                     {
+                        serverList.updateCardsList("");
                         updateListToClient();
                     }
                     

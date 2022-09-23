@@ -82,7 +82,7 @@ public class CardInventory implements ICardInventory
     }
     
     @Override
-    public void addCard(CardHolder card)
+    public void addCard(CardHolder card, int currentPage)
     {
         list.add(card);
     }

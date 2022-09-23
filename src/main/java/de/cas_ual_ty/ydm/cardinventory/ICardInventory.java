@@ -10,7 +10,7 @@ public interface ICardInventory
     
     List<CardHolder> getCardsForPage(int page);
     
-    void addCard(CardHolder card);
+    void addCard(CardHolder card, int currentPage);
     
     CardHolder extractCard(int page, int index);
     
