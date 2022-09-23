@@ -486,7 +486,7 @@ public class CustomDecks
         CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_2, new StringTextComponent("King's Stardust Deck"), (c) -> c.getName().equals("Stardust Dragon"));
         CustomDecks.addDeckSource(list, CustomDecks.TIME_BLAZING_GAMING_DECK_1, new StringTextComponent("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker"));
         CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_1, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light"));
-        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_2, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light"));
+        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_2, new StringTextComponent("LuisRavenFlame1's Branded Control"), (c) -> c.getName().equals("Fallen of Albaz"));
         
         return list;
     }

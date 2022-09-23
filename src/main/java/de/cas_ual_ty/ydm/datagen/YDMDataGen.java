@@ -18,7 +18,7 @@ public class YDMDataGen
     {
         try
         {
-            ImageHandler.createCustomSleevesImages(CardSleevesType.P_3, "png");
+            ImageHandler.createCustomSleevesImages(CardSleevesType.DUELING_MC, "png");
         }
         catch(IOException e)
         {
