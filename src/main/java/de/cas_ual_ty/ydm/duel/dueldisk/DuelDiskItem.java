@@ -99,12 +99,12 @@ public class DuelDiskItem extends Item
                 if(dmUUID != null)
                 {
                     Entity e = level.getEntity(dmUUID);
-    
+                    
                     if(e instanceof DuelEntity)
                     {
                         //dm exists -> player2 already playing or player2s request was done recently
                         DuelEntity dm = (DuelEntity) e;
-    
+                        
                         if(dm.duelManager.hasStarted())
                         {
                             // player2 is already playing -> spectate
@@ -113,7 +113,7 @@ public class DuelDiskItem extends Item
                                 buf.writeInt(dm.getId());
                                 buf.writeBoolean(true);
                             });
-        
+                            
                             return ActionResultType.SUCCESS;
                         }
                         
