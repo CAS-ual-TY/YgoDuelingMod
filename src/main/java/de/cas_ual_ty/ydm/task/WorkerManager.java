@@ -22,39 +22,6 @@ public class WorkerManager
         
         Thread shutdownListener = new Thread(() ->
         {
-            int everythingDone = 0;
-            
-            for(; ; )
-            {
-                everythingDone++;
-                
-                for(Worker w : WorkerManager.WORKERS)
-                {
-                    if(w.isAlive() && w.isWorking)
-                    {
-                        everythingDone = 0;
-                        break;
-                    }
-                }
-                
-                // we do this check 3 times
-                // on 3rd time, we finish
-                if(everythingDone >= 3)
-                {
-                    break;
-                }
-                else
-                {
-                    try
-                    {
-                        TimeUnit.MILLISECONDS.sleep(WorkerManager.sleepMillis * 2);
-                    }
-                    catch(InterruptedException e)
-                    {
-                    }
-                }
-            }
-            
             YDM.forceTaskStop = true;
             
             for(Worker w : WorkerManager.WORKERS)
