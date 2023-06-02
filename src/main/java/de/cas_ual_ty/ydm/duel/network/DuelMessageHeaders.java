@@ -14,6 +14,7 @@ public class DuelMessageHeaders
 {
     public static final DuelMessageHeaderType CONTAINER = null;
     public static final DuelMessageHeaderType TILE_ENTITY = null;
+    public static final DuelMessageHeaderType ENTITY = null;
     
     @SubscribeEvent
     public static void registerItems(RegistryEvent.Register<DuelMessageHeaderType> event)
@@ -21,5 +22,6 @@ public class DuelMessageHeaders
         IForgeRegistry<DuelMessageHeaderType> registry = event.getRegistry();
         registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.ContainerHeader(DuelMessageHeaders.CONTAINER)).setRegistryName(YDM.MOD_ID, "container"));
         registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY)).setRegistryName(YDM.MOD_ID, "tile_entity"));
+        registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.EntityHeader(DuelMessageHeaders.ENTITY)).setRegistryName(YDM.MOD_ID, "entity"));
     }
 }

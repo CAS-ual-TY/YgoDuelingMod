@@ -319,9 +319,24 @@ public class DuelManager
         }
     }
     
-    protected void kickPlayer(PlayerEntity player)
+    public void kickPlayer(PlayerEntity player)
     {
         player.closeContainer();
+    }
+    
+    public void kickAllPlayers()
+    {
+        if(player1 != null)
+        {
+            kickPlayer(player1);
+        }
+        
+        if(player2 != null)
+        {
+            kickPlayer(player2);
+        }
+        
+        spectators.forEach(this::kickPlayer);
     }
     
     @Nullable
@@ -586,7 +601,7 @@ public class DuelManager
         return e.decksList;
     }
     
-    protected void sendDecksToPlayers()
+    public void sendDecksToPlayers()
     {
         if(player1Decks.isEmpty())
         {

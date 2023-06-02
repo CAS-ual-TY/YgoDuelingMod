@@ -2,10 +2,7 @@ package de.cas_ual_ty.ydm.clientutil;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.YdmContainerTypes;
-import de.cas_ual_ty.ydm.YdmDatabase;
-import de.cas_ual_ty.ydm.YdmItems;
+import de.cas_ual_ty.ydm.*;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import de.cas_ual_ty.ydm.card.CardSleevesType;
@@ -38,6 +35,7 @@ import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.config.ModConfig;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -181,12 +179,15 @@ public class ClientProxy implements ISidedProxy
         ScreenManager.register(YdmContainerTypes.CARD_BINDER, CardBinderScreen::new);
         ScreenManager.register(YdmContainerTypes.DECK_BOX, DeckBoxScreen::new);
         ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>register(YdmContainerTypes.DUEL_BLOCK_CONTAINER, DuelScreenBase::new);
+        ScreenManager.<DuelContainer, DuelContainerScreen<DuelContainer>>register(YdmContainerTypes.DUEL_ENTITY_CONTAINER, DuelScreenBase::new);
         ScreenManager.register(YdmContainerTypes.CARD_SUPPLY, CardSupplyScreen::new);
         ScreenManager.register(YdmContainerTypes.CARD_SET, (ScreenManager.IScreenFactory<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
         ScreenManager.register(YdmContainerTypes.CARD_SET_CONTENTS, (ScreenManager.IScreenFactory<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
         ScreenManager.register(YdmContainerTypes.SIMPLE_BINDER, (ScreenManager.IScreenFactory<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
         
         CardRenderUtil.init(ClientProxy.maxInfoImages, ClientProxy.maxMainImages);
+        
+        RenderingRegistry.registerEntityRenderingHandler(YdmEntityTypes.DUEL, DuelEntityRenderer::new);
     }
     
     @Override

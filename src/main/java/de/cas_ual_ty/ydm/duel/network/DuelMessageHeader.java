@@ -2,6 +2,7 @@ package de.cas_ual_ty.ydm.duel.network;
 
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.block.DuelTileEntity;
+import de.cas_ual_ty.ydm.duel.dueldisk.DuelEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.math.BlockPos;
@@ -74,6 +75,45 @@ public abstract class DuelMessageHeader
         {
             DuelTileEntity te0 = (DuelTileEntity) player.level.getBlockEntity(pos);
             DuelManager dm = te0.duelManager;
+            
+            return DistExecutor.<IDuelManagerProvider>unsafeRunForDist(
+                    () -> () -> new de.cas_ual_ty.ydm.duel.network.ClientDuelManagerProvider(dm),
+                    () -> () -> () -> dm);
+        }
+    }
+    
+    public static class EntityHeader extends DuelMessageHeader
+    {
+        public int entityId;
+        
+        public EntityHeader(DuelMessageHeaderType type, int entityId)
+        {
+            super(type);
+            this.entityId = entityId;
+        }
+        
+        public EntityHeader(DuelMessageHeaderType type)
+        {
+            super(type);
+        }
+        
+        @Override
+        public void writeToBuf(PacketBuffer buf)
+        {
+            buf.writeInt(entityId);
+        }
+        
+        @Override
+        public void readFromBuf(PacketBuffer buf)
+        {
+            entityId = buf.readInt();
+        }
+        
+        @Override
+        public IDuelManagerProvider getDuelManager(PlayerEntity player)
+        {
+            DuelEntity e = (DuelEntity) player.level.getEntity(entityId);
+            DuelManager dm = e.duelManager;
             
             return DistExecutor.<IDuelManagerProvider>unsafeRunForDist(
                     () -> () -> new de.cas_ual_ty.ydm.duel.network.ClientDuelManagerProvider(dm),
