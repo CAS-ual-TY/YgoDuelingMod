@@ -6,8 +6,8 @@ import java.util.LinkedList;
 
 public class TaskQueue
 {
-    private static final LinkedList<Task> TASK_QUEUE = new LinkedList<>();
-    private static final LinkedList<Task> TASKS_TO_ADD = new LinkedList<>();
+    public static final LinkedList<Task> TASK_QUEUE = new LinkedList<>();
+    public static final LinkedList<Task> TASKS_TO_ADD = new LinkedList<>();
     
     public static void addTask(Task t)
     {

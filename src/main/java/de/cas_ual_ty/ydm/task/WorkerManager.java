@@ -35,6 +35,14 @@ public class WorkerManager
                     }
                 }
             }
+            
+            for(Task t : TaskQueue.TASK_QUEUE)
+            {
+                if(t.priority == TaskPriority.BINDER_LOAD.priority || t.priority == TaskPriority.BINDER_SAVE.priority)
+                {
+                    t.run();
+                }
+            }
         },
                 YDM.MOD_ID_UP + " shutdown hook");
         
