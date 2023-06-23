@@ -4,7 +4,7 @@ import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class MoveAction extends DualZoneAction
 {
@@ -23,13 +23,13 @@ public abstract class MoveAction extends DualZoneAction
         this.player = player;
     }
     
-    public MoveAction(ActionType actionType, PacketBuffer buf)
+    public MoveAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readShort(), buf.readByte(), CardPosition.getFromIndex(buf.readByte()), DuelMessageUtility.decodeZoneOwner(buf));
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         buf.writeByte(destinationCardPosition.getIndex());

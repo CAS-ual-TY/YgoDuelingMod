@@ -4,11 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class Properties
         }
         
         @Override
-        public void addCardType(List<ITextComponent> list)
+        public void addCardType(List<Component> list)
         {
             
         }
@@ -214,34 +213,34 @@ public class Properties
         return new ResourceLocation(YDM.MOD_ID, "textures/item/" + YDM.proxy.getCardMainReplacementImage(this, adjustImageIndex(imageIndex)) + ".png");
     }
     
-    public void addInformation(List<ITextComponent> list)
+    public void addInformation(List<Component> list)
     {
         addHeader(list);
-        list.add(StringTextComponent.EMPTY);
+        list.add(Component.empty());
         addText(list);
     }
     
-    public void addHeader(List<ITextComponent> list)
+    public void addHeader(List<Component> list)
     {
-        list.add(new StringTextComponent(getName()));
+        list.add(Component.literal(getName()));
         
         if(isCustom)
         {
-            list.add(new StringTextComponent("Custom Card").setStyle(Style.EMPTY.applyFormat(TextFormatting.RED)));
+            list.add(Component.literal("Custom Card").setStyle(Style.EMPTY.applyFormat(ChatFormatting.RED)));
         }
         
-        list.add(StringTextComponent.EMPTY);
+        list.add(Component.empty());
         addCardType(list);
     }
     
-    public void addText(List<ITextComponent> list)
+    public void addText(List<Component> list)
     {
-        list.add(new StringTextComponent(getText()));
+        list.add(Component.literal(getText()));
     }
     
-    public void addCardType(List<ITextComponent> list)
+    public void addCardType(List<Component> list)
     {
-        list.add(new StringTextComponent(type.name));
+        list.add(Component.literal(type.name));
     }
     
     // --- Getters ---

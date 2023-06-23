@@ -1,12 +1,14 @@
 package de.cas_ual_ty.ydm.duel.playfield;
 
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+
+
+import de.cas_ual_ty.ydm.YDM;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
-public class ZoneType extends ForgeRegistryEntry<ZoneType>
+public class ZoneType
 {
     // for description of other fields, see builder methods below
     
@@ -22,6 +24,9 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
     
     public boolean noOwner;
     
+    private ResourceLocation registryName;
+    private String localKey;
+    
     public ZoneType()
     {
         straightOnly = true;
@@ -34,16 +39,35 @@ public class ZoneType extends ForgeRegistryEntry<ZoneType>
         defaultCardPosition = null;
         
         noOwner = false;
+    
+        registryName = null;
+        localKey = null;
+    }
+    
+    public ResourceLocation getRegistryName()
+    {
+        if(registryName == null)
+        {
+            registryName = YDM.zoneTypeRegistry.get().getKey(this);
+        }
+        
+        return registryName;
     }
     
     public String getLocalKey()
     {
-        return "zone." + getRegistryName().getNamespace() + "." + getRegistryName().getPath();
+        if(localKey == null)
+        {
+            ResourceLocation rl = getRegistryName();
+            localKey = "zone." + rl.getNamespace() + "." + rl.getPath();
+        }
+        
+        return localKey;
     }
     
-    public ITextComponent getLocal()
+    public Component getLocal()
     {
-        return new TranslationTextComponent(getLocalKey());
+        return Component.translatable(getLocalKey());
     }
     
     // allow SET and DEF position

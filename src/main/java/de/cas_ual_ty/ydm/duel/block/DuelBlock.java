@@ -1,26 +1,29 @@
 package de.cas_ual_ty.ydm.duel.block;
 
 import de.cas_ual_ty.ydm.YdmTileEntityTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalBlock;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.gameevent.GameEventListener;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.Nullable;
 
-public class DuelBlock extends HorizontalBlock
+public class DuelBlock extends HorizontalDirectionalBlock implements EntityBlock
 {
     protected final VoxelShape shape;
     
@@ -31,54 +34,48 @@ public class DuelBlock extends HorizontalBlock
     }
     
     @Override
-    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit)
     {
-        if(!worldIn.isClientSide && player instanceof ServerPlayerEntity)
+        if(!worldIn.isClientSide && player instanceof ServerPlayer)
         {
-            NetworkHooks.openGui((ServerPlayerEntity) player, getTE(worldIn, pos), pos);
+            NetworkHooks.openScreen((ServerPlayer) player, getTE(worldIn, pos), pos);
         }
         
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
     
-    public DuelTileEntity getTE(World world, BlockPos pos)
+    public DuelTileEntity getTE(Level world, BlockPos pos)
     {
-        TileEntity te = world.getBlockEntity(pos);
+        BlockEntity te = world.getBlockEntity(pos);
         return te instanceof DuelTileEntity ? (DuelTileEntity) te : null;
     }
     
     @Override
-    public boolean hasTileEntity(BlockState state)
+    public BlockEntity newBlockEntity(BlockPos pPos, BlockState pState)
     {
-        return true;
+        return YdmTileEntityTypes.DUEL.get().create(pPos, pState);
     }
     
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
-        return YdmTileEntityTypes.DUEL.create();
+        return defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, context.getHorizontalDirection().getOpposite());
     }
     
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> pBuilder)
     {
-        return defaultBlockState().setValue(HorizontalBlock.FACING, context.getHorizontalDirection().getOpposite());
+        pBuilder.add(HorizontalDirectionalBlock.FACING);
     }
     
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    public RenderShape getRenderShape(BlockState state)
     {
-        builder.add(HorizontalBlock.FACING);
+        return RenderShape.MODEL;
     }
     
     @Override
-    public BlockRenderType getRenderShape(BlockState state)
-    {
-        return BlockRenderType.MODEL;
-    }
-    
-    @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
+    public VoxelShape getShape(BlockState pState, BlockGetter pLevel, BlockPos pPos, CollisionContext pContext)
     {
         return shape;
     }

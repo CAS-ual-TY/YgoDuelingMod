@@ -3,9 +3,9 @@ package de.cas_ual_ty.ydm.duel.network;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.block.DuelTileEntity;
 import de.cas_ual_ty.ydm.duel.dueldisk.DuelEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.fml.DistExecutor;
 
 public abstract class DuelMessageHeader
@@ -19,15 +19,15 @@ public abstract class DuelMessageHeader
         this.type = type;
     }
     
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
     }
     
-    public void readFromBuf(PacketBuffer buf)
+    public void readFromBuf(FriendlyByteBuf buf)
     {
     }
     
-    public abstract IDuelManagerProvider getDuelManager(PlayerEntity player);
+    public abstract IDuelManagerProvider getDuelManager(Player player);
     
     public static class ContainerHeader extends DuelMessageHeader
     {
@@ -37,7 +37,7 @@ public abstract class DuelMessageHeader
         }
         
         @Override
-        public IDuelManagerProvider getDuelManager(PlayerEntity player)
+        public IDuelManagerProvider getDuelManager(Player player)
         {
             return (IDuelManagerProvider) player.containerMenu;
         }
@@ -59,19 +59,19 @@ public abstract class DuelMessageHeader
         }
         
         @Override
-        public void writeToBuf(PacketBuffer buf)
+        public void writeToBuf(FriendlyByteBuf buf)
         {
             buf.writeBlockPos(pos);
         }
         
         @Override
-        public void readFromBuf(PacketBuffer buf)
+        public void readFromBuf(FriendlyByteBuf buf)
         {
             pos = buf.readBlockPos();
         }
         
         @Override
-        public IDuelManagerProvider getDuelManager(PlayerEntity player)
+        public IDuelManagerProvider getDuelManager(Player player)
         {
             DuelTileEntity te0 = (DuelTileEntity) player.level.getBlockEntity(pos);
             DuelManager dm = te0.duelManager;
@@ -98,19 +98,19 @@ public abstract class DuelMessageHeader
         }
         
         @Override
-        public void writeToBuf(PacketBuffer buf)
+        public void writeToBuf(FriendlyByteBuf buf)
         {
             buf.writeInt(entityId);
         }
         
         @Override
-        public void readFromBuf(PacketBuffer buf)
+        public void readFromBuf(FriendlyByteBuf buf)
         {
             entityId = buf.readInt();
         }
         
         @Override
-        public IDuelManagerProvider getDuelManager(PlayerEntity player)
+        public IDuelManagerProvider getDuelManager(Player player)
         {
             DuelEntity e = (DuelEntity) player.level.getEntity(entityId);
             DuelManager dm = e.duelManager;

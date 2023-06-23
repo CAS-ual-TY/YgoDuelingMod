@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.deckbox;
 
 import de.cas_ual_ty.ydm.YdmItems;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -15,6 +15,6 @@ public class DeckBoxSlot extends SlotItemHandler
     @Override
     public boolean mayPlace(ItemStack stack)
     {
-        return stack.getItem() == YdmItems.CARD;
+        return stack.getItem() == YdmItems.CARD.get();
     }
 }

@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.util;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 public class CooldownHolder implements ICooldownHolder
 {
@@ -34,16 +34,16 @@ public class CooldownHolder implements ICooldownHolder
     }
     
     @Override
-    public CompoundNBT serializeNBT()
+    public CompoundTag serializeNBT()
     {
-        CompoundNBT nbt = new CompoundNBT();
+        CompoundTag nbt = new CompoundTag();
         nbt.putInt("cooldown", cooldown);
         nbt.putLong("time", System.currentTimeMillis());
         return nbt;
     }
     
     @Override
-    public void deserializeNBT(CompoundNBT nbt)
+    public void deserializeNBT(CompoundTag nbt)
     {
         cooldown = nbt.getInt("cooldown");
         

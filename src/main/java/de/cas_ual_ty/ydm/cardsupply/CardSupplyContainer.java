@@ -4,26 +4,26 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 
-public class CardSupplyContainer extends Container
+public class CardSupplyContainer extends AbstractContainerMenu
 {
     public BlockPos pos;
-    public PlayerEntity player;
+    public Player player;
     
-    public CardSupplyContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, PacketBuffer extraData)
+    public CardSupplyContainer(MenuType<?> type, int id, Inventory playerInventory, FriendlyByteBuf extraData)
     {
         this(type, id, playerInventory, extraData.readBlockPos());
     }
     
-    public CardSupplyContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, BlockPos blockPos)
+    public CardSupplyContainer(MenuType<?> type, int id, Inventory playerInventory, BlockPos blockPos)
     {
         super(type, id);
         pos = blockPos;
@@ -47,17 +47,17 @@ public class CardSupplyContainer extends Container
     
     public void giveCard(Properties card, byte imageIndex)
     {
-        player.addItem(YdmItems.CARD.createItemForCardHolder(new CardHolder(card, imageIndex, Rarity.SUPPLY.name)));
+        player.addItem(YdmItems.CARD.get().createItemForCardHolder(new CardHolder(card, imageIndex, Rarity.SUPPLY.name)));
     }
     
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(Player playerIn, int index)
     {
         return ItemStack.EMPTY;
     }
     
     @Override
-    public boolean stillValid(PlayerEntity player) // from LockableLootTileEntity::isUsableByPlayer
+    public boolean stillValid(Player player) // from LockableLootTileEntity::isUsableByPlayer
     {
         return player.distanceToSqr(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
     }

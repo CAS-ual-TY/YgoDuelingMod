@@ -2,9 +2,8 @@ package de.cas_ual_ty.ydm.card.properties;
 
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 
 import java.util.List;
 
@@ -62,15 +61,15 @@ public class LevelMonsterProperties extends DefMonsterProperties
     }
     
     @Override
-    public void addMonsterHeader1(List<ITextComponent> list)
+    public void addMonsterHeader1(List<Component> list)
     {
-        list.add(new StringTextComponent(getAttribute() + " / Level " + getLevel()));
+        list.add(Component.literal(getAttribute() + " / Level " + getLevel()));
     }
     
     @Override
-    public void addMonsterTextHeader(List<ITextComponent> list)
+    public void addMonsterTextHeader(List<Component> list)
     {
-        IFormattableTextComponent s = new StringTextComponent(getSpecies() + " / ");
+        MutableComponent s = Component.literal(getSpecies() + " / ");
         
         if(getMonsterType() != null)
         {

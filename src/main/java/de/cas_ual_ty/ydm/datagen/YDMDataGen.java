@@ -4,9 +4,9 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.ImageHandler;
 import net.minecraft.data.DataGenerator;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
 
 import java.io.IOException;
 
@@ -26,6 +26,6 @@ public class YDMDataGen
         }
         
         DataGenerator generator = event.getGenerator();
-        generator.addProvider(new YDMItemModels(generator, YDM.MOD_ID, event.getExistingFileHelper()));
+        generator.addProvider(event.includeClient(), new YDMItemModels(generator, YDM.MOD_ID, event.getExistingFileHelper()));
     }
 }

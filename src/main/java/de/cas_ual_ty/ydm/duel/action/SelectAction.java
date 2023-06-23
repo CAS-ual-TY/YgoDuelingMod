@@ -4,7 +4,7 @@ import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +27,7 @@ public class SelectAction extends SingleCardAction
         this(actionType, sourceZone == null ? (byte) -1 : sourceZone.index, (sourceZone == null || card == null) ? (short) -1 : sourceZone.getCardIndexShort(card), owner.getIndex());
     }
     
-    public SelectAction(ActionType actionType, PacketBuffer buf)
+    public SelectAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readShort(), buf.readByte());
     }
@@ -47,7 +47,7 @@ public class SelectAction extends SingleCardAction
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         buf.writeByte(ownerIndex);

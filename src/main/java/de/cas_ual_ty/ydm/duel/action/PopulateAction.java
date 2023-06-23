@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
 
@@ -16,13 +16,13 @@ public class PopulateAction extends SingleZoneAction
         this.cards = cards;
     }
     
-    public PopulateAction(ActionType actionType, PacketBuffer buf)
+    public PopulateAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeDuelCard));
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         DuelMessageUtility.encodeList(cards, buf, DuelMessageUtility::encodeDuelCard);

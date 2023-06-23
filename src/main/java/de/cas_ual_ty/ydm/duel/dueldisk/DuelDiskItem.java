@@ -2,20 +2,20 @@ package de.cas_ual_ty.ydm.duel.dueldisk;
 
 import de.cas_ual_ty.ydm.YdmEntityTypes;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.UUID;
 
@@ -27,23 +27,23 @@ public class DuelDiskItem extends Item
     }
     
     @Override
-    public ActionResult<ItemStack> use(World level, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
-        if(hand == Hand.OFF_HAND && !level.isClientSide && player instanceof ServerPlayerEntity)
+        if(hand == InteractionHand.OFF_HAND && !level.isClientSide && player instanceof ServerPlayer)
         {
-            ServerWorld slevel = (ServerWorld) level;
-            ServerPlayerEntity splayer = (ServerPlayerEntity) player;
+            ServerLevel slevel = (ServerLevel) level;
+            ServerPlayer splayer = (ServerPlayer) player;
             
             if(openActiveDM(slevel, splayer, true))
             {
-                return ActionResult.success(player.getOffhandItem());
+                return InteractionResultHolder.success(player.getOffhandItem());
             }
         }
         
         return super.use(level, player, hand);
     }
     
-    public boolean openActiveDM(ServerWorld slevel, ServerPlayerEntity splayer, boolean open)
+    public boolean openActiveDM(ServerLevel slevel, ServerPlayer splayer, boolean open)
     {
         UUID dmUUID = getDMUUID(splayer.getOffhandItem());
         
@@ -59,7 +59,7 @@ public class DuelDiskItem extends Item
                 {
                     if(open)
                     {
-                        NetworkHooks.openGui(splayer, dm, buf ->
+                        NetworkHooks.openScreen(splayer, dm, buf ->
                         {
                             buf.writeInt(dm.getId());
                             buf.writeBoolean(true);
@@ -75,20 +75,20 @@ public class DuelDiskItem extends Item
     }
     
     @Override
-    public ActionResultType interactLivingEntity(ItemStack pStack, PlayerEntity player1u, LivingEntity target, Hand hand)
+    public InteractionResult interactLivingEntity(ItemStack pStack, Player player1u, LivingEntity target, InteractionHand hand)
     {
-        if(hand == Hand.OFF_HAND && !player1u.level.isClientSide && player1u instanceof ServerPlayerEntity && target instanceof ServerPlayerEntity)
+        if(hand == InteractionHand.OFF_HAND && !player1u.level.isClientSide && player1u instanceof ServerPlayer && target instanceof ServerPlayer)
         {
-            ServerWorld level = (ServerWorld) player1u.level;
+            ServerLevel level = (ServerLevel) player1u.level;
             
-            ServerPlayerEntity player1 = (ServerPlayerEntity) player1u;
+            ServerPlayer player1 = (ServerPlayer) player1u;
             
             if(openActiveDM(level, player1, false))
             {
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
             
-            ServerPlayerEntity player2 = (ServerPlayerEntity) target;
+            ServerPlayer player2 = (ServerPlayer) target;
             
             if(player2.getOffhandItem().getItem() instanceof DuelDiskItem)
             {
@@ -108,13 +108,13 @@ public class DuelDiskItem extends Item
                         if(dm.duelManager.hasStarted())
                         {
                             // player2 is already playing -> spectate
-                            NetworkHooks.openGui(player1, dm, buf ->
+                            NetworkHooks.openScreen(player1, dm, buf ->
                             {
                                 buf.writeInt(dm.getId());
                                 buf.writeBoolean(true);
                             });
                             
-                            return ActionResultType.SUCCESS;
+                            return InteractionResult.SUCCESS;
                         }
                         
                         if(player1.getUUID().equals(lastP2Request))
@@ -125,12 +125,12 @@ public class DuelDiskItem extends Item
                             
                             //open it for both players
                             
-                            NetworkHooks.openGui(player1, dm, buf ->
+                            NetworkHooks.openScreen(player1, dm, buf ->
                             {
                                 buf.writeInt(dm.getId());
                                 buf.writeBoolean(false);
                             });
-                            NetworkHooks.openGui(player2, dm, buf ->
+                            NetworkHooks.openScreen(player2, dm, buf ->
                             {
                                 buf.writeInt(dm.getId());
                                 buf.writeBoolean(false);
@@ -141,32 +141,32 @@ public class DuelDiskItem extends Item
                             dm.duelManager.requestReady(player1, true);
                             dm.duelManager.requestReady(player2, true);
                             
-                            return ActionResultType.SUCCESS;
+                            return InteractionResult.SUCCESS;
                         }
                     }
                 }
                 
                 //player1 asks player2
                 setPlayer2UUID(pStack, player2.getUUID());
-                DuelEntity dm = new DuelEntity(YdmEntityTypes.DUEL, level);
+                DuelEntity dm = new DuelEntity(YdmEntityTypes.DUEL.get(), level);
                 dm.setPos(player1.position().x(), player1.position().y(), player1.position().z());
                 level.addFreshEntity(dm);
                 setDMUUID(pStack, dm.getUUID());
                 
-                player2.displayClientMessage(new StringTextComponent("\"" + player1.getGameProfile().getName() + "\" requested a DUEL!"), false);
-                player1.displayClientMessage(new StringTextComponent("DUEL request sent to \"" + player2.getGameProfile().getName() + "\"!"), false);
+                player2.displayClientMessage(Component.literal("\"" + player1.getGameProfile().getName() + "\" requested a DUEL!"), false);
+                player1.displayClientMessage(Component.literal("DUEL request sent to \"" + player2.getGameProfile().getName() + "\"!"), false);
             }
         }
         
         return super.interactLivingEntity(pStack, player1u, target, hand);
     }
     
-    public void requestDuel(ServerPlayerEntity requester, ServerPlayerEntity requestee)
+    public void requestDuel(ServerPlayer requester, ServerPlayer requestee)
     {
-        requestee.displayClientMessage(new StringTextComponent(requester.getName() + " requested a DUEL!"), false);
+        requestee.displayClientMessage(Component.literal(requester.getName() + " requested a DUEL!"), false);
     }
     
-    public CompoundNBT getTag(ItemStack stack)
+    public CompoundTag getTag(ItemStack stack)
     {
         return stack.getOrCreateTag();
     }

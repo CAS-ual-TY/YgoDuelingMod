@@ -10,30 +10,28 @@ import de.cas_ual_ty.ydm.duel.dueldisk.DuelDiskItem;
 import de.cas_ual_ty.ydm.set.CardSetItem;
 import de.cas_ual_ty.ydm.set.OpenedCardSetItem;
 import de.cas_ual_ty.ydm.simplebinder.SimpleBinderItem;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.Item.Properties;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.*;
 
-@EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
-@ObjectHolder(YDM.MOD_ID)
 public class YdmItems
 {
-    public static final Item BLANC_CARD = null;
-    public static final Item CARD_BACK = null;
-    public static final Item BLANC_SET = null;
-    public static final CardItem CARD = null;
-    public static final CardSetItem SET = null;
-    public static final OpenedCardSetItem OPENED_SET = null;
-    public static final CardBinderItem CARD_BINDER = null;
-    public static final Item DUEL_PLAYMAT = null;
-    public static final Item DUEL_TABLE = null;
-    public static final Item CARD_SUPPLY = null;
+    private static final DeferredRegister<Item> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.ITEMS, YDM.MOD_ID);
+    
+    public static final RegistryObject<Item> BLANC_CARD = null;
+    public static final RegistryObject<Item> CARD_BACK = null;
+    public static final RegistryObject<Item> BLANC_SET = null;
+    public static final RegistryObject<CardItem> CARD = null;
+    public static final RegistryObject<CardSetItem> SET = null;
+    public static final RegistryObject<OpenedCardSetItem> OPENED_SET = null;
+    public static final RegistryObject<CardBinderItem> CARD_BINDER = null;
+    public static final RegistryObject<Item> DUEL_PLAYMAT = null;
+    public static final RegistryObject<Item> DUEL_TABLE = null;
+    public static final RegistryObject<Item> CARD_SUPPLY = null;
     
     public static final SimpleBinderItem SIMPLE_BINDER_3 = null;
     public static final SimpleBinderItem SIMPLE_BINDER_9 = null;
@@ -70,72 +68,70 @@ public class YdmItems
     public static final DeckBoxItem EMERALD_DECK_BOX = null;
     public static final DeckBoxItem PATREON_DECK_BOX = null;
     
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<Item> event)
+    public static void register(IEventBus bus)
     {
-        IForgeRegistry<Item> registry = event.getRegistry();
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "blanc_card"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_back"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "blanc_set"));
-        registry.register(new CardItem(new Properties().tab(YDM.cardsItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "card"));
-        registry.register(new CardSetItem(new Properties().tab(YDM.setsItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "set"));
-        registry.register(new OpenedCardSetItem(new Properties().stacksTo(1)).setRegistryName(YDM.MOD_ID, "opened_set"));
-        registry.register(new CardBinderItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "card_binder"));
-        registry.register(new BlockItem(YdmBlocks.DUEL_PLAYMAT, new Properties().tab(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_playmat"));
-        registry.register(new BlockItem(YdmBlocks.DUEL_TABLE, new Properties().tab(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "duel_table"));
-        registry.register(new BlockItem(YdmBlocks.CARD_SUPPLY, new Properties().tab(YDM.ydmItemGroup)).setRegistryName(YDM.MOD_ID, "card_supply"));
+        DEFERRED_REGISTER.register("blanc_card", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup)));
+        DEFERRED_REGISTER.register("card_back", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup)));
+        DEFERRED_REGISTER.register("blanc_set", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup)));
+        DEFERRED_REGISTER.register("card", () -> new CardItem(new Item.Properties().tab(YDM.cardsItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("set", () -> new CardSetItem(new Item.Properties().tab(YDM.setsItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("opened_set", () -> new OpenedCardSetItem(new Item.Properties().stacksTo(1)));
+        DEFERRED_REGISTER.register("card_binder", () -> new CardBinderItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("duel_playmat", () -> new BlockItem(YdmBlocks.DUEL_PLAYMAT.get(), new Item.Properties().tab(YDM.ydmItemGroup)));
+        DEFERRED_REGISTER.register("duel_table", () -> new BlockItem(YdmBlocks.DUEL_TABLE.get(), new Item.Properties().tab(YDM.ydmItemGroup)));
+        DEFERRED_REGISTER.register("card_supply", () -> new BlockItem(YdmBlocks.CARD_SUPPLY.get(), new Item.Properties().tab(YDM.ydmItemGroup)));
         
-        registry.register(SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 3));
-        registry.register(SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 9));
-        registry.register(SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 27));
+        DEFERRED_REGISTER.register("simple_binder_" + 3, () -> SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 3));
+        DEFERRED_REGISTER.register("simple_binder_" + 9, () -> SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 9));
+        DEFERRED_REGISTER.register("simple_binder_" + 27, () -> SimpleBinderItem.makeItem(YDM.MOD_ID, YDM.ydmItemGroup, 27));
         
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "millennium_eye"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "millennium_key"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "millennium_necklace"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "millennium_puzzle"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "millennium_ring"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "millennium_rod"));
-        registry.register(new CosmeticItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "millennium_scale"));
+        DEFERRED_REGISTER.register("millennium_eye", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("millennium_key", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("millennium_necklace", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("millennium_puzzle", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("millennium_ring", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("millennium_rod", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("millennium_scale", () -> new CosmeticItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
         
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "duel_disk"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "chaos_disk"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "academia_disk"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "academia_disk_red"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "academia_disk_blue"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "academia_disk_yellow"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "rock_spirit_disk"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "trueman_disk"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "jewel_disk"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "kaibaman_disk"));
-        registry.register(new DuelDiskItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "cyber_design_interface"));
+        DEFERRED_REGISTER.register("duel_disk", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("chaos_disk", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("academia_disk", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("academia_disk_red", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("academia_disk_blue", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("academia_disk_yellow", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("rock_spirit_disk", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("trueman_disk", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("jewel_disk", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("kaibaman_disk", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("cyber_design_interface", () -> new DuelDiskItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
         
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "black_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "red_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "green_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "brown_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "blue_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "purple_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "cyan_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "light_gray_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "gray_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "pink_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "lime_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "yellow_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "light_blue_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "magenta_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "orange_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "white_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "iron_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "gold_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "diamond_deck_box"));
-        registry.register(new DeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "emerald_deck_box"));
-        registry.register(new PatreonDeckBoxItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1)).setRegistryName(YDM.MOD_ID, "patreon_deck_box"));
+        DEFERRED_REGISTER.register("black_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("red_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("green_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("brown_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("blue_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("purple_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("cyan_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("light_gray_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("gray_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("pink_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("lime_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("yellow_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("light_blue_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("magenta_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("orange_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("white_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("iron_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("gold_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("diamond_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("emerald_deck_box", () -> new DeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
+        DEFERRED_REGISTER.register("patreon_deck_box", () -> new PatreonDeckBoxItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1)));
         
         for(CardSleevesType sleeve : CardSleevesType.VALUES)
         {
             if(!sleeve.isCardBack())
             {
-                registry.register(new CardSleevesItem(new Properties().tab(YDM.ydmItemGroup).stacksTo(1), sleeve).setRegistryName(YDM.MOD_ID, sleeve.getResourceName()));
+                DEFERRED_REGISTER.register(sleeve.getResourceName(), () -> new CardSleevesItem(new Item.Properties().tab(YDM.ydmItemGroup).stacksTo(1), sleeve));
             }
         }
     }

@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class ShowCardAction extends SingleCardAction implements IAnnouncedAction
 {
@@ -16,7 +16,7 @@ public class ShowCardAction extends SingleCardAction implements IAnnouncedAction
         super(actionType, sourceZone.index, sourceZone.getCardIndexShort(sourceCard));
     }
     
-    public ShowCardAction(ActionType actionType, PacketBuffer buf)
+    public ShowCardAction(ActionType actionType, FriendlyByteBuf buf)
     {
         super(actionType, buf);
     }

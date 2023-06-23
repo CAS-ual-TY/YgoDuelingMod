@@ -1,12 +1,11 @@
 package de.cas_ual_ty.ydm.card;
 
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Rarity;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import java.util.List;
 
@@ -21,13 +20,13 @@ public class CardSleevesItem extends Item
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
     {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         
         if(sleeves.isPatreonReward)
         {
-            tooltip.add(new StringTextComponent(sleeves.patronName + "'s Patreon Sleeves"));
+            tooltip.add(Component.literal(sleeves.patronName + "'s Patreon Sleeves"));
         }
     }
     

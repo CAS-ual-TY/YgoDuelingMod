@@ -1,9 +1,10 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+
 
 public abstract class RandomAction extends Action implements IAnnouncedAction
 {
@@ -12,13 +13,13 @@ public abstract class RandomAction extends Action implements IAnnouncedAction
         super(actionType);
     }
     
-    public RandomAction(ActionType actionType, PacketBuffer buf)
+    public RandomAction(ActionType actionType, FriendlyByteBuf buf)
     {
         super(actionType, buf);
     }
     
     @Override
-    public abstract void writeToBuf(PacketBuffer buf);
+    public abstract void writeToBuf(FriendlyByteBuf buf);
     
     @Override
     public abstract void initServer(PlayField playField);
@@ -47,5 +48,5 @@ public abstract class RandomAction extends Action implements IAnnouncedAction
     }
     
     @Override
-    public abstract IFormattableTextComponent getAnnouncement(ITextComponent playerName);
+    public abstract MutableComponent getAnnouncement(Component playerName);
 }

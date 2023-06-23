@@ -3,7 +3,7 @@ package de.cas_ual_ty.ydm.duel.action;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.List;
 import java.util.Random;
@@ -30,13 +30,13 @@ public class ShuffleAction extends SingleZoneAction implements IAnnouncedAction
         this(actionType, sourceZone.index);
     }
     
-    public ShuffleAction(ActionType actionType, PacketBuffer buf)
+    public ShuffleAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readLong());
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         buf.writeLong(randomSeed);

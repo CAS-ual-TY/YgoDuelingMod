@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.cardsupply;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -10,22 +11,22 @@ import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.font.TextFieldHelper;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
+public class CardSupplyScreen extends AbstractContainerScreen<CardSupplyContainer>
 {
     private static final ResourceLocation CARD_SUPPLY_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_supply.png");
     
@@ -34,14 +35,14 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
     public static final int PAGE = CardSupplyScreen.ROWS * CardSupplyScreen.COLUMNS;
     
     public List<CardHolder> cardsList;
-    public TextFieldWidget textField;
+    public EditBox textField;
     protected Button prevButton;
     protected Button nextButton;
     public int page;
     
     public CardButton[] cardButtons;
     
-    public CardSupplyScreen(CardSupplyContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public CardSupplyScreen(CardSupplyContainer screenContainer, Inventory inv, Component titleIn)
     {
         super(screenContainer, inv, titleIn);
         imageWidth = 176;
@@ -50,16 +51,16 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
     }
     
     @Override
-    public void init(Minecraft minecraft, int width, int height)
+    protected void init()
     {
-        super.init(minecraft, width, height);
-        
-        addButton(textField = new TextFieldWidget(font, leftPos + imageWidth - 80 - 8 - 1, topPos + 6 - 1, 80 + 2, font.lineHeight + 2, StringTextComponent.EMPTY));
-        
+        super.init();
+    
+        addRenderableWidget(textField = new EditBox(font, leftPos + imageWidth - 80 - 8 - 1, topPos + 6 - 1, 80 + 2, font.lineHeight + 2, Component.empty()));
+    
         int index;
         CardButton button;
         cardButtons = new CardButton[CardSupplyScreen.PAGE];
-        
+    
         for(int y = 0; y < CardInventory.DEFAULT_PAGE_ROWS; ++y)
         {
             for(int x = 0; x < CardInventory.DEFAULT_PAGE_COLUMNS; ++x)
@@ -67,36 +68,36 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
                 index = x + y * 9;
                 button = new CardButton(leftPos + 7 + x * 18, topPos + 17 + y * 18, 18, 18, index, this::onCardClicked, this::getCard);
                 cardButtons[index] = button;
-                addButton(button);
+                addRenderableWidget(button);
             }
         }
-        
-        addButton(prevButton = new ImprovedButton(leftPos + imageWidth - 80 - 8, topPos + imageHeight - 96, 40, 12, new TranslationTextComponent("container.ydm.card_supply.prev"), this::onButtonClicked));
-        addButton(nextButton = new ImprovedButton(leftPos + imageWidth - 40 - 8, topPos + imageHeight - 96, 40, 12, new TranslationTextComponent("container.ydm.card_supply.next"), this::onButtonClicked));
-        
+    
+        addRenderableWidget(prevButton = new ImprovedButton(leftPos + imageWidth - 80 - 8, topPos + imageHeight - 96, 40, 12, Component.translatable("container.ydm.card_supply.prev"), this::onButtonClicked));
+        addRenderableWidget(nextButton = new ImprovedButton(leftPos + imageWidth - 40 - 8, topPos + imageHeight - 96, 40, 12, Component.translatable("container.ydm.card_supply.next"), this::onButtonClicked));
+    
         applyName();
         updateCards();
     }
     
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         super.render(ms, mouseX, mouseY, partialTicks);
         renderTooltip(ms, mouseX, mouseY);
         
         for(CardButton button : cardButtons)
         {
-            if(button.isHovered())
+            if(button.isHoveredOrFocused())
             {
                 if(button.getCard() != null)
                 {
                     CardRenderUtil.renderCardInfo(ms, button.getCard(), this);
                     
-                    List<ITextComponent> list = new LinkedList<>();
+                    List<Component> list = new LinkedList<>();
                     button.getCard().addInformation(list);
                     
-                    List<ITextComponent> tooltip = new ArrayList<>(list.size());
-                    for(ITextComponent t : list)
+                    List<Component> tooltip = new ArrayList<>(list.size());
+                    for(Component t : list)
                     {
                         tooltip.add(t);
                     }
@@ -111,17 +112,17 @@ public class CardSupplyScreen extends ContainerScreen<CardSupplyContainer>
     }
     
     @Override
-    protected void renderBg(MatrixStack ms, float partialTicks, int x, int y)
+    protected void renderBg(PoseStack ms, float partialTicks, int x, int y)
     {
-        minecraft.getTextureManager().bind(CardSupplyScreen.CARD_SUPPLY_GUI_TEXTURE);
+        RenderSystem.setShaderTexture(0, CardSupplyScreen.CARD_SUPPLY_GUI_TEXTURE);
         blit(ms, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
     
     @Override
-    protected void renderLabels(MatrixStack ms, int mouseX, int mouseY)
+    protected void renderLabels(PoseStack ms, int mouseX, int mouseY)
     {
         font.draw(ms, title, 8.0F, 6.0F, 0x404040);
-        font.draw(ms, inventory.getDisplayName(), 8.0F, (float) (imageHeight - 96 + 2), 0x404040);
+        font.draw(ms, playerInventoryTitle.getVisualOrderText(), 8.0F, (float) (imageHeight - 96 + 2), 0x404040);
     }
     
     @Override

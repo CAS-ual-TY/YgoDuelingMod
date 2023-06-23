@@ -5,9 +5,10 @@ import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+
+
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -94,7 +95,7 @@ public class Distribution
         logErrors();
     }
     
-    public void addInformation(List<ITextComponent> tooltip, CardSet set)
+    public void addInformation(List<Component> tooltip, CardSet set)
     {
         if(pulls.length <= 0)
         {
@@ -106,21 +107,21 @@ public class Distribution
             
             for(PullEntry pe : pull.pullEntries)
             {
-                tooltip.add(new StringTextComponent(Distribution.makePullEntryString(set, pe)));
+                tooltip.add(Component.literal(Distribution.makePullEntryString(set, pe)));
             }
         }
         else
         {
             for(Pull pull : pulls)
             {
-                tooltip.add(new StringTextComponent(Distribution.makeOddsString(pull.weight, totalWeight)));
+                tooltip.add(Component.literal(Distribution.makeOddsString(pull.weight, totalWeight)));
                 
                 for(PullEntry pe : pull.pullEntries)
                 {
-                    tooltip.add(new StringTextComponent("  " + Distribution.makePullEntryString(set, pe)));
+                    tooltip.add(Component.literal("  " + Distribution.makePullEntryString(set, pe)));
                 }
                 
-                tooltip.add(StringTextComponent.EMPTY);
+                tooltip.add(Component.empty());
             }
             
             tooltip.remove(tooltip.size() - 1);
@@ -176,7 +177,7 @@ public class Distribution
         
         if(!rarityFound)
         {
-            s.append(TextFormatting.RED.toString());
+            s.append(ChatFormatting.RED.toString());
             
             for(String rarity : pe.rarities)
             {

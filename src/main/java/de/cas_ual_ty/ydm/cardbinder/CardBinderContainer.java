@@ -5,24 +5,24 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.cardinventory.UUIDCardsManager;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CardBinderContainer extends Container
+public class CardBinderContainer extends AbstractContainerMenu
 {
     protected final UUIDCardsManager manager;
-    protected PlayerEntity player;
+    protected Player player;
     protected ItemStack itemStack;
     
     protected List<CardHolder> clientList;
@@ -35,13 +35,13 @@ public class CardBinderContainer extends Container
     
     protected Slot insertionSlot;
     
-    protected IInventory containerInv;
+    protected Container containerInv;
     
     protected String currentSearch;
     
-    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
+    public CardBinderContainer(MenuType<?> type, int id, Inventory playerInventory)
     {
-        this(type, id, playerInventory, null, YdmItems.CARD_BINDER.getActiveBinder(playerInventory.player));
+        this(type, id, playerInventory, null, YdmItems.CARD_BINDER.get().getActiveBinder(playerInventory.player));
         clientList = new ArrayList<>(CardInventory.DEFAULT_CARDS_PER_PAGE);
         page = 0;
         clientMaxPage = 0;
@@ -49,7 +49,7 @@ public class CardBinderContainer extends Container
         currentSearch = "";
     }
     
-    public CardBinderContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, UUIDCardsManager manager, ItemStack itemStack)
+    public CardBinderContainer(MenuType<?> type, int id, Inventory playerInventory, UUIDCardsManager manager, ItemStack itemStack)
     {
         super(type, id);
         this.manager = manager;
@@ -61,13 +61,13 @@ public class CardBinderContainer extends Container
         
         loaded = false;
         
-        containerInv = new Inventory(1);
+        containerInv = new SimpleContainer(1);
         addSlot(insertionSlot = new Slot(containerInv, 0, 179, 18)
         {
             @Override
             public boolean mayPlace(ItemStack stack)
             {
-                return stack.getItem() == YdmItems.CARD && YdmItems.CARD.getCardHolder(stack).getCard() != null;
+                return stack.getItem() == YdmItems.CARD.get() && YdmItems.CARD.get().getCardHolder(stack).getCard() != null;
             }
             
             @Override
@@ -76,7 +76,7 @@ public class CardBinderContainer extends Container
                 if(serverList != null)
                 {
                     int maxPage = serverList.getPagesAmount();
-                    serverList.addCard(YdmItems.CARD.getCardHolder(stack), page);
+                    serverList.addCard(YdmItems.CARD.get().getCardHolder(stack), page);
                     
                     if(page == maxPage && currentSearch.isEmpty())
                     {
@@ -112,7 +112,7 @@ public class CardBinderContainer extends Container
                 s = new Slot(playerInventory, s.getSlotIndex(), s.x, s.y)
                 {
                     @Override
-                    public boolean mayPickup(PlayerEntity playerIn)
+                    public boolean mayPickup(Player playerIn)
                     {
                         return false;
                     }
@@ -130,12 +130,12 @@ public class CardBinderContainer extends Container
     
     protected void updateListToClient()
     {
-        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new CardBinderMessages.UpdateList(page, serverList.getCardsForPage(page)));
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new CardBinderMessages.UpdateList(page, serverList.getCardsForPage(page)));
     }
     
     protected void updatePagesToClient()
     {
-        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new CardBinderMessages.UpdatePage(page, serverList.getPagesAmount()));
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new CardBinderMessages.UpdatePage(page, serverList.getPagesAmount()));
     }
     
     public void setClientList(int page, List<CardHolder> list)
@@ -161,7 +161,7 @@ public class CardBinderContainer extends Container
     
     protected void updateHoldingItemStack(ItemStack itemStack)
     {
-        player.inventory.setCarried(itemStack);
+        player.getInventory().setPickedItem(itemStack);
     }
     
     protected CardHolder extractCard(int index)
@@ -191,7 +191,7 @@ public class CardBinderContainer extends Container
         
         if(card != null)
         {
-            ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(card);
+            ItemStack itemStack = YdmItems.CARD.get().createItemForCardHolder(card);
             
             if(shiftDown)
             {
@@ -199,7 +199,7 @@ public class CardBinderContainer extends Container
             }
             else
             {
-                player.inventory.setCarried(itemStack);
+                player.getInventory().setPickedItem(itemStack);
             }
         }
     }
@@ -215,7 +215,7 @@ public class CardBinderContainer extends Container
         
         if(card != null)
         {
-            ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(card);
+            ItemStack itemStack = YdmItems.CARD.get().createItemForCardHolder(card);
             player.drop(itemStack, false);
         }
     }
@@ -312,7 +312,7 @@ public class CardBinderContainer extends Container
     }
     
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(Player playerIn, int index)
     {
         Slot slot = slots.get(index);
         
@@ -331,13 +331,13 @@ public class CardBinderContainer extends Container
     }
     
     @Override
-    public boolean stillValid(PlayerEntity playerIn)
+    public boolean stillValid(Player playerIn)
     {
         return true;
     }
     
     @Override
-    public void removed(PlayerEntity playerIn)
+    public void removed(Player playerIn)
     {
         super.removed(playerIn);
         if(manager != null && manager.isLoaded())

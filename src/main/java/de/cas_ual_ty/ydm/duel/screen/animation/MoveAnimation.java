@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
@@ -9,7 +10,6 @@ import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.widget.ZoneWidget;
-import net.minecraft.util.math.vector.Quaternion;
 
 public class MoveAnimation extends Animation
 {
@@ -46,7 +46,7 @@ public class MoveAnimation extends Animation
     }
     
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         double relativeTickTime = (double) (tickTime + partialTicks) / maxTickTime;
         float relativePositionRotation;

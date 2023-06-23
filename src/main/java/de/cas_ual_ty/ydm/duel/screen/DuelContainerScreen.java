@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.duel.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
@@ -14,18 +15,22 @@ import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.widget.DisplayChatWidget;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.IReorderingProcessor;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+
+import net.minecraft.ChatFormatting;
+
+import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraftforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
@@ -46,16 +51,18 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     protected Button chatUpButton;
     protected Button chatDownButton;
     protected DisplayChatWidget chatWidget;
-    protected TextFieldWidget textFieldWidget;
+    protected EditBox textFieldWidget;
     
     protected Button duelChatButton;
     protected Button worldChatButton;
     protected boolean duelChat;
     
-    protected List<ITextComponent> worldChatMessages;
+    protected List<Component> worldChatMessages;
+    
+    protected Inventory playerInv;
     
     @SuppressWarnings("unchecked")
-    public DuelContainerScreen(E screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public DuelContainerScreen(E screenContainer, Inventory inv, Component titleIn)
     {
         super(screenContainer, inv, titleIn);
         imageWidth = 234;
@@ -72,6 +79,8 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         screensForEachState[DuelState.END.getIndex()] = DuelScreenPreparing::new;
         screensForEachState[DuelState.DUELING.getIndex()] = DuelScreenDueling::new;
         screensForEachState[DuelState.SIDING.getIndex()] = DuelScreenDueling::new;
+        
+        this.playerInv = inv;
     }
     
     public DuelContainerScreen<E> setScreenForState(DuelState state, DuelScreenConstructor<E> screen)
@@ -82,7 +91,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     protected DuelContainerScreen<E> createNewScreenForState(DuelState state)
     {
-        return screensForEachState[state.getIndex()].construct(menu, inventory, title);
+        return screensForEachState[state.getIndex()].construct(menu, playerInv, title);
     }
     
     public final void duelStateChanged()
@@ -96,17 +105,17 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     }
     
     @Override
-    protected void renderBg(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY)
     {
         ScreenUtil.renderDisabledRect(ms, 0, 0, width, height);
         
         ScreenUtil.white();
-        minecraft.getTextureManager().bind(DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
+        RenderSystem.setShaderTexture(0, DuelContainerScreen.DUEL_BACKGROUND_GUI_TEXTURE);
         blit(ms, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
     
     @Override
-    public void switchScreen(ContainerScreen<E> s)
+    public void switchScreen(AbstractContainerScreen<E> s)
     {
         super.switchScreen(s);
         
@@ -158,7 +167,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     }
     
     @Override
-    public void renderTooltip(MatrixStack ms, List<? extends IReorderingProcessor> tooltips, int mouseX, int mouseY)
+    public void renderTooltip(PoseStack ms, List<? extends FormattedCharSequence> tooltips, int mouseX, int mouseY)
     {
         ms.pushPose();
         ms.translate(0, 0, 10D);
@@ -167,7 +176,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     }
     
     @Override
-    public void renderTooltip(MatrixStack ms, ITextComponent text, int mouseX, int mouseY)
+    public void renderTooltip(PoseStack ms, Component text, int mouseX, int mouseY)
     {
         ms.pushPose();
         ms.translate(0, 0, 10D);
@@ -175,16 +184,16 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         ms.popPose();
     }
     
-    public void renderDisabledTooltip(MatrixStack ms, List<IReorderingProcessor> tooltips, int mouseX, int mouseY)
+    public void renderDisabledTooltip(PoseStack ms, List<FormattedCharSequence> tooltips, int mouseX, int mouseY)
     {
-        tooltips.add(new StringTextComponent("DISABLED").withStyle((s) -> s.applyFormat(TextFormatting.ITALIC).applyFormat(TextFormatting.RED)).getVisualOrderText());
-        tooltips.add(new StringTextComponent("COMING SOON").withStyle((s) -> s.applyFormat(TextFormatting.ITALIC).applyFormat(TextFormatting.RED)).getVisualOrderText());
+        tooltips.add(Component.literal("DISABLED").withStyle((s) -> s.applyFormat(ChatFormatting.ITALIC).applyFormat(ChatFormatting.RED)).getVisualOrderText());
+        tooltips.add(Component.literal("COMING SOON").withStyle((s) -> s.applyFormat(ChatFormatting.ITALIC).applyFormat(ChatFormatting.RED)).getVisualOrderText());
         renderTooltip(ms, tooltips, mouseX, mouseY);
     }
     
-    public void renderDisabledTooltip(MatrixStack ms, @Nullable ITextComponent text, int mouseX, int mouseY)
+    public void renderDisabledTooltip(PoseStack ms, @Nullable Component text, int mouseX, int mouseY)
     {
-        List<IReorderingProcessor> tooltips = new LinkedList<>();
+        List<FormattedCharSequence> tooltips = new LinkedList<>();
         
         if(text != null)
         {
@@ -218,20 +227,20 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         int halfW = w / 2;
         int extraOff = halfW % 2;
         
-        addButton(duelChatButton = new Button(x, y, halfW, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.duel_chat"), (b) -> switchChat()));
-        addButton(worldChatButton = new Button(x + halfW - extraOff, y, halfW + extraOff, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.world_chat"), (b) -> switchChat()));
+        addRenderableWidget(duelChatButton = new Button(x, y, halfW, buttonHeight, Component.translatable("container." + YDM.MOD_ID + ".duel.duel_chat"), (b) -> switchChat()));
+        addRenderableWidget(worldChatButton = new Button(x + halfW - extraOff, y, halfW + extraOff, buttonHeight, Component.translatable("container." + YDM.MOD_ID + ".duel.world_chat"), (b) -> switchChat()));
         y += offset;
         
-        addButton(chatUpButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.up_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
+        addRenderableWidget(chatUpButton = new Button(x, y, w, buttonHeight, Component.translatable("container." + YDM.MOD_ID + ".duel.up_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
         y += offset;
         
-        addButton(chatWidget = new DisplayChatWidget(x, y - (chatHeight % font.lineHeight) / 2, chatWidth, chatHeight, StringTextComponent.EMPTY));
+        addRenderableWidget(chatWidget = new DisplayChatWidget(x, y - (chatHeight % font.lineHeight) / 2, chatWidth, chatHeight, Component.empty()));
         y += chatHeight + margin;
         
-        addButton(chatDownButton = new Button(x, y, w, buttonHeight, new TranslationTextComponent("container." + YDM.MOD_ID + ".duel.down_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
+        addRenderableWidget(chatDownButton = new Button(x, y, w, buttonHeight, Component.translatable("container." + YDM.MOD_ID + ".duel.down_arrow"), this::chatScrollButtonClicked, this::chatScrollButtonHovered));
         y += offset;
         
-        addButton(textFieldWidget = new TextFieldWidget(font, x + 1, y + 1, w - 2, buttonHeight - 2, StringTextComponent.EMPTY));
+        addRenderableWidget(textFieldWidget = new EditBox(font, x + 1, y + 1, w - 2, buttonHeight - 2, Component.empty()));
         textFieldWidget.setMaxLength(64);
         y += offset;
         
@@ -279,11 +288,11 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         {
             if(duelChat)
             {
-                YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.SendMessageToServer(getHeader(), new StringTextComponent(text)));
+                YDM.channel.send(PacketDistributor.SERVER.noArg(), new DuelMessages.SendMessageToServer(getHeader(), Component.literal(text)));
             }
             else
             {
-                sendMessage(text, true);
+                minecraft.player.chatSigned(text, null);
             }
         }
         
@@ -301,7 +310,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
             {
                 toEnable = duelChatButton;
                 toDisable = worldChatButton;
-                chatWidget.setTextSupplier(getWorldMessagesSupplier());
+                chatWidget.setTextSupplier(getLevelMessagesSupplier());
             }
             else
             {
@@ -316,22 +325,22 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         }
     }
     
-    protected Supplier<List<ITextComponent>> getDuelMessagesSupplier()
+    protected Supplier<List<Component>> getDuelMessagesSupplier()
     {
         return () -> //TODO
         {
-            List<ITextComponent> list = new ArrayList<>(getDuelManager().getMessages().size());
+            List<Component> list = new ArrayList<>(getDuelManager().getMessages().size());
             
             for(DuelChatMessage msg : getDuelManager().getMessages())
             {
-                list.add(msg.generateStyledMessage(getPlayerRole(), TextFormatting.BLUE, TextFormatting.RED, TextFormatting.WHITE));
+                list.add(msg.generateStyledMessage(getPlayerRole(), ChatFormatting.BLUE, ChatFormatting.RED, ChatFormatting.WHITE));
             }
             
             return list;
         };
     }
     
-    protected Supplier<List<ITextComponent>> getWorldMessagesSupplier()
+    protected Supplier<List<Component>> getLevelMessagesSupplier()
     {
         return () -> ClientProxy.chatMessages;
     }
@@ -341,10 +350,10 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         //TODO
     }
     
-    protected void chatScrollButtonHovered(Widget w, MatrixStack ms, int mouseX, int mouseY)
+    protected void chatScrollButtonHovered(AbstractWidget w, PoseStack ms, int mouseX, int mouseY)
     {
         //TODO
-        renderDisabledTooltip(ms, (ITextComponent) null, mouseX, mouseY);
+        renderDisabledTooltip(ms, (Component) null, mouseX, mouseY);
     }
     
     public void populateDeckSources(List<DeckSource> deckSources)
@@ -410,6 +419,6 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
     
     public interface DuelScreenConstructor<E extends DuelContainer>
     {
-        DuelContainerScreen<E> construct(E container, PlayerInventory inv, ITextComponent title);
+        DuelContainerScreen<E> construct(E container, Inventory inv, Component title);
     }
 }

@@ -8,22 +8,22 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import de.cas_ual_ty.ydm.util.YdmUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.SortedArraySet;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+
+
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -37,7 +37,7 @@ public abstract class CardSetBaseItem extends Item
     }
     
     @Override
-    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
     {
         CardSet set = getCardSet(itemStack);
         tooltip.clear();
@@ -45,10 +45,10 @@ public abstract class CardSetBaseItem extends Item
     }
     
     @Override
-    public ITextComponent getName(ItemStack itemStack)
+    public Component getName(ItemStack itemStack)
     {
         CardSet set = getCardSet(itemStack);
-        return new StringTextComponent(set.name);
+        return Component.literal(set.name);
     }
     
     public CardSet getCardSet(ItemStack itemStack)
@@ -75,13 +75,13 @@ public abstract class CardSetBaseItem extends Item
         getNBT(itemStack).putString(JsonKeys.CODE, set.code);
     }
     
-    public CompoundNBT getNBT(ItemStack itemStack)
+    public CompoundTag getNBT(ItemStack itemStack)
     {
         return itemStack.getOrCreateTag();
     }
     
     @Override
-    public abstract void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items);
+    public abstract void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items);
     
     @Override
     public boolean shouldOverrideMultiplayerNbt()
@@ -89,7 +89,7 @@ public abstract class CardSetBaseItem extends Item
         return true;
     }
     
-    public void viewSetContents(World world, PlayerEntity player, ItemStack itemStack)
+    public void viewSetContents(Level world, Player player, ItemStack itemStack)
     {
         if(!world.isClientSide)
         {
@@ -97,31 +97,31 @@ public abstract class CardSetBaseItem extends Item
             SortedArraySet<CardHolder> cardsSet = set.getAllCardEntries();
             CardHolder[] cards = cardsSet.toArray(new CardHolder[0]);
             
-            CIIContainer.openGui(player, cards.length, new INamedContainerProvider()
+            CIIContainer.openGui(player, cards.length, new MenuProvider()
             {
                 @Override
-                public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity p_createMenu_3_)
+                public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player p_createMenu_3_)
                 {
                     IItemHandler itemHandler = new ItemStackHandler(cards.length);
                     
                     for(int i = 0; i < cards.length; ++i)
                     {
-                        itemHandler.insertItem(i, YdmItems.CARD.createItemForCardHolder(cards[i]), false);
+                        itemHandler.insertItem(i, YdmItems.CARD.get().createItemForCardHolder(cards[i]), false);
                     }
                     
-                    return new CardSetContentsContainer(YdmContainerTypes.CARD_SET_CONTENTS, id, playerInv, itemHandler);
+                    return new CardSetContentsContainer(YdmContainerTypes.CARD_SET_CONTENTS.get(), id, playerInv, itemHandler);
                 }
                 
                 @Override
-                public ITextComponent getDisplayName()
+                public Component getDisplayName()
                 {
-                    return new TranslationTextComponent("container." + YDM.MOD_ID + ".card_set_contents");
+                    return Component.translatable("container." + YDM.MOD_ID + ".card_set_contents");
                 }
             });
         }
     }
     
-    public static Hand getActiveSetItem(PlayerEntity player)
+    public static InteractionHand getActiveSetItem(Player player)
     {
         return YdmUtil.getActiveItem(player, (i) -> (i.getItem() instanceof CardSetBaseItem));
     }

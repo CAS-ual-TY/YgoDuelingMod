@@ -9,11 +9,11 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.SortedArraySet;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.item.ItemStack;
+
 
 import java.text.ParseException;
 import java.util.*;
@@ -203,20 +203,20 @@ public class CardSet
         pull.addAllCardEntries(sortedSet);
     }
     
-    public void addItemInformation(List<ITextComponent> tooltip)
+    public void addItemInformation(List<Component> tooltip)
     {
-        tooltip.add(new StringTextComponent(name));
-        tooltip.add(new StringTextComponent(type));
-        tooltip.add(new StringTextComponent(shownCode));
+        tooltip.add(Component.literal(name));
+        tooltip.add(Component.literal(type));
+        tooltip.add(Component.literal(shownCode));
     }
     
-    public void addInformation(List<ITextComponent> tooltip)
+    public void addInformation(List<Component> tooltip)
     {
-        tooltip.add(new StringTextComponent(name));
-        tooltip.add(new StringTextComponent(type));
-        tooltip.add(new StringTextComponent(YdmDatabase.SET_DATE_PARSER.format(date)));
-        tooltip.add(new StringTextComponent(shownCode));
-        tooltip.add(StringTextComponent.EMPTY);
+        tooltip.add(Component.literal(name));
+        tooltip.add(Component.literal(type));
+        tooltip.add(Component.literal(YdmDatabase.SET_DATE_PARSER.format(date)));
+        tooltip.add(Component.literal(shownCode));
+        tooltip.add(Component.empty());
         pull.addInformation(tooltip);
     }
     

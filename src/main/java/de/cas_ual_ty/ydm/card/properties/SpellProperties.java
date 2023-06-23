@@ -2,8 +2,8 @@ package de.cas_ual_ty.ydm.card.properties;
 
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+
 
 import java.util.List;
 
@@ -57,9 +57,9 @@ public class SpellProperties extends Properties
     }
     
     @Override
-    public void addCardType(List<ITextComponent> list)
+    public void addCardType(List<Component> list)
     {
-        list.add(new StringTextComponent(getSpellType().name + " " + getType().name));
+        list.add(Component.literal(getSpellType().name + " " + getType().name));
     }
     
     // --- Getters ---

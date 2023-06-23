@@ -2,8 +2,7 @@ package de.cas_ual_ty.ydm.card.properties;
 
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
 
 import java.util.List;
 
@@ -57,9 +56,9 @@ public class DefMonsterProperties extends MonsterProperties
     }
     
     @Override
-    public void addMonsterHeader2(List<ITextComponent> list)
+    public void addMonsterHeader2(List<Component> list)
     {
-        list.add(new StringTextComponent(getAtk() + " ATK / " + getDef() + " DEF"));
+        list.add(Component.literal(getAtk() + " ATK / " + getDef() + " DEF"));
     }
     
     // --- Getters ---

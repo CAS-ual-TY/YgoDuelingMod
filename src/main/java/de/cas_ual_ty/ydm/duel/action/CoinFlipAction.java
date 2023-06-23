@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+
 
 public class CoinFlipAction extends RandomAction
 {
@@ -21,13 +21,13 @@ public class CoinFlipAction extends RandomAction
         this(actionType, false);
     }
     
-    public CoinFlipAction(ActionType actionType, PacketBuffer buf)
+    public CoinFlipAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readBoolean());
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         buf.writeBoolean(heads);
     }
@@ -39,9 +39,9 @@ public class CoinFlipAction extends RandomAction
     }
     
     @Override
-    public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
+    public MutableComponent getAnnouncement(Component playerName)
     {
-        return new TranslationTextComponent(getAnnouncementLocalKey()).append(": ")
-                .append(new TranslationTextComponent(getAnnouncementLocalKey() + "." + (heads ? "heads" : "tails")));
+        return Component.translatable(getAnnouncementLocalKey()).append(": ")
+                .append(Component.translatable(getAnnouncementLocalKey() + "." + (heads ? "heads" : "tails")));
     }
 }

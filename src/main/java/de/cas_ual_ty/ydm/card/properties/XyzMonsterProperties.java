@@ -2,8 +2,8 @@ package de.cas_ual_ty.ydm.card.properties;
 
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+
 
 import java.util.List;
 
@@ -56,9 +56,9 @@ public class XyzMonsterProperties extends DefMonsterProperties
     }
     
     @Override
-    public void addMonsterHeader1(List<ITextComponent> list)
+    public void addMonsterHeader1(List<Component> list)
     {
-        list.add(new StringTextComponent(getAttribute() + " / Rank " + getRank()));
+        list.add(Component.literal(getAttribute() + " / Rank " + getRank()));
     }
     
     // --- Getters ---

@@ -1,17 +1,22 @@
 package de.cas_ual_ty.ydm.duel.action;
 
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.registries.ForgeRegistryEntry;
+import de.cas_ual_ty.ydm.YDM;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class ActionType extends ForgeRegistryEntry<ActionType>
+
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+public class ActionType
 {
     public final ActionType.Factory factory;
+    
+    private String localKey;
     
     public ActionType(ActionType.Factory factory)
     {
         this.factory = factory;
+        localKey = null;
     }
     
     public ActionType.Factory getFactory()
@@ -21,16 +26,22 @@ public class ActionType extends ForgeRegistryEntry<ActionType>
     
     public String getLocalKey()
     {
-        return "action." + getRegistryName().getNamespace() + "." + getRegistryName().getPath();
+        if(localKey == null)
+        {
+            ResourceLocation rl = YDM.actionTypeRegistry.get().getKey(this);
+            localKey = "action." + rl.getNamespace() + "." + rl.getPath();
+        }
+        
+        return localKey;
     }
     
-    public ITextComponent getLocal()
+    public Component getLocal()
     {
-        return new TranslationTextComponent(getLocalKey());
+        return Component.translatable(getLocalKey());
     }
     
     public interface Factory
     {
-        Action create(ActionType type, PacketBuffer buf);
+        Action create(ActionType type, FriendlyByteBuf buf);
     }
 }

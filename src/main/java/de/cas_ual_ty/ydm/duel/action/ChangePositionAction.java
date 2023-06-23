@@ -5,7 +5,7 @@ import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class ChangePositionAction extends SingleCardAction
 {
@@ -23,13 +23,13 @@ public class ChangePositionAction extends SingleCardAction
         this(actionType, zone.index, zone.getCardIndexShort(sourceCard), targetCardPosition);
     }
     
-    public ChangePositionAction(ActionType actionType, PacketBuffer buf)
+    public ChangePositionAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readShort(), DuelMessageUtility.decodeCardPosition(buf));
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         DuelMessageUtility.encodeCardPosition(destinationCardPosition, buf);

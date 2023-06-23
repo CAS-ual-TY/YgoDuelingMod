@@ -3,14 +3,15 @@ package de.cas_ual_ty.ydm.clientutil;
 import com.google.common.base.CharMatcher;
 import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonObject;
+import com.mojang.realmsclient.util.JsonUtils;
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.resources.ResourcePack;
-import net.minecraft.resources.ResourcePackFileNotFoundException;
-import net.minecraft.resources.ResourcePackType;
-import net.minecraft.resources.data.IMetadataSectionSerializer;
-import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.server.packs.FilePackResources;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.ResourcePackFileNotFoundException;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
+import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -22,7 +23,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.function.Predicate;
 
-public class YdmCardResourcePack extends ResourcePack
+public class YdmCardResourcePack extends FilePackResources
 {
     public static final String PATH_PREFIX = "assets/" + YDM.MOD_ID + "/textures/item/";
     
@@ -70,7 +71,7 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    protected boolean hasResource(String resourcePath)
+    public boolean hasResource(String resourcePath)
     {
         return getFile(resourcePath) != null;
     }
@@ -115,9 +116,9 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    public Set<String> getNamespaces(ResourcePackType type)
+    public Set<String> getNamespaces(PackType type)
     {
-        return type == ResourcePackType.CLIENT_RESOURCES ? ImmutableSet.of(YDM.MOD_ID) : ImmutableSet.of();
+        return type == PackType.CLIENT_RESOURCES ? ImmutableSet.of(YDM.MOD_ID) : ImmutableSet.of();
     }
     
     @Override
@@ -126,7 +127,7 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    public Collection<ResourceLocation> getResources(ResourcePackType type, String namespaceIn, String pathIn, int maxDepthIn, Predicate<String> filterIn)
+    public Collection<ResourceLocation> getResources(PackType type, String namespaceIn, String pathIn, Predicate<ResourceLocation> filterIn)
     {
         // This is only needed for fonts and sounds afaik
         /*
@@ -149,11 +150,11 @@ public class YdmCardResourcePack extends ResourcePack
     }
     
     @Override
-    public <T> T getMetadataSection(IMetadataSectionSerializer<T> deserializer) throws IOException
+    public <T> T getMetadataSection(MetadataSectionSerializer<T> deserializer) throws IOException
     {
         if(deserializer.getMetadataSectionName().equals("pack"))
         {
-            return deserializer.fromJson(JSONUtils.getAsJsonObject(packMeta, deserializer.getMetadataSectionName()));
+            return deserializer.fromJson(GsonHelper.getAsJsonObject(packMeta, deserializer.getMetadataSectionName()));
         }
         return null;
     }

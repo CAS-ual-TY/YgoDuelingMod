@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.DuelManager;
@@ -12,13 +12,12 @@ import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -31,7 +30,7 @@ public class ZoneWidget extends Button
     public boolean isFlipped;
     public DuelCard hoverCard;
     
-    public ZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
+    public ZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, Component title, Consumer<ZoneWidget> onPress, OnTooltip onTooltip)
     {
         super(0, 0, width, height, title, (w) -> onPress.accept((ZoneWidget) w), onTooltip);
         this.zone = zone;
@@ -100,21 +99,21 @@ public class ZoneWidget extends Button
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.font;
+        Font Font = minecraft.font;
         
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.color4f(1F, 1F, 1F, alpha);
+        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
         
         renderZoneSelectRect(ms, zone, x, y, width, height);
         
         hoverCard = renderCards(ms, mouseX, mouseY);
         
-        RenderSystem.color4f(1F, 1F, 1F, alpha);
+        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
         
         if(zone.type.getCanHaveCounters() && zone.getCounters() > 0)
         {
@@ -122,15 +121,15 @@ public class ZoneWidget extends Button
             // white is translated in front by that
             ms.pushPose();
             ms.translate(0, 0, 0.03F);
-            AbstractGui.drawCenteredString(ms, fontrenderer, new StringTextComponent("(" + zone.getCounters() + ")"),
-                    x + width / 2, y + height / 2 - fontrenderer.lineHeight / 2,
-                    16777215 | MathHelper.ceil(alpha * 255.0F) << 24);
+            Screen.drawCenteredString(ms, Font, Component.literal("(" + zone.getCounters() + ")"),
+                    x + width / 2, y + height / 2 - Font.lineHeight / 2,
+                    16777215 | Mth.ceil(alpha * 255.0F) << 24);
             ms.popPose();
         }
         
         if(active)
         {
-            if(isHovered())
+            if(isHoveredOrFocused())
             {
                 if(zone.getCardsAmount() == 0)
                 {
@@ -146,7 +145,7 @@ public class ZoneWidget extends Button
         }
     }
     
-    public void renderZoneSelectRect(MatrixStack ms, Zone zone, float x, float y, float width, float height)
+    public void renderZoneSelectRect(PoseStack ms, Zone zone, float x, float y, float width, float height)
     {
         if(context.getClickedZone() == zone && context.getClickedCard() == null)
         {
@@ -172,7 +171,7 @@ public class ZoneWidget extends Button
         }
     }
     
-    public void renderCardSelectRect(MatrixStack ms, DuelCard card, float x, float y, float width, float height)
+    public void renderCardSelectRect(PoseStack ms, DuelCard card, float x, float y, float width, float height)
     {
         if(context.getClickedCard() == card)
         {
@@ -199,7 +198,7 @@ public class ZoneWidget extends Button
     }
     
     @Nullable
-    public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
+    public DuelCard renderCards(PoseStack ms, int mouseX, int mouseY)
     {
         if(zone.getCardsAmount() <= 0)
         {
@@ -234,7 +233,7 @@ public class ZoneWidget extends Button
         return null;
     }
     
-    protected boolean drawCard(MatrixStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY, int cardsWidth, int cardsHeight)
+    protected boolean drawCard(PoseStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY, int cardsWidth, int cardsHeight)
     {
         int offset = cardsHeight - cardsWidth;
         
@@ -259,7 +258,7 @@ public class ZoneWidget extends Button
         return drawCard(ms, duelCard, renderX, renderY, renderWidth, renderHeight, mouseX, mouseY, hoverX, hoverY, hoverWidth, hoverHeight);
     }
     
-    protected boolean drawCard(MatrixStack ms, DuelCard duelCard, float renderX, float renderY, float renderWidth, float renderHeight, int mouseX, int mouseY, float hoverX, float hoverY, float hoverWidth, float hoverHeight)
+    protected boolean drawCard(PoseStack ms, DuelCard duelCard, float renderX, float renderY, float renderWidth, float renderHeight, int mouseX, int mouseY, float hoverX, float hoverY, float hoverWidth, float hoverHeight)
     {
         boolean isOwner = zone.getOwner() == context.getZoneOwner();
         boolean faceUp = zone.getType().getShowFaceDownCardsToOwner() && isOwner;
@@ -276,7 +275,7 @@ public class ZoneWidget extends Button
             CardRenderUtil.renderDuelCardReversedCentered(ms, zone.getSleeves(), mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, faceUp);
         }
         
-        if(isHovered() && mouseX >= hoverX && mouseX < hoverX + hoverWidth && mouseY >= hoverY && mouseY < hoverY + hoverHeight)
+        if(isHoveredOrFocused() && mouseX >= hoverX && mouseX < hoverX + hoverWidth && mouseY >= hoverY && mouseY < hoverY + hoverHeight)
         {
             return true;
         }
@@ -286,7 +285,7 @@ public class ZoneWidget extends Button
         }
     }
     
-    public void addInteractionWidgets(ZoneOwner player, Zone interactor, DuelCard interactorCard, DuelManager m, List<InteractionWidget> list, Consumer<InteractionWidget> onPress, ITooltip onTooltip, boolean isAdvanced)
+    public void addInteractionWidgets(ZoneOwner player, Zone interactor, DuelCard interactorCard, DuelManager m, List<InteractionWidget> list, Consumer<InteractionWidget> onPress, OnTooltip onTooltip, boolean isAdvanced)
     {
         List<ZoneInteraction> interactions;
         
@@ -396,9 +395,9 @@ public class ZoneWidget extends Button
         return y + height / 2;
     }
     
-    public ITextComponent getTranslation()
+    public Component getTranslation()
     {
-        return new TranslationTextComponent(zone.getType().getRegistryName().getNamespace() + ".zone." + zone.getType().getRegistryName().getPath());
+        return Component.translatable(zone.getType().getRegistryName().getNamespace() + ".zone." + zone.getType().getRegistryName().getPath());
     }
     
     public boolean openAdvancedZoneView()

@@ -3,7 +3,7 @@ package de.cas_ual_ty.ydm.util;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.set.CardSet;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.IEventBus;
 
 import javax.annotation.Nullable;
@@ -39,7 +39,7 @@ public interface ISidedProxy
     }
     
     @Nullable
-    default PlayerEntity getClientPlayer()
+    default Player getClientPlayer()
     {
         return null;
     }

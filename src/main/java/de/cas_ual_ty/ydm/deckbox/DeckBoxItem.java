@@ -5,25 +5,26 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.CardSleevesItem;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.ListNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.items.CapabilityItemHandler;
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
+import net.minecraft.nbt.CompoundTag;
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class DeckBoxItem extends Item implements INamedContainerProvider
+import javax.annotation.Nullable;
+
+public class DeckBoxItem extends Item implements MenuProvider
 {
     public static final String ITEM_HANDLER_KEY = "cards";
     public static final String CARD_SLEEVES_KEY = "sleeves";
@@ -33,12 +34,9 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         super(properties);
     }
     
-    public IItemHandler getItemHandler(ItemStack itemStack)
+    public YDMItemHandler getItemHandler(ItemStack itemStack)
     {
-        IItemHandler itemHandler = new ItemStackHandler(DeckHolder.TOTAL_DECK_SIZE);
-        ListNBT nbt = itemStack.getOrCreateTag().getList(DeckBoxItem.ITEM_HANDLER_KEY, Constants.NBT.TAG_COMPOUND);
-        CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, nbt);
-        return itemHandler;
+        return itemStack.getCapability(YDM.CARD_ITEM_INVENTORY).orElse(null);
     }
     
     public ItemStack getCardSleeves(ItemStack itemStack)
@@ -53,48 +51,48 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         }
     }
     
-    public void saveItemHandlerToNBT(ItemStack itemStack, IItemHandler itemHandler)
+    public void saveItemHandlerToNBT(ItemStack itemStack, YDMItemHandler itemHandler)
     {
-        itemStack.getOrCreateTag().put(DeckBoxItem.ITEM_HANDLER_KEY,
-                CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.writeNBT(itemHandler, null));
+        //FIXME probably not needed
+        //itemStack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(ih -> ih.deserializeNBT(itemHandler.serializeNBT()));
     }
     
     public void saveCardSleevesToNBT(ItemStack itemStack, ItemStack sleevesStack)
     {
         if(sleevesStack.getItem() instanceof CardSleevesItem && !((CardSleevesItem) sleevesStack.getItem()).sleeves.isCardBack())
         {
-            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, sleevesStack.save(new CompoundNBT()));
+            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, sleevesStack.save(new CompoundTag()));
         }
         else
         {
-            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, ItemStack.EMPTY.save(new CompoundNBT()));
+            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, ItemStack.EMPTY.save(new CompoundTag()));
         }
     }
     
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
     {
         ItemStack stack = DeckBoxItem.getActiveDeckBox(player);
         
         if(player.getItemInHand(hand) == stack)
         {
             player.openMenu(this);
-            return ActionResult.success(stack);
+            return InteractionResultHolder.success(stack);
         }
         
         return super.use(world, player, hand);
     }
     
     @Override
-    public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
+    public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player)
     {
-        return new DeckBoxContainer(YdmContainerTypes.DECK_BOX, id, playerInv, DeckBoxItem.getActiveDeckBox(player));
+        return new DeckBoxContainer(YdmContainerTypes.DECK_BOX.get(), id, playerInv, DeckBoxItem.getActiveDeckBox(player));
     }
     
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return new TranslationTextComponent("container." + YDM.MOD_ID + ".deck_box");
+        return Component.translatable("container." + YDM.MOD_ID + ".deck_box");
     }
     
     public ItemHandlerDeckHolder getDeckHolder(ItemStack itemStack)
@@ -104,7 +102,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
     
     public void setDeckHolder(ItemStack itemStack, DeckHolder holder)
     {
-        IItemHandler itemHandler = new ItemStackHandler(DeckHolder.TOTAL_DECK_SIZE);
+        YDMItemHandler itemHandler = new YDMItemHandler(DeckHolder.TOTAL_DECK_SIZE, itemStack::getOrCreateTag);
         
         CardHolder c;
         
@@ -114,7 +112,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
             
             if(c != null)
             {
-                itemHandler.insertItem(DeckHolder.MAIN_DECK_INDEX_START + i, YdmItems.CARD.createItemForCardHolder(c), false);
+                itemHandler.insertItem(DeckHolder.MAIN_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c), false);
             }
         }
         
@@ -129,7 +127,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
             
             if(c != null)
             {
-                itemHandler.insertItem(DeckHolder.EXTRA_DECK_INDEX_START + i, YdmItems.CARD.createItemForCardHolder(c), false);
+                itemHandler.insertItem(DeckHolder.EXTRA_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c), false);
             }
         }
         
@@ -144,7 +142,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
             
             if(c != null)
             {
-                itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, YdmItems.CARD.createItemForCardHolder(c), false);
+                itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c), false);
             }
         }
         
@@ -161,7 +159,7 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         }
     }
     
-    public static ItemStack getActiveDeckBox(PlayerEntity player)
+    public static ItemStack getActiveDeckBox(Player player)
     {
         if(player.getMainHandItem().getItem() instanceof DeckBoxItem)
         {
@@ -175,5 +173,40 @@ public class DeckBoxItem extends Item implements INamedContainerProvider
         {
             return ItemStack.EMPTY;
         }
+    }
+    
+    @Override
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt)
+    {
+        super.readShareTag(stack, nbt);
+        
+        if(nbt != null && nbt.contains("card_item_inventory", Tag.TAG_COMPOUND))
+        {
+            stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
+            {
+                handler.deserializeNBT(nbt.getCompound("card_item_inventory"));
+            });
+        }
+    }
+    
+    @Nullable
+    @Override
+    public CompoundTag getShareTag(ItemStack stack)
+    {
+        CompoundTag nbt = super.getShareTag(stack);
+        
+        if(nbt == null)
+        {
+            nbt = new CompoundTag();
+        }
+        
+        CompoundTag finalNBT = nbt;
+        
+        stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
+        {
+            finalNBT.put("card_item_inventory", handler.serializeNBT());
+        });
+        
+        return finalNBT;
     }
 }

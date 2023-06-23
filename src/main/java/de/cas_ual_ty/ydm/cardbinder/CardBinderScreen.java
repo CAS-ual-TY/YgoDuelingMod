@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
@@ -10,24 +11,22 @@ import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
 import de.cas_ual_ty.ydm.clientutil.widget.TextureButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.IHasContainer;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.MenuAccess;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CardBinderScreen extends ContainerScreen<CardBinderContainer> implements IHasContainer<CardBinderContainer>
+public class CardBinderScreen extends AbstractContainerScreen<CardBinderContainer>
 {
     private static final ResourceLocation CARD_BINDER_GUI_TEXTURE = new ResourceLocation(YDM.MOD_ID, "textures/gui/card_binder.png");
     
@@ -46,40 +45,12 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     protected int centerX;
     protected int centerY;
     
-    protected TextFieldWidget cardSearch;
+    protected EditBox cardSearch;
     
-    public CardBinderScreen(CardBinderContainer screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public CardBinderScreen(CardBinderContainer screenContainer, Inventory inv, Component titleIn)
     {
         super(screenContainer, inv, titleIn);
         shiftDown = false;
-    }
-    
-    @Override
-    public void init(Minecraft mc, int width, int height)
-    {
-        super.init(mc, width, height);
-        
-        int index;
-        CardButton button;
-        cardButtons = new CardButton[CardInventory.DEFAULT_CARDS_PER_PAGE];
-        
-        for(int y = 0; y < CardInventory.DEFAULT_PAGE_ROWS; ++y)
-        {
-            for(int x = 0; x < CardInventory.DEFAULT_PAGE_COLUMNS; ++x)
-            {
-                index = x + y * 9;
-                button = new CardButton(leftPos + 7 + x * 18, topPos + 17 + y * 18, 18, 18, index, this::onCardClicked, this::getCard);
-                cardButtons[index] = button;
-                addButton(button);
-            }
-        }
-        
-        addButton(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8 - 27, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.left_arrow"), this::onButtonClicked));
-        addButton(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8 - 27, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.right_arrow"), this::onButtonClicked));
-        
-        addButton(reloadButton = new TextureButton(leftPos + imageWidth - 12 - 8 - 27, topPos + imageHeight - 96, 12, 12, StringTextComponent.EMPTY, this::onButtonClicked)
-                .setTexture(new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_widgets.png"), 64, 0, 16, 16));
-        addButton(cardSearch = new TextFieldWidget(font, leftPos + imageWidth - 12 - 8 - 27 - 82, topPos + imageHeight - 96, 80, 12, StringTextComponent.EMPTY));
     }
     
     @Override
@@ -89,10 +60,32 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
         imageHeight = 114 + CardInventory.DEFAULT_PAGE_ROWS * 18; //222
         super.init();
         imageWidth += 27; //insertion slot on the right; gui is not centered
+    
+        int index;
+        CardButton button;
+        cardButtons = new CardButton[CardInventory.DEFAULT_CARDS_PER_PAGE];
+    
+        for(int y = 0; y < CardInventory.DEFAULT_PAGE_ROWS; ++y)
+        {
+            for(int x = 0; x < CardInventory.DEFAULT_PAGE_COLUMNS; ++x)
+            {
+                index = x + y * 9;
+                button = new CardButton(leftPos + 7 + x * 18, topPos + 17 + y * 18, 18, 18, index, this::onCardClicked, this::getCard);
+                cardButtons[index] = button;
+                addRenderableWidget(button);
+            }
+        }
+    
+        addRenderableWidget(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8 - 27, topPos + 4, 12, 12, Component.literal("generic.ydm.left_arrow"), this::onButtonClicked));
+        addRenderableWidget(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8 - 27, topPos + 4, 12, 12, Component.literal("generic.ydm.right_arrow"), this::onButtonClicked));
+    
+        addRenderableWidget(reloadButton = new TextureButton(leftPos + imageWidth - 12 - 8 - 27, topPos + imageHeight - 96, 12, 12, Component.empty(), this::onButtonClicked)
+                .setTexture(new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_widgets.png"), 64, 0, 16, 16));
+        addRenderableWidget(cardSearch = new EditBox(font, leftPos + imageWidth - 12 - 8 - 27 - 82, topPos + imageHeight - 96, 80, 12, Component.empty()));
     }
     
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         renderBackground(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
@@ -100,17 +93,17 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
         
         for(CardButton button : cardButtons)
         {
-            if(button.isHovered())
+            if(button.isHoveredOrFocused())
             {
                 if(button.getCard() != null)
                 {
                     CardRenderUtil.renderCardInfo(ms, button.getCard(), this);
                     
-                    List<ITextComponent> list = new LinkedList<>();
+                    List<Component> list = new LinkedList<>();
                     button.getCard().addInformation(list);
                     
-                    List<ITextComponent> tooltip = new ArrayList<>(list.size());
-                    for(ITextComponent t : list)
+                    List<Component> tooltip = new ArrayList<>(list.size());
+                    for(Component t : list)
                     {
                         tooltip.add(t);
                     }
@@ -125,29 +118,29 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
     }
     
     @Override
-    protected void renderLabels(MatrixStack ms, int mouseX, int mouseY)
+    protected void renderLabels(PoseStack ms, int mouseX, int mouseY)
     {
-        IFormattableTextComponent title = new StringTextComponent(this.title.getString());
+        MutableComponent title = Component.literal(this.title.getString());
         
         if(!getMenu().loaded)
         {
-            title = title.append(" ").append(new TranslationTextComponent("container.ydm.card_binder.loading"));
+            title = title.append(" ").append(Component.translatable("container.ydm.card_binder.loading"));
         }
         else
         {
-            title = title.append(" ").append(new StringTextComponent(menu.page + "/" + menu.clientMaxPage));
+            title = title.append(" ").append(Component.literal(menu.page + "/" + menu.clientMaxPage));
         }
         
         font.draw(ms, title, 8.0F, 6.0F, 0x404040);
         
-        font.draw(ms, inventory.getDisplayName(), 8.0F, (float) (imageHeight - 96 + 2), 0x404040);
+        font.draw(ms, playerInventoryTitle.getVisualOrderText(), 8.0F, (float) (imageHeight - 96 + 2), 0x404040);
     }
     
     @Override
-    protected void renderBg(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY)
     {
         ScreenUtil.white();
-        minecraft.getTextureManager().bind(CardBinderScreen.CARD_BINDER_GUI_TEXTURE);
+        RenderSystem.setShaderTexture(0, CardBinderScreen.CARD_BINDER_GUI_TEXTURE);
         blit(ms, leftPos, topPos, 0, 0, imageWidth, imageHeight);
     }
     
@@ -179,14 +172,14 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
             return;
         }
         
-        if(button.getCard() != null && YDM.proxy.getClientPlayer().inventory.getCarried().isEmpty())
+        if(button.getCard() != null && YDM.proxy.getClientPlayer().getInventory().getSelected().isEmpty())
         {
             YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index, shiftDown));
             
             if(!shiftDown)
             {
-                ItemStack itemStack = YdmItems.CARD.createItemForCardHolder(button.getCard());
-                YDM.proxy.getClientPlayer().inventory.setCarried(itemStack);
+                ItemStack itemStack = YdmItems.CARD.get().createItemForCardHolder(button.getCard());
+                YDM.proxy.getClientPlayer().getInventory().setPickedItem(itemStack);
             }
         }
     }
@@ -213,7 +206,7 @@ public class CardBinderScreen extends ContainerScreen<CardBinderContainer> imple
             {
                 for(CardButton button : cardButtons)
                 {
-                    if(button.isHovered() && button.getCard() != null)
+                    if(button.isHoveredOrFocused() && button.getCard() != null)
                     {
                         YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexDropped(button.index));
                         break;

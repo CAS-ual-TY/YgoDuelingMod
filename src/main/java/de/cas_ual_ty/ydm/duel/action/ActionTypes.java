@@ -1,65 +1,45 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
 import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.RegistryObject;
 
-@EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
-@ObjectHolder(YDM.MOD_ID)
 public class ActionTypes
 {
-    public static final ActionType POPULATE = null;
-    public static final ActionType MOVE_ON_TOP = null;
-    public static final ActionType SPECIAL_SUMMON = null;
-    public static final ActionType SPECIAL_SUMMON_OVERLAY = null;
-    public static final ActionType MOVE_TO_BOTTOM = null;
-    public static final ActionType CHANGE_POSITION = null;
-    public static final ActionType SHUFFLE_ZONE = null;
-    public static final ActionType SHOW_ZONE = null;
-    public static final ActionType VIEW_ZONE = null;
-    public static final ActionType SHOW_CARD = null;
-    public static final ActionType ATTACK = null;
-    public static final ActionType LIST = null;
-    public static final ActionType CHANGE_LP = null;
-    public static final ActionType COIN_FLIP = null;
-    public static final ActionType DICE_ROLL = null;
-    public static final ActionType CHANGE_COUNTERS = null;
-    public static final ActionType CREATE_TOKEN = null;
-    public static final ActionType REMOVE_TOKEN = null;
-    public static final ActionType CHANGE_PHASE = null;
-    public static final ActionType END_TURN = null;
-    public static final ActionType INIT_SLEEVES = null;
-    public static final ActionType SELECT = null;
+    private static final DeferredRegister<ActionType> DEFERRED_REGISTER = DeferredRegister.create(new ResourceLocation(YDM.MOD_ID, "action_types"), YDM.MOD_ID);
     
-    @SubscribeEvent
-    public static void registerActionTypes(RegistryEvent.Register<ActionType> event)
+    public static final RegistryObject<ActionType> POPULATE = DEFERRED_REGISTER.register("populate", () -> new ActionType(PopulateAction::new));
+    public static final RegistryObject<ActionType> MOVE_ON_TOP = DEFERRED_REGISTER.register("move_on_top", () -> new ActionType(MoveTopAction::new));
+    public static final RegistryObject<ActionType> SPECIAL_SUMMON = DEFERRED_REGISTER.register("special_summon", () -> new ActionType(MoveTopAction::new));
+    public static final RegistryObject<ActionType> SPECIAL_SUMMON_OVERLAY = DEFERRED_REGISTER.register("special_summon_overlay", () -> new ActionType(ListAction::new));
+    public static final RegistryObject<ActionType> MOVE_TO_BOTTOM = DEFERRED_REGISTER.register("move_to_bottom", () -> new ActionType(MoveBottomAction::new));
+    public static final RegistryObject<ActionType> CHANGE_POSITION = DEFERRED_REGISTER.register("change_position", () -> new ActionType(ChangePositionAction::new));
+    public static final RegistryObject<ActionType> SHUFFLE_ZONE = DEFERRED_REGISTER.register("shuffle_zone", () -> new ActionType(ShuffleAction::new));
+    public static final RegistryObject<ActionType> SHOW_ZONE = DEFERRED_REGISTER.register("show_zone", () -> new ActionType(ShowZoneAction::new));
+    public static final RegistryObject<ActionType> VIEW_ZONE = DEFERRED_REGISTER.register("view_zone", () -> new ActionType(ViewZoneAction::new));
+    public static final RegistryObject<ActionType> SHOW_CARD = DEFERRED_REGISTER.register("show_card", () -> new ActionType(ShowCardAction::new));
+    public static final RegistryObject<ActionType> ATTACK = DEFERRED_REGISTER.register("attack", () -> new ActionType(AttackAction::new));
+    public static final RegistryObject<ActionType> LIST = DEFERRED_REGISTER.register("list", () -> new ActionType(ListAction::new));
+    public static final RegistryObject<ActionType> CHANGE_LP = DEFERRED_REGISTER.register("change_lp", () -> new ActionType(ChangeLPAction::new));
+    public static final RegistryObject<ActionType> COIN_FLIP = DEFERRED_REGISTER.register("coin_flip", () -> new ActionType(CoinFlipAction::new));
+    public static final RegistryObject<ActionType> DICE_ROLL = DEFERRED_REGISTER.register("dice_roll", () -> new ActionType(DiceRollAction::new));
+    public static final RegistryObject<ActionType> CHANGE_COUNTERS = DEFERRED_REGISTER.register("change_counters", () -> new ActionType(ChangeCountersAction::new));
+    public static final RegistryObject<ActionType> CREATE_TOKEN = DEFERRED_REGISTER.register("create_token", () -> new ActionType(CreateTokenAction::new));
+    public static final RegistryObject<ActionType> REMOVE_TOKEN = DEFERRED_REGISTER.register("remove_token", () -> new ActionType(RemoveTokenAction::new));
+    public static final RegistryObject<ActionType> CHANGE_PHASE = DEFERRED_REGISTER.register("change_phase", () -> new ActionType(ChangePhaseAction::new));
+    public static final RegistryObject<ActionType> END_TURN = DEFERRED_REGISTER.register("end_turn", () -> new ActionType(EndTurnAction::new));
+    public static final RegistryObject<ActionType> INIT_SLEEVES = DEFERRED_REGISTER.register("init_sleeves", () -> new ActionType(InitSleevesAction::new));
+    public static final RegistryObject<ActionType> SELECT = DEFERRED_REGISTER.register("select", () -> new ActionType(SelectAction::new));
+    
+    public static void register(IEventBus bus)
     {
-        IForgeRegistry<ActionType> registry = event.getRegistry();
-        registry.register(new ActionType(PopulateAction::new).setRegistryName(YDM.MOD_ID, "populate"));
-        registry.register(new ActionType(MoveTopAction::new).setRegistryName(YDM.MOD_ID, "move_on_top"));
-        registry.register(new ActionType(MoveTopAction::new).setRegistryName(YDM.MOD_ID, "special_summon"));
-        registry.register(new ActionType(ListAction::new).setRegistryName(YDM.MOD_ID, "special_summon_overlay"));
-        registry.register(new ActionType(MoveBottomAction::new).setRegistryName(YDM.MOD_ID, "move_to_bottom"));
-        registry.register(new ActionType(ChangePositionAction::new).setRegistryName(YDM.MOD_ID, "change_position"));
-        registry.register(new ActionType(ShuffleAction::new).setRegistryName(YDM.MOD_ID, "shuffle_zone"));
-        registry.register(new ActionType(ShowZoneAction::new).setRegistryName(YDM.MOD_ID, "show_zone"));
-        registry.register(new ActionType(ViewZoneAction::new).setRegistryName(YDM.MOD_ID, "view_zone"));
-        registry.register(new ActionType(ShowCardAction::new).setRegistryName(YDM.MOD_ID, "show_card"));
-        registry.register(new ActionType(AttackAction::new).setRegistryName(YDM.MOD_ID, "attack"));
-        registry.register(new ActionType(ListAction::new).setRegistryName(YDM.MOD_ID, "list"));
-        registry.register(new ActionType(ChangeLPAction::new).setRegistryName(YDM.MOD_ID, "change_lp"));
-        registry.register(new ActionType(CoinFlipAction::new).setRegistryName(YDM.MOD_ID, "coin_flip"));
-        registry.register(new ActionType(DiceRollAction::new).setRegistryName(YDM.MOD_ID, "dice_roll"));
-        registry.register(new ActionType(ChangeCountersAction::new).setRegistryName(YDM.MOD_ID, "change_counters"));
-        registry.register(new ActionType(CreateTokenAction::new).setRegistryName(YDM.MOD_ID, "create_token"));
-        registry.register(new ActionType(RemoveTokenAction::new).setRegistryName(YDM.MOD_ID, "remove_token"));
-        registry.register(new ActionType(ChangePhaseAction::new).setRegistryName(YDM.MOD_ID, "change_phase"));
-        registry.register(new ActionType(EndTurnAction::new).setRegistryName(YDM.MOD_ID, "end_turn"));
-        registry.register(new ActionType(InitSleevesAction::new).setRegistryName(YDM.MOD_ID, "init_sleeves"));
-        registry.register(new ActionType(SelectAction::new).setRegistryName(YDM.MOD_ID, "select"));
+        DEFERRED_REGISTER.register(bus);
     }
 }

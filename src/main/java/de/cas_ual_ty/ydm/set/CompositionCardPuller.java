@@ -7,10 +7,10 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.SortedArraySet;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.world.item.ItemStack;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +75,7 @@ public class CompositionCardPuller extends CardPuller
         {
             if(subSet.isIndependentAndItem())
             {
-                list.add(YdmItems.SET.createItemForSet(subSet));
+                list.add(YdmItems.SET.get().createItemForSet(subSet));
             }
             else
             {
@@ -87,7 +87,7 @@ public class CompositionCardPuller extends CardPuller
     }
     
     @Override
-    public void addInformation(List<ITextComponent> tooltip)
+    public void addInformation(List<Component> tooltip)
     {
         if(addInformationInComposition())
         {
@@ -95,7 +95,7 @@ public class CompositionCardPuller extends CardPuller
             {
                 if(subSet.isIndependentAndItem())
                 {
-                    tooltip.add(new StringTextComponent(subSet.name));
+                    tooltip.add(Component.literal(subSet.name));
                 }
                 else
                 {

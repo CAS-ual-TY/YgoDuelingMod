@@ -1,13 +1,15 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+
 
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -20,14 +22,14 @@ public class CardButton extends AbstractButton
     
     public CardButton(int posX, int posY, int width, int height, int index, BiConsumer<CardButton, Integer> onPress, Function<Integer, CardHolder> cardHolder)
     {
-        super(posX, posY, width, height, StringTextComponent.EMPTY);
+        super(posX, posY, width, height, Component.empty());
         this.index = index;
         this.cardHolder = cardHolder;
         this.onPress = onPress;
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTick)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTick)
     {
         CardHolder card = getCard();
         if(card != null)
@@ -36,14 +38,14 @@ public class CardButton extends AbstractButton
             CardRenderUtil.bindMainResourceLocation(card);
             YdmBlitUtil.fullBlit(ms, x + 1, y + 1, 16, 16);
             
-            if(isHovered())
+            if(isHoveredOrFocused())
             {
                 drawHover(ms);
             }
         }
     }
     
-    protected void drawHover(MatrixStack ms)
+    protected void drawHover(PoseStack ms)
     {
         RenderSystem.disableDepthTest();
         int x = this.x + 1;
@@ -64,5 +66,11 @@ public class CardButton extends AbstractButton
     public CardHolder getCard()
     {
         return cardHolder.apply(index);
+    }
+    
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput)
+    {
+    
     }
 }

@@ -4,9 +4,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,23 +76,23 @@ public class LinkMonsterProperties extends MonsterProperties
     }
     
     @Override
-    public void addMonsterHeader2(List<ITextComponent> list)
+    public void addMonsterHeader2(List<Component> list)
     {
-        list.add(new StringTextComponent(getAtk() + " ATK / LINK-" + getLinkRating()));
+        list.add(Component.literal(getAtk() + " ATK / LINK-" + getLinkRating()));
     }
     
     @Override
-    public void addText(List<ITextComponent> list)
+    public void addText(List<Component> list)
     {
         addLinkMarkers(list);
-        list.add(StringTextComponent.EMPTY);
+        list.add(Component.empty());
         super.addText(list);
     }
     
-    public void addLinkMarkers(List<ITextComponent> list)
+    public void addLinkMarkers(List<Component> list)
     {
         //        list.add(this.linkArrows.stream().map((arrow) -> arrow.name).collect(Collectors.joining(", ")));
-        list.addAll(LinkArrow.buildSymbolsString(getLinkArrows(), TextFormatting.DARK_GRAY, TextFormatting.RED, "  "));
+        list.addAll(LinkArrow.buildSymbolsString(getLinkArrows(), ChatFormatting.DARK_GRAY, ChatFormatting.RED, "  "));
     }
     
     // --- Getters ---

@@ -5,7 +5,7 @@ import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class CreateTokenAction extends DualZoneAction
 {
@@ -26,13 +26,13 @@ public class CreateTokenAction extends DualZoneAction
         this(actionType, sourceZone.index, sourceZone.getCardIndexShort(card), destinationZone.index, destinationCardPosition, player);
     }
     
-    public CreateTokenAction(ActionType actionType, PacketBuffer buf)
+    public CreateTokenAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readShort(), buf.readByte(), DuelMessageUtility.decodeCardPosition(buf), DuelMessageUtility.decodeZoneOwner(buf));
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         DuelMessageUtility.encodeCardPosition(destinationCardPosition, buf);

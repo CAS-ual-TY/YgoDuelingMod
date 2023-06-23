@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class DualZoneAction extends SingleCardAction
 {
@@ -16,13 +16,13 @@ public abstract class DualZoneAction extends SingleCardAction
         this.destinationZoneId = destinationZoneId;
     }
     
-    public DualZoneAction(ActionType actionType, PacketBuffer buf)
+    public DualZoneAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readShort(), buf.readByte());
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         buf.writeByte(destinationZoneId);

@@ -2,28 +2,26 @@ package de.cas_ual_ty.ydm.cardbinder;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.StringNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-public class CardBinderItem extends Item implements INamedContainerProvider
+public class CardBinderItem extends Item implements MenuProvider
 {
     private static final HashMap<UUID, CardBinderCardsManager> MANAGER_MAP = new HashMap<>();
     public static final String MANAGER_UUID_KEY_OLD = "binder_uuid";
@@ -65,26 +63,26 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     }
     
     @Override
-    public void appendHoverText(ItemStack stack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack stack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
     {
         super.appendHoverText(stack, worldIn, tooltip, flagIn);
         
-        tooltip.add(new TranslationTextComponent(getDescriptionId() + ".uuid"));
+        tooltip.add(Component.translatable(getDescriptionId() + ".uuid"));
         
         UUID uuid = getUUID(stack);
         
         if(uuid != null)
         {
-            tooltip.add(new StringTextComponent(uuid.toString()));
+            tooltip.add(Component.literal(uuid.toString()));
         }
         else
         {
-            tooltip.add(new TranslationTextComponent(getDescriptionId() + ".uuid.empty"));
+            tooltip.add(Component.translatable(getDescriptionId() + ".uuid.empty"));
         }
     }
     
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
     {
         // must also fix UUID on client side if player is in creative mode
         getUUID(player.getItemInHand(hand));
@@ -94,26 +92,26 @@ public class CardBinderItem extends Item implements INamedContainerProvider
         if(player.getItemInHand(hand) == stack)
         {
             player.openMenu(this);
-            return ActionResult.success(stack);
+            return InteractionResultHolder.success(stack);
         }
         
         return super.use(world, player, hand);
     }
     
     @Override
-    public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
+    public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player)
     {
         ItemStack s = getActiveBinder(player);
-        return new CardBinderContainer(YdmContainerTypes.CARD_BINDER, id, playerInv, getInventoryManager(s), s);
+        return new CardBinderContainer(YdmContainerTypes.CARD_BINDER.get(), id, playerInv, getInventoryManager(s), s);
     }
     
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return new TranslationTextComponent("container." + YDM.MOD_ID + ".card_binder");
+        return Component.translatable("container." + YDM.MOD_ID + ".card_binder");
     }
     
-    public ItemStack getActiveBinder(PlayerEntity player)
+    public ItemStack getActiveBinder(Player player)
     {
         if(player.getMainHandItem().getItem() == this)
         {
@@ -165,29 +163,29 @@ public class CardBinderItem extends Item implements INamedContainerProvider
     
     @Nullable
     @Override
-    public CompoundNBT getShareTag(ItemStack stack)
+    public CompoundTag getShareTag(ItemStack stack)
     {
-        CompoundNBT nbt = super.getShareTag(stack);
+        CompoundTag nbt = super.getShareTag(stack);
         
         if(nbt == null)
         {
-            nbt = new CompoundNBT();
+            nbt = new CompoundTag();
         }
         
-        CompoundNBT finalNbt = nbt;
+        CompoundTag finalNbt = nbt;
         
         stack.getCapability(YDM.UUID_HOLDER).ifPresent(holder -> finalNbt.put(MANAGER_UUID_KEY, holder.serializeNBT()));
         return finalNbt;
     }
     
     @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt)
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt)
     {
         super.readShareTag(stack, nbt);
         
         if(nbt != null && nbt.contains(MANAGER_UUID_KEY, 8))
         {
-            stack.getCapability(YDM.UUID_HOLDER).ifPresent(holder -> holder.deserializeNBT((StringNBT) nbt.get(MANAGER_UUID_KEY)));
+            stack.getCapability(YDM.UUID_HOLDER).ifPresent(holder -> holder.deserializeNBT((StringTag) nbt.get(MANAGER_UUID_KEY)));
         }
     }
 }

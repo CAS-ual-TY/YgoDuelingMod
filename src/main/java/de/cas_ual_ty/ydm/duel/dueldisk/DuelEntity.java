@@ -5,20 +5,20 @@ import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeaders;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.UUID;
 
-public class DuelEntity extends Entity implements INamedContainerProvider
+public class DuelEntity extends Entity implements MenuProvider
 {
     public static final int MAX_TIMEOUT = 20 * 8;
     
@@ -27,7 +27,7 @@ public class DuelEntity extends Entity implements INamedContainerProvider
     public UUID player1UUID;
     public UUID player2UUID;
     
-    public DuelEntity(EntityType<?> pType, World level)
+    public DuelEntity(EntityType<?> pType, Level level)
     {
         super(pType, level);
         duelManager = new DuelManager(level.isClientSide, this::createHeader);
@@ -35,7 +35,7 @@ public class DuelEntity extends Entity implements INamedContainerProvider
     
     public DuelMessageHeader createHeader()
     {
-        return new DuelMessageHeader.EntityHeader(DuelMessageHeaders.ENTITY, getId());
+        return new DuelMessageHeader.EntityHeader(DuelMessageHeaders.ENTITY.get(), getId());
     }
     
     private int timeout = 0;
@@ -57,7 +57,7 @@ public class DuelEntity extends Entity implements INamedContainerProvider
             {
                 // 1 player left during deck selection
                 duelManager.kickAllPlayers();
-                remove();
+                discard();
             }
             else if(duelManager.player1 == null && duelManager.player2 == null)
             {
@@ -65,7 +65,7 @@ public class DuelEntity extends Entity implements INamedContainerProvider
                 {
                     // both players left after the duel was started
                     duelManager.kickAllPlayers();
-                    remove();
+                    discard();
                 }
                 else
                 {
@@ -74,7 +74,7 @@ public class DuelEntity extends Entity implements INamedContainerProvider
                     if(timeout >= MAX_TIMEOUT)
                     {
                         duelManager.kickAllPlayers();
-                        remove();
+                        discard();
                     }
                 }
             }
@@ -92,24 +92,25 @@ public class DuelEntity extends Entity implements INamedContainerProvider
     }
     
     @Override
-    protected void readAdditionalSaveData(CompoundNBT pCompound)
+    protected void readAdditionalSaveData(CompoundTag pCompound)
     {
     }
     
     @Override
-    protected void addAdditionalSaveData(CompoundNBT pCompound)
+    protected void addAdditionalSaveData(CompoundTag pCompound)
     {
     }
     
     @Override
-    public IPacket<?> getAddEntityPacket()
+    public Packet<?> getAddEntityPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
     
+    
     @Override
-    public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
+    public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player)
     {
-        return new DuelEntityContainer(YdmContainerTypes.DUEL_ENTITY_CONTAINER, id, playerInv, getId(), false);
+        return new DuelEntityContainer(YdmContainerTypes.DUEL_ENTITY_CONTAINER.get(), id, playerInv, getId(), false);
     }
 }

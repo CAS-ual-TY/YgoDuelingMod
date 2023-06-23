@@ -1,27 +1,27 @@
 package de.cas_ual_ty.ydm.set;
 
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.items.IItemHandler;
 
 public class CardSetContainer extends HeldCIIContainer
 {
-    public CardSetContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler, Hand hand)
+    public CardSetContainer(MenuType<?> type, int id, Inventory playerInventoryIn, IItemHandler itemHandler, InteractionHand hand)
     {
         super(type, id, playerInventoryIn, itemHandler, hand);
     }
     
-    public CardSetContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
+    public CardSetContainer(MenuType<?> type, int id, Inventory playerInventoryIn, FriendlyByteBuf extraData)
     {
         super(type, id, playerInventoryIn, extraData);
     }
     
     @Override
-    public void removed(PlayerEntity player)
+    public void removed(Player player)
     {
         super.removed(player);
         

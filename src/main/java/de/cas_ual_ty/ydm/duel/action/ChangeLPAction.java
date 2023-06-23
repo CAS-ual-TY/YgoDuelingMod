@@ -3,11 +3,10 @@ package de.cas_ual_ty.ydm.duel.action;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+
 
 public class ChangeLPAction extends Action implements IAnnouncedAction
 {
@@ -26,13 +25,13 @@ public class ChangeLPAction extends Action implements IAnnouncedAction
         this.owner = owner;
     }
     
-    public ChangeLPAction(ActionType actionType, PacketBuffer buf)
+    public ChangeLPAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readInt(), DuelMessageUtility.decodeZoneOwner(buf));
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         buf.writeInt(changeAmount);
         DuelMessageUtility.encodeZoneOwner(owner, buf);
@@ -71,15 +70,15 @@ public class ChangeLPAction extends Action implements IAnnouncedAction
     }
     
     @Override
-    public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
+    public MutableComponent getAnnouncement(Component playerName)
     {
-        IFormattableTextComponent t = new StringTextComponent(String.valueOf(trueChange));
+        MutableComponent t = Component.literal(String.valueOf(trueChange));
         
         if(trueChange > 0)
         {
-            t = new StringTextComponent("+").append(t);
+            t = Component.literal("+").append(t);
         }
         
-        return new TranslationTextComponent(getAnnouncementLocalKey()).append(": ").append(t);
+        return Component.translatable(getAnnouncementLocalKey()).append(": ").append(t);
     }
 }

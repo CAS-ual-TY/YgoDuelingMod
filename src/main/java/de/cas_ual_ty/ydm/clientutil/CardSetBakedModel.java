@@ -1,32 +1,32 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
-import java.util.Random;
 
 @SuppressWarnings("deprecation")
-public class CardSetBakedModel implements IBakedModel
+public class CardSetBakedModel implements BakedModel
 {
-    private IBakedModel mainModel;
-    private ItemOverrideList overrideList;
+    private BakedModel mainModel;
+    private ItemOverrides overrideList;
     
-    public CardSetBakedModel(IBakedModel mainModel)
+    public CardSetBakedModel(BakedModel mainModel)
     {
         this.mainModel = mainModel;
         overrideList = new CardSetOverrideList(new FinalCardSetBakedModel(mainModel));
     }
     
     @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
+    public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand)
     {
         return mainModel.getQuads(state, side, rand);
     }
@@ -62,12 +62,12 @@ public class CardSetBakedModel implements IBakedModel
     }
     
     @Override
-    public ItemOverrideList getOverrides()
+    public ItemOverrides getOverrides()
     {
         return overrideList;
     }
     
-    private static class CardSetOverrideList extends ItemOverrideList
+    private static class CardSetOverrideList extends ItemOverrides
     {
         private FinalCardSetBakedModel finalModel;
         
@@ -75,9 +75,9 @@ public class CardSetBakedModel implements IBakedModel
         {
             this.finalModel = finalModel;
         }
-        
+    
         @Override
-        public IBakedModel resolve(IBakedModel model, ItemStack stack, ClientWorld worldIn, LivingEntity entityIn)
+        public BakedModel resolve(BakedModel model, ItemStack stack, ClientLevel worldIn, LivingEntity entityIn, int seed)
         {
             return finalModel.setActiveItemStack(stack);
         }

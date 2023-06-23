@@ -9,8 +9,9 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.set.Distribution.Pull;
 import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public class DistributionCardPuller extends CardPuller
         
         for(CardHolder c : cards)
         {
-            list.add(YdmItems.CARD.createItemForCardHolder(c));
+            list.add(YdmItems.CARD.get().createItemForCardHolder(c));
         }
         
         return list;
@@ -153,7 +154,7 @@ public class DistributionCardPuller extends CardPuller
     }
     
     @Override
-    public void addInformation(List<ITextComponent> tooltip)
+    public void addInformation(List<Component> tooltip)
     {
         distribution.addInformation(tooltip, set);
     }

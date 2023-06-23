@@ -4,31 +4,31 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.duel.DuelManager;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeader;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeaders;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 
-public class DuelTileEntity extends TileEntity implements INamedContainerProvider
+public class DuelTileEntity extends BlockEntity implements MenuProvider
 {
     public DuelManager duelManager;
     
-    public DuelTileEntity(TileEntityType<?> tileEntityType)
+    public DuelTileEntity(BlockEntityType<DuelTileEntity> tileEntityType, BlockPos pos, BlockState state)
     {
-        super(tileEntityType);
+        super(tileEntityType, pos, state);
         duelManager = null;
     }
     
     @Override
-    public void setLevelAndPosition(World world, BlockPos pos)
+    public void setLevel(Level world)
     {
-        super.setLevelAndPosition(world, pos);
+        super.setLevel(world);
         
         // world is still null at constructor, so we gotta do this here
         duelManager = createDuelManager();
@@ -41,18 +41,18 @@ public class DuelTileEntity extends TileEntity implements INamedContainerProvide
     
     public DuelMessageHeader createHeader()
     {
-        return new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY, getBlockPos());
+        return new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY.get(), getBlockPos());
     }
     
     @Override
-    public Container createMenu(int id, PlayerInventory playerInv, PlayerEntity player)
+    public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player)
     {
-        return new DuelBlockContainer(YdmContainerTypes.DUEL_BLOCK_CONTAINER, id, playerInv, worldPosition);
+        return new DuelBlockContainer(YdmContainerTypes.DUEL_BLOCK_CONTAINER.get(), id, playerInv, worldPosition);
     }
     
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return new TranslationTextComponent("container.ydm.duel");
+        return Component.translatable("container.ydm.duel");
     }
 }

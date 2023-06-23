@@ -1,21 +1,23 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.duel.screen.animation.Animation;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
+
 
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class AnimationsWidget extends Widget
+public class AnimationsWidget extends AbstractWidget
 {
     public Queue<Animation> animations;
     
     public AnimationsWidget(int x, int y, int width, int height)
     {
-        super(x, y, width, height, StringTextComponent.EMPTY);
+        super(x, y, width, height, Component.empty());
         animations = new LinkedList<>();
     }
     
@@ -39,9 +41,9 @@ public class AnimationsWidget extends Widget
     }
     
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        RenderSystem.color4f(1F, 1F, 1F, alpha);
+        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
         
         if(visible)
         {
@@ -80,5 +82,11 @@ public class AnimationsWidget extends Widget
                 a.tick();
             }
         }
+    }
+    
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput)
+    {
+    
     }
 }

@@ -1,17 +1,18 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.util.text.ITextComponent;
+
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 
 // From
 // https://github.com/CAS-ual-TY/UsefulCodeBitsForTheBlocksGame/blob/main/src/main/java/com/example/examplemod/client/screen/SwitchableContainerScreen.java
-public abstract class SwitchableContainerScreen<T extends Container> extends ContainerScreen<T>
+public abstract class SwitchableContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T>
 {
     private boolean isClosedByPlayer;
     
-    public SwitchableContainerScreen(T screenContainer, PlayerInventory inv, ITextComponent titleIn)
+    public SwitchableContainerScreen(T screenContainer, Inventory inv, Component titleIn)
     {
         super(screenContainer, inv, titleIn);
         isClosedByPlayer = true;
@@ -31,7 +32,7 @@ public abstract class SwitchableContainerScreen<T extends Container> extends Con
         super.removed();
     }
     
-    public void switchScreen(ContainerScreen<T> screen)
+    public void switchScreen(AbstractContainerScreen<T> screen)
     {
         isClosedByPlayer = false;
         minecraft.setScreen(screen);

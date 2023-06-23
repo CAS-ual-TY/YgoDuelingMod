@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class ViewZoneAction extends SingleZoneAction implements IAnnouncedAction
 {
@@ -15,7 +15,7 @@ public class ViewZoneAction extends SingleZoneAction implements IAnnouncedAction
         super(actionType, sourceZone.index);
     }
     
-    public ViewZoneAction(ActionType actionType, PacketBuffer buf)
+    public ViewZoneAction(ActionType actionType, FriendlyByteBuf buf)
     {
         super(actionType, buf);
     }

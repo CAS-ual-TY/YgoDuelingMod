@@ -1,15 +1,15 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import de.cas_ual_ty.ydm.clientutil.ClientProxy;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import de.cas_ual_ty.ydm.duel.action.ActionIcon;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneInteraction;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+
 
 import java.util.function.Consumer;
 
@@ -18,14 +18,14 @@ public class InteractionWidget extends Button
     public final ZoneInteraction interaction;
     public final IDuelScreenContext context;
     
-    public InteractionWidget(ZoneInteraction interaction, IDuelScreenContext context, int x, int y, int width, int height, ITextComponent title, Consumer<InteractionWidget> onPress, ITooltip onTooltip)
+    public InteractionWidget(ZoneInteraction interaction, IDuelScreenContext context, int x, int y, int width, int height, Component title, Consumer<InteractionWidget> onPress, OnTooltip onTooltip)
     {
         super(x, y, width, height, title, (w) -> onPress.accept((InteractionWidget) w), onTooltip);
         this.interaction = interaction;
         this.context = context;
     }
     
-    public InteractionWidget(ZoneInteraction interaction, IDuelScreenContext context, int x, int y, int width, int height, Consumer<InteractionWidget> onPress, ITooltip onTooltip)
+    public InteractionWidget(ZoneInteraction interaction, IDuelScreenContext context, int x, int y, int width, int height, Consumer<InteractionWidget> onPress, OnTooltip onTooltip)
     {
         super(x, y, width, height, interaction.icon.getLocal(), (w) -> onPress.accept((InteractionWidget) w), onTooltip);
         this.interaction = interaction;
@@ -33,7 +33,7 @@ public class InteractionWidget extends Button
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         ms.pushPose();
         ms.translate(0, 0, 5);
@@ -60,10 +60,10 @@ public class InteractionWidget extends Button
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         
-        ClientProxy.getMinecraft().getTextureManager().bind(icon.sourceFile);
+        RenderSystem.setShaderTexture(0, icon.sourceFile);
         YdmBlitUtil.blit(ms, x + (width - iconWidth) / 2, y + (height - iconHeight) / 2, iconWidth, iconHeight, icon.iconX, icon.iconY, icon.iconWidth, icon.iconHeight, icon.fileSize, icon.fileSize);
         
-        if(isHovered() && active)
+        if(isHoveredOrFocused() && active)
         {
             ScreenUtil.renderHoverRect(ms, x, y, width, height);
             renderToolTip(ms, mouseX, mouseY);

@@ -1,27 +1,22 @@
 package de.cas_ual_ty.ydm.duel.network;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraftforge.registries.RegistryObject;
 
-@EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
-@ObjectHolder(YDM.MOD_ID)
 public class DuelMessageHeaders
 {
-    public static final DuelMessageHeaderType CONTAINER = null;
-    public static final DuelMessageHeaderType TILE_ENTITY = null;
-    public static final DuelMessageHeaderType ENTITY = null;
+    private static final DeferredRegister<DuelMessageHeaderType> DEFERRED_REGISTER = DeferredRegister.create(new ResourceLocation(YDM.MOD_ID, "duel_message_headers"), YDM.MOD_ID);
     
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<DuelMessageHeaderType> event)
+    public static final RegistryObject<DuelMessageHeaderType> CONTAINER = DEFERRED_REGISTER.register("container", () -> new DuelMessageHeaderType(() -> new DuelMessageHeader.ContainerHeader(DuelMessageHeaders.CONTAINER.get())));
+    public static final RegistryObject<DuelMessageHeaderType> TILE_ENTITY = DEFERRED_REGISTER.register("tile_entity", () -> new DuelMessageHeaderType(() -> new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY.get())));
+    public static final RegistryObject<DuelMessageHeaderType> ENTITY = DEFERRED_REGISTER.register("entity", () -> new DuelMessageHeaderType(() -> new DuelMessageHeader.EntityHeader(DuelMessageHeaders.ENTITY.get())));
+    
+    public static void register(IEventBus bus)
     {
-        IForgeRegistry<DuelMessageHeaderType> registry = event.getRegistry();
-        registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.ContainerHeader(DuelMessageHeaders.CONTAINER)).setRegistryName(YDM.MOD_ID, "container"));
-        registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.TileEntityHeader(DuelMessageHeaders.TILE_ENTITY)).setRegistryName(YDM.MOD_ID, "tile_entity"));
-        registry.register(new DuelMessageHeaderType(() -> new DuelMessageHeader.EntityHeader(DuelMessageHeaders.ENTITY)).setRegistryName(YDM.MOD_ID, "entity"));
+        DEFERRED_REGISTER.register(bus);
     }
 }

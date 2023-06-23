@@ -3,27 +3,29 @@ package de.cas_ual_ty.ydm.deckbox;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 
-public class DeckBoxContainer extends Container
+public class DeckBoxContainer extends AbstractContainerMenu
 {
     public ItemStack itemStack;
-    public IItemHandler itemHandler;
+    public YDMItemHandler itemHandler;
     public Slot cardSleevesSlot;
     
-    public DeckBoxContainer(ContainerType<?> type, int id, PlayerInventory playerInventory)
+    public DeckBoxContainer(MenuType<?> type, int id, Inventory playerInventory)
     {
         this(type, id, playerInventory, DeckBoxItem.getActiveDeckBox(playerInventory.player));
     }
     
-    public DeckBoxContainer(ContainerType<?> type, int id, PlayerInventory playerInventory, ItemStack itemStack)
+    public DeckBoxContainer(MenuType<?> type, int id, Inventory playerInventory, ItemStack itemStack)
     {
         super(type, id);
         
@@ -54,7 +56,7 @@ public class DeckBoxContainer extends Container
             addSlot(new DeckBoxSlot(itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
         
-        addSlot(cardSleevesSlot = new Slot(new Inventory(1), 0, 8 + 12 * 18, 168 + 0 * 18)
+        addSlot(cardSleevesSlot = new Slot(new SimpleContainer(1), 0, 8 + 12 * 18, 168 + 0 * 18)
         {
             @Override
             public boolean mayPlace(ItemStack stack)
@@ -91,7 +93,7 @@ public class DeckBoxContainer extends Container
                 s = new Slot(playerInventory, s.getSlotIndex(), s.x, s.y)
                 {
                     @Override
-                    public boolean mayPickup(PlayerEntity playerIn)
+                    public boolean mayPickup(Player playerIn)
                     {
                         return false;
                     }
@@ -103,7 +105,7 @@ public class DeckBoxContainer extends Container
     }
     
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(Player playerIn, int index)
     {
         Slot slot = slots.get(index);
         ItemStack original = slot.getItem().copy();
@@ -121,11 +123,11 @@ public class DeckBoxContainer extends Container
             
             return ItemStack.EMPTY;
         }
-        else if(original.getItem() == YdmItems.CARD)
+        else if(original.getItem() == YdmItems.CARD.get())
         {
             //inventory to deck box
             
-            Properties card = YdmItems.CARD.getCardHolder(original).getCard();
+            Properties card = YdmItems.CARD.get().getCardHolder(original).getCard();
             boolean isExtraDeck = card.getIsInExtraDeck();
             
             int minTarget;
@@ -166,13 +168,13 @@ public class DeckBoxContainer extends Container
     }
     
     @Override
-    public boolean stillValid(PlayerEntity playerIn)
+    public boolean stillValid(Player playerIn)
     {
         return true;
     }
     
     @Override
-    public void removed(PlayerEntity playerIn)
+    public void removed(Player playerIn)
     {
         // TODO can be removed when capabilities work again
         ((DeckBoxItem) itemStack.getItem()).saveItemHandlerToNBT(itemStack, itemHandler);

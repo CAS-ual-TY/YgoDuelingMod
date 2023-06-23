@@ -3,7 +3,7 @@ package de.cas_ual_ty.ydm.duel.network;
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.*;
 import de.cas_ual_ty.ydm.duel.action.Action;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public interface IDuelManagerProvider
     {
     }
     
-    default void receiveMessage(PlayerEntity player, DuelChatMessage message)
+    default void receiveMessage(Player player, DuelChatMessage message)
     {
     }
 }

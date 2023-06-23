@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class Action
 {
@@ -12,13 +12,13 @@ public abstract class Action
         this.actionType = actionType;
     }
     
-    public Action(ActionType actionType, PacketBuffer buf)
+    public Action(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType);
     }
     
     // not called by superclasses
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         // actionType is already encoded. See DuelMessages class
     }

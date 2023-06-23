@@ -1,16 +1,17 @@
 package de.cas_ual_ty.ydm.card;
 
 import de.cas_ual_ty.ydm.YdmDatabase;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Properties;
 
 public class CardItem extends Item
 {
@@ -20,7 +21,7 @@ public class CardItem extends Item
     }
     
     @Override
-    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
     {
         CardHolder holder = getCardHolder(itemStack);
         tooltip.clear();
@@ -28,10 +29,10 @@ public class CardItem extends Item
     }
     
     @Override
-    public ITextComponent getName(ItemStack itemStack)
+    public Component getName(ItemStack itemStack)
     {
         CardHolder holder = getCardHolder(itemStack);
-        return new StringTextComponent(holder.getCard().getName());
+        return Component.literal(holder.getCard().getName());
     }
     
     public CardHolder getCardHolder(ItemStack itemStack)
@@ -66,9 +67,9 @@ public class CardItem extends Item
     }
     
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items)
     {
-        if(!allowdedIn(group))
+        if(!allowedIn(group))
         {
             return;
         }

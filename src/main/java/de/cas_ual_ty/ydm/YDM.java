@@ -12,47 +12,53 @@ import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.deckbox.ItemHandlerDeckHolder;
 import de.cas_ual_ty.ydm.duel.FindDecksEvent;
 import de.cas_ual_ty.ydm.duel.action.ActionIcon;
+import de.cas_ual_ty.ydm.duel.action.ActionIcons;
 import de.cas_ual_ty.ydm.duel.action.ActionType;
+import de.cas_ual_ty.ydm.duel.action.ActionTypes;
 import de.cas_ual_ty.ydm.duel.network.DuelMessage;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageHeaderType;
+import de.cas_ual_ty.ydm.duel.network.DuelMessageHeaders;
 import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneType;
+import de.cas_ual_ty.ydm.duel.playfield.ZoneTypes;
 import de.cas_ual_ty.ydm.serverutil.YdmCommand;
 import de.cas_ual_ty.ydm.simplebinder.SimpleBinderItem;
 import de.cas_ual_ty.ydm.task.WorkerManager;
 import de.cas_ual_ty.ydm.util.*;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.INBT;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.capabilities.CapabilityToken;
 import net.minecraftforge.common.capabilities.ICapabilitySerializable;
 import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.RegistryEvent.NewRegistry;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.network.NetworkRegistry;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 import net.minecraftforge.registries.IForgeRegistry;
+import net.minecraftforge.registries.NewRegistryEvent;
 import net.minecraftforge.registries.RegistryBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
@@ -60,6 +66,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.util.Random;
+import java.util.function.Supplier;
 
 @Mod(YDM.MOD_ID)
 public class YDM
@@ -73,9 +80,9 @@ public class YDM
     public static YDM instance;
     public static ISidedProxy proxy;
     public static Random random;
-    public static ItemGroup ydmItemGroup;
-    public static ItemGroup cardsItemGroup;
-    public static ItemGroup setsItemGroup;
+    public static CreativeModeTab ydmItemGroup;
+    public static CreativeModeTab cardsItemGroup;
+    public static CreativeModeTab setsItemGroup;
     
     public static ForgeConfigSpec commonConfigSpec;
     public static CommonConfig commonConfig;
@@ -90,19 +97,14 @@ public class YDM
     
     public static SimpleChannel channel;
     
-    @CapabilityInject(IUUIDHolder.class)
-    public static Capability<UUIDHolder> UUID_HOLDER = null;
+    public static Capability<UUIDHolder> UUID_HOLDER = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<YDMItemHandler> CARD_ITEM_INVENTORY = CapabilityManager.get(new CapabilityToken<>() {});
+    public static Capability<CooldownHolder> COOLDOWN_HOLDER = CapabilityManager.get(new CapabilityToken<>() {});
     
-    @CapabilityInject(IItemHandler.class)
-    public static Capability<YDMItemHandler> CARD_ITEM_INVENTORY = null;
-    
-    @CapabilityInject(ICooldownHolder.class)
-    public static Capability<CooldownHolder> COOLDOWN_HOLDER = null;
-    
-    public static IForgeRegistry<ActionIcon> actionIconRegistry;
-    public static IForgeRegistry<ZoneType> zoneTypeRegistry;
-    public static IForgeRegistry<ActionType> actionTypeRegistry;
-    public static IForgeRegistry<DuelMessageHeaderType> duelMessageHeaderRegistry;
+    public static Supplier<IForgeRegistry<ActionIcon>> actionIconRegistry;
+    public static Supplier<IForgeRegistry<ZoneType>> zoneTypeRegistry;
+    public static Supplier<IForgeRegistry<ActionType>> actionTypeRegistry;
+    public static Supplier<IForgeRegistry<DuelMessageHeaderType>> duelMessageHeaderRegistry;
     public static volatile boolean continueTasks = true;
     public static volatile boolean forceTaskStop = false;
     
@@ -113,8 +115,8 @@ public class YDM
                 () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
                 () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
         YDM.random = new Random();
-        YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, () -> YdmItems.CARD_BACK);
-        YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", () -> YdmItems.BLANC_CARD)
+        YDM.ydmItemGroup = new YdmItemGroup(YDM.MOD_ID, YdmItems.CARD_BACK);
+        YDM.cardsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".cards", YdmItems.BLANC_CARD)
         {
             @Override
             public boolean hasSearchBar()
@@ -122,7 +124,7 @@ public class YDM
                 return true;
             }
         }.setBackgroundSuffix("item_search.png");
-        YDM.setsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".sets", () -> YdmItems.BLANC_SET)
+        YDM.setsItemGroup = new YdmItemGroup(YDM.MOD_ID + ".sets", YdmItems.BLANC_SET)
         {
             @Override
             public boolean hasSearchBar()
@@ -141,6 +143,16 @@ public class YDM
         bus.addListener(this::modConfig);
         bus.addListener(this::newRegistry);
         YDM.proxy.registerModEventListeners(bus);
+        
+        YdmBlocks.register(bus);
+        YdmItems.register(bus);
+        YdmContainerTypes.register(bus);
+        YdmEntityTypes.register(bus);
+        YdmTileEntityTypes.register(bus);
+        ActionIcons.register(bus);
+        ZoneTypes.register(bus);
+        ActionTypes.register(bus);
+        DuelMessageHeaders.register(bus);
         
         bus = MinecraftForge.EVENT_BUS;
         // see: https://github.com/MinecraftForge/MinecraftForge/pull/6954
@@ -164,8 +176,6 @@ public class YDM
                 () -> YDM.PROTOCOL_VERSION,
                 YDM.PROTOCOL_VERSION::equals,
                 YDM.PROTOCOL_VERSION::equals);
-        
-        CapabilityManager.INSTANCE.register(CardBinderCardsManager.class, new CardBinderCardsManager.Storage(), CardBinderCardsManager::new);
         
         initFiles();
         
@@ -225,7 +235,7 @@ public class YDM
     
     private void attachItemStackCapabilities(AttachCapabilitiesEvent<ItemStack> event)
     {
-        if(event.getObject().getItem() == YdmItems.CARD_BINDER)
+        if(event.getObject().getItem() == YdmItems.CARD_BINDER.get())
         {
             attachCapability(event, new UUIDHolder(event.getObject()::getOrCreateTag), UUID_HOLDER, "uuid_holder", true);
         }
@@ -235,22 +245,26 @@ public class YDM
             YDMItemHandler handler = new YDMItemHandler(item.binderSize, event.getObject()::getOrCreateTag);
             attachCapability(event, handler, CARD_ITEM_INVENTORY, "card_item_inventory", true);
         }
-        if(event.getObject().getItem() == YdmItems.OPENED_SET)
+        if(event.getObject().getItem() == YdmItems.OPENED_SET.get())
         {
             attachCapability(event, new YDMItemHandler(0, event.getObject()::getOrCreateTag), CARD_ITEM_INVENTORY, "card_item_inventory", true);
+        }
+        if(event.getObject().getItem() instanceof DeckBoxItem)
+        {
+            attachCapability(event, new YDMItemHandler(DeckHolder.TOTAL_DECK_SIZE, event.getObject()::getOrCreateTag), CARD_ITEM_INVENTORY, "card_item_inventory", true);
         }
     }
     
     private void attachPlayerCapabilities(AttachCapabilitiesEvent<Entity> event)
     {
-        if(event.getObject() instanceof PlayerEntity)
+        if(event.getObject() instanceof Player)
         {
-            PlayerEntity player = (PlayerEntity) event.getObject();
+            Player player = (Player) event.getObject();
             attachCapability(event, new CooldownHolder(), COOLDOWN_HOLDER, "cooldown_holder", false);
         }
     }
     
-    private static <T extends INBT, C extends INBTSerializable<T>> void attachCapability(AttachCapabilitiesEvent<?> event, C capData, Capability<C> capability, String name, boolean invalidate)
+    private static <T extends Tag, C extends INBTSerializable<T>> void attachCapability(AttachCapabilitiesEvent<?> event, C capData, Capability<C> capability, String name, boolean invalidate)
     {
         LazyOptional<C> optional = LazyOptional.of(() -> capData);
         ICapabilitySerializable<T> provider = new ICapabilitySerializable<T>()
@@ -289,8 +303,8 @@ public class YDM
     
     private void playerClone(PlayerEvent.Clone event)
     {
-        final PlayerEntity original = event.getOriginal();
-        final PlayerEntity current = event.getPlayer();
+        final Player original = event.getOriginal();
+        final Player current = event.getEntity();
         
         original.revive();
         
@@ -302,7 +316,7 @@ public class YDM
             });
         });
         
-        original.remove();
+        original.discard();
     }
     
     private void playerTick(TickEvent.PlayerTickEvent event)
@@ -318,7 +332,7 @@ public class YDM
         YdmCommand.registerCommand(event.getDispatcher());
     }
     
-    private void modConfig(final ModConfig.ModConfigEvent event)
+    private void modConfig(ModConfigEvent event)
     {
         if(event.getConfig().getSpec() == YDM.commonConfigSpec)
         {
@@ -329,14 +343,14 @@ public class YDM
     
     private void findDecks(FindDecksEvent event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getEntity();
         
         ItemStack itemStack;
         DeckHolder dh;
         
-        for(int i = 0; i < player.inventory.getContainerSize(); ++i)
+        for(int i = 0; i < player.getInventory().getContainerSize(); ++i)
         {
-            itemStack = player.inventory.getItem(i);
+            itemStack = player.getInventory().getItem(i);
             
             if(itemStack.getItem() instanceof DeckBoxItem)
             {
@@ -361,15 +375,15 @@ public class YDM
         }
     }
     
-    private void newRegistry(NewRegistry event)
+    private void newRegistry(NewRegistryEvent event)
     {
-        YDM.actionIconRegistry = new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setType(ActionIcon.class).setMaxID(511).create();
-        YDM.zoneTypeRegistry = new RegistryBuilder<ZoneType>().setName(new ResourceLocation(YDM.MOD_ID, "zone_types")).setType(ZoneType.class).setMaxID(511).create();
-        YDM.actionTypeRegistry = new RegistryBuilder<ActionType>().setName(new ResourceLocation(YDM.MOD_ID, "action_types")).setType(ActionType.class).setMaxID(511).create();
-        YDM.duelMessageHeaderRegistry = new RegistryBuilder<DuelMessageHeaderType>().setName(new ResourceLocation(YDM.MOD_ID, "duel_message_headers")).setType(DuelMessageHeaderType.class).setMaxID(63).create();
+        YDM.actionIconRegistry = event.create(new RegistryBuilder<ActionIcon>().setName(new ResourceLocation(YDM.MOD_ID, "action_icons")).setMaxID(511));
+        YDM.zoneTypeRegistry = event.create(new RegistryBuilder<ZoneType>().setName(new ResourceLocation(YDM.MOD_ID, "zone_types")).setMaxID(511));
+        YDM.actionTypeRegistry = event.create(new RegistryBuilder<ActionType>().setName(new ResourceLocation(YDM.MOD_ID, "action_types")).setMaxID(511));
+        YDM.duelMessageHeaderRegistry = event.create(new RegistryBuilder<DuelMessageHeaderType>().setName(new ResourceLocation(YDM.MOD_ID, "duel_message_headers")).setMaxID(63));
     }
     
-    private void serverStopped(FMLServerStoppedEvent event)
+    private void serverStopped(ServerStoppedEvent event)
     {
         synchronized(JsonCardsManager.LOADED_MANAGERS)
         {

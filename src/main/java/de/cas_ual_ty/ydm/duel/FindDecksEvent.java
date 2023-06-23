@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.duel;
 
 import de.cas_ual_ty.ydm.deckbox.DeckHolder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 
 import java.util.LinkedList;
@@ -12,7 +12,7 @@ public class FindDecksEvent extends PlayerEvent
 {
     public List<DeckSource> decksList;
     
-    public FindDecksEvent(PlayerEntity player, DuelManager duelManager)
+    public FindDecksEvent(Player player, DuelManager duelManager)
     {
         super(player);
         decksList = new LinkedList<>();

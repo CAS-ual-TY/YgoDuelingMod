@@ -1,11 +1,10 @@
 package de.cas_ual_ty.ydm.duel.network;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
-import net.minecraftforge.fml.network.simple.SimpleChannel;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -20,13 +19,13 @@ public abstract class DuelMessage
             super(header);
         }
         
-        public ClientBaseMessage(PacketBuffer buf)
+        public ClientBaseMessage(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public final PlayerEntity getPlayer(Context context)
+        public final Player getPlayer(NetworkEvent.Context context)
         {
             return YDM.proxy.getClientPlayer();
         }
@@ -40,13 +39,13 @@ public abstract class DuelMessage
             super(header);
         }
         
-        public ServerBaseMessage(PacketBuffer buf)
+        public ServerBaseMessage(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public final PlayerEntity getPlayer(Context context)
+        public final Player getPlayer(NetworkEvent.Context context)
         {
             return context.getSender();
         }
@@ -60,30 +59,30 @@ public abstract class DuelMessage
         this.header = header;
     }
     
-    public DuelMessage(PacketBuffer buf)
+    public DuelMessage(FriendlyByteBuf buf)
     {
         decodedHeader = DuelMessageUtility.decodeHeader(buf);
         decodeMessage(buf);
     }
     
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         DuelMessageUtility.encodeHeader(header, buf);
         encodeMessage(buf);
     }
     
-    public abstract void encodeMessage(PacketBuffer buf);
+    public abstract void encodeMessage(FriendlyByteBuf buf);
     
-    public abstract void decodeMessage(PacketBuffer buf);
+    public abstract void decodeMessage(FriendlyByteBuf buf);
     
-    public abstract void handleMessage(PlayerEntity player, IDuelManagerProvider provider);
+    public abstract void handleMessage(Player player, IDuelManagerProvider provider);
     
-    public abstract PlayerEntity getPlayer(NetworkEvent.Context context);
+    public abstract Player getPlayer(NetworkEvent.Context context);
     
     public void handle(Supplier<NetworkEvent.Context> ctx)
     {
         NetworkEvent.Context context = ctx.get();
-        PlayerEntity player = getPlayer(context);
+        Player player = getPlayer(context);
         
         context.enqueueWork(() ->
         {
@@ -93,7 +92,7 @@ public abstract class DuelMessage
         context.setPacketHandled(true);
     }
     
-    public static <M extends DuelMessage> void register(SimpleChannel channel, int index, Class<M> c, Function<PacketBuffer, M> constructor)
+    public static <M extends DuelMessage> void register(SimpleChannel channel, int index, Class<M> c, Function<FriendlyByteBuf, M> constructor)
     {
         channel.registerMessage(index, c, (m, buf) -> m.encode(buf), constructor, (m, ctx) -> m.handle(ctx));
     }

@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class InitSleevesAction extends Action
 {
@@ -16,13 +16,13 @@ public class InitSleevesAction extends Action
         this.player2Sleeves = player2Sleeves;
     }
     
-    public InitSleevesAction(ActionType actionType, PacketBuffer buf)
+    public InitSleevesAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, CardSleevesType.getFromIndex(buf.readByte()), CardSleevesType.getFromIndex(buf.readByte()));
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         buf.writeByte(player1Sleeves.getIndex());
         buf.writeByte(player2Sleeves.getIndex());

@@ -5,24 +5,23 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
 import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import de.cas_ual_ty.ydm.util.YdmUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.nbt.CompoundTag;
+
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -38,14 +37,14 @@ public class SimpleBinderItem extends Item
     }
     
     @Override
-    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
     {
         super.appendHoverText(itemStack, worldIn, tooltip, flagIn);
-        //        tooltip.add(new TranslationTextComponent(this.getTranslationKey() + ".desc").modifyStyle((s) -> s.applyFormatting(TextFormatting.RED)));
+        //        tooltip.add(new Component(this.getTranslationKey() + ".desc").modifyStyle((s) -> s.applyFormatting(ChatFormatting.RED)));
     }
     
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
     {
         if(!world.isClientSide && hand == YdmUtil.getActiveItem(player, this))
         {
@@ -53,31 +52,24 @@ public class SimpleBinderItem extends Item
             
             getItemHandler(itemStack).ifPresent(handler ->
             {
-                if(hasOldItemHandler(itemStack))
-                {
-                    ItemStackHandler oldHandler = getOldItemHandler(itemStack);
-                    handler.deserializeNBT(oldHandler.serializeNBT());
-                    removeOldItemHandler(itemStack);
-                }
-                
-                HeldCIIContainer.openGui(player, hand, binderSize, new INamedContainerProvider()
+                HeldCIIContainer.openGui(player, hand, binderSize, new MenuProvider()
                 {
                     @Override
-                    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
+                    public AbstractContainerMenu createMenu(int id, Inventory playerInventory, Player player)
                     {
                         ItemStack itemStack = player.getItemInHand(hand);
-                        return new SimpleBinderContainer(YdmContainerTypes.SIMPLE_BINDER, id, playerInventory, handler, hand);
+                        return new SimpleBinderContainer(YdmContainerTypes.SIMPLE_BINDER.get(), id, playerInventory, handler, hand);
                     }
                     
                     @Override
-                    public ITextComponent getDisplayName()
+                    public Component getDisplayName()
                     {
-                        return new TranslationTextComponent("container." + YDM.MOD_ID + ".simple_binder");
+                        return Component.translatable("container." + YDM.MOD_ID + ".simple_binder");
                     }
                 });
             });
             
-            return ActionResult.success(itemStack);
+            return InteractionResultHolder.success(itemStack);
         }
         
         return super.use(world, player, hand);
@@ -88,39 +80,14 @@ public class SimpleBinderItem extends Item
         return itemStack.getCapability(YDM.CARD_ITEM_INVENTORY);
     }
     
-    public boolean hasOldItemHandler(ItemStack itemStack)
-    {
-        CompoundNBT nbt = getNBT(itemStack);
-        return nbt != null && nbt.contains("itemHandler");
-    }
-    
-    @Nullable
-    public ItemStackHandler getOldItemHandler(ItemStack itemStack)
-    {
-        CompoundNBT nbt = getNBT(itemStack);
-        ItemStackHandler itemHandler = new ItemStackHandler(binderSize);
-        
-        if(nbt.contains("itemHandler"))
-        {
-            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, nbt.get("itemHandler"));
-        }
-        
-        return itemHandler;
-    }
-    
-    public void removeOldItemHandler(ItemStack itemStack)
-    {
-        getNBT(itemStack).remove("itemHandler");
-    }
-    
-    public CompoundNBT getNBT(ItemStack itemStack)
+    public CompoundTag getNBT(ItemStack itemStack)
     {
         return itemStack.getOrCreateTag();
     }
     
-    public static Item makeItem(String modId, ItemGroup itemGroup, int pagesAmt)
+    public static Item makeItem(String modId, CreativeModeTab itemGroup, int pagesAmt)
     {
-        return new SimpleBinderItem(new Properties().tab(itemGroup).stacksTo(1), 6 * 9 * pagesAmt).setRegistryName(modId, "simple_binder_" + pagesAmt);
+        return new SimpleBinderItem(new Properties().tab(itemGroup).stacksTo(1), 6 * 9 * pagesAmt);
     }
     
     @Override
@@ -130,11 +97,11 @@ public class SimpleBinderItem extends Item
     }
     
     @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt)
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt)
     {
         super.readShareTag(stack, nbt);
         
-        if(nbt != null && nbt.contains("simple_binder_inventory", Constants.NBT.TAG_COMPOUND))
+        if(nbt != null && nbt.contains("simple_binder_inventory", Tag.TAG_COMPOUND))
         {
             stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
             {
@@ -145,16 +112,16 @@ public class SimpleBinderItem extends Item
     
     @Nullable
     @Override
-    public CompoundNBT getShareTag(ItemStack stack)
+    public CompoundTag getShareTag(ItemStack stack)
     {
-        CompoundNBT nbt = super.getShareTag(stack);
+        CompoundTag nbt = super.getShareTag(stack);
         
         if(nbt == null)
         {
-            nbt = new CompoundNBT();
+            nbt = new CompoundTag();
         }
         
-        CompoundNBT finalNBT = nbt;
+        CompoundTag finalNBT = nbt;
         
         stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
         {

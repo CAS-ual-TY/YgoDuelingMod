@@ -1,7 +1,10 @@
 package de.cas_ual_ty.ydm.card.properties;
 
 import de.cas_ual_ty.ydm.util.YdmUtil;
-import net.minecraft.util.text.*;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,14 +49,14 @@ public enum LinkArrow
         return null;
     }
     
-    public static List<ITextComponent> buildSymbolsString(List<LinkArrow> arrows, TextFormatting unactive, TextFormatting active, String joiner)
+    public static List<Component> buildSymbolsString(List<LinkArrow> arrows, ChatFormatting unactive, ChatFormatting active, String joiner)
     {
         LinkArrow arrow;
-        List<ITextComponent> list = new ArrayList<>(3);
+        List<Component> list = new ArrayList<>(3);
         
         // Top row
         
-        IFormattableTextComponent s = new StringTextComponent("");
+        MutableComponent s = Component.literal("");
         
         for(int i = 0; i < 3; ++i)
         {
@@ -61,11 +64,11 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
+                s.append(Component.literal(arrow.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
             }
             else
             {
-                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
+                s.append(Component.literal(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
             }
             
             if(i < 2)
@@ -78,33 +81,33 @@ public enum LinkArrow
         
         // Middle row
         
-        s = new StringTextComponent("");
+        s = Component.literal("");
         
         if(arrows.contains(LEFT))
         {
-            s.append(new StringTextComponent(LEFT.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
+            s.append(Component.literal(LEFT.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
         }
         else
         {
-            s.append(new StringTextComponent(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
+            s.append(Component.literal(LEFT.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
         }
         
         s.append(joiner + "" + joiner);
         
         if(arrows.contains(RIGHT))
         {
-            s.append(new StringTextComponent(RIGHT.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
+            s.append(Component.literal(RIGHT.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
         }
         else
         {
-            s.append(new StringTextComponent(RIGHT.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
+            s.append(Component.literal(RIGHT.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
         }
         
         list.add(s);
         
         // Bottom row
         
-        s = new StringTextComponent("");
+        s = Component.literal("");
         
         for(int i = 6; i > 3; --i)
         {
@@ -112,11 +115,11 @@ public enum LinkArrow
             
             if(arrows.contains(arrow))
             {
-                s.append(new StringTextComponent(arrow.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
+                s.append(Component.literal(arrow.symbolActive).setStyle(Style.EMPTY.applyFormat(active)));
             }
             else
             {
-                s.append(new StringTextComponent(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
+                s.append(Component.literal(arrow.symbolUnactive).setStyle(Style.EMPTY.applyFormat(unactive)));
             }
             
             if(i > 4)

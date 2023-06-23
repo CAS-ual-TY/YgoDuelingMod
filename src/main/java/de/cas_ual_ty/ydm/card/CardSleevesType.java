@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.card;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.ForgeRegistries;
 
 public enum CardSleevesType

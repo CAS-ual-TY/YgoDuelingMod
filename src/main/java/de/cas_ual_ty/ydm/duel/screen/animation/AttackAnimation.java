@@ -1,13 +1,13 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.widget.ZoneWidget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Quaternion;
+import net.minecraft.util.Mth;
 
 public class AttackAnimation extends Animation
 {
@@ -35,7 +35,7 @@ public class AttackAnimation extends Animation
     }
     
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         int halfTime = maxTickTime / 2;
         
@@ -49,7 +49,7 @@ public class AttackAnimation extends Animation
         float deltaX = destX - sourceX;
         float deltaY = destY - sourceY;
         
-        float maxSize = MathHelper.sqrt(deltaX * deltaX + deltaY * deltaY);
+        float maxSize = Mth.sqrt(deltaX * deltaX + deltaY * deltaY);
         
         float rotation;
         

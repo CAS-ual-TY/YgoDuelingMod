@@ -1,24 +1,24 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Transformation;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.set.CardSet;
-import net.minecraft.block.BlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms.TransformType;
-import net.minecraft.client.renderer.model.ItemOverrideList;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.TransformationMatrix;
-import net.minecraftforge.client.model.ItemTextureQuadConverter;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,9 +27,9 @@ import java.util.Random;
 import java.util.function.Function;
 
 @SuppressWarnings("deprecation")
-public class FinalCardSetBakedModel implements IBakedModel
+public class FinalCardSetBakedModel implements BakedModel
 {
-    private IBakedModel mainModel;
+    private BakedModel mainModel;
     private ItemStack activeItemStack;
     private Function<ResourceLocation, TextureAtlasSprite> textureGetter;
     
@@ -40,11 +40,11 @@ public class FinalCardSetBakedModel implements IBakedModel
     
     private final float distance = 0.002F;
     
-    public FinalCardSetBakedModel(IBakedModel mainModel)
+    public FinalCardSetBakedModel(BakedModel mainModel)
     {
         this.mainModel = mainModel;
         setActiveItemStack(ItemStack.EMPTY);
-        textureGetter = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS);
+        textureGetter = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
         quadsMap = new HashMap<>(YdmDatabase.SETS_LIST.size());
     }
     
@@ -55,19 +55,19 @@ public class FinalCardSetBakedModel implements IBakedModel
     }
     
     @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
+    public List<BakedQuad> getQuads(BlockState state, Direction side, RandomSource rand)
     {
         List<BakedQuad> list = new ArrayList<>(0);
         list.addAll(getSetList());
         
-        if(activeItemStack.getItem() == YdmItems.OPENED_SET)
+        if(activeItemStack.getItem() == YdmItems.OPENED_SET.get())
         {
             list.addAll(getOpenedList());
         }
         
         if(ClientProxy.itemsUseSetImagesActive)
         {
-            CardSet set = YdmItems.SET.getCardSet(activeItemStack);
+            CardSet set = YdmItems.SET.get().getCardSet(activeItemStack);
             
             if(set != CardSet.DUMMY)
             {
@@ -77,8 +77,8 @@ public class FinalCardSetBakedModel implements IBakedModel
                 if(!quadsMap.containsKey(set))
                 {
                     List<BakedQuad> textureQuads = new ArrayList<>(0);
-                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F + distance, Direction.SOUTH, 0xFFFFFFFF, 1));
-                    textureQuads.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), spriteFront, spriteFront, 0.5F - distance, Direction.NORTH, 0xFFFFFFFF, 1));
+                    textureQuads.addAll(FinalCardBakedModel.convertTexture(Transformation.identity(), spriteFront, 0.5F + distance, Direction.SOUTH, 0xFFFFFFFF, 1, front));
+                    textureQuads.addAll(FinalCardBakedModel.convertTexture(Transformation.identity(), spriteFront, 0.5F - distance, Direction.NORTH, 0xFFFFFFFF, 1, front));
                     quadsMap.put(set, textureQuads);
                 }
                 
@@ -120,13 +120,13 @@ public class FinalCardSetBakedModel implements IBakedModel
     }
     
     @Override
-    public ItemOverrideList getOverrides()
+    public ItemOverrides getOverrides()
     {
         return mainModel.getOverrides();
     }
     
     @Override
-    public IBakedModel handlePerspective(TransformType t, MatrixStack mat)
+    public BakedModel applyTransform(ItemTransforms.TransformType t, PoseStack mat, boolean applyLeftHandTransform)
     {
         mat.pushPose();
         
@@ -163,8 +163,8 @@ public class FinalCardSetBakedModel implements IBakedModel
             ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YDM.proxy.addSetItemTag("blanc_set"));
             TextureAtlasSprite sprite = textureGetter.apply(rl);
             setList = new ArrayList<>(0);
-            setList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1));
-            setList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1));
+            setList.addAll(FinalCardBakedModel.convertTexture(Transformation.identity(), sprite, 0.5F, Direction.SOUTH, 0xFFFFFFFF, 1, rl));
+            setList.addAll(FinalCardBakedModel.convertTexture(Transformation.identity(), sprite, 0.5F, Direction.NORTH, 0xFFFFFFFF, 1, rl));
         }
         
         return setList;
@@ -174,11 +174,11 @@ public class FinalCardSetBakedModel implements IBakedModel
     {
         if(openedList == null)
         {
-            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YdmItems.OPENED_SET.getRegistryName().getPath());
+            ResourceLocation rl = new ResourceLocation(YDM.MOD_ID, "item/" + YdmItems.OPENED_SET.getId().getPath());
             TextureAtlasSprite sprite = textureGetter.apply(rl);
             openedList = new ArrayList<>(0);
-            openedList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F + 2 * distance, Direction.SOUTH, 0xFFFFFFFF, 1));
-            openedList.addAll(ItemTextureQuadConverter.convertTexture(TransformationMatrix.identity(), sprite, sprite, 0.5F - 2 * distance, Direction.NORTH, 0xFFFFFFFF, 1));
+            openedList.addAll(FinalCardBakedModel.convertTexture(Transformation.identity(), sprite, 0.5F + 2 * distance, Direction.SOUTH, 0xFFFFFFFF, 1, rl));
+            openedList.addAll(FinalCardBakedModel.convertTexture(Transformation.identity(), sprite, 0.5F - 2 * distance, Direction.NORTH, 0xFFFFFFFF, 1, rl));
         }
         
         return openedList;

@@ -1,20 +1,22 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
 
-public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraftforge.network.PacketDistributor;
+
+public class CIIScreen<T extends CIIContainer> extends AbstractContainerScreen<T>
 {
     private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
     
@@ -23,7 +25,7 @@ public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
     protected Button prevButton;
     protected Button nextButton;
     
-    public CIIScreen(T container, PlayerInventory playerInventory, ITextComponent title)
+    public CIIScreen(T container, Inventory playerInventory, Component title)
     {
         super(container, playerInventory, title);
         passEvents = false;
@@ -39,31 +41,31 @@ public class CIIScreen<T extends CIIContainer> extends ContainerScreen<T>
     {
         super.init();
         
-        addButton(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.left_arrow"), this::onButtonClicked));
-        addButton(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8, topPos + 4, 12, 12, new TranslationTextComponent("generic.ydm.right_arrow"), this::onButtonClicked));
+        addRenderableWidget(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8, topPos + 4, 12, 12, Component.translatable("generic.ydm.left_arrow"), this::onButtonClicked));
+        addRenderableWidget(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8, topPos + 4, 12, 12, Component.translatable("generic.ydm.right_arrow"), this::onButtonClicked));
     }
     
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack PoseStack, int mouseX, int mouseY, float partialTicks)
     {
-        renderBackground(matrixStack);
-        super.render(matrixStack, mouseX, mouseY, partialTicks);
-        renderTooltip(matrixStack, mouseX, mouseY);
+        renderBackground(PoseStack);
+        super.render(PoseStack, mouseX, mouseY, partialTicks);
+        renderTooltip(PoseStack, mouseX, mouseY);
     }
     
     @Override
-    protected void renderLabels(MatrixStack ms, int x, int y)
+    protected void renderLabels(PoseStack ms, int x, int y)
     {
-        IFormattableTextComponent title = new StringTextComponent(this.title.getString());
-        title = title.append(" ").append(new StringTextComponent((menu.getPage() + 1) + "/" + menu.getMaxPage()));
+        MutableComponent title = Component.literal(this.title.getString());
+        title = title.append(" ").append(Component.literal((menu.getPage() + 1) + "/" + menu.getMaxPage()));
         font.draw(ms, title, 8.0F, 6.0F, 0x404040);
     }
     
     @Override
-    protected void renderBg(MatrixStack ms, float partialTicks, int x, int y)
+    protected void renderBg(PoseStack ms, float partialTicks, int x, int y)
     {
         ScreenUtil.white();
-        minecraft.getTextureManager().bind(CIIScreen.CHEST_GUI_TEXTURE);
+        RenderSystem.setShaderTexture(0, CIIScreen.CHEST_GUI_TEXTURE);
         int i = (width - imageWidth) / 2;
         int j = (height - imageHeight) / 2;
         blit(ms, i, j, 0, 0, imageWidth, inventoryRows * 18 + 17);

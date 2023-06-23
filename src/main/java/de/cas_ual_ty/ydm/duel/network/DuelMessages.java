@@ -6,9 +6,10 @@ import de.cas_ual_ty.ydm.duel.DuelChatMessage;
 import de.cas_ual_ty.ydm.duel.DuelState;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import de.cas_ual_ty.ydm.duel.action.Action;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -26,25 +27,25 @@ public class DuelMessages
             this.playerRole = playerRole;
         }
         
-        public SelectRole(PacketBuffer buf)
+        public SelectRole(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             DuelMessageUtility.encodePlayerRole(playerRole, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             playerRole = DuelMessageUtility.decodePlayerRole(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().playerSelectRole(player, playerRole);
         }
@@ -64,18 +65,18 @@ public class DuelMessages
             this.rolePlayerId = rolePlayerId;
         }
         
-        public UpdateRole(DuelMessageHeader header, @Nullable PlayerRole role, PlayerEntity rolePlayer)
+        public UpdateRole(DuelMessageHeader header, @Nullable PlayerRole role, Player rolePlayer)
         {
             this(header, role, rolePlayer.getUUID());
         }
         
-        public UpdateRole(PacketBuffer buf)
+        public UpdateRole(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             if(role != null)
             {
@@ -91,7 +92,7 @@ public class DuelMessages
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             if(buf.readBoolean())
             {
@@ -106,9 +107,9 @@ public class DuelMessages
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
-            PlayerEntity rolePlayer = player.level.getPlayerByUUID(rolePlayerId);
+            Player rolePlayer = player.level.getPlayerByUUID(rolePlayerId);
             
             if(role != null && rolePlayer != null)
             {
@@ -131,25 +132,25 @@ public class DuelMessages
             this.duelState = duelState;
         }
         
-        public UpdateDuelState(PacketBuffer buf)
+        public UpdateDuelState(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             DuelMessageUtility.encodeDuelState(duelState, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             duelState = DuelMessageUtility.decodeDuelState(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.updateDuelState(duelState);
         }
@@ -162,25 +163,25 @@ public class DuelMessages
             super(header);
         }
         
-        public RequestFullUpdate(PacketBuffer buf)
+        public RequestFullUpdate(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().sendAllTo(player);
         }
@@ -196,25 +197,25 @@ public class DuelMessages
             this.ready = ready;
         }
         
-        public RequestReady(PacketBuffer buf)
+        public RequestReady(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             buf.writeBoolean(ready);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             ready = buf.readBoolean();
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().requestReady(player, ready);
         }
@@ -232,27 +233,27 @@ public class DuelMessages
             this.ready = ready;
         }
         
-        public UpdateReady(PacketBuffer buf)
+        public UpdateReady(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             DuelMessageUtility.encodePlayerRole(role, buf);
             buf.writeBoolean(ready);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             role = DuelMessageUtility.decodePlayerRole(buf);
             ready = buf.readBoolean();
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().updateReady(role, ready);
         }
@@ -268,25 +269,25 @@ public class DuelMessages
             this.deckSources = deckSources;
         }
         
-        public SendAvailableDecks(PacketBuffer buf)
+        public SendAvailableDecks(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             DuelMessageUtility.encodeList(deckSources, buf, DuelMessageUtility::encodeDeckSourceParams);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             deckSources = DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeDeckSourceParams);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.receiveDeckSources(deckSources);
         }
@@ -302,25 +303,25 @@ public class DuelMessages
             this.index = index;
         }
         
-        public RequestDeck(PacketBuffer buf)
+        public RequestDeck(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             buf.writeInt(index);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             index = buf.readInt();
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().requestDeck(index, player);
         }
@@ -338,27 +339,27 @@ public class DuelMessages
             this.deck = deck;
         }
         
-        public SendDeck(PacketBuffer buf)
+        public SendDeck(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             buf.writeInt(index);
             DuelMessageUtility.encodeDeckHolder(deck, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             index = buf.readInt();
             deck = DuelMessageUtility.decodeDeckHolder(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.receiveDeck(index, deck);
         }
@@ -374,25 +375,25 @@ public class DuelMessages
             this.index = index;
         }
         
-        public ChooseDeck(PacketBuffer buf)
+        public ChooseDeck(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             buf.writeInt(index);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             index = buf.readInt();
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().chooseDeck(index, player);
         }
@@ -408,25 +409,25 @@ public class DuelMessages
             this.role = role;
         }
         
-        public DeckAccepted(PacketBuffer buf)
+        public DeckAccepted(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             DuelMessageUtility.encodePlayerRole(role, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             role = DuelMessageUtility.decodePlayerRole(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.deckAccepted(role);
         }
@@ -442,25 +443,25 @@ public class DuelMessages
             this.action = action;
         }
         
-        public RequestDuelAction(PacketBuffer buf)
+        public RequestDuelAction(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             DuelMessageUtility.encodeAction(action, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             action = DuelMessageUtility.decodeAction(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().receiveActionFrom(player, action);
         }
@@ -480,27 +481,27 @@ public class DuelMessages
             this.action = action;
         }
         
-        public DuelAction(PacketBuffer buf)
+        public DuelAction(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             //encodePlayerRole
             DuelMessageUtility.encodeAction(action, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             //decodePlayerRole
             action = DuelMessageUtility.decodeAction(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.handleAction(action);
         }
@@ -516,26 +517,26 @@ public class DuelMessages
             this.actions = actions;
         }
         
-        public AllDuelActions(PacketBuffer buf)
+        public AllDuelActions(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             //encodePlayerRole ?? if this is done in DuelAction class, might need to do it here too
             DuelMessageUtility.encodeActions(actions, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             actions = DuelMessageUtility.decodeActions(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.handleAllActions(actions);
         }
@@ -543,33 +544,33 @@ public class DuelMessages
     
     public static class SendMessageToServer extends DuelMessage.ServerBaseMessage
     {
-        public ITextComponent message;
+        public Component message;
         
-        public SendMessageToServer(DuelMessageHeader header, ITextComponent message)
+        public SendMessageToServer(DuelMessageHeader header, Component message)
         {
             super(header);
             this.message = message;
         }
         
-        public SendMessageToServer(PacketBuffer buf)
+        public SendMessageToServer(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             buf.writeComponent(message);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             message = buf.readComponent();
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().receiveMessageFromClient(player, message);
         }
@@ -585,25 +586,25 @@ public class DuelMessages
             this.message = message;
         }
         
-        public SendMessageToClient(PacketBuffer buf)
+        public SendMessageToClient(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
             DuelMessageUtility.encodeDuelChatMessage(message, buf);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
             message = DuelMessageUtility.decodeDuelChatMessage(buf);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.receiveMessage(player, message);
         }
@@ -619,25 +620,25 @@ public class DuelMessages
             messages = message;
         }
         
-        public SendAllMessagesToClient(PacketBuffer buf)
+        public SendAllMessagesToClient(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf0)
+        public void encodeMessage(FriendlyByteBuf buf0)
         {
             DuelMessageUtility.encodeList(messages, buf0, DuelMessageUtility::encodeDuelChatMessage);
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf0)
+        public void decodeMessage(FriendlyByteBuf buf0)
         {
             messages = DuelMessageUtility.decodeList(buf0, DuelMessageUtility::decodeDuelChatMessage);
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             for(DuelChatMessage message : messages)
             {
@@ -653,25 +654,25 @@ public class DuelMessages
             super(header);
         }
         
-        public SendAdmitDefeat(PacketBuffer buf)
+        public SendAdmitDefeat(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
         
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
         
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().playerAdmitsDefeat(player);
         }
@@ -684,25 +685,25 @@ public class DuelMessages
             super(header);
         }
         
-        public SendOfferDraw(PacketBuffer buf)
+        public SendOfferDraw(FriendlyByteBuf buf)
         {
             super(buf);
         }
         
         @Override
-        public void encodeMessage(PacketBuffer buf)
+        public void encodeMessage(FriendlyByteBuf buf)
         {
         
         }
         
         @Override
-        public void decodeMessage(PacketBuffer buf)
+        public void decodeMessage(FriendlyByteBuf buf)
         {
         
         }
         
         @Override
-        public void handleMessage(PlayerEntity player, IDuelManagerProvider provider)
+        public void handleMessage(Player player, IDuelManagerProvider provider)
         {
             provider.getDuelManager().playerOffersDraw(player);
         }

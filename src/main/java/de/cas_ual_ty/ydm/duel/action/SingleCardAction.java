@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public abstract class SingleCardAction extends SingleZoneAction
 {
@@ -16,13 +16,13 @@ public abstract class SingleCardAction extends SingleZoneAction
         sourceCardIndex = sourceCardId;
     }
     
-    public SingleCardAction(ActionType actionType, PacketBuffer buf)
+    public SingleCardAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readShort());
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         buf.writeShort(sourceCardIndex);

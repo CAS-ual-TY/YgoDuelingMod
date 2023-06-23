@@ -1,34 +1,41 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.model.BakedQuad;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemOverrideList;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.extensions.IForgeBakedModel;
+import net.minecraftforge.client.model.IDynamicBakedModel;
+import net.minecraftforge.client.model.data.ModelData;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Random;
 
 @SuppressWarnings("deprecation")
-public class CardBakedModel implements IBakedModel
+public class CardBakedModel implements IDynamicBakedModel
 {
-    private IBakedModel mainModel;
-    private ItemOverrideList overrideList;
+    private BakedModel mainModel;
+    private ItemOverrides overrideList;
     
-    public CardBakedModel(IBakedModel mainModel)
+    public CardBakedModel(BakedModel mainModel)
     {
         this.mainModel = mainModel;
         overrideList = new CardOverrideList(new FinalCardBakedModel(mainModel));
     }
     
     @Override
-    public List<BakedQuad> getQuads(BlockState state, Direction side, Random rand)
+    public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction side, @NotNull RandomSource rand, @NotNull ModelData extraData, @Nullable RenderType renderType)
     {
-        return mainModel.getQuads(state, side, rand);
+        return mainModel.getQuads(state, side, rand, extraData, renderType);
     }
     
     @Override
@@ -62,12 +69,12 @@ public class CardBakedModel implements IBakedModel
     }
     
     @Override
-    public ItemOverrideList getOverrides()
+    public ItemOverrides getOverrides()
     {
         return overrideList;
     }
     
-    private static class CardOverrideList extends ItemOverrideList
+    private static class CardOverrideList extends ItemOverrides
     {
         private FinalCardBakedModel finalModel;
         
@@ -75,9 +82,9 @@ public class CardBakedModel implements IBakedModel
         {
             this.finalModel = finalModel;
         }
-        
+    
         @Override
-        public IBakedModel resolve(IBakedModel model, ItemStack stack, ClientWorld worldIn, LivingEntity entityIn)
+        public BakedModel resolve(BakedModel pModel, ItemStack stack, @Nullable ClientLevel pLevel, @Nullable LivingEntity pEntity, int pSeed)
         {
             return finalModel.setActiveItemStack(stack);
         }

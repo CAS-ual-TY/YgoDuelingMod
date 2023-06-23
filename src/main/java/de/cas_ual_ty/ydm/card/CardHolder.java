@@ -4,10 +4,11 @@ import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+
+
 
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class CardHolder implements Comparable<CardHolder>
         this(null, (byte) 0, "", "");
     }
     
-    public CardHolder(CompoundNBT nbt)
+    public CardHolder(CompoundTag nbt)
     {
         this();
         readCardHolderFromNBT(nbt);
@@ -49,12 +50,12 @@ public class CardHolder implements Comparable<CardHolder>
         readFromJson(json);
     }
     
-    public void addInformation(List<ITextComponent> tooltip)
+    public void addInformation(List<Component> tooltip)
     {
-        tooltip.add(new StringTextComponent(getCard().getName()));
-        tooltip.add(new StringTextComponent(getCode()));
-        tooltip.add(new StringTextComponent(getRarity()));
-        tooltip.add(new StringTextComponent("Image Variant " + (1 + getImageIndex())));
+        tooltip.add(Component.literal(getCard().getName()));
+        tooltip.add(Component.literal(getCode()));
+        tooltip.add(Component.literal(getRarity()));
+        tooltip.add(Component.literal("Image Variant " + (1 + getImageIndex())));
     }
     
     public String getImageName()
@@ -145,7 +146,7 @@ public class CardHolder implements Comparable<CardHolder>
         return code;
     }
     
-    public void readCardHolderFromNBT(CompoundNBT nbt)
+    public void readCardHolderFromNBT(CompoundTag nbt)
     {
         card = YdmDatabase.PROPERTIES_LIST.get(nbt.getLong(JsonKeys.ID));
         
@@ -159,7 +160,7 @@ public class CardHolder implements Comparable<CardHolder>
         code = nbt.getString(JsonKeys.CODE);
     }
     
-    public void writeCardHolderToNBT(CompoundNBT nbt)
+    public void writeCardHolderToNBT(CompoundTag nbt)
     {
         if(card != Properties.DUMMY)
         {

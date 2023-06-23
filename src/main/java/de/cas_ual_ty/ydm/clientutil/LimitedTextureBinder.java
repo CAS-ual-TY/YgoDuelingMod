@@ -1,7 +1,8 @@
 package de.cas_ual_ty.ydm.clientutil;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -57,7 +58,7 @@ public class LimitedTextureBinder
     
     private void bindTexture(ResourceLocation rl)
     {
-        mc.getTextureManager().bind(rl);
+        RenderSystem.setShaderTexture(0, rl);
     }
     
     private void unbindTexture(ResourceLocation rl)

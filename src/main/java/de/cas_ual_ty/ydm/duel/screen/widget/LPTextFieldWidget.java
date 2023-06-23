@@ -1,20 +1,21 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.clientutil.widget.ITooltip;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
-public class LPTextFieldWidget extends TextFieldWidget
+
+public class LPTextFieldWidget extends EditBox
 {
     // doing it exactly in the super class
     private boolean enableBackgroundDrawing = true;
     public ITooltip tooltip;
     
-    public LPTextFieldWidget(FontRenderer fontrenderer, int x, int y, int width, int height, ITooltip tooltip)
+    public LPTextFieldWidget(Font fontrenderer, int x, int y, int width, int height, ITooltip tooltip)
     {
-        super(fontrenderer, x, y, width, height, StringTextComponent.EMPTY);
+        super(fontrenderer, x, y, width, height, Component.empty());
         this.tooltip = tooltip;
         setMaxLength(6);
         
@@ -46,7 +47,7 @@ public class LPTextFieldWidget extends TextFieldWidget
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         x *= 2;
         y *= 2;

@@ -5,8 +5,8 @@ import de.cas_ual_ty.ydm.deckbox.DeckHolder;
 import de.cas_ual_ty.ydm.duel.*;
 import de.cas_ual_ty.ydm.duel.action.Action;
 import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -80,7 +80,7 @@ public class ClientDuelManagerProvider implements IDuelManagerProvider
     }
     
     @Override
-    public void receiveMessage(PlayerEntity player, DuelChatMessage message)
+    public void receiveMessage(Player player, DuelChatMessage message)
     {
         getDuelManager().messages.add(message);
     }

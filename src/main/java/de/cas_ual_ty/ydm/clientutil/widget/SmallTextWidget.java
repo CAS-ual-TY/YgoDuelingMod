@@ -1,43 +1,43 @@
 package de.cas_ual_ty.ydm.clientutil.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import java.util.function.Supplier;
 
-public class SmallTextWidget extends Widget
+public class SmallTextWidget extends AbstractWidget
 {
-    public Supplier<ITextComponent> msgGetter;
+    public Supplier<Component> msgGetter;
     public ITooltip tooltip;
     
-    public SmallTextWidget(int xIn, int yIn, int widthIn, int heightIn, Supplier<ITextComponent> msgGetter, ITooltip tooltip)
+    public SmallTextWidget(int xIn, int yIn, int widthIn, int heightIn, Supplier<Component> msgGetter, ITooltip tooltip)
     {
-        super(xIn, yIn, widthIn, heightIn, StringTextComponent.EMPTY);
+        super(xIn, yIn, widthIn, heightIn, Component.empty());
         this.msgGetter = msgGetter;
         active = false;
         this.tooltip = tooltip;
     }
     
-    public SmallTextWidget(int xIn, int yIn, int widthIn, int heightIn, Supplier<ITextComponent> msgGetter)
+    public SmallTextWidget(int xIn, int yIn, int widthIn, int heightIn, Supplier<Component> msgGetter)
     {
         this(xIn, yIn, widthIn, heightIn, msgGetter, null);
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.font;
-        minecraft.getTextureManager().bind(Widget.WIDGETS_LOCATION);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
-        int i = getYImage(isHovered());
+        Font fontrenderer = minecraft.font;
+        RenderSystem.setShaderTexture(0, AbstractWidget.WIDGETS_LOCATION);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+        int i = getYImage(isHoveredOrFocused());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
@@ -54,11 +54,11 @@ public class SmallTextWidget extends Widget
         ms.scale(0.5F, 0.5F, 1F);
         
         int j = getFGColor();
-        AbstractGui.drawCenteredString(ms, fontrenderer, getMessage(), x * 2, y * 2 - fontrenderer.lineHeight / 2, j | MathHelper.ceil(alpha * 255.0F) << 24);
+        Screen.drawCenteredString(ms, fontrenderer, getMessage(), x * 2, y * 2 - fontrenderer.lineHeight / 2, j | Mth.ceil(alpha * 255.0F) << 24);
         
         ms.popPose();
         
-        if(isHovered() && tooltip != null)
+        if(isHoveredOrFocused() && tooltip != null)
         {
             tooltip.onTooltip(this, ms, mouseX, mouseY);
         }
@@ -71,8 +71,14 @@ public class SmallTextWidget extends Widget
     }
     
     @Override
-    public ITextComponent getMessage()
+    public Component getMessage()
     {
         return msgGetter.get();
+    }
+    
+    @Override
+    public void updateNarration(NarrationElementOutput pNarrationElementOutput)
+    {
+    
     }
 }

@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.DuelPhase;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -21,7 +21,7 @@ public class EndTurnAction extends Action
         super(actionType);
     }
     
-    public EndTurnAction(ActionType actionType, PacketBuffer buf)
+    public EndTurnAction(ActionType actionType, FriendlyByteBuf buf)
     {
         super(actionType);
     }

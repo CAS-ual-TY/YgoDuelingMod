@@ -3,10 +3,12 @@ package de.cas_ual_ty.ydm.datagen;
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.Item;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
 import net.minecraftforge.client.model.generators.ModelFile.UncheckedModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
+import net.minecraftforge.registries.ForgeRegistries;
 
 public class YDMItemModels extends ItemModelProvider
 {
@@ -42,8 +44,9 @@ public class YDMItemModels extends ItemModelProvider
     
     public void defaultSizedModel(Item item, int size)
     {
-        getBuilder(item.getRegistryName().toString() + "_" + size)
-                .parent(new UncheckedModelFile(item.getRegistryName().toString()))
-                .texture("layer0", modLoc("item/" + item.getRegistryName().getPath() + "_" + size));
+        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(item);
+        getBuilder(rl.toString() + "_" + size)
+                .parent(new UncheckedModelFile(rl.toString()))
+                .texture("layer0", modLoc("item/" + rl.getPath() + "_" + size));
     }
 }

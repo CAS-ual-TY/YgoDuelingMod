@@ -4,13 +4,13 @@ import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.properties.*;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.util.NonNullSupplier;
 
 import javax.annotation.Nullable;
@@ -73,7 +73,7 @@ public class YdmUtil
     
     public static UUID createRandomUUID()
     {
-        return MathHelper.createInsecureUUID();
+        return Mth.createInsecureUUID();
     }
     
     public static NonNullSupplier<IllegalArgumentException> throwNullCapabilityException()
@@ -83,7 +83,7 @@ public class YdmUtil
     
     public static int toPow2ConfigValue(int i, int min)
     {
-        return YdmUtil.getPow2(YdmUtil.range(MathHelper.log2(i), min, YdmUtil.POW_2.length - 1));
+        return YdmUtil.getPow2(YdmUtil.range(Mth.log2(i), min, YdmUtil.POW_2.length - 1));
     }
     
     public static int range(int i, int min, int max)
@@ -92,21 +92,21 @@ public class YdmUtil
     }
     
     @Nullable
-    public static Hand getActiveItem(PlayerEntity player, Item item)
+    public static InteractionHand getActiveItem(Player player, Item item)
     {
         return YdmUtil.getActiveItem(player, (itemStack) -> itemStack.getItem() == item);
     }
     
     @Nullable
-    public static Hand getActiveItem(PlayerEntity player, Predicate<ItemStack> item)
+    public static InteractionHand getActiveItem(Player player, Predicate<ItemStack> item)
     {
         if(item.test(player.getMainHandItem()))
         {
-            return Hand.MAIN_HAND;
+            return InteractionHand.MAIN_HAND;
         }
         else if(item.test(player.getOffhandItem()))
         {
-            return Hand.OFF_HAND;
+            return InteractionHand.OFF_HAND;
         }
         else
         {
@@ -137,11 +137,11 @@ public class YdmUtil
         }
     }
     
-    public static void executeAdmitDefeatCommands(PlayerEntity winner, PlayerEntity loser)
+    public static void executeAdmitDefeatCommands(Player winner, Player loser)
     {
-        if(winner.level instanceof ServerWorld)
+        if(winner.level instanceof ServerLevel)
         {
-            ServerWorld world = (ServerWorld) winner.level;
+            ServerLevel world = (ServerLevel) winner.level;
             MinecraftServer server = world.getServer();
             
             winner.getCapability(YDM.COOLDOWN_HOLDER).ifPresent(cdWinner ->
@@ -193,7 +193,7 @@ public class YdmUtil
                         
                         try
                         {
-                            server.getCommands().performCommand(server.createCommandSourceStack(), command);
+                            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
                         }
                         catch(Exception e)
                         {
@@ -206,11 +206,11 @@ public class YdmUtil
         }
     }
     
-    public static void executeDrawCommands(PlayerEntity player1, PlayerEntity player2)
+    public static void executeDrawCommands(Player player1, Player player2)
     {
-        if(player1.level instanceof ServerWorld)
+        if(player1.level instanceof ServerLevel)
         {
-            ServerWorld world = (ServerWorld) player1.level;
+            ServerLevel world = (ServerLevel) player1.level;
             MinecraftServer server = world.getServer();
             
             player1.getCapability(YDM.COOLDOWN_HOLDER).ifPresent(cd1 ->
@@ -262,7 +262,7 @@ public class YdmUtil
                         
                         try
                         {
-                            server.getCommands().performCommand(server.createCommandSourceStack(), command);
+                            server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
                         }
                         catch(Exception e)
                         {

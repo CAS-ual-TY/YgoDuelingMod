@@ -1,21 +1,21 @@
 package de.cas_ual_ty.ydm.set;
 
 import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 
 public class CardSetContentsContainer extends CIIContainer
 {
-    public CardSetContentsContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler)
+    public CardSetContentsContainer(MenuType<?> type, int id, Inventory playerInventoryIn, IItemHandler itemHandler)
     {
         super(type, id, playerInventoryIn, itemHandler);
     }
     
-    public CardSetContentsContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
+    public CardSetContentsContainer(MenuType<?> type, int id, Inventory playerInventoryIn, FriendlyByteBuf extraData)
     {
         super(type, id, playerInventoryIn, extraData);
     }
@@ -27,7 +27,7 @@ public class CardSetContentsContainer extends CIIContainer
     }
     
     @Override
-    public boolean canTakeStack(PlayerEntity player, ItemStack itemStack)
+    public boolean canTakeStack(Player player, ItemStack itemStack)
     {
         return false;
     }

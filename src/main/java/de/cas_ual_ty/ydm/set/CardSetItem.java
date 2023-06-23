@@ -2,23 +2,24 @@ package de.cas_ual_ty.ydm.set;
 
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.world.World;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 
 public class CardSetItem extends CardSetBaseItem
 {
-    public CardSetItem(Properties properties)
+    public CardSetItem(Item.Properties properties)
     {
         super(properties);
     }
     
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
     {
         ItemStack stack = CardSetItem.getActiveSet(player);
         
@@ -35,9 +36,9 @@ public class CardSetItem extends CardSetBaseItem
         return super.use(world, player, hand);
     }
     
-    public void unseal(ItemStack itemStack, PlayerEntity player, Hand hand)
+    public void unseal(ItemStack itemStack, Player player, InteractionHand hand)
     {
-        ItemStack newStack = YdmItems.OPENED_SET.createItemForSet(getCardSet(itemStack));
+        ItemStack newStack = YdmItems.OPENED_SET.get().createItemForSet(getCardSet(itemStack));
         player.setItemInHand(hand, newStack);
         
         if(itemStack.getCount() > 1)
@@ -46,7 +47,7 @@ public class CardSetItem extends CardSetBaseItem
             
             if(!player.level.isClientSide)
             {
-                player.inventory.placeItemBackInInventory(player.level, itemStack);
+                player.getInventory().placeItemBackInInventory(itemStack);
             }
         }
     }
@@ -59,9 +60,9 @@ public class CardSetItem extends CardSetBaseItem
     }
     
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items)
     {
-        if(!allowdedIn(group))
+        if(!allowedIn(group))
         {
             return;
         }
@@ -75,13 +76,13 @@ public class CardSetItem extends CardSetBaseItem
         }
     }
     
-    public static ItemStack getActiveSet(PlayerEntity player)
+    public static ItemStack getActiveSet(Player player)
     {
-        if(player.getMainHandItem().getItem() == YdmItems.SET)
+        if(player.getMainHandItem().getItem() == YdmItems.SET.get())
         {
             return player.getMainHandItem();
         }
-        else if(player.getOffhandItem().getItem() == YdmItems.SET)
+        else if(player.getOffhandItem().getItem() == YdmItems.SET.get())
         {
             return player.getOffhandItem();
         }

@@ -1,28 +1,27 @@
 package de.cas_ual_ty.ydm.clientutil;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.resources.IPackFinder;
-import net.minecraft.resources.IPackNameDecorator;
-import net.minecraft.resources.IResourcePack;
-import net.minecraft.resources.ResourcePackInfo;
-import net.minecraft.resources.ResourcePackInfo.IFactory;
+import net.minecraft.server.packs.PackResources;
+import net.minecraft.server.packs.repository.Pack;
+import net.minecraft.server.packs.repository.PackSource;
+import net.minecraft.server.packs.repository.RepositorySource;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class YdmResourcePackFinder implements IPackFinder
+public class YdmResourcePackFinder implements RepositorySource
 {
     public YdmResourcePackFinder()
     {
     }
     
     @Override
-    public void loadPacks(Consumer<ResourcePackInfo> infoConsumer, IFactory infoFactory)
+    public void loadPacks(Consumer<Pack> infoConsumer, Pack.PackConstructor infoFactory)
     {
-        infoConsumer.accept(ResourcePackInfo.create(YDM.MOD_ID, true, makePackSupplier(), infoFactory, ResourcePackInfo.Priority.TOP, IPackNameDecorator.DEFAULT));
+        infoConsumer.accept(Pack.create(YDM.MOD_ID, true, makePackSupplier(), infoFactory, Pack.Position.TOP, PackSource.DEFAULT));
     }
     
-    private Supplier<IResourcePack> makePackSupplier()
+    private Supplier<PackResources> makePackSupplier()
     {
         return () -> new YdmCardResourcePack();
     }

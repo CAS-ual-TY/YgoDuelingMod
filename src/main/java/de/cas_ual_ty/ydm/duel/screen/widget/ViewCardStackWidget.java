@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.card.CardSleevesType;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
@@ -9,11 +9,11 @@ import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -30,7 +30,7 @@ public class ViewCardStackWidget extends Button
     protected List<DuelCard> cards;
     protected boolean forceFaceUp;
     
-    public ViewCardStackWidget(IDuelScreenContext context, int x, int y, int width, int height, ITextComponent title, Consumer<ViewCardStackWidget> onPress, ITooltip onTooltip)
+    public ViewCardStackWidget(IDuelScreenContext context, int x, int y, int width, int height, Component title, Consumer<ViewCardStackWidget> onPress, OnTooltip onTooltip)
     {
         super(x, y, width, height, title, (button) -> onPress.accept((ViewCardStackWidget) button), onTooltip);
         this.context = context;
@@ -79,7 +79,7 @@ public class ViewCardStackWidget extends Button
     {
         if(cards != null && columns > 0)
         {
-            return Math.max(0, MathHelper.ceil(cards.size() / (float) columns) - rows);
+            return Math.max(0, Mth.ceil(cards.size() / (float) columns) - rows);
         }
         else
         {
@@ -108,15 +108,15 @@ public class ViewCardStackWidget extends Button
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.font;
+        Font fontrenderer = minecraft.font;
         
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.color4f(1F, 1F, 1F, alpha);
+        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
         
         if(!cards.isEmpty())
         {
@@ -128,11 +128,11 @@ public class ViewCardStackWidget extends Button
         }
         
         int j = getFGColor();
-        AbstractGui.drawCenteredString(ms, fontrenderer, getMessage(), x, y, j | MathHelper.ceil(alpha * 255.0F) << 24);
+        Screen.drawCenteredString(ms, fontrenderer, getMessage(), x, y, j | Mth.ceil(alpha * 255.0F) << 24);
     }
     
     @Nullable
-    public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
+    public DuelCard renderCards(PoseStack ms, int mouseX, int mouseY)
     {
         DuelCard hoveredCard = null;
         int hoverX = 0, hoverY = 0;
@@ -179,7 +179,7 @@ public class ViewCardStackWidget extends Button
         }
     }
     
-    protected boolean drawCard(MatrixStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY)
+    protected boolean drawCard(PoseStack ms, DuelCard duelCard, int renderX, int renderY, int renderWidth, int renderHeight, int mouseX, int mouseY)
     {
         if(context.getClickedCard() == duelCard)
         {
@@ -206,6 +206,6 @@ public class ViewCardStackWidget extends Button
         
         CardRenderUtil.renderDuelCardCentered(ms, context.getClickedZone() != null ? context.getClickedZone().getSleeves() : CardSleevesType.CARD_BACK, mouseX, mouseY, renderX, renderY, renderWidth, renderHeight, duelCard, forceFaceUp);
         
-        return isHovered() && mouseX >= renderX && mouseX < renderX + renderWidth && mouseY >= renderY && mouseY < renderY + renderHeight;
+        return isHoveredOrFocused() && mouseX >= renderX && mouseX < renderX + renderWidth && mouseY >= renderY && mouseY < renderY + renderHeight;
     }
 }

@@ -4,8 +4,8 @@ import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.duel.DeckSource;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.Component;
+
 
 import java.util.LinkedList;
 import java.util.List;
@@ -480,18 +480,18 @@ public class CustomDecks
     {
         List<DeckSource> list = new LinkedList<>();
         
-        CustomDecks.addDeckSource(list, CustomDecks.OJAMA_DECK_MAKER, new StringTextComponent("CAS_ual_TY's Ojarampage"), (c) -> c.getName().equals("Ojama Delta Hurricane!!"));
-        CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_1, new StringTextComponent("King's Soul"), (c) -> c.getName().equals("Dark Magical Circle"));
-        CustomDecks.addDeckSource(list, CustomDecks.BLESS_DECK_1, new StringTextComponent("\"Why did we make this?\""), (c) -> c.getName().equals("Duza the Meteor Cubic Vessel"));
-        CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_2, new StringTextComponent("King's Stardust Deck"), (c) -> c.getName().equals("Stardust Dragon"));
-        CustomDecks.addDeckSource(list, CustomDecks.TIME_BLAZING_GAMING_DECK_1, new StringTextComponent("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker"));
-        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_1, new StringTextComponent("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light"));
-        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_2, new StringTextComponent("LuisRavenFlame1's Branded Control"), (c) -> c.getName().equals("Fallen of Albaz"));
+        CustomDecks.addDeckSource(list, CustomDecks.OJAMA_DECK_MAKER, Component.literal("CAS_ual_TY's Ojarampage"), (c) -> c.getName().equals("Ojama Delta Hurricane!!"));
+        CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_1, Component.literal("King's Soul"), (c) -> c.getName().equals("Dark Magical Circle"));
+        CustomDecks.addDeckSource(list, CustomDecks.BLESS_DECK_1, Component.literal("\"Why did we make this?\""), (c) -> c.getName().equals("Duza the Meteor Cubic Vessel"));
+        CustomDecks.addDeckSource(list, CustomDecks.KING_SCRUBBY_DECK_2, Component.literal("King's Stardust Deck"), (c) -> c.getName().equals("Stardust Dragon"));
+        CustomDecks.addDeckSource(list, CustomDecks.TIME_BLAZING_GAMING_DECK_1, Component.literal("Blazing's Cynet Awakening"), (c) -> c.getName().equals("Accesscode Talker"));
+        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_1, Component.literal("LuisRavenFlame1's Gods of Egypt"), (c) -> c.getName().equals("Holactie the Creator of Light"));
+        CustomDecks.addDeckSource(list, CustomDecks.LUIS_RAVEN_FLAME_DECK_2, Component.literal("LuisRavenFlame1's Branded Control"), (c) -> c.getName().equals("Fallen of Albaz"));
         
         return list;
     }
     
-    public static void addDeckSource(List<DeckSource> decks, Supplier<DeckHolder> deckHolder, ITextComponent name, Predicate<Properties> flagShipCardChooser)
+    public static void addDeckSource(List<DeckSource> decks, Supplier<DeckHolder> deckHolder, Component name, Predicate<Properties> flagShipCardChooser)
     {
         try
         {
@@ -513,7 +513,7 @@ public class CustomDecks
                 }
             }
             
-            DeckSource s = new DeckSource(deck, YdmItems.CARD.createItemForCard(card), name);
+            DeckSource s = new DeckSource(deck, YdmItems.CARD.get().createItemForCard(card), name);
             decks.add(s);
         }
         catch(Exception e)

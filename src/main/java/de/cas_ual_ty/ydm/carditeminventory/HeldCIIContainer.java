@@ -1,39 +1,39 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.Hand;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
 
 public abstract class HeldCIIContainer extends CIIContainer
 {
-    protected final Hand hand;
+    protected final InteractionHand hand;
     protected final ItemStack itemStack;
     
-    public HeldCIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler, Hand hand)
+    public HeldCIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, IItemHandler itemHandler, InteractionHand hand)
     {
         super(type, id, playerInventoryIn, itemHandler);
         this.hand = hand;
         itemStack = player.getItemInHand(hand);
     }
     
-    public HeldCIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
+    public HeldCIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, FriendlyByteBuf extraData)
     {
-        this(type, id, playerInventoryIn, new ItemStackHandler(extraData.readInt()), extraData.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
+        this(type, id, playerInventoryIn, new ItemStackHandler(extraData.readInt()), extraData.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
     }
     
     @Override
-    protected void createBottomSlots(PlayerInventory playerInventoryIn)
+    protected void createBottomSlots(Inventory playerInventoryIn)
     {
-        if(hand == Hand.OFF_HAND)
+        if(hand == InteractionHand.OFF_HAND)
         {
             super.createBottomSlots(playerInventoryIn);
             return;
@@ -54,7 +54,7 @@ public abstract class HeldCIIContainer extends CIIContainer
                     addSlot(new Slot(playerInventoryIn, id, 8 + j1 * 18, 103 + l * 18 + i)
                     {
                         @Override
-                        public boolean mayPickup(PlayerEntity playerIn)
+                        public boolean mayPickup(Player playerIn)
                         {
                             return false;
                         }
@@ -76,7 +76,7 @@ public abstract class HeldCIIContainer extends CIIContainer
                 addSlot(new Slot(playerInventoryIn, i1, 8 + i1 * 18, 161 + i)
                 {
                     @Override
-                    public boolean mayPickup(PlayerEntity playerIn)
+                    public boolean mayPickup(Player playerIn)
                     {
                         return false;
                     }
@@ -89,12 +89,12 @@ public abstract class HeldCIIContainer extends CIIContainer
         }
     }
     
-    public static void openGui(PlayerEntity player, Hand hand, int itemHandlerSize, INamedContainerProvider p)
+    public static void openGui(Player player, InteractionHand hand, int itemHandlerSize, MenuProvider p)
     {
-        NetworkHooks.openGui((ServerPlayerEntity) player, p, (extraData) ->
+        NetworkHooks.openScreen((ServerPlayer) player, p, (extraData) ->
         {
             extraData.writeInt(itemHandlerSize);
-            extraData.writeBoolean(hand == Hand.MAIN_HAND);
+            extraData.writeBoolean(hand == InteractionHand.MAIN_HAND);
         });
     }
 }

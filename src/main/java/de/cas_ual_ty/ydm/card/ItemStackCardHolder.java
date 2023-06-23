@@ -1,8 +1,8 @@
 package de.cas_ual_ty.ydm.card;
 
 import de.cas_ual_ty.ydm.card.properties.Properties;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
 public class ItemStackCardHolder extends CardHolder
 {
@@ -20,7 +20,7 @@ public class ItemStackCardHolder extends CardHolder
         writeCardHolderToNBT(getNBT());
     }
     
-    private CompoundNBT getNBT()
+    private CompoundTag getNBT()
     {
         return itemStack.getOrCreateTag();
     }

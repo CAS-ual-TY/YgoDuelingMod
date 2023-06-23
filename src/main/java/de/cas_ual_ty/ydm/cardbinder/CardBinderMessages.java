@@ -3,10 +3,9 @@ package de.cas_ual_ty.ydm.cardbinder;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -14,7 +13,7 @@ import java.util.function.Supplier;
 
 public class CardBinderMessages
 {
-    public static void doForBinderContainer(PlayerEntity player, Consumer<CardBinderContainer> consumer)
+    public static void doForBinderContainer(Player player, Consumer<CardBinderContainer> consumer)
     {
         if(player != null && player.containerMenu instanceof CardBinderContainer)
         {
@@ -32,19 +31,19 @@ public class CardBinderMessages
             this.nextPage = nextPage;
         }
         
-        public static void encode(ChangePage msg, PacketBuffer buf)
+        public static void encode(ChangePage msg, FriendlyByteBuf buf)
         {
             buf.writeBoolean(msg.nextPage);
         }
         
-        public static ChangePage decode(PacketBuffer buf)
+        public static ChangePage decode(FriendlyByteBuf buf)
         {
             return new ChangePage(buf.readBoolean());
         }
         
         public static void handle(ChangePage msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             context.enqueueWork(() ->
             {
                 CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->
@@ -74,19 +73,19 @@ public class CardBinderMessages
             this.search = search;
         }
         
-        public static void encode(ChangeSearch msg, PacketBuffer buf)
+        public static void encode(ChangeSearch msg, FriendlyByteBuf buf)
         {
             buf.writeUtf(msg.search, Short.MAX_VALUE);
         }
         
-        public static ChangeSearch decode(PacketBuffer buf)
+        public static ChangeSearch decode(FriendlyByteBuf buf)
         {
             return new ChangeSearch(buf.readUtf(Short.MAX_VALUE));
         }
         
         public static void handle(ChangeSearch msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             context.enqueueWork(() ->
             {
                 CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->
@@ -111,20 +110,20 @@ public class CardBinderMessages
             this.maxPage = maxPage;
         }
         
-        public static void encode(UpdatePage msg, PacketBuffer buf)
+        public static void encode(UpdatePage msg, FriendlyByteBuf buf)
         {
             buf.writeInt(msg.page);
             buf.writeInt(msg.maxPage);
         }
         
-        public static UpdatePage decode(PacketBuffer buf)
+        public static UpdatePage decode(FriendlyByteBuf buf)
         {
             return new UpdatePage(buf.readInt(), buf.readInt());
         }
         
         public static void handle(UpdatePage msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             context.enqueueWork(() ->
             {
                 CardBinderMessages.doForBinderContainer(YDM.proxy.getClientPlayer(), (container) ->
@@ -150,20 +149,20 @@ public class CardBinderMessages
             this.list = list;
         }
         
-        public static void encode(UpdateList msg, PacketBuffer buf)
+        public static void encode(UpdateList msg, FriendlyByteBuf buf)
         {
             buf.writeInt(msg.page);
             DuelMessageUtility.encodeList(msg.list, buf, DuelMessageUtility::encodeCardHolder);
         }
         
-        public static UpdateList decode(PacketBuffer buf)
+        public static UpdateList decode(FriendlyByteBuf buf)
         {
             return new UpdateList(buf.readInt(), DuelMessageUtility.decodeList(buf, DuelMessageUtility::decodeCardHolder));
         }
         
         public static void handle(UpdateList msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             context.enqueueWork(() ->
             {
                 CardBinderMessages.doForBinderContainer(YDM.proxy.getClientPlayer(), (container) ->
@@ -188,20 +187,20 @@ public class CardBinderMessages
             this.shiftDown = shiftDown;
         }
         
-        public static void encode(IndexClicked msg, PacketBuffer buf)
+        public static void encode(IndexClicked msg, FriendlyByteBuf buf)
         {
             buf.writeInt(msg.index);
             buf.writeBoolean(msg.shiftDown);
         }
         
-        public static IndexClicked decode(PacketBuffer buf)
+        public static IndexClicked decode(FriendlyByteBuf buf)
         {
             return new IndexClicked(buf.readInt(), buf.readBoolean());
         }
         
         public static void handle(IndexClicked msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             context.enqueueWork(() ->
             {
                 CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->
@@ -223,19 +222,19 @@ public class CardBinderMessages
             this.index = index;
         }
         
-        public static void encode(IndexDropped msg, PacketBuffer buf)
+        public static void encode(IndexDropped msg, FriendlyByteBuf buf)
         {
             buf.writeInt(msg.index);
         }
         
-        public static IndexDropped decode(PacketBuffer buf)
+        public static IndexDropped decode(FriendlyByteBuf buf)
         {
             return new IndexDropped(buf.readInt());
         }
         
         public static void handle(IndexDropped msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             context.enqueueWork(() ->
             {
                 CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->

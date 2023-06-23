@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 
@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 
 public class SplitItemHandlerSlot extends Slot
 {
-    private static IInventory emptyInventory = new Inventory(0);
+    private static Container emptyInventory = new SimpleContainer(0);
     
     private final IItemHandler itemHandler;
     private final int itemHandlerIndex;
@@ -91,7 +91,7 @@ public class SplitItemHandlerSlot extends Slot
     }
     
     @Override
-    public boolean mayPickup(PlayerEntity playerIn)
+    public boolean mayPickup(Player playerIn)
     {
         return !getItemHandler().extractItem(itemHandlerIndex, 1, true).isEmpty();
     }

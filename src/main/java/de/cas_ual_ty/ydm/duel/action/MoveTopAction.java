@@ -4,7 +4,7 @@ import de.cas_ual_ty.ydm.duel.playfield.CardPosition;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class MoveTopAction extends MoveAction
 {
@@ -18,7 +18,7 @@ public class MoveTopAction extends MoveAction
         this(actionType, sourceZone.index, sourceZone.getCardIndexShort(card), destinationZone.index, destinationCardPosition, player);
     }
     
-    public MoveTopAction(ActionType actionType, PacketBuffer buf)
+    public MoveTopAction(ActionType actionType, FriendlyByteBuf buf)
     {
         super(actionType, buf);
     }

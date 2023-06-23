@@ -2,19 +2,19 @@ package de.cas_ual_ty.ydm.cardsupply;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraftforge.network.NetworkHooks;
 
 public class CardSupplyBlock extends Block
 {
@@ -24,21 +24,21 @@ public class CardSupplyBlock extends Block
     }
     
     @Override
-    public ActionResultType use(BlockState state, World worldIn, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
+    public InteractionResult use(BlockState state, Level worldIn, BlockPos pos, Player player, InteractionHand handIn, BlockHitResult hit)
     {
-        if(!worldIn.isClientSide && player instanceof ServerPlayerEntity)
+        if(!worldIn.isClientSide && player instanceof ServerPlayer p)
         {
-            NetworkHooks.openGui((ServerPlayerEntity) player, getMenuProvider(state, worldIn, pos), pos);
+            NetworkHooks.openScreen(p, getMenuProvider(state, worldIn, pos), pos);
         }
         
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
     
     @Override
-    public INamedContainerProvider getMenuProvider(BlockState state, World worldIn, BlockPos pos)
+    public MenuProvider getMenuProvider(BlockState state, Level worldIn, BlockPos pos)
     {
-        return new SimpleNamedContainerProvider(
-                (id, inventory, player) -> new CardSupplyContainer(YdmContainerTypes.CARD_SUPPLY, id, inventory, pos),
-                new TranslationTextComponent("container." + YDM.MOD_ID + ".card_supply"));
+        return new SimpleMenuProvider(
+                (id, inventory, player) -> new CardSupplyContainer(YdmContainerTypes.CARD_SUPPLY.get(), id, inventory, pos),
+                Component.translatable("container." + YDM.MOD_ID + ".card_supply"));
     }
 }

@@ -1,21 +1,22 @@
 package de.cas_ual_ty.ydm.duel.screen.animation;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.clientutil.ClientProxy;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+
 
 public class TextAnimation extends Animation
 {
-    public ITextComponent message;
+    public Component message;
     public float centerPosX;
     public float centerPosY;
     
-    public TextAnimation(ITextComponent message, float centerPosX, float centerPosY)
+    public TextAnimation(Component message, float centerPosX, float centerPosY)
     {
         super(ClientProxy.announcementAnimationLength);
         
@@ -25,9 +26,9 @@ public class TextAnimation extends Animation
     }
     
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        FontRenderer f = ClientProxy.getMinecraft().font;
+        Font f = ClientProxy.getMinecraft().font;
         
         double relativeTickTime = (tickTime + partialTicks) / maxTickTime;
         
@@ -41,12 +42,12 @@ public class TextAnimation extends Animation
         ms.translate(centerPosX, centerPosY - f.lineHeight / 2, 0);
         
         RenderSystem.enableBlend();
-        RenderSystem.color4f(1F, 1F, 1F, alpha);
+        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
         
         int j = 16777215; //See TextWidget
-        AbstractGui.drawCenteredString(ms, f, message, 0, 0, j | MathHelper.ceil(alpha * 255.0F) << 24);
+        Screen.drawCenteredString(ms, f, message, 0, 0, j | Mth.ceil(alpha * 255.0F) << 24);
         
         RenderSystem.disableBlend();
         ScreenUtil.white();

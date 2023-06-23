@@ -1,18 +1,18 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.nbt.INBT;
-import net.minecraft.nbt.StringNBT;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.Tag;
 import net.minecraftforge.common.util.INBTSerializable;
 
 import javax.annotation.Nullable;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
+public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringTag>
 {
-    private static final CompoundNBT DUMMY_NBT = new CompoundNBT();
+    private static final CompoundTag DUMMY_NBT = new CompoundTag();
     public static final UUIDHolder NULL_HOLDER = new UUIDHolder(() -> DUMMY_NBT)
     {
         @Override
@@ -23,9 +23,9 @@ public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
     };
     
     protected UUID uuid;
-    protected Supplier<CompoundNBT> nbtSupplier;
+    protected Supplier<CompoundTag> nbtSupplier;
     
-    public UUIDHolder(Supplier<CompoundNBT> nbtSupplier)
+    public UUIDHolder(Supplier<CompoundTag> nbtSupplier)
     {
         uuid = null;
         this.nbtSupplier = nbtSupplier;
@@ -47,13 +47,13 @@ public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
     }
     
     @Override
-    public StringNBT serializeNBT()
+    public StringTag serializeNBT()
     {
-        return uuid == null ? StringNBT.valueOf("") : StringNBT.valueOf(getUUID().toString());
+        return uuid == null ? StringTag.valueOf("") : StringTag.valueOf(getUUID().toString());
     }
     
     @Override
-    public void deserializeNBT(StringNBT nbt)
+    public void deserializeNBT(StringTag nbt)
     {
         String uuid = nbt.getAsString();
         
@@ -72,15 +72,15 @@ public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
         if(YDM.commonConfig.mohistWorkaround.get())
         {
             UUID old = uuid;
-            CompoundNBT nbt = nbtSupplier.get();
+            CompoundTag nbt = nbtSupplier.get();
             
             if(nbt.contains("uuid_cap"))
             {
-                INBT inbt = nbt.get("uuid_cap");
+                Tag inbt = nbt.get("uuid_cap");
                 
-                if(inbt instanceof StringNBT)
+                if(inbt instanceof StringTag)
                 {
-                    deserializeNBT((StringNBT) inbt);
+                    deserializeNBT((StringTag) inbt);
                 }
             }
             
@@ -97,8 +97,8 @@ public class UUIDHolder implements IUUIDHolder, INBTSerializable<StringNBT>
     {
         if(YDM.commonConfig.mohistWorkaround.get() && uuid != null)
         {
-            CompoundNBT nbt = nbtSupplier.get();
-            nbt.put("uuid_cap", uuid == null ? StringNBT.valueOf("") : StringNBT.valueOf(uuid.toString()));
+            CompoundTag nbt = nbtSupplier.get();
+            nbt.put("uuid_cap", uuid == null ? StringTag.valueOf("") : StringTag.valueOf(uuid.toString()));
         }
     }
 }

@@ -1,24 +1,19 @@
 package de.cas_ual_ty.ydm;
 
 import de.cas_ual_ty.ydm.duel.block.DuelTileEntity;
-import net.minecraft.tileentity.TileEntityType;
-import net.minecraftforge.event.RegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
-import net.minecraftforge.registries.IForgeRegistry;
-import net.minecraftforge.registries.ObjectHolder;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
-@EventBusSubscriber(modid = YDM.MOD_ID, bus = Bus.MOD)
-@ObjectHolder(YDM.MOD_ID)
 public class YdmTileEntityTypes
 {
-    public static final TileEntityType<?> DUEL = null;
+    private static final DeferredRegister<BlockEntityType<?>> DEFERRED_REGISTER = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, YDM.MOD_ID);
+    public static final RegistryObject<BlockEntityType<DuelTileEntity>> DUEL = DEFERRED_REGISTER.register("duel", () -> BlockEntityType.Builder.of((pos, state) -> new DuelTileEntity(YdmTileEntityTypes.DUEL.get(), pos, state), YdmBlocks.DUEL_PLAYMAT.get(), YdmBlocks.DUEL_TABLE.get()).build(null));
     
-    @SubscribeEvent
-    public static void registerItems(RegistryEvent.Register<TileEntityType<?>> event)
+    public static void register(IEventBus bus)
     {
-        IForgeRegistry<TileEntityType<?>> registry = event.getRegistry();
-        registry.register(TileEntityType.Builder.of(() -> new DuelTileEntity(YdmTileEntityTypes.DUEL), YdmBlocks.DUEL_PLAYMAT, YdmBlocks.DUEL_TABLE).build(null).setRegistryName(YDM.MOD_ID, "duel"));
+        DEFERRED_REGISTER.register(bus);
     }
 }

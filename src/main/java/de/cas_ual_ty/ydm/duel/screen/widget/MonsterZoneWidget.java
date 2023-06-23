@@ -1,26 +1,27 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.network.chat.Component;
+
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 
 public class MonsterZoneWidget extends ZoneWidget
 {
-    public MonsterZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, ITextComponent title, Consumer<ZoneWidget> onPress, ITooltip onTooltip)
+    public MonsterZoneWidget(Zone zone, IDuelScreenContext context, int width, int height, Component title, Consumer<ZoneWidget> onPress, OnTooltip onTooltip)
     {
         super(zone, context, width, height, title, onPress, onTooltip);
     }
     
     @Override
     @Nullable
-    public DuelCard renderCards(MatrixStack ms, int mouseX, int mouseY)
+    public DuelCard renderCards(PoseStack ms, int mouseX, int mouseY)
     {
         if(zone.getCardsAmount() <= 0)
         {

@@ -1,9 +1,10 @@
 package de.cas_ual_ty.ydm.duel.screen.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.network.chat.Component;
+
 
 import java.util.function.Supplier;
 
@@ -12,7 +13,7 @@ public class RoleButtonWidget extends Button
     public Supplier<Boolean> available;
     public PlayerRole role;
     
-    public RoleButtonWidget(int xIn, int yIn, int widthIn, int heightIn, ITextComponent text, IPressable onPress, Supplier<Boolean> available, PlayerRole role)
+    public RoleButtonWidget(int xIn, int yIn, int widthIn, int heightIn, Component text, Button.OnPress onPress, Supplier<Boolean> available, PlayerRole role)
     {
         super(xIn, yIn, widthIn, heightIn, text, onPress);
         this.available = available;
@@ -20,7 +21,7 @@ public class RoleButtonWidget extends Button
     }
     
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partial)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partial)
     {
         active = available.get();
         super.render(ms, mouseX, mouseY, partial);

@@ -2,9 +2,10 @@ package de.cas_ual_ty.ydm.set;
 
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import net.minecraft.item.ItemStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.SortedArraySet;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.item.ItemStack;
+
 
 import java.util.List;
 import java.util.Random;
@@ -25,7 +26,7 @@ public abstract class CardPuller
     
     public abstract List<ItemStack> open(Random random);
     
-    public void addInformation(List<ITextComponent> tooltip)
+    public void addInformation(List<Component> tooltip)
     {
         
     }

@@ -1,17 +1,16 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
 import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.NetworkEvent.Context;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 public class CIIMessages
 {
-    public static void doForContainer(PlayerEntity player, Consumer<CIIContainer> consumer)
+    public static void doForContainer(Player player, Consumer<CIIContainer> consumer)
     {
         if(player != null && player.containerMenu instanceof CIIContainer)
         {
@@ -28,19 +27,19 @@ public class CIIMessages
             this.page = page;
         }
         
-        public static void encode(SetPage msg, PacketBuffer buf)
+        public static void encode(SetPage msg, FriendlyByteBuf buf)
         {
             buf.writeInt(msg.page);
         }
         
-        public static SetPage decode(PacketBuffer buf)
+        public static SetPage decode(FriendlyByteBuf buf)
         {
             return new SetPage(buf.readInt());
         }
         
         public static void handle(SetPage msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             
             context.enqueueWork(() ->
             {
@@ -63,19 +62,19 @@ public class CIIMessages
             this.nextPage = nextPage;
         }
         
-        public static void encode(ChangePage msg, PacketBuffer buf)
+        public static void encode(ChangePage msg, FriendlyByteBuf buf)
         {
             buf.writeBoolean(msg.nextPage);
         }
         
-        public static ChangePage decode(PacketBuffer buf)
+        public static ChangePage decode(FriendlyByteBuf buf)
         {
             return new ChangePage(buf.readBoolean());
         }
         
         public static void handle(ChangePage msg, Supplier<NetworkEvent.Context> ctx)
         {
-            Context context = ctx.get();
+            NetworkEvent.Context context = ctx.get();
             
             context.enqueueWork(() ->
             {

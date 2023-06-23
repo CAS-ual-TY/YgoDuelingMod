@@ -1,12 +1,12 @@
 package de.cas_ual_ty.ydm;
 
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.function.Supplier;
 
-public class YdmItemGroup extends ItemGroup
+public class YdmItemGroup extends CreativeModeTab
 {
     private Supplier<Item> supplier;
     

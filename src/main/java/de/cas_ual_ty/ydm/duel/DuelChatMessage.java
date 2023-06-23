@@ -1,19 +1,20 @@
 package de.cas_ual_ty.ydm.duel;
 
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+
+
+import net.minecraft.ChatFormatting;
 
 public class DuelChatMessage
 {
-    public final ITextComponent message;
-    public final ITextComponent playerName;
+    public final Component message;
+    public final Component playerName;
     public final PlayerRole sourceRole;
     public final boolean isAnnouncement;
     
-    public DuelChatMessage(ITextComponent message, ITextComponent playerName, PlayerRole playerRole, boolean isAnnouncement)
+    public DuelChatMessage(Component message, Component playerName, PlayerRole playerRole, boolean isAnnouncement)
     {
         this.message = message;
         this.playerName = playerName;
@@ -21,16 +22,16 @@ public class DuelChatMessage
         this.isAnnouncement = isAnnouncement;
     }
     
-    public DuelChatMessage(ITextComponent message, IFormattableTextComponent playerName, PlayerRole playerRole)
+    public DuelChatMessage(Component message, MutableComponent playerName, PlayerRole playerRole)
     {
         this(message, playerName, playerRole, false);
     }
     
     // view role has nothing to do with the view itself
     // flipping does not affect it
-    public ITextComponent generateStyledMessage(PlayerRole viewerRole, TextFormatting friendlyColor, TextFormatting opponentColor, TextFormatting neutralColor)
+    public Component generateStyledMessage(PlayerRole viewerRole, ChatFormatting friendlyColor, ChatFormatting opponentColor, ChatFormatting neutralColor)
     {
-        IFormattableTextComponent playerName = this.playerName.copy();
+        MutableComponent playerName = this.playerName.copy();
         
         if(ZoneOwner.fromPlayerRole(viewerRole).isPlayer())
         {
@@ -79,18 +80,18 @@ public class DuelChatMessage
             }
         }
         
-        IFormattableTextComponent m = message.copy();
+        MutableComponent m = message.copy();
         
         if(isAnnouncement)
         {
-            m.withStyle((style) -> style.applyFormat(TextFormatting.ITALIC));
+            m.withStyle((style) -> style.applyFormat(ChatFormatting.ITALIC));
         }
         
-        IFormattableTextComponent t = new StringTextComponent("<").append(playerName).append("> ").append(m);
+        MutableComponent t = Component.literal("<").append(playerName).append("> ").append(m);
         
         //        if(this.isAnnouncement)
         //        {
-        //            t.modifyStyle((style) -> style.applyFormatting(TextFormatting.BOLD));
+        //            t.modifyStyle((style) -> style.applyFormatting(ChatFormatting.BOLD));
         //        }
         
         return t;

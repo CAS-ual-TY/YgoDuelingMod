@@ -2,37 +2,37 @@ package de.cas_ual_ty.ydm.carditeminventory;
 
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.util.YDMItemHandler;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.ContainerType;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.MathHelper;
-import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
+import net.minecraft.world.Container;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 
-public class CIIContainer extends Container
+public class CIIContainer extends AbstractContainerMenu
 {
     public static final int INV_SIZE = 4 * 9;
     public static final int PAGE_SIZE = 6 * 9;
     
-    protected final PlayerEntity player;
+    protected final Player player;
     protected final IItemHandler itemHandler;
     
     protected int page;
     protected final int maxPage;
     protected boolean filling;
     
-    public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, IItemHandler itemHandler)
+    public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, IItemHandler itemHandler)
     {
         super(type, id);
         
@@ -45,15 +45,15 @@ public class CIIContainer extends Container
         createTopSlots();
         
         page = 0;
-        maxPage = MathHelper.ceil(this.itemHandler.getSlots() / (double) PAGE_SIZE);
+        maxPage = Mth.ceil(this.itemHandler.getSlots() / (double) PAGE_SIZE);
     }
     
-    public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, int itemHandlerSize)
+    public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, int itemHandlerSize)
     {
         this(type, id, playerInventoryIn, new ItemStackHandler(itemHandlerSize));
     }
     
-    public CIIContainer(ContainerType<?> type, int id, PlayerInventory playerInventoryIn, PacketBuffer extraData)
+    public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, FriendlyByteBuf extraData)
     {
         this(type, id, playerInventoryIn, extraData.readInt());
     }
@@ -98,7 +98,7 @@ public class CIIContainer extends Container
                     }
                     
                     @Override
-                    public boolean mayPickup(PlayerEntity playerIn)
+                    public boolean mayPickup(Player playerIn)
                     {
                         return canTakeStack(playerIn, getItem());
                     }
@@ -107,7 +107,7 @@ public class CIIContainer extends Container
         }
     }
     
-    protected void createBottomSlots(PlayerInventory playerInventoryIn)
+    protected void createBottomSlots(Inventory playerInventoryIn)
     {
         final int i = (6 - 4) * 18;
         
@@ -130,7 +130,7 @@ public class CIIContainer extends Container
         return false;
     }
     
-    public boolean canTakeStack(PlayerEntity player, ItemStack itemStack)
+    public boolean canTakeStack(Player player, ItemStack itemStack)
     {
         return true;
     }
@@ -153,7 +153,7 @@ public class CIIContainer extends Container
     
     protected void updatePage()
     {
-        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity) player), new CIIMessages.SetPage(page));
+        YDM.channel.send(PacketDistributor.PLAYER.with(() -> (ServerPlayer) player), new CIIMessages.SetPage(page));
     }
     
     public void nextPage()
@@ -186,23 +186,23 @@ public class CIIContainer extends Container
     {
         attemptSave();
         slots.clear();
-        createBottomSlots(player.inventory);
+        createBottomSlots(player.getInventory());
         createTopSlots();
     }
     
     @Override
-    public void slotsChanged(IInventory inventoryIn)
+    public void slotsChanged(Container inventoryIn)
     {
     }
     
     @Override
-    public boolean stillValid(PlayerEntity playerIn)
+    public boolean stillValid(Player playerIn)
     {
         return true;
     }
     
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(Player playerIn, int index)
     {
         Slot slot = slots.get(index);
         ItemStack original = slot.getItem().copy();
@@ -232,15 +232,15 @@ public class CIIContainer extends Container
     }
     
     @Override
-    public void removed(PlayerEntity pPlayer)
+    public void removed(Player pPlayer)
     {
         attemptSave();
         super.removed(pPlayer);
     }
     
-    public static void openGui(PlayerEntity player, int itemHandlerSize, INamedContainerProvider p)
+    public static void openGui(Player player, int itemHandlerSize, MenuProvider p)
     {
-        NetworkHooks.openGui((ServerPlayerEntity) player, p, (extraData) ->
+        NetworkHooks.openScreen((ServerPlayer) player, p, (extraData) ->
         {
             extraData.writeInt(itemHandlerSize);
         });

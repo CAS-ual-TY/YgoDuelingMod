@@ -3,7 +3,7 @@ package de.cas_ual_ty.ydm.duel.action;
 import de.cas_ual_ty.ydm.duel.DuelPhase;
 import de.cas_ual_ty.ydm.duel.network.DuelMessageUtility;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.function.Consumer;
 
@@ -20,13 +20,13 @@ public class ChangePhaseAction extends Action
         this.phase = phase;
     }
     
-    public ChangePhaseAction(ActionType actionType, PacketBuffer buf)
+    public ChangePhaseAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, DuelMessageUtility.decodePhase(buf));
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         DuelMessageUtility.encodePhase(phase, buf);

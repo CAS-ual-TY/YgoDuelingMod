@@ -5,25 +5,24 @@ import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
 import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import de.cas_ual_ty.ydm.util.YdmUtil;
-import net.minecraft.client.util.ITooltipFlag;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.World;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+
+import net.minecraft.ChatFormatting;
+
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -37,49 +36,39 @@ public class OpenedCardSetItem extends CardSetBaseItem
     }
     
     @Override
-    public void appendHoverText(ItemStack itemStack, World worldIn, List<ITextComponent> tooltip, ITooltipFlag flagIn)
+    public void appendHoverText(ItemStack itemStack, Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
     {
         super.appendHoverText(itemStack, worldIn, tooltip, flagIn);
-        tooltip.add(new TranslationTextComponent(getDescriptionId() + ".desc").withStyle((s) -> s.applyFormat(TextFormatting.RED)));
+        tooltip.add(Component.translatable(getDescriptionId() + ".desc").withStyle((s) -> s.applyFormat(ChatFormatting.RED)));
     }
     
     @Override
-    public ActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
+    public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
     {
         if(!world.isClientSide && hand == YdmUtil.getActiveItem(player, this))
         {
             ItemStack itemStack = player.getItemInHand(hand);
             
-            if(hasOldItemHandler(itemStack))
-            {
-                ItemStackHandler itemHandler = getOldItemHandler(itemStack);
-                getItemHandler(itemStack).ifPresent(current -> {
-                    current.deserializeNBT(itemHandler.serializeNBT());
-                    current.save();
-                });
-                removeOldItemHandler(itemStack);
-            }
-            
             getItemHandler(itemStack).ifPresent(itemHandler ->
             {
                 itemHandler.load();
-                HeldCIIContainer.openGui(player, hand, itemHandler.getSlots(), new INamedContainerProvider()
+                HeldCIIContainer.openGui(player, hand, itemHandler.getSlots(), new MenuProvider()
                 {
                     @Override
-                    public Container createMenu(int id, PlayerInventory playerInventory, PlayerEntity player)
+                    public AbstractContainerMenu createMenu(int id, Inventory playerInventory, Player player)
                     {
-                        return new CardSetContainer(YdmContainerTypes.CARD_SET, id, playerInventory, itemHandler, hand);
+                        return new CardSetContainer(YdmContainerTypes.CARD_SET.get(), id, playerInventory, itemHandler, hand);
                     }
                     
                     @Override
-                    public ITextComponent getDisplayName()
+                    public Component getDisplayName()
                     {
-                        return new TranslationTextComponent("container." + YDM.MOD_ID + ".card_set");
+                        return Component.translatable("container." + YDM.MOD_ID + ".card_set");
                     }
                 });
             });
             
-            return ActionResult.success(itemStack);
+            return InteractionResultHolder.success(itemStack);
         }
         
         return super.use(world, player, hand);
@@ -88,36 +77,6 @@ public class OpenedCardSetItem extends CardSetBaseItem
     public int getSize(ItemStack itemStack)
     {
         return getNBT(itemStack).getInt("size");
-    }
-    
-    public boolean hasOldItemHandler(ItemStack itemStack)
-    {
-        return getNBT(itemStack).contains("itemHandler");
-    }
-    
-    @Nullable
-    public ItemStackHandler getOldItemHandler(ItemStack itemStack)
-    {
-        CompoundNBT nbt = getNBT(itemStack);
-        
-        if(!nbt.contains("itemHandler") || !nbt.contains("size"))
-        {
-            return null;
-        }
-        else
-        {
-            int size = nbt.getInt("size");
-            ItemStackHandler itemHandler = new ItemStackHandler(size);
-            CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.readNBT(itemHandler, null, nbt.get("itemHandler"));
-            return itemHandler;
-        }
-    }
-    
-    public void removeOldItemHandler(ItemStack itemStack)
-    {
-        CompoundNBT nbt = getNBT(itemStack);
-        nbt.remove("itemHandler");
-        nbt.remove("size");
     }
     
     public LazyOptional<YDMItemHandler> getItemHandler(ItemStack itemStack)
@@ -160,17 +119,17 @@ public class OpenedCardSetItem extends CardSetBaseItem
     }
     
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items)
     {
         return;
     }
     
     @Override
-    public void readShareTag(ItemStack stack, @Nullable CompoundNBT nbt)
+    public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt)
     {
         super.readShareTag(stack, nbt);
         
-        if(nbt != null && nbt.contains("card_item_inventory", Constants.NBT.TAG_COMPOUND))
+        if(nbt != null && nbt.contains("card_item_inventory", Tag.TAG_COMPOUND))
         {
             stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
             {
@@ -181,16 +140,16 @@ public class OpenedCardSetItem extends CardSetBaseItem
     
     @Nullable
     @Override
-    public CompoundNBT getShareTag(ItemStack stack)
+    public CompoundTag getShareTag(ItemStack stack)
     {
-        CompoundNBT nbt = super.getShareTag(stack);
+        CompoundTag nbt = super.getShareTag(stack);
         
         if(nbt == null)
         {
-            nbt = new CompoundNBT();
+            nbt = new CompoundTag();
         }
         
-        CompoundNBT finalNBT = nbt;
+        CompoundTag finalNBT = nbt;
         
         stack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(handler ->
         {

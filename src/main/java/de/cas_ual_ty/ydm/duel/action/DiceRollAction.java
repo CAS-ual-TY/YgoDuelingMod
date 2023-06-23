@@ -1,10 +1,10 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.IFormattableTextComponent;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+
 
 public class DiceRollAction extends RandomAction
 {
@@ -21,13 +21,13 @@ public class DiceRollAction extends RandomAction
         this(actionType, -1);
     }
     
-    public DiceRollAction(ActionType actionType, PacketBuffer buf)
+    public DiceRollAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readInt());
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         buf.writeInt(result);
     }
@@ -39,8 +39,8 @@ public class DiceRollAction extends RandomAction
     }
     
     @Override
-    public IFormattableTextComponent getAnnouncement(ITextComponent playerName)
+    public MutableComponent getAnnouncement(Component playerName)
     {
-        return new TranslationTextComponent(getAnnouncementLocalKey()).append(": " + result);
+        return Component.translatable(getAnnouncementLocalKey()).append(": " + result);
     }
 }

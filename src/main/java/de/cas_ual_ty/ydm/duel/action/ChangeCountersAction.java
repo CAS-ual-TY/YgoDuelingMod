@@ -1,7 +1,7 @@
 package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 
 public class ChangeCountersAction extends SingleZoneAction
 {
@@ -21,13 +21,13 @@ public class ChangeCountersAction extends SingleZoneAction
         this(actionType, sourceZone.index, counterChange);
     }
     
-    public ChangeCountersAction(ActionType actionType, PacketBuffer buf)
+    public ChangeCountersAction(ActionType actionType, FriendlyByteBuf buf)
     {
         this(actionType, buf.readByte(), buf.readInt());
     }
     
     @Override
-    public void writeToBuf(PacketBuffer buf)
+    public void writeToBuf(FriendlyByteBuf buf)
     {
         super.writeToBuf(buf);
         buf.writeInt(counterChange);

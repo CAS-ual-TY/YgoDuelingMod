@@ -1,6 +1,6 @@
 package de.cas_ual_ty.ydm.duel.screen;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.duel.playfield.DuelCard;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.Zone;
@@ -45,5 +45,5 @@ public interface IDuelScreenContext
     
     ZoneOwner getZoneOwner();
     
-    void renderCardInfo(MatrixStack ms, DuelCard card);
+    void renderCardInfo(PoseStack ms, DuelCard card);
 }

@@ -2,7 +2,7 @@ package de.cas_ual_ty.ydm.cardinventory;
 
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import de.cas_ual_ty.ydm.util.YdmUtil;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import java.util.UUID;
 
@@ -34,7 +34,7 @@ public abstract class UUIDCardsManager extends JsonCardsManager
     }
     
     @Override
-    public void readFromNBT(CompoundNBT nbt)
+    public void readFromNBT(CompoundTag nbt)
     {
         if(nbt.hasUUID(JsonKeys.UUID))
         {
@@ -43,7 +43,7 @@ public abstract class UUIDCardsManager extends JsonCardsManager
     }
     
     @Override
-    public void writeToNBT(CompoundNBT nbt)
+    public void writeToNBT(CompoundTag nbt)
     {
         if(getUUID() != null)
         {

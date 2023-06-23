@@ -9,7 +9,7 @@ import de.cas_ual_ty.ydm.task.TaskPriority;
 import de.cas_ual_ty.ydm.task.TaskQueue;
 import de.cas_ual_ty.ydm.util.DNCList;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 import java.io.File;
 import java.io.IOException;
@@ -282,7 +282,7 @@ public abstract class JsonCardsManager
         }
     }
     
-    public abstract void readFromNBT(CompoundNBT nbt);
+    public abstract void readFromNBT(CompoundTag nbt);
     
-    public abstract void writeToNBT(CompoundNBT nbt);
+    public abstract void writeToNBT(CompoundTag nbt);
 }

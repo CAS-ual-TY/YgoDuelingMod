@@ -1,35 +1,35 @@
 package de.cas_ual_ty.ydm.clientutil.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 public class ImprovedButton extends Button
 {
-    public ImprovedButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction)
+    public ImprovedButton(int x, int y, int width, int height, Component title, Button.OnPress pressedAction)
     {
         super(x, y, width, height, title, pressedAction);
     }
     
-    public ImprovedButton(int x, int y, int width, int height, ITextComponent title, IPressable pressedAction, ITooltip onTooltip)
+    public ImprovedButton(int x, int y, int width, int height, Component title, OnPress pressedAction, OnTooltip onTooltip)
     {
         super(x, y, width, height, title, pressedAction, onTooltip);
     }
     
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         Minecraft minecraft = Minecraft.getInstance();
-        FontRenderer fontrenderer = minecraft.font;
-        minecraft.getTextureManager().bind(Widget.WIDGETS_LOCATION);
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, alpha);
-        int i = getYImage(isHovered());
+        Font fontrenderer = minecraft.font;
+        RenderSystem.setShaderTexture(0, AbstractWidget.WIDGETS_LOCATION);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+        int i = getYImage(isHoveredOrFocused());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
@@ -40,9 +40,9 @@ public class ImprovedButton extends Button
         renderBg(ms, minecraft, mouseX, mouseY);
         
         int j = getFGColor();
-        AbstractGui.drawCenteredString(ms, fontrenderer, getMessage(), x + width / 2, y + (height - 8) / 2, j | MathHelper.ceil(alpha * 255.0F) << 24);
+        Screen.drawCenteredString(ms, fontrenderer, getMessage(), x + width / 2, y + (height - 8) / 2, j | Mth.ceil(alpha * 255.0F) << 24);
         
-        if(isHovered())
+        if(isHoveredOrFocused())
         {
             renderToolTip(ms, mouseX, mouseY);
         }
