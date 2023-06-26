@@ -110,7 +110,7 @@ public class YDM
     public YDM()
     {
         YDM.instance = this;
-        YDM.proxy = DistExecutor.safeRunForDist(
+        YDM.proxy = DistExecutor.unsafeRunForDist(
                 () -> de.cas_ual_ty.ydm.clientutil.ClientProxy::new,
                 () -> de.cas_ual_ty.ydm.serverutil.ServerProxy::new);
         YDM.random = new Random();
