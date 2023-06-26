@@ -299,7 +299,7 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
     protected void containerTick()
     {
         animationsWidget.tick();
-        super.tick();
+        super.containerTick();
     }
     
     protected ZoneWidget createZoneWidgetForZone(Zone zone)
