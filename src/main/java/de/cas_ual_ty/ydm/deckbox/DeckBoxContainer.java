@@ -29,7 +29,7 @@ public class DeckBoxContainer extends AbstractContainerMenu
         
         this.itemStack = itemStack;
         
-        itemHandler = YdmItems.BLACK_DECK_BOX.getItemHandler(this.itemStack);
+        itemHandler = YdmItems.BLACK_DECK_BOX.get().getItemHandler(this.itemStack);
         
         final int itemsPerRow = 15;
         
@@ -69,7 +69,7 @@ public class DeckBoxContainer extends AbstractContainerMenu
             }
         });
         
-        cardSleevesSlot.set(YdmItems.BLACK_DECK_BOX.getCardSleeves(itemStack));
+        cardSleevesSlot.set(YdmItems.BLACK_DECK_BOX.get().getCardSleeves(itemStack));
         
         // player inventory
         for(int y = 0; y < 3; ++y)

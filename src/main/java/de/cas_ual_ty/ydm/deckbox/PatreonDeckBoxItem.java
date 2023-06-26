@@ -33,7 +33,7 @@ public class PatreonDeckBoxItem extends DeckBoxItem
     
     public ItemStack makeItemStackFromDeckSource(DeckSource s)
     {
-        ItemStack itemStack = new ItemStack(YdmItems.PATREON_DECK_BOX);
+        ItemStack itemStack = new ItemStack(YdmItems.PATREON_DECK_BOX.get());
         setDeckHolder(itemStack, s.deck);
         itemStack.setHoverName(s.name);
         return itemStack;

@@ -83,7 +83,7 @@ public class SimpleBinderItem extends Item
         return itemStack.getOrCreateTag();
     }
     
-    public static Item makeItem(String modId, CreativeModeTab itemGroup, int pagesAmt)
+    public static SimpleBinderItem makeItem(String modId, CreativeModeTab itemGroup, int pagesAmt)
     {
         return new SimpleBinderItem(new Properties().tab(itemGroup).stacksTo(1), 6 * 9 * pagesAmt);
     }
