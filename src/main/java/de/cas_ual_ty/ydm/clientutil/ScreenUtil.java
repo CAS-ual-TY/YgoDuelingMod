@@ -5,6 +5,9 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.advancements.AdvancementTab;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 
@@ -24,28 +27,31 @@ public class ScreenUtil
     {
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tessellator.getBuilder();
-        
-        GlStateManager._enableBlend();
-        GlStateManager._disableTexture();
+    
+        RenderSystem.enableBlend();
+        RenderSystem.disableTexture();
         
         // Use src_color * src_alpha
         // and dest_color * (1 - src_alpha) for colors
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        
-        RenderSystem.setShaderColor(r, g, b, a);
+        RenderSystem.defaultBlendFunc();
+    
+        //RenderSystem.setShaderColor(r, g, b, a);
         
         Matrix4f m = ms.last().pose();
+    
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferbuilder.vertex(m, x, y + h, 0F).color(r, g, b, a).endVertex(); // BL
+        bufferbuilder.vertex(m, x + w, y + h, 0F).color(r, g, b, a).endVertex(); // BR
+        bufferbuilder.vertex(m, x + w, y, 0F).color(r, g, b, a).endVertex(); // TR
+        bufferbuilder.vertex(m, x, y, 0F).color(r, g, b, a).endVertex(); // TL
+        //tessellator.end();
+        BufferUploader.drawWithShader(bufferbuilder.end());
+    
+        RenderSystem.enableTexture();
+        RenderSystem.disableBlend();
         
-        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-        bufferbuilder.vertex(m, x, y + h, 0F).endVertex(); // BL
-        bufferbuilder.vertex(m, x + w, y + h, 0F).endVertex(); // BR
-        bufferbuilder.vertex(m, x + w, y, 0F).endVertex(); // TR
-        bufferbuilder.vertex(m, x, y, 0F).endVertex(); // TL
-        tessellator.end();
-        
-        GlStateManager._enableTexture();
-        GlStateManager._disableBlend();
-        ScreenUtil.white();
+        //ScreenUtil.white();
     }
     
     public static void drawSplitString(PoseStack ms, Font fontRenderer, List<Component> list, float x, float y, int maxWidth, int color)
