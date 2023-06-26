@@ -10,11 +10,9 @@ import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.ScreenUtil;
 import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
 import de.cas_ual_ty.ydm.clientutil.widget.TextureButton;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.gui.screens.inventory.MenuAccess;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -60,11 +58,11 @@ public class CardBinderScreen extends AbstractContainerScreen<CardBinderContaine
         imageHeight = 114 + CardInventory.DEFAULT_PAGE_ROWS * 18; //222
         super.init();
         imageWidth += 27; //insertion slot on the right; gui is not centered
-    
+        
         int index;
         CardButton button;
         cardButtons = new CardButton[CardInventory.DEFAULT_CARDS_PER_PAGE];
-    
+        
         for(int y = 0; y < CardInventory.DEFAULT_PAGE_ROWS; ++y)
         {
             for(int x = 0; x < CardInventory.DEFAULT_PAGE_COLUMNS; ++x)
@@ -75,10 +73,10 @@ public class CardBinderScreen extends AbstractContainerScreen<CardBinderContaine
                 addRenderableWidget(button);
             }
         }
-    
+        
         addRenderableWidget(prevButton = new ImprovedButton(leftPos + imageWidth - 24 - 8 - 27, topPos + 4, 12, 12, Component.literal("generic.ydm.left_arrow"), this::onButtonClicked));
         addRenderableWidget(nextButton = new ImprovedButton(leftPos + imageWidth - 12 - 8 - 27, topPos + 4, 12, 12, Component.literal("generic.ydm.right_arrow"), this::onButtonClicked));
-    
+        
         addRenderableWidget(reloadButton = new TextureButton(leftPos + imageWidth - 12 - 8 - 27, topPos + imageHeight - 96, 12, 12, Component.empty(), this::onButtonClicked)
                 .setTexture(new ResourceLocation(YDM.MOD_ID, "textures/gui/duel_widgets.png"), 64, 0, 16, 16));
         addRenderableWidget(cardSearch = new EditBox(font, leftPos + imageWidth - 12 - 8 - 27 - 82, topPos + imageHeight - 96, 80, 12, Component.empty()));

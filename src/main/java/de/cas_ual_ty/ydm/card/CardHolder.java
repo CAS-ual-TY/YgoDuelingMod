@@ -8,8 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
-
-
 import java.util.List;
 
 public class CardHolder implements Comparable<CardHolder>

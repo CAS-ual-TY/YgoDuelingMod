@@ -5,8 +5,6 @@ import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.set.Distribution.Pull.PullEntry;
 import de.cas_ual_ty.ydm.util.JsonKeys;
-
-
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 

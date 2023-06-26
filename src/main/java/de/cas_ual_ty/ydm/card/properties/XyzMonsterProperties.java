@@ -4,7 +4,6 @@ import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.network.chat.Component;
 
-
 import java.util.List;
 
 public class XyzMonsterProperties extends DefMonsterProperties

@@ -6,7 +6,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.SortedArraySet;
 import net.minecraft.world.item.ItemStack;
 
-
 import java.util.List;
 import java.util.Random;
 

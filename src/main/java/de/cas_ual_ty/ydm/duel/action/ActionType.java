@@ -2,8 +2,6 @@ package de.cas_ual_ty.ydm.duel.action;
 
 import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.network.FriendlyByteBuf;
-
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 

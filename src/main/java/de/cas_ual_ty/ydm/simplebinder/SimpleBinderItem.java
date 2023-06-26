@@ -6,8 +6,6 @@ import de.cas_ual_ty.ydm.carditeminventory.HeldCIIContainer;
 import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.nbt.CompoundTag;
-
-
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;

@@ -12,7 +12,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
-
 import java.util.function.Supplier;
 
 public class ColoredTextWidget extends AbstractWidget

@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.clientutil;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.ScreenManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.*;
@@ -26,19 +25,13 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.client.resources.model.ModelBakery;
-import net.minecraft.client.resources.model.ModelManager;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-
-
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-import net.minecraftforge.client.model.data.ModelDataManager;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -422,7 +415,7 @@ public class ClientProxy implements ISidedProxy
                     event.getModelManager().getModel(
                             new ModelResourceLocation(
                                     new ResourceLocation(YdmItems.BLANC_CARD.getId().toString() + "_" + ClientProxy.activeCardItemImageSize), "inventory")));
-    
+            
             event.getModels().put(new ModelResourceLocation(YdmItems.CARD_BACK.getId(), "inventory"),
                     event.getModelManager().getModel(
                             new ModelResourceLocation(

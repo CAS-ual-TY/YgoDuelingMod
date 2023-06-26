@@ -10,7 +10,6 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 
-
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;

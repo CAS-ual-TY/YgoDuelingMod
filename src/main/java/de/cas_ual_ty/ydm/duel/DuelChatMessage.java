@@ -1,11 +1,9 @@
 package de.cas_ual_ty.ydm.duel;
 
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-
-
-import net.minecraft.ChatFormatting;
 
 public class DuelChatMessage
 {

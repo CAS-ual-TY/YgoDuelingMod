@@ -75,7 +75,7 @@ public class CardSetBakedModel implements BakedModel
         {
             this.finalModel = finalModel;
         }
-    
+        
         @Override
         public BakedModel resolve(BakedModel model, ItemStack stack, ClientLevel worldIn, LivingEntity entityIn, int seed)
         {

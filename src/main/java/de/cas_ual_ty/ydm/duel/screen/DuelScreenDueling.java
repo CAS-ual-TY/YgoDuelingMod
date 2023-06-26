@@ -15,7 +15,6 @@ import de.cas_ual_ty.ydm.duel.playfield.*;
 import de.cas_ual_ty.ydm.duel.screen.animation.*;
 import de.cas_ual_ty.ydm.duel.screen.widget.*;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Widget;
@@ -34,7 +33,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-import java.util.stream.Collectors;
 
 public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScreen<E> implements IDuelScreenContext
 {
@@ -877,9 +875,9 @@ public class DuelScreenDueling<E extends DuelContainer> extends DuelContainerScr
             w.addInteractionWidgets(owner, clickedZoneWidget.zone, clickedCard, getDuelManager(), interactionWidgets, this::interactionClicked, this::interactionTooltip, isAdvanced);
             w.active = false;
         }
-    
+        
         renderables.addAll(interactionWidgets); //FIXME this was "buttons"
-        ((List<GuiEventListener>)children()).addAll(interactionWidgets); //FIXME this was "children"
+        ((List<GuiEventListener>) children()).addAll(interactionWidgets); //FIXME this was "children"
     }
     
     protected void interactionClicked(InteractionWidget widget)

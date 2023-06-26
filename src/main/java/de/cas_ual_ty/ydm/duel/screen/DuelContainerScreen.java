@@ -15,19 +15,13 @@ import de.cas_ual_ty.ydm.duel.network.DuelMessages;
 import de.cas_ual_ty.ydm.duel.playfield.PlayField;
 import de.cas_ual_ty.ydm.duel.playfield.ZoneOwner;
 import de.cas_ual_ty.ydm.duel.screen.widget.DisplayChatWidget;
-import net.minecraft.client.Minecraft;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-
-
-import net.minecraft.ChatFormatting;
-
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.network.PacketDistributor;
@@ -80,7 +74,7 @@ public abstract class DuelContainerScreen<E extends DuelContainer> extends Switc
         screensForEachState[DuelState.DUELING.getIndex()] = DuelScreenDueling::new;
         screensForEachState[DuelState.SIDING.getIndex()] = DuelScreenDueling::new;
         
-        this.playerInv = inv;
+        playerInv = inv;
     }
     
     public DuelContainerScreen<E> setScreenForState(DuelState state, DuelScreenConstructor<E> screen)

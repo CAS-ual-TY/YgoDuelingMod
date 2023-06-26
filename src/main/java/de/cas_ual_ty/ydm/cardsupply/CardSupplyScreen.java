@@ -10,14 +10,11 @@ import de.cas_ual_ty.ydm.cardbinder.CardButton;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
 import de.cas_ual_ty.ydm.clientutil.widget.ImprovedButton;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.font.TextFieldHelper;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
@@ -54,13 +51,13 @@ public class CardSupplyScreen extends AbstractContainerScreen<CardSupplyContaine
     protected void init()
     {
         super.init();
-    
+        
         addRenderableWidget(textField = new EditBox(font, leftPos + imageWidth - 80 - 8 - 1, topPos + 6 - 1, 80 + 2, font.lineHeight + 2, Component.empty()));
-    
+        
         int index;
         CardButton button;
         cardButtons = new CardButton[CardSupplyScreen.PAGE];
-    
+        
         for(int y = 0; y < CardInventory.DEFAULT_PAGE_ROWS; ++y)
         {
             for(int x = 0; x < CardInventory.DEFAULT_PAGE_COLUMNS; ++x)
@@ -71,10 +68,10 @@ public class CardSupplyScreen extends AbstractContainerScreen<CardSupplyContaine
                 addRenderableWidget(button);
             }
         }
-    
+        
         addRenderableWidget(prevButton = new ImprovedButton(leftPos + imageWidth - 80 - 8, topPos + imageHeight - 96, 40, 12, Component.translatable("container.ydm.card_supply.prev"), this::onButtonClicked));
         addRenderableWidget(nextButton = new ImprovedButton(leftPos + imageWidth - 40 - 8, topPos + imageHeight - 96, 40, 12, Component.translatable("container.ydm.card_supply.next"), this::onButtonClicked));
-    
+        
         applyName();
         updateCards();
     }

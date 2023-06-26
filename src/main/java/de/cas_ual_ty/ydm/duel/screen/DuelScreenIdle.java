@@ -13,8 +13,6 @@ import de.cas_ual_ty.ydm.duel.screen.widget.RoleButtonWidget;
 import de.cas_ual_ty.ydm.duel.screen.widget.RoleOccupantsWidget;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
-
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.network.PacketDistributor;

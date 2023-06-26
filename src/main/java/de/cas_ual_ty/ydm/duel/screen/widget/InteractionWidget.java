@@ -10,7 +10,6 @@ import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-
 import java.util.function.Consumer;
 
 public class InteractionWidget extends Button

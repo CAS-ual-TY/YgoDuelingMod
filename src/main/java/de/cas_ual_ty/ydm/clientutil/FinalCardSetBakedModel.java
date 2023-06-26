@@ -23,7 +23,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.function.Function;
 
 @SuppressWarnings("deprecation")

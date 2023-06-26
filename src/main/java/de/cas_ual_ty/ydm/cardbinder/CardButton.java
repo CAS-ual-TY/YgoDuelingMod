@@ -10,7 +10,6 @@ import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 
-
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 

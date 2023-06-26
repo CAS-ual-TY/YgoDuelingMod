@@ -9,7 +9,6 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.clientutil.YdmBlitUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
@@ -97,7 +96,7 @@ public class ItemStackWidget extends AbstractWidget
                 
                 ms.popPose();
                 RenderSystem.applyModelViewMatrix();
-    
+                
                 return;
             }
         }

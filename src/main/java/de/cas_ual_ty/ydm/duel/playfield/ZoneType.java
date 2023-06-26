@@ -1,7 +1,6 @@
 package de.cas_ual_ty.ydm.duel.playfield;
 
 
-
 import de.cas_ual_ty.ydm.YDM;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -39,7 +38,7 @@ public class ZoneType
         defaultCardPosition = null;
         
         noOwner = false;
-    
+        
         registryName = null;
         localKey = null;
     }

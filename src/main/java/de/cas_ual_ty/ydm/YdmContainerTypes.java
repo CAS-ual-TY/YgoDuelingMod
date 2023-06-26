@@ -9,16 +9,11 @@ import de.cas_ual_ty.ydm.duel.dueldisk.DuelEntityContainer;
 import de.cas_ual_ty.ydm.set.CardSetContainer;
 import de.cas_ual_ty.ydm.set.CardSetContentsContainer;
 import de.cas_ual_ty.ydm.simplebinder.SimpleBinderContainer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
-import net.minecraftforge.fml.common.Mod.EventBusSubscriber.Bus;
 import net.minecraftforge.network.IContainerFactory;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.ObjectHolder;
 import net.minecraftforge.registries.RegistryObject;
 
 public class YdmContainerTypes

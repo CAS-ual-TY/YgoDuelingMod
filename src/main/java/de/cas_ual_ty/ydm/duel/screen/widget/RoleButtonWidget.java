@@ -5,7 +5,6 @@ import de.cas_ual_ty.ydm.duel.PlayerRole;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-
 import java.util.function.Supplier;
 
 public class RoleButtonWidget extends Button

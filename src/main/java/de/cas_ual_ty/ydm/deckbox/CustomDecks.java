@@ -6,7 +6,6 @@ import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.duel.DeckSource;
 import net.minecraft.network.chat.Component;
 
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Predicate;

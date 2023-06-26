@@ -8,7 +8,6 @@ import de.cas_ual_ty.ydm.duel.screen.DuelScreenDueling;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.network.chat.Component;
 
-
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
 

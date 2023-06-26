@@ -4,7 +4,6 @@ import de.cas_ual_ty.ydm.clientutil.widget.TextWidget;
 import de.cas_ual_ty.ydm.duel.PlayerRole;
 import net.minecraft.network.chat.Component;
 
-
 import java.util.function.Function;
 
 public class RoleOccupantsWidget extends TextWidget

@@ -6,7 +6,6 @@ import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
-import org.lwjgl.opengl.GL11;
 
 public class YdmBlitUtil
 {

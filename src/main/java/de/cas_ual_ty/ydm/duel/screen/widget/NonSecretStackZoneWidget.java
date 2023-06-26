@@ -5,7 +5,6 @@ import de.cas_ual_ty.ydm.duel.playfield.Zone;
 import de.cas_ual_ty.ydm.duel.screen.IDuelScreenContext;
 import net.minecraft.network.chat.Component;
 
-
 import java.util.function.Consumer;
 
 public class NonSecretStackZoneWidget extends StackZoneWidget
