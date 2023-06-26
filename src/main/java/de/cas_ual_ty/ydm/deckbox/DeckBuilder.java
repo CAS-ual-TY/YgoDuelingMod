@@ -6,6 +6,7 @@ import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.function.Supplier;
 
@@ -119,6 +120,8 @@ public class DeckBuilder
         return this;
     }
     
+    private static HashSet<String> sentErrors = new HashSet<>();
+    
     public Supplier<DeckHolder> build()
     {
         if(mode >= 0)
@@ -132,6 +135,8 @@ public class DeckBuilder
             
             CardHolder card;
             
+            LinkedList<Entry> errors = new LinkedList<>();
+            
             for(Entry s : main)
             {
                 card = s.get();
@@ -142,8 +147,7 @@ public class DeckBuilder
                 }
                 else
                 {
-                    YDM.log("Deck Builder Entry gives null: " + s.getErrorString());
-                    new NullPointerException().printStackTrace();
+                    errors.add(s);
                 }
             }
             
@@ -157,8 +161,7 @@ public class DeckBuilder
                 }
                 else
                 {
-                    YDM.log("Deck Builder Entry gives null: " + s.getErrorString());
-                    new NullPointerException().printStackTrace();
+                    errors.add(s);
                 }
             }
             
@@ -172,8 +175,17 @@ public class DeckBuilder
                 }
                 else
                 {
-                    YDM.log("Deck Builder Entry gives null: " + s.getErrorString());
-                    new NullPointerException().printStackTrace();
+                    errors.add(s);
+                }
+            }
+            
+            for(Entry e : errors)
+            {
+                if(!sentErrors.contains(e.getErrorString()))
+                {
+                    sentErrors.add(e.getErrorString());
+                    YDM.log("Deck Builder Entry gives null: " + e.getErrorString());
+                    //new NullPointerException().printStackTrace();
                 }
             }
             
