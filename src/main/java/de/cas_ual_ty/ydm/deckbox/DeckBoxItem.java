@@ -99,7 +99,7 @@ public class DeckBoxItem extends Item implements MenuProvider
     
     public void setDeckHolder(ItemStack itemStack, DeckHolder holder)
     {
-        YDMItemHandler itemHandler = new YDMItemHandler(DeckHolder.TOTAL_DECK_SIZE, itemStack::getOrCreateTag);
+        YDMItemHandler itemHandler = itemStack.getCapability(YDM.CARD_ITEM_INVENTORY).orElse(null);
         
         CardHolder c;
         
