@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.clientutil;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
 import com.mojang.math.Transformation;
+import com.mojang.math.Vector3f;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
@@ -140,8 +141,6 @@ public class FinalCardBakedModel implements BakedModel
     @Override
     public BakedModel applyTransform(ItemTransforms.TransformType t, PoseStack mat, boolean applyLeftHandTransform)
     {
-        mat.pushPose();
-        
         switch(t)
         {
             case THIRD_PERSON_LEFT_HAND:
@@ -166,8 +165,6 @@ public class FinalCardBakedModel implements BakedModel
         }
         
         BakedModel.super.applyTransform(t, mat, applyLeftHandTransform);
-        
-        mat.popPose();
         
         return this;
     }
@@ -212,8 +209,24 @@ public class FinalCardBakedModel implements BakedModel
     
     public static List<BakedQuad> convertTexture(Transformation t, TextureAtlasSprite sprite, float off, Direction direction, int color, int layerIdx, ResourceLocation rl)
     {
-        ModelState modelState = new SimpleModelState(Transformation.identity()); //FIXME direction.step().mul(off)
-        List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemMaskElements(layerIdx, sprite);
+        ModelState modelState = new SimpleModelState(new Transformation(Vector3f.ZERO, Quaternion.ONE, new Vector3f(1F, 1F, 1F), Quaternion.ONE));
+        
+        List<BlockElement> unbaked = UnbakedGeometryHelper.createUnbakedItemElements(layerIdx, sprite);
+        unbaked.forEach(e ->
+        {
+            for(Direction d : Direction.values())
+            {
+                if(d != direction)
+                {
+                    e.faces.remove(d);
+                }
+            }
+            
+            float z = (e.from.z() + e.to.z()) * 0.5F;
+            e.from.setZ(z);
+            e.to.setZ(z);
+        });
+        
         return UnbakedGeometryHelper.bakeElements(unbaked, m -> sprite, modelState, rl);
     }
 }

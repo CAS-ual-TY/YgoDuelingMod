@@ -127,8 +127,6 @@ public class FinalCardSetBakedModel implements BakedModel
     @Override
     public BakedModel applyTransform(ItemTransforms.TransformType t, PoseStack mat, boolean applyLeftHandTransform)
     {
-        mat.pushPose();
-        
         switch(t)
         {
             case THIRD_PERSON_LEFT_HAND:
@@ -153,8 +151,6 @@ public class FinalCardSetBakedModel implements BakedModel
         }
         
         BakedModel.super.applyTransform(t, mat, applyLeftHandTransform);
-        
-        mat.popPose();
         
         return this;
     }
