@@ -68,7 +68,7 @@ public class DeckBoxItem extends Item implements MenuProvider
     
     public void setDeckHolder(ItemStack itemStack, DeckHolder holder)
     {
-        YDMItemHandler itemHandler = itemStack.getCapability(YDM.CARD_ITEM_INVENTORY).orElse(null);
+        YDMItemHandler itemHandler = getItemHandler(itemStack);
         
         CardHolder c;
         
@@ -78,13 +78,13 @@ public class DeckBoxItem extends Item implements MenuProvider
             
             if(c != null)
             {
-                itemHandler.insertItem(DeckHolder.MAIN_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c), false);
+                itemHandler.setStackInSlot(DeckHolder.MAIN_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c));
             }
         }
         
         for(int i = holder.getMainDeckSize(); i < DeckHolder.MAIN_DECK_SIZE; ++i)
         {
-            itemHandler.insertItem(DeckHolder.MAIN_DECK_INDEX_START + i, ItemStack.EMPTY, false);
+            itemHandler.setStackInSlot(DeckHolder.MAIN_DECK_INDEX_START + i, ItemStack.EMPTY);
         }
         
         for(int i = 0; i < holder.getExtraDeckSize(); ++i)
@@ -93,13 +93,13 @@ public class DeckBoxItem extends Item implements MenuProvider
             
             if(c != null)
             {
-                itemHandler.insertItem(DeckHolder.EXTRA_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c), false);
+                itemHandler.setStackInSlot(DeckHolder.EXTRA_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c));
             }
         }
         
         for(int i = holder.getExtraDeckSize(); i < DeckHolder.EXTRA_DECK_SIZE; ++i)
         {
-            itemHandler.insertItem(DeckHolder.EXTRA_DECK_INDEX_START + i, ItemStack.EMPTY, false);
+            itemHandler.setStackInSlot(DeckHolder.EXTRA_DECK_INDEX_START + i, ItemStack.EMPTY);
         }
         
         for(int i = 0; i < holder.getSideDeckSize(); ++i)
@@ -108,19 +108,21 @@ public class DeckBoxItem extends Item implements MenuProvider
             
             if(c != null)
             {
-                itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c), false);
+                itemHandler.setStackInSlot(DeckHolder.SIDE_DECK_INDEX_START + i, YdmItems.CARD.get().createItemForCardHolder(c));
             }
         }
         
         for(int i = holder.getSideDeckSize(); i < DeckHolder.SIDE_DECK_SIZE; ++i)
         {
-            itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, ItemStack.EMPTY, false);
+            itemHandler.setStackInSlot(DeckHolder.SIDE_DECK_INDEX_START + i, ItemStack.EMPTY);
         }
         
         if(!holder.getSleeves().isCardBack())
         {
-            itemHandler.insertItem(DeckHolder.SLEEVES_INDEX, new ItemStack(holder.getSleeves().getItem()), false);
+            itemHandler.setStackInSlot(DeckHolder.SLEEVES_INDEX, new ItemStack(holder.getSleeves().getItem()));
         }
+        
+        itemHandler.save();
     }
     
     public static ItemStack getActiveDeckBox(Player player)
