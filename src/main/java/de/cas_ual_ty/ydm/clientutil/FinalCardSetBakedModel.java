@@ -19,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.client.extensions.IForgeBakedModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -151,6 +152,10 @@ public class FinalCardSetBakedModel implements BakedModel
             default:
                 break;
         }
+        
+        BakedModel.super.applyTransform(t, mat, applyLeftHandTransform);
+        
+        mat.popPose();
         
         return this;
     }
