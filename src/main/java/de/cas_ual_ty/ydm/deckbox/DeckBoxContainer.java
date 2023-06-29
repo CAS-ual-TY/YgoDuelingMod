@@ -11,6 +11,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.items.SlotItemHandler;
 
 public class DeckBoxContainer extends AbstractContainerMenu
 {
@@ -29,7 +30,8 @@ public class DeckBoxContainer extends AbstractContainerMenu
         
         this.itemStack = itemStack;
         
-        itemHandler = YdmItems.BLACK_DECK_BOX.get().getItemHandler(this.itemStack);
+        itemHandler = ((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack);
+        itemHandler.load();
         
         final int itemsPerRow = 15;
         
@@ -53,8 +55,13 @@ public class DeckBoxContainer extends AbstractContainerMenu
         {
             addSlot(new DeckBoxSlot(itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
+    
+        for(int x = 0; x < DeckHolder.SIDE_DECK_SIZE; ++x)
+        {
+            addSlot(new DeckBoxSlot(itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
+        }
         
-        addSlot(cardSleevesSlot = new Slot(new SimpleContainer(1), 0, 8 + 12 * 18, 168 + 0 * 18)
+        addSlot(cardSleevesSlot = new SlotItemHandler(itemHandler, DeckHolder.SLEEVES_INDEX, 8 + 12 * 18, 168 + 0 * 18)
         {
             @Override
             public boolean mayPlace(ItemStack stack)
@@ -69,36 +76,33 @@ public class DeckBoxContainer extends AbstractContainerMenu
             }
         });
         
-        cardSleevesSlot.set(YdmItems.BLACK_DECK_BOX.get().getCardSleeves(itemStack));
-        
         // player inventory
         for(int y = 0; y < 3; ++y)
         {
             for(int x = 0; x < 9; ++x)
             {
-                addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 168 + y * 18));
+                addSlot(new Slot(playerInventory, x + y * 9 + 9, 8 + x * 18, 168 + y * 18)
+                {
+                    @Override
+                    public boolean mayPickup(Player pPlayer)
+                    {
+                        return this.getItem() != itemStack && super.mayPickup(pPlayer);
+                    }
+                });
             }
         }
         
         // player hot bar
-        Slot s;
         for(int x = 0; x < 9; ++x)
         {
-            s = new Slot(playerInventory, x, 8 + x * 18, 226);
-            
-            if(s.getItem() == this.itemStack)
+            addSlot(new Slot(playerInventory, x, 8 + x * 18, 226)
             {
-                s = new Slot(playerInventory, s.getSlotIndex(), s.x, s.y)
+                @Override
+                public boolean mayPickup(Player pPlayer)
                 {
-                    @Override
-                    public boolean mayPickup(Player playerIn)
-                    {
-                        return false;
-                    }
-                };
-            }
-            
-            addSlot(s);
+                    return this.getItem() != itemStack && super.mayPickup(pPlayer);
+                }
+            });
         }
     }
     
@@ -174,9 +178,7 @@ public class DeckBoxContainer extends AbstractContainerMenu
     @Override
     public void removed(Player playerIn)
     {
-        // TODO can be removed when capabilities work again
-        ((DeckBoxItem) itemStack.getItem()).saveItemHandlerToNBT(itemStack, itemHandler);
-        ((DeckBoxItem) itemStack.getItem()).saveCardSleevesToNBT(itemStack, cardSleevesSlot.getItem());
+        itemHandler.save();
         super.removed(playerIn);
     }
 }

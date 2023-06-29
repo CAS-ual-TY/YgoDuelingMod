@@ -36,36 +36,6 @@ public class DeckBoxItem extends Item implements MenuProvider
         return itemStack.getCapability(YDM.CARD_ITEM_INVENTORY).orElse(null);
     }
     
-    public ItemStack getCardSleeves(ItemStack itemStack)
-    {
-        if(itemStack.getOrCreateTag().contains(DeckBoxItem.CARD_SLEEVES_KEY))
-        {
-            return ItemStack.of(itemStack.getOrCreateTag().getCompound(DeckBoxItem.CARD_SLEEVES_KEY));
-        }
-        else
-        {
-            return ItemStack.EMPTY;
-        }
-    }
-    
-    public void saveItemHandlerToNBT(ItemStack itemStack, YDMItemHandler itemHandler)
-    {
-        //FIXME probably not needed
-        //itemStack.getCapability(YDM.CARD_ITEM_INVENTORY).ifPresent(ih -> ih.deserializeNBT(itemHandler.serializeNBT()));
-    }
-    
-    public void saveCardSleevesToNBT(ItemStack itemStack, ItemStack sleevesStack)
-    {
-        if(sleevesStack.getItem() instanceof CardSleevesItem && !((CardSleevesItem) sleevesStack.getItem()).sleeves.isCardBack())
-        {
-            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, sleevesStack.save(new CompoundTag()));
-        }
-        else
-        {
-            itemStack.getOrCreateTag().put(DeckBoxItem.CARD_SLEEVES_KEY, ItemStack.EMPTY.save(new CompoundTag()));
-        }
-    }
-    
     @Override
     public InteractionResultHolder<ItemStack> use(Level world, Player player, InteractionHand hand)
     {
@@ -94,7 +64,7 @@ public class DeckBoxItem extends Item implements MenuProvider
     
     public ItemHandlerDeckHolder getDeckHolder(ItemStack itemStack)
     {
-        return new ItemHandlerDeckHolder(getItemHandler(itemStack), getCardSleeves(itemStack));
+        return new ItemHandlerDeckHolder(getItemHandler(itemStack));
     }
     
     public void setDeckHolder(ItemStack itemStack, DeckHolder holder)
@@ -148,11 +118,9 @@ public class DeckBoxItem extends Item implements MenuProvider
             itemHandler.insertItem(DeckHolder.SIDE_DECK_INDEX_START + i, ItemStack.EMPTY, false);
         }
         
-        saveItemHandlerToNBT(itemStack, itemHandler);
-        
         if(!holder.getSleeves().isCardBack())
         {
-            saveCardSleevesToNBT(itemStack, new ItemStack(holder.getSleeves().getItem()));
+            itemHandler.insertItem(DeckHolder.SLEEVES_INDEX, new ItemStack(holder.getSleeves().getItem()), false);
         }
     }
     

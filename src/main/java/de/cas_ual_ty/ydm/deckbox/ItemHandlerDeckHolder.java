@@ -11,7 +11,7 @@ public class ItemHandlerDeckHolder extends DeckHolder
     protected int extraDeckSize;
     protected int sideDeckSize;
     
-    public ItemHandlerDeckHolder(IItemHandler itemHandler, ItemStack sleevesStack)
+    public ItemHandlerDeckHolder(IItemHandler itemHandler)
     {
         super();
         
@@ -66,6 +66,8 @@ public class ItemHandlerDeckHolder extends DeckHolder
                 sideDeck.add(null);
             }
         }
+        
+        ItemStack sleevesStack = itemHandler.getStackInSlot(DeckHolder.SLEEVES_INDEX);
         
         if(sleevesStack.getItem() instanceof CardSleevesItem)
         {

@@ -21,6 +21,12 @@ public class DeckHolder
     public static final int SIDE_DECK_INDEX_START = DeckHolder.EXTRA_DECK_INDEX_END;
     public static final int SIDE_DECK_INDEX_END = DeckHolder.SIDE_DECK_INDEX_START + DeckHolder.SIDE_DECK_SIZE;
     
+    // sleeves
+    public static final int EXTRA_STUFF_SIZE = 1;
+    public static final int SLEEVES_INDEX = SIDE_DECK_INDEX_END;
+    
+    public static final int TOTAL_SIZE_WITH_EXTRAS = DeckHolder.TOTAL_DECK_SIZE + EXTRA_STUFF_SIZE;
+    
     public static final DeckHolder DUMMY = new DeckHolder();
     
     // these lists can contain null

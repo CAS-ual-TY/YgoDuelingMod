@@ -250,7 +250,7 @@ public class YDM
         }
         if(event.getObject().getItem() instanceof DeckBoxItem)
         {
-            attachCapability(event, new YDMItemHandler(DeckHolder.TOTAL_DECK_SIZE, event.getObject()::getOrCreateTag), CARD_ITEM_INVENTORY, "card_item_inventory", true);
+            attachCapability(event, new YDMItemHandler(DeckHolder.TOTAL_SIZE_WITH_EXTRAS, event.getObject()::getOrCreateTag), CARD_ITEM_INVENTORY, "card_item_inventory", true);
         }
     }
     
@@ -351,9 +351,9 @@ public class YDM
         {
             itemStack = player.getInventory().getItem(i);
             
-            if(itemStack.getItem() instanceof DeckBoxItem)
+            if(itemStack.getItem() instanceof DeckBoxItem deckBoxItem)
             {
-                dh = new ItemHandlerDeckHolder(((DeckBoxItem) itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem) itemStack.getItem()).getCardSleeves(itemStack));
+                dh = new ItemHandlerDeckHolder(deckBoxItem.getItemHandler(itemStack));
                 
                 if(!dh.isEmpty())
                 {
@@ -363,9 +363,9 @@ public class YDM
         }
         
         itemStack = player.getOffhandItem();
-        if(itemStack.getItem() instanceof DeckBoxItem)
+        if(itemStack.getItem() instanceof DeckBoxItem deckBoxItem)
         {
-            dh = new ItemHandlerDeckHolder(((DeckBoxItem) itemStack.getItem()).getItemHandler(itemStack), ((DeckBoxItem) itemStack.getItem()).getCardSleeves(itemStack));
+            dh = new ItemHandlerDeckHolder(deckBoxItem.getItemHandler(itemStack));
             
             if(!dh.isEmpty())
             {
