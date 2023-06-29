@@ -1,9 +1,8 @@
 package de.cas_ual_ty.ydm.util;
 
-import de.cas_ual_ty.ydm.YDM;
+import com.google.common.base.Suppliers;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -17,6 +16,11 @@ public class YDMItemHandler extends ItemStackHandler
     {
         super();
         this.nbtSupplier = nbtSupplier;
+    }
+    
+    public YDMItemHandler(int size)
+    {
+        this(size, Suppliers.memoize(CompoundTag::new));
     }
     
     public YDMItemHandler(int size, Supplier<CompoundTag> nbtSupplier)
@@ -33,7 +37,7 @@ public class YDMItemHandler extends ItemStackHandler
     
     public void load()
     {
-        if(YDM.commonConfig.mohistWorkaround.get())
+        /*if(YDM.commonConfig.mohistWorkaround.get())
         {
             CompoundTag nbt = nbtSupplier.get();
             
@@ -46,15 +50,15 @@ public class YDMItemHandler extends ItemStackHandler
                     deserializeNBT((CompoundTag) inbt);
                 }
             }
-        }
+        }*/
     }
     
     public void save()
     {
-        if(YDM.commonConfig.mohistWorkaround.get())
+        /*if(YDM.commonConfig.mohistWorkaround.get())
         {
             CompoundTag nbt = nbtSupplier.get();
             nbt.put("item_handler_cap", serializeNBT());
-        }
+        }*/
     }
 }
