@@ -9,12 +9,11 @@ import net.minecraft.world.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.items.SlotItemHandler;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 
@@ -39,13 +38,12 @@ public class CIIContainer extends AbstractContainerMenu
         player = playerInventoryIn.player;
         this.itemHandler = itemHandler;
         
-        attemptLoad();
-        
-        createBottomSlots(playerInventoryIn);
-        createTopSlots();
+        itemHandler.load();
         
         page = 0;
         maxPage = Mth.ceil(this.itemHandler.getSlots() / (double) PAGE_SIZE);
+        
+        updateSlots();
     }
     
     public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, int itemHandlerSize)
@@ -56,16 +54,6 @@ public class CIIContainer extends AbstractContainerMenu
     public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, FriendlyByteBuf extraData)
     {
         this(type, id, playerInventoryIn, extraData.readInt());
-    }
-    
-    protected void attemptLoad()
-    {
-        itemHandler.load();
-    }
-    
-    protected void attemptSave()
-    {
-        itemHandler.save();
     }
     
     protected void createTopSlots()
@@ -83,14 +71,14 @@ public class CIIContainer extends AbstractContainerMenu
                     continue;
                 }
                 
-                addSlot(new SplitItemHandlerSlot(itemHandler, slotIndex, 8 + k * 18, 18 + j * 18, itemIndex)
+                addSlot(new SlotItemHandler(itemHandler, itemIndex, 8 + k * 18, 18 + j * 18)
                 {
                     @Override
                     public boolean mayPlace(@Nonnull ItemStack stack)
                     {
                         return canPutStack(stack);
                     }
-                    
+        
                     @Override
                     public boolean mayPickup(Player playerIn)
                     {
@@ -178,15 +166,10 @@ public class CIIContainer extends AbstractContainerMenu
     
     public void updateSlots()
     {
-        attemptSave();
+        itemHandler.save();
         slots.clear();
         createBottomSlots(player.getInventory());
         createTopSlots();
-    }
-    
-    @Override
-    public void slotsChanged(Container inventoryIn)
-    {
     }
     
     @Override
@@ -228,7 +211,7 @@ public class CIIContainer extends AbstractContainerMenu
     @Override
     public void removed(Player pPlayer)
     {
-        attemptSave();
+        itemHandler.save();
         super.removed(pPlayer);
     }
     
