@@ -4,7 +4,6 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.util.YDMItemHandler;
-import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -30,7 +29,7 @@ public class DeckBoxContainer extends AbstractContainerMenu
         
         this.itemStack = itemStack;
         
-        itemHandler = ((DeckBoxItem)itemStack.getItem()).getItemHandler(itemStack);
+        itemHandler = ((DeckBoxItem) itemStack.getItem()).getItemHandler(itemStack);
         itemHandler.load();
         
         final int itemsPerRow = 15;
@@ -55,7 +54,7 @@ public class DeckBoxContainer extends AbstractContainerMenu
         {
             addSlot(new DeckBoxSlot(itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
         }
-    
+        
         for(int x = 0; x < DeckHolder.SIDE_DECK_SIZE; ++x)
         {
             addSlot(new DeckBoxSlot(itemHandler, x + DeckHolder.SIDE_DECK_INDEX_START, 8 + x * 18, 136));
@@ -86,7 +85,7 @@ public class DeckBoxContainer extends AbstractContainerMenu
                     @Override
                     public boolean mayPickup(Player pPlayer)
                     {
-                        return this.getItem() != itemStack && super.mayPickup(pPlayer);
+                        return getItem() != itemStack && super.mayPickup(pPlayer);
                     }
                 });
             }
@@ -100,7 +99,7 @@ public class DeckBoxContainer extends AbstractContainerMenu
                 @Override
                 public boolean mayPickup(Player pPlayer)
                 {
-                    return this.getItem() != itemStack && super.mayPickup(pPlayer);
+                    return getItem() != itemStack && super.mayPickup(pPlayer);
                 }
             });
         }

@@ -1,6 +1,5 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
-import com.mojang.serialization.JsonOps;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import net.minecraft.nbt.CompoundTag;

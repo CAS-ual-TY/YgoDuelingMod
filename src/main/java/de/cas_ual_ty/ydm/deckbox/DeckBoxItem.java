@@ -4,7 +4,6 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;

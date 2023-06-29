@@ -164,9 +164,9 @@ public class FinalCardBakedModel implements BakedModel
             default:
                 break;
         }
-    
+        
         BakedModel.super.applyTransform(t, mat, applyLeftHandTransform);
-    
+        
         mat.popPose();
         
         return this;
