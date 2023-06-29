@@ -101,7 +101,7 @@ public class OpenedCardSetItem extends CardSetBaseItem
         }
         else
         {
-            items = NonNullList.of(ItemStack.EMPTY, cards.toArray(new ItemStack[0]));
+            items = NonNullList.of(ItemStack.EMPTY, cards.toArray(ItemStack[]::new));
         }
         
         return createItemForSet(set, items);
@@ -110,9 +110,15 @@ public class OpenedCardSetItem extends CardSetBaseItem
     public ItemStack createItemForSet(CardSet set, NonNullList<ItemStack> items)
     {
         ItemStack itemStack = new ItemStack(this);
-        YDMItemHandler itemHandler = new YDMItemHandler(items, itemStack::getOrCreateTag);
         setCardSet(itemStack, set);
-        getItemHandler(itemStack).ifPresent(current -> current.deserializeNBT(itemHandler.serializeNBT()));
+        getItemHandler(itemStack).ifPresent(current ->
+        {
+            current.setSize(items.size());
+            for(int i = 0; i < items.size(); i++)
+            {
+                current.setStackInSlot(i, items.get(i));
+            }
+        });
         return itemStack;
     }
     
