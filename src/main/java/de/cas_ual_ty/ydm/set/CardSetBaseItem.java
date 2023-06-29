@@ -7,6 +7,7 @@ import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
 import de.cas_ual_ty.ydm.util.JsonKeys;
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import de.cas_ual_ty.ydm.util.YdmUtil;
 import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
@@ -100,7 +101,7 @@ public abstract class CardSetBaseItem extends Item
                 @Override
                 public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player p_createMenu_3_)
                 {
-                    IItemHandler itemHandler = new ItemStackHandler(cards.length);
+                    YDMItemHandler itemHandler = new YDMItemHandler(cards.length, itemStack::getOrCreateTag);
                     
                     for(int i = 0; i < cards.length; ++i)
                     {

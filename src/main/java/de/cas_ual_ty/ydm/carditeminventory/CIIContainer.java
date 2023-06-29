@@ -26,13 +26,13 @@ public class CIIContainer extends AbstractContainerMenu
     public static final int PAGE_SIZE = 6 * 9;
     
     protected final Player player;
-    protected final IItemHandler itemHandler;
+    protected final YDMItemHandler itemHandler;
     
     protected int page;
     protected final int maxPage;
     protected boolean filling;
     
-    public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, IItemHandler itemHandler)
+    public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, YDMItemHandler itemHandler)
     {
         super(type, id);
         
@@ -50,7 +50,7 @@ public class CIIContainer extends AbstractContainerMenu
     
     public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, int itemHandlerSize)
     {
-        this(type, id, playerInventoryIn, new ItemStackHandler(itemHandlerSize));
+        this(type, id, playerInventoryIn, new YDMItemHandler(itemHandlerSize));
     }
     
     public CIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, FriendlyByteBuf extraData)
@@ -60,18 +60,12 @@ public class CIIContainer extends AbstractContainerMenu
     
     protected void attemptLoad()
     {
-        if(itemHandler instanceof YDMItemHandler)
-        {
-            ((YDMItemHandler) itemHandler).load();
-        }
+        itemHandler.load();
     }
     
     protected void attemptSave()
     {
-        if(itemHandler instanceof YDMItemHandler)
-        {
-            ((YDMItemHandler) itemHandler).save();
-        }
+        itemHandler.save();
     }
     
     protected void createTopSlots()

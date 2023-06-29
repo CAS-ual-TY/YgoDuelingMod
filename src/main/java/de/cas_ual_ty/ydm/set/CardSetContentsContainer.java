@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.set;
 
 import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -10,7 +11,7 @@ import net.minecraftforge.items.IItemHandler;
 
 public class CardSetContentsContainer extends CIIContainer
 {
-    public CardSetContentsContainer(MenuType<?> type, int id, Inventory playerInventoryIn, IItemHandler itemHandler)
+    public CardSetContentsContainer(MenuType<?> type, int id, Inventory playerInventoryIn, YDMItemHandler itemHandler)
     {
         super(type, id, playerInventoryIn, itemHandler);
     }

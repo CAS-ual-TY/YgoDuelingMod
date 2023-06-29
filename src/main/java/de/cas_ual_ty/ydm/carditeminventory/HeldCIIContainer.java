@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.carditeminventory;
 
+import de.cas_ual_ty.ydm.util.YDMItemHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -18,7 +19,7 @@ public abstract class HeldCIIContainer extends CIIContainer
     protected final InteractionHand hand;
     protected final ItemStack itemStack;
     
-    public HeldCIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, IItemHandler itemHandler, InteractionHand hand)
+    public HeldCIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, YDMItemHandler itemHandler, InteractionHand hand)
     {
         super(type, id, playerInventoryIn, itemHandler);
         this.hand = hand;
@@ -27,7 +28,7 @@ public abstract class HeldCIIContainer extends CIIContainer
     
     public HeldCIIContainer(MenuType<?> type, int id, Inventory playerInventoryIn, FriendlyByteBuf extraData)
     {
-        this(type, id, playerInventoryIn, new ItemStackHandler(extraData.readInt()), extraData.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+        this(type, id, playerInventoryIn, new YDMItemHandler(extraData.readInt()), extraData.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
     }
     
     @Override
