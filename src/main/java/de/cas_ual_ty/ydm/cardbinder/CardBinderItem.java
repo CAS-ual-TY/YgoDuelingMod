@@ -1,5 +1,6 @@
 package de.cas_ual_ty.ydm.cardbinder;
 
+import com.mojang.serialization.JsonOps;
 import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmContainerTypes;
 import net.minecraft.nbt.CompoundTag;
@@ -159,6 +160,12 @@ public class CardBinderItem extends Item implements MenuProvider
         MANAGER_MAP.remove(manager.getUUID());
         manager.setUUID(uuid);
         MANAGER_MAP.put(uuid, manager);
+    }
+    
+    @Override
+    public boolean shouldOverrideMultiplayerNbt()
+    {
+        return true;
     }
     
     @Nullable

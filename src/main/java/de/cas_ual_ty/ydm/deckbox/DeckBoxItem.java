@@ -173,6 +173,12 @@ public class DeckBoxItem extends Item implements MenuProvider
     }
     
     @Override
+    public boolean shouldOverrideMultiplayerNbt()
+    {
+        return true;
+    }
+    
+    @Override
     public void readShareTag(ItemStack stack, @Nullable CompoundTag nbt)
     {
         super.readShareTag(stack, nbt);
