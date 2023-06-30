@@ -34,7 +34,7 @@ public class CommonConfig
         
         dbSourceUrl = builder
                 .comment("Link to the db.json of the used cards and sets database.")
-                .define("dbSourceUrl", "https://raw.githubusercontent.com/CAS-ual-TY/YDM2-DB/master/db.json");
+                .define("dbSourceUrl", "https://raw.githubusercontent.com/CAS-ual-TY/YDM2-DB/main/db.json");
         
         mohistWorkaround = builder
                 .comment("If set to true contents will be saved directly to item NBTs to avoid wipes when using mohist.")
