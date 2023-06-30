@@ -1,12 +1,12 @@
-package de.cas_ual_ty.ydm.card;
+package de.cas_ual_ty.ydm.rarity;
 
-public enum Rarity
+public enum Rarities
 {
     COMMON("Common"), SUPPLY("Supply"), CREATIVE("Creative");
     
     public final String name;
     
-    Rarity(String name)
+    Rarities(String name)
     {
         this.name = name;
     }

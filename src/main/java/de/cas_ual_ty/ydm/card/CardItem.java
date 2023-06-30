@@ -1,8 +1,13 @@
 package de.cas_ual_ty.ydm.card;
 
+import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
+import de.cas_ual_ty.ydm.rarity.Rarities;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -33,6 +38,20 @@ public class CardItem extends Item
         return Component.literal(holder.getCard().getName());
     }
     
+    @Override
+    public InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand)
+    {
+        ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
+        CardHolder cardHolder = getCardHolder(itemStack);
+        if(cardHolder != null && pPlayer.level.isClientSide)
+        {
+            YDM.proxy.openCardInspectScreen(cardHolder);
+            return InteractionResultHolder.success(itemStack);
+        }
+        
+        return super.use(pLevel, pPlayer, pUsedHand);
+    }
+    
     public CardHolder getCardHolder(ItemStack itemStack)
     {
         return new ItemStackCardHolder(itemStack);
@@ -54,7 +73,7 @@ public class CardItem extends Item
     
     public ItemStack createItemForCard(de.cas_ual_ty.ydm.card.properties.Properties card)
     {
-        return createItemForCard(card, (byte) 0, Rarity.CREATIVE.name);
+        return createItemForCard(card, (byte) 0, Rarities.CREATIVE.name);
     }
     
     public ItemStack createItemForCardHolder(CardHolder card)
@@ -74,7 +93,7 @@ public class CardItem extends Item
         
         YdmDatabase.forAllCardVariants((card, imageIndex) ->
         {
-            items.add(createItemForCard(card, imageIndex, Rarity.CREATIVE.name));
+            items.add(createItemForCard(card, imageIndex, Rarities.CREATIVE.name));
         });
     }
     

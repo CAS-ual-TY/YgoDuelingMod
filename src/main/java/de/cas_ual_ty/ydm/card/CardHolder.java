@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.card;
 import com.google.gson.JsonObject;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.rarity.Rarities;
 import de.cas_ual_ty.ydm.util.JsonKeys;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -12,7 +13,7 @@ import java.util.List;
 
 public class CardHolder implements Comparable<CardHolder>
 {
-    public static final CardHolder DUMMY = new CardHolder(Properties.DUMMY, (byte) 0, Rarity.CREATIVE.name, "DUM-MY");
+    public static final CardHolder DUMMY = new CardHolder(Properties.DUMMY, (byte) 0, Rarities.CREATIVE.name, "DUM-MY");
     public Properties card;
     public byte imageIndex;
     public String rarity;

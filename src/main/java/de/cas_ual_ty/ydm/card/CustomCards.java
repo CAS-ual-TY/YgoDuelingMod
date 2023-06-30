@@ -3,6 +3,7 @@ package de.cas_ual_ty.ydm.card;
 import com.google.common.collect.Lists;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.card.properties.*;
+import de.cas_ual_ty.ydm.rarity.Rarities;
 
 public class CustomCards
 {
@@ -272,6 +273,6 @@ public class CustomCards
     
     public static CardHolder createPatreonCard(Properties c) // add rarity here as parameter
     {
-        return new CardHolder(c, (byte) 0, Rarity.COMMON.name, "PATREON-" + c.id);
+        return new CardHolder(c, (byte) 0, Rarities.COMMON.name, "PATREON-" + c.id);
     }
 }

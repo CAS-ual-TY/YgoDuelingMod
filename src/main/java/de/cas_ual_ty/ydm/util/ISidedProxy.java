@@ -1,7 +1,9 @@
 package de.cas_ual_ty.ydm.util;
 
 import de.cas_ual_ty.ydm.YDM;
+import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.properties.Properties;
+import de.cas_ual_ty.ydm.rarity.RarityLayer;
 import de.cas_ual_ty.ydm.set.CardSet;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -84,6 +86,16 @@ public interface ISidedProxy
         return null;
     }
     
+    default String getRarityMainImage(RarityLayer layer)
+    {
+        return null;
+    }
+    
+    default String getRarityInfoImage(RarityLayer layer)
+    {
+        return null;
+    }
+    
     default boolean continueTasks()
     {
         return YDM.continueTasks;
@@ -92,5 +104,10 @@ public interface ISidedProxy
     default boolean forceTaskStop()
     {
         return YDM.forceTaskStop;
+    }
+    
+    default void openCardInspectScreen(CardHolder card)
+    {
+    
     }
 }

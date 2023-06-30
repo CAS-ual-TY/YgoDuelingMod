@@ -1,6 +1,5 @@
 package de.cas_ual_ty.ydm.clientutil;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.GlStateManager.DestFactor;
 import com.mojang.blaze3d.platform.GlStateManager.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -86,7 +85,6 @@ public class YdmBlitUtil
     // use full mask (64x64) for 16x16 texture
     public static void advancedMaskedBlit(PoseStack ms, float renderX, float renderY, float renderWidth, float renderHeight, Runnable maskBinderAndDrawer, Runnable textureBinderAndDrawer)
     {
-        //        RenderSystem.pushMatrix();
         ScreenUtil.white();
         RenderSystem.enableBlend();
         
@@ -94,11 +92,12 @@ public class YdmBlitUtil
         // but rather replaces the framebuffer alpha values with values based
         // on the whiteness of the mask. In other words, if a pixel is white in the mask,
         // then the corresponding framebuffer pixel's alpha will be set to 1.
-        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE, GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ZERO);
+        RenderSystem.blendFuncSeparate(SourceFactor.ZERO, DestFactor.ONE, SourceFactor.SRC_ALPHA, DestFactor.ZERO);
         
         // Addendum to previous comment: Making sure that we write ALL pixels with ANY alpha.
-        /*RenderSystem.enableAlphaTest(); //FIXME probably needed for Rarity
-        RenderSystem.alphaFunc(GL11.GL_ALWAYS, 0);*/
+        //GL11.glEnable(GL11.GL_ALPHA_TEST);
+        //RenderSystem.enableAlphaTest();
+        //RenderSystem.alphaFunc(GL11.GL_ALWAYS, 0);
         
         // Now "draw" the mask (again, this doesn't produce a visible result, it just
         // changes the alpha values in the framebuffer)
@@ -106,11 +105,10 @@ public class YdmBlitUtil
         
         // Finally, we want a blendfunc that makes the foreground visible only in
         // areas with high alpha.
-        RenderSystem.blendFunc(SourceFactor.DST_ALPHA, DestFactor.ONE_MINUS_DST_ALPHA);
+        RenderSystem.blendFuncSeparate(SourceFactor.ONE_MINUS_DST_ALPHA, DestFactor.DST_COLOR, SourceFactor.DST_ALPHA, DestFactor.ONE_MINUS_DST_ALPHA);
         textureBinderAndDrawer.run();
         
         RenderSystem.disableBlend();
-        //        RenderSystem.popMatrix();
     }
     
     protected static void customInnerBlit(Matrix4f matrix, float posX1, float posX2, float posY1, float posY2, float posZ, float texX1, float texX2, float texY1, float texY2)

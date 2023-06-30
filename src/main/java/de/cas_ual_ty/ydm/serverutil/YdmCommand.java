@@ -8,8 +8,8 @@ import de.cas_ual_ty.ydm.YDM;
 import de.cas_ual_ty.ydm.YdmDatabase;
 import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
-import de.cas_ual_ty.ydm.card.Rarity;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderCardsManager;
+import de.cas_ual_ty.ydm.rarity.Rarities;
 import de.cas_ual_ty.ydm.set.CardSetBaseItem;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -128,7 +128,7 @@ public class YdmCommand
                     {
                         for(int i = 0; i < amount; ++i)
                         {
-                            list.add(new CardHolder(card, imageIndex, Rarity.CREATIVE.name));
+                            list.add(new CardHolder(card, imageIndex, Rarities.CREATIVE.name));
                         }
                     });
                     

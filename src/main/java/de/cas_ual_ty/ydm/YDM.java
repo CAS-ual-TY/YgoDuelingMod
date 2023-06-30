@@ -92,6 +92,7 @@ public class YDM
     public static File cardsFolder;
     public static File setsFolder;
     public static File distributionsFolder;
+    public static File raritiesFolder;
     public static File bindersFolder;
     
     public static SimpleChannel channel;
@@ -218,6 +219,7 @@ public class YDM
         YDM.cardsFolder = new File(YDM.mainFolder, "cards");
         YDM.setsFolder = new File(YDM.mainFolder, "sets");
         YDM.distributionsFolder = new File(YDM.mainFolder, "distributions");
+        YDM.raritiesFolder = new File(YDM.mainFolder, "rarities");
         
         YDM.bindersFolder = new File("ydm_binders");
         YdmIOUtil.createDirIfNonExistant(YDM.bindersFolder);

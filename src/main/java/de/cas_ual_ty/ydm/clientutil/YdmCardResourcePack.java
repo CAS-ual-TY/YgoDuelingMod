@@ -109,7 +109,16 @@ public class YdmCardResourcePack extends FilePackResources
             }
             else
             {
-                return null;
+                image = ImageHandler.getRarityFile(filename);
+                
+                if(image.exists())
+                {
+                    return image;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
     }

@@ -72,6 +72,10 @@ public class JsonKeys
     public static final String RARITIES = "rarities";
     public static final String COUNT = "count";
     
+    // rarities
+    
+    public static final String LAYERS = "layers";
+    
     // other
     
     public static final String UUID = "uuid";

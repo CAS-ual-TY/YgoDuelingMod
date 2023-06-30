@@ -7,6 +7,7 @@ import de.cas_ual_ty.ydm.*;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.card.CardSleevesItem;
 import de.cas_ual_ty.ydm.card.CardSleevesType;
+import de.cas_ual_ty.ydm.card.InspectCardScreen;
 import de.cas_ual_ty.ydm.card.properties.Properties;
 import de.cas_ual_ty.ydm.cardbinder.CardBinderScreen;
 import de.cas_ual_ty.ydm.carditeminventory.CIIContainer;
@@ -16,6 +17,7 @@ import de.cas_ual_ty.ydm.deckbox.DeckBoxScreen;
 import de.cas_ual_ty.ydm.duel.DuelContainer;
 import de.cas_ual_ty.ydm.duel.screen.DuelContainerScreen;
 import de.cas_ual_ty.ydm.duel.screen.DuelScreenBase;
+import de.cas_ual_ty.ydm.rarity.RarityLayer;
 import de.cas_ual_ty.ydm.set.CardSet;
 import de.cas_ual_ty.ydm.util.ISidedProxy;
 import de.cas_ual_ty.ydm.util.YdmIOUtil;
@@ -75,8 +77,12 @@ public class ClientProxy implements ISidedProxy
     public static File imagesParentFolder;
     public static File cardImagesFolder;
     public static File setImagesFolder;
+    public static File rarityImagesFolder;
+    public static File rarityMainImagesFolder;
+    public static File rarityInfoImagesFolder;
     public static File rawCardImagesFolder;
     public static File rawSetImagesFolder;
+    public static File rawRarityImagesFolder;
     private static File cardInfoImagesFolder;
     private static File cardItemImagesFolder;
     private static File cardMainImagesFolder;
@@ -186,6 +192,8 @@ public class ClientProxy implements ISidedProxy
         MenuScreens.register(YdmContainerTypes.CARD_SET_CONTENTS.get(), (MenuScreens.ScreenConstructor<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
         MenuScreens.register(YdmContainerTypes.SIMPLE_BINDER.get(), (MenuScreens.ScreenConstructor<CIIContainer, CIIScreen<CIIContainer>>) (CIIScreen::new));
         
+        ImageHandler.prepareRarityImages(ClientProxy.activeCardMainImageSize);
+        ImageHandler.prepareRarityImages(ClientProxy.activeCardInfoImageSize);
         CardRenderUtil.init(ClientProxy.maxInfoImages, ClientProxy.maxMainImages);
     }
     
@@ -195,14 +203,18 @@ public class ClientProxy implements ISidedProxy
         ClientProxy.imagesParentFolder = new File("ydm_db_images");
         ClientProxy.cardImagesFolder = new File(ClientProxy.imagesParentFolder, "cards");
         ClientProxy.setImagesFolder = new File(ClientProxy.imagesParentFolder, "sets");
+        ClientProxy.rarityImagesFolder = new File(ClientProxy.imagesParentFolder, "rarities");
         ClientProxy.rawCardImagesFolder = new File(ClientProxy.cardImagesFolder, "raw");
         ClientProxy.rawSetImagesFolder = new File(ClientProxy.setImagesFolder, "raw");
+        ClientProxy.rawRarityImagesFolder = new File(YDM.mainFolder, "rarity_images");
         
         YdmIOUtil.createDirIfNonExistant(ClientProxy.imagesParentFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.setImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rarityImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.rawCardImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.rawSetImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rawRarityImagesFolder);
     }
     
     @Override
@@ -213,13 +225,20 @@ public class ClientProxy implements ISidedProxy
         ClientProxy.cardItemImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeCardItemImageSize);
         ClientProxy.cardMainImagesFolder = new File(ClientProxy.cardImagesFolder, "" + ClientProxy.activeCardMainImageSize);
         
-        // change this depending on resolution (64/128/256)
-        ClientProxy.setInfoImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetInfoImageSize);
-        ClientProxy.setItemImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetItemImageSize);
+        ClientProxy.rarityMainImagesFolder = new File(rarityImagesFolder, "" + ClientProxy.activeCardMainImageSize);
+        ClientProxy.rarityInfoImagesFolder = new File(rarityImagesFolder, "" + ClientProxy.activeCardInfoImageSize);
         
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardItemImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.cardMainImagesFolder);
+        
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rarityMainImagesFolder);
+        YdmIOUtil.createDirIfNonExistant(ClientProxy.rarityInfoImagesFolder);
+        
+        // change this depending on resolution (64/128/256)
+        ClientProxy.setInfoImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetInfoImageSize);
+        ClientProxy.setItemImagesFolder = new File(ClientProxy.setImagesFolder, "" + ClientProxy.activeSetItemImageSize);
+        
         YdmIOUtil.createDirIfNonExistant(ClientProxy.setInfoImagesFolder);
         YdmIOUtil.createDirIfNonExistant(ClientProxy.setItemImagesFolder);
     }
@@ -276,6 +295,24 @@ public class ClientProxy implements ISidedProxy
     public String getSetInfoReplacementImage(CardSet set)
     {
         return ImageHandler.getInfoReplacementImage(set);
+    }
+    
+    @Override
+    public String getRarityMainImage(RarityLayer layer)
+    {
+        return ImageHandler.getRarityMainImage(layer);
+    }
+    
+    @Override
+    public String getRarityInfoImage(RarityLayer layer)
+    {
+        return ImageHandler.getRarityInfoImage(layer);
+    }
+    
+    @Override
+    public void openCardInspectScreen(CardHolder card)
+    {
+        Minecraft.getInstance().setScreen(new InspectCardScreen(card));
     }
     
     private void entityRenderers(EntityRenderersEvent.RegisterRenderers event)
