@@ -100,7 +100,12 @@ public class ImageHandler
                 File finished = getRarityFile(imageSize + "/" + l.texture + ".png");
                 File raw = getRawRarityImageFile(l.texture);
                 
-                if(raw.exists() && !finished.exists())
+                if(finished.exists())
+                {
+                    finished.delete();
+                }
+                
+                if(raw.exists())
                 {
                     try
                     {
