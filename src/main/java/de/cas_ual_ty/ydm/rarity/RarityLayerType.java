@@ -1,21 +1,16 @@
 package de.cas_ual_ty.ydm.rarity;
 
-import de.cas_ual_ty.ydm.YDM;
-import net.minecraft.resources.ResourceLocation;
-
 public enum RarityLayerType
 {
-    NORMAL("normal"), INVERTED("inverted");
+    NORMAL("normal", false), INVERTED("inverted", true);
     
-    public static final ResourceLocation EMPTY_MASK = new ResourceLocation(YDM.MOD_ID, "textures/gui/mask_empty.png");
-    
-    public final ResourceLocation maskRl;
     public final String id;
+    public final boolean invertedRendering;
     
-    RarityLayerType(String id)
+    RarityLayerType(String id, boolean invertedRendering)
     {
-        maskRl = new ResourceLocation(YDM.MOD_ID, "textures/gui/rarity_mask_" + id + ".png");
         this.id = id;
+        this.invertedRendering = invertedRendering;
     }
     
     public static RarityLayerType fromString(String s)

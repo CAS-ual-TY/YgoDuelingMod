@@ -24,6 +24,8 @@ import java.util.List;
 
 public class CardRenderUtil
 {
+    public static final ResourceLocation MASK_RL = new ResourceLocation(YDM.MOD_ID, "textures/gui/rarity_mask.png");
+    
     private static LimitedTextureBinder infoTextureBinder;
     private static LimitedTextureBinder mainTextureBinder;
     
@@ -182,10 +184,7 @@ public class CardRenderUtil
                 
                 Runnable mask = () ->
                 {
-                    //RenderSystem.setShaderTexture(0, RarityLayerType.EMPTY_MASK);
-                    //YdmBlitUtil.fullBlit(ms, x, y, width, height);
-                    
-                    RenderSystem.setShaderTexture(0, layer.type.maskRl);
+                    RenderSystem.setShaderTexture(0, MASK_RL);
                     YdmBlitUtil.fullBlit(ms, mouseX - width / 2, mouseY - height / 2, width, height);
                 };
                 
@@ -195,7 +194,7 @@ public class CardRenderUtil
                     YdmBlitUtil.fullBlit(ms, x - width / 2, y - height / 2, width, height);
                 };
                 
-                YdmBlitUtil.advancedMaskedBlit(ms, x, y, width, height, mask, renderer);
+                YdmBlitUtil.advancedMaskedBlit(ms, x, y, width, height, mask, renderer, layer.type.invertedRendering);
             }
         }
     }
@@ -243,16 +242,9 @@ public class CardRenderUtil
             {
                 for(RarityLayer layer : rarity.layers)
                 {
-                    if(layer.type == RarityLayerType.INVERTED)
-                    {
-                    }
-                    
                     Runnable mask = () ->
                     {
-                        RenderSystem.setShaderTexture(0, RarityLayerType.EMPTY_MASK);
-                        blitMethod.fullBlit(ms, x, y, width, height);
-                        
-                        RenderSystem.setShaderTexture(0, layer.type.maskRl);
+                        RenderSystem.setShaderTexture(0, MASK_RL);
                         blitMethod.fullBlit(ms, mouseX - width / 2, mouseY - height / 2, width, height);
                     };
                     
@@ -262,7 +254,7 @@ public class CardRenderUtil
                         blitMethod.fullBlit(ms, x, y, width, height);
                     };
                     
-                    YdmBlitUtil.advancedMaskedBlit(ms, x, y, width, height, mask, renderer);
+                    YdmBlitUtil.advancedMaskedBlit(ms, x, y, width, height, mask, renderer, layer.type.invertedRendering);
                 }
             }
         }
