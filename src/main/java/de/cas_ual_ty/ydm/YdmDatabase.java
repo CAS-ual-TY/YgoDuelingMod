@@ -195,6 +195,15 @@ public class YdmDatabase
         
         YdmDatabase.readCards(YDM.cardsFolder);
         
+        if(YDM.distributionsFolder.exists())
+        {
+            YdmDatabase.readDistributions(YDM.distributionsFolder);
+        }
+        else
+        {
+            YDM.log(YDM.distributionsFolder.getAbsolutePath() + " (distributions folder) does not exist! Skipping...");
+        }
+        
         if(YDM.setsFolder.exists())
         {
             YdmDatabase.readSets(YDM.setsFolder);
@@ -211,15 +220,6 @@ public class YdmDatabase
         else
         {
             YDM.log(YDM.raritiesFolder.getAbsolutePath() + " (rarities folder) does not exist! Skipping...");
-        }
-        
-        if(YDM.distributionsFolder.exists())
-        {
-            YdmDatabase.readDistributions(YDM.distributionsFolder);
-        }
-        else
-        {
-            YDM.log(YDM.distributionsFolder.getAbsolutePath() + " (distributions folder) does not exist! Skipping...");
         }
         
         YdmDatabase.postDBInit();
