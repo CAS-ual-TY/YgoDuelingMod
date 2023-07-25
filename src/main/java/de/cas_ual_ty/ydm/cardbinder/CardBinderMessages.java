@@ -179,23 +179,20 @@ public class CardBinderMessages
     public static class IndexClicked
     {
         public int index;
-        public boolean shiftDown;
         
-        public IndexClicked(int index, boolean shiftDown)
+        public IndexClicked(int index)
         {
             this.index = index;
-            this.shiftDown = shiftDown;
         }
         
         public static void encode(IndexClicked msg, FriendlyByteBuf buf)
         {
             buf.writeInt(msg.index);
-            buf.writeBoolean(msg.shiftDown);
         }
         
         public static IndexClicked decode(FriendlyByteBuf buf)
         {
-            return new IndexClicked(buf.readInt(), buf.readBoolean());
+            return new IndexClicked(buf.readInt());
         }
         
         public static void handle(IndexClicked msg, Supplier<NetworkEvent.Context> ctx)
@@ -205,7 +202,7 @@ public class CardBinderMessages
             {
                 CardBinderMessages.doForBinderContainer(context.getSender(), (container) ->
                 {
-                    container.indexClicked(msg.index, msg.shiftDown);
+                    container.indexClicked(msg.index);
                 });
             });
             

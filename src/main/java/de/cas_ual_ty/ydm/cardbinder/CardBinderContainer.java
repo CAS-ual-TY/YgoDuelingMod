@@ -180,7 +180,7 @@ public class CardBinderContainer extends AbstractContainerMenu
         return card;
     }
     
-    public void indexClicked(int index, boolean shiftDown)
+    public void indexClicked(int index)
     {
         if(!manager.isLoaded())
         {
@@ -193,13 +193,15 @@ public class CardBinderContainer extends AbstractContainerMenu
         {
             ItemStack itemStack = YdmItems.CARD.get().createItemForCardHolder(card);
             
-            if(shiftDown)
+            int slot = player.getInventory().getFreeSlot();
+            
+            if(slot == -1)
             {
-                player.addItem(itemStack);
+                player.drop(itemStack, true);
             }
             else
             {
-                player.getInventory().setPickedItem(itemStack);
+                player.getInventory().add(itemStack);
             }
         }
     }
@@ -235,11 +237,6 @@ public class CardBinderContainer extends AbstractContainerMenu
         {
             return;
         }
-        
-        /*
-        this.page %= this.serverList.getPagesAmount();
-        this.page++;
-        */
         
         if(page >= serverList.getPagesAmount())
         {

@@ -3,7 +3,6 @@ package de.cas_ual_ty.ydm.cardbinder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import de.cas_ual_ty.ydm.YDM;
-import de.cas_ual_ty.ydm.YdmItems;
 import de.cas_ual_ty.ydm.card.CardHolder;
 import de.cas_ual_ty.ydm.cardinventory.CardInventory;
 import de.cas_ual_ty.ydm.clientutil.CardRenderUtil;
@@ -17,7 +16,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -38,8 +36,6 @@ public class CardBinderScreen extends AbstractContainerScreen<CardBinderContaine
     protected Button prevButton;
     protected Button nextButton;
     
-    protected boolean shiftDown;
-    
     protected int centerX;
     protected int centerY;
     
@@ -48,7 +44,6 @@ public class CardBinderScreen extends AbstractContainerScreen<CardBinderContaine
     public CardBinderScreen(CardBinderContainer screenContainer, Inventory inv, Component titleIn)
     {
         super(screenContainer, inv, titleIn);
-        shiftDown = false;
     }
     
     @Override
@@ -170,15 +165,9 @@ public class CardBinderScreen extends AbstractContainerScreen<CardBinderContaine
             return;
         }
         
-        if(button.getCard() != null && YDM.proxy.getClientPlayer().getInventory().getSelected().isEmpty())
+        if(button.getCard() != null)
         {
-            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index, shiftDown));
-            
-            if(!shiftDown)
-            {
-                ItemStack itemStack = YdmItems.CARD.get().createItemForCardHolder(button.getCard());
-                YDM.proxy.getClientPlayer().getInventory().setPickedItem(itemStack);
-            }
+            YDM.channel.send(PacketDistributor.SERVER.noArg(), new CardBinderMessages.IndexClicked(index));
         }
     }
     
@@ -196,11 +185,7 @@ public class CardBinderScreen extends AbstractContainerScreen<CardBinderContaine
         }
         else if(getMenu().loaded)
         {
-            if(keyCode == CardBinderScreen.LEFT_SHIFT)
-            {
-                shiftDown = true;
-            }
-            else if(keyCode == CardBinderScreen.Q)
+            if(keyCode == CardBinderScreen.Q)
             {
                 for(CardButton button : cardButtons)
                 {
@@ -214,15 +199,5 @@ public class CardBinderScreen extends AbstractContainerScreen<CardBinderContaine
         }
         
         return super.keyPressed(keyCode, scanCode, modifiers);
-    }
-    
-    @Override
-    public boolean keyReleased(int keyCode, int scanCode, int modifiers)
-    {
-        if(keyCode == CardBinderScreen.LEFT_SHIFT)
-        {
-            shiftDown = false;
-        }
-        return super.keyReleased(keyCode, scanCode, modifiers);
     }
 }
