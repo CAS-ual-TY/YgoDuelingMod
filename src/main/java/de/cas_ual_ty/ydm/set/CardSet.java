@@ -1,6 +1,7 @@
 package de.cas_ual_ty.ydm.set;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -64,7 +65,7 @@ public class CardSet
     public List<CardHolder> cards;
     
     // list of all contained rarities
-    public List<String> rarityPool;
+    public Set<String> rarityPool;
     
     public boolean isSubSet;
     public String shownCode;
@@ -127,13 +128,13 @@ public class CardSet
         if(!j.has(JsonKeys.CARDS))
         {
             cards = ImmutableList.of();
-            rarityPool = ImmutableList.of();
+            rarityPool = ImmutableSet.of();
         }
         else
         {
             JsonArray cards = j.get(JsonKeys.CARDS).getAsJsonArray();
             this.cards = new ArrayList<>(cards.size());
-            rarityPool = new LinkedList<>();
+            rarityPool = new HashSet<>();
             
             JsonObject c;
             long id;
@@ -161,11 +162,7 @@ public class CardSet
                 }
                 
                 rarity = c.get(JsonKeys.RARITY).getAsString();
-                
-                if(!rarityPool.contains(rarity))
-                {
-                    rarityPool.add(rarity);
-                }
+                rarityPool.add(rarity);
                 
                 this.cards.add(new CardHolder(card, imageIndex, rarity, c.get(JsonKeys.CODE).getAsString()));
             }

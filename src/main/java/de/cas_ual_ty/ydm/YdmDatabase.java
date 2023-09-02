@@ -15,8 +15,11 @@ import de.cas_ual_ty.ydm.util.YdmUtil;
 import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -24,6 +27,8 @@ public class YdmDatabase
 {
     public static final DNCList<Long, Properties> PROPERTIES_LIST = new DNCList<>((p) -> p.getId(), Long::compare);
     private static int cardsVariantsCount = -1;
+    
+    public static final HashSet<String> FOUND_RARITIES = new HashSet<>();
     
     public static final DNCList<String, RarityEntry> RARITIES_LIST = new DNCList<>((r) -> r.rarity, (s1, s2) -> s1.compareTo(s2));
     public static final DNCList<String, Distribution> DISTRIBUTIONS_LIST = new DNCList<>((d) -> d.name, (s1, s2) -> s1.compareTo(s2));
@@ -549,6 +554,11 @@ public class YdmDatabase
         {
             x.postDBInit();
         }
+        
+        SETS_LIST.getList().stream().filter(Objects::nonNull).map(s -> s.rarityPool).filter(Objects::nonNull).forEach(FOUND_RARITIES::addAll);
+        
+        YDM.log("All rarities found:");
+        YDM.log(FOUND_RARITIES.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(", ")));
     }
     
     public static int getTotalCardsAndVariants()
