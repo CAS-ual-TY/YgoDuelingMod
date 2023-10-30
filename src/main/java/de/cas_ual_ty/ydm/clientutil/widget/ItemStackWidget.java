@@ -66,35 +66,35 @@ public class ItemStackWidget extends AbstractWidget
                 
                 BakedModel bakedmodel = itemRenderer.getModel(itemStack, null, null, 0); //FIXME 0 correct?
                 
-                ms.pushPose();
-                
-                RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
                 minecraft.getTextureManager().getTexture(TextureAtlas.LOCATION_BLOCKS).setFilter(false, false);
+                RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
                 RenderSystem.enableBlend();
                 RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
                 RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-                ms.translate((float) x, (float) y, 100.0F + itemRenderer.blitOffset);
-                ms.translate(width / 2F, height / 2F, 0.0F);
-                ms.scale(1.0F, -1.0F, 1.0F);
-                ms.scale(width, height, 16.0F);
+                PoseStack posestack = RenderSystem.getModelViewStack();
+                posestack.pushPose();
+                posestack.translate((float) x, (float) y, 100.0F + itemRenderer.blitOffset);
+                posestack.translate(width / 2F, height / 2F, 0.0D);
+                posestack.scale(1.0F, -1.0F, 1.0F);
+                posestack.scale(width, height, 16.0F);
                 RenderSystem.applyModelViewMatrix();
-                PoseStack PoseStack = new PoseStack();
-                MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+                PoseStack posestack1 = new PoseStack();
+                MultiBufferSource.BufferSource multibuffersource$buffersource = Minecraft.getInstance().renderBuffers().bufferSource();
                 boolean flag = !bakedmodel.usesBlockLight();
                 if(flag)
                 {
                     Lighting.setupForFlatItems();
                 }
                 
-                itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, PoseStack, irendertypebuffer$impl, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
-                irendertypebuffer$impl.endBatch();
+                itemRenderer.render(itemStack, ItemTransforms.TransformType.GUI, false, posestack1, multibuffersource$buffersource, 15728880, OverlayTexture.NO_OVERLAY, bakedmodel);
+                multibuffersource$buffersource.endBatch();
                 RenderSystem.enableDepthTest();
                 if(flag)
                 {
                     Lighting.setupFor3DItems();
                 }
                 
-                ms.popPose();
+                posestack.popPose();
                 RenderSystem.applyModelViewMatrix();
                 
                 return;
